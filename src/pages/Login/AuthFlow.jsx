@@ -1,10 +1,10 @@
-import { useSignIn, useSignUp, useAuth } from "@clerk/react";
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BookOpen, AlertCircle, ArrowLeft, Key, Lock, Phone, ShieldCheck, Loader2, Eye, EyeOff } from "lucide-react";
+import { useAuth, useClerk, useSignIn, useSignUp } from "@clerk/react";
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertCircle, ArrowLeft, BookOpen, Eye, EyeOff, Key, Loader2, Lock, Phone, ShieldCheck } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Common Clerk Error Mapper to Bengali
 const getBengaliError = (err) => {
@@ -21,7 +21,7 @@ const getBengaliError = (err) => {
     return "ওটিপি কোডটির মেয়াদ শেষ হয়ে গেছে। আবার চেষ্টা করুন।";
   }
   if (code === "form_code_incorrect" || msg.toLowerCase().includes("incorrect code")) {
-    return "ভুল ওটিপি কোড! সঠিক কোডটি লিখুন।";
+    return "ভুল ওটিপি কোড! সঠিক ওটিপি কোডটি লিখুন।";
   }
   if (code === "too_many_requests") {
     return "অতিরিক্ত অনুরোধ করা হয়েছে। অনুগ্রহ করে কিছুক্ষণ পর চেষ্টা করুন।";
@@ -35,6 +35,7 @@ const getBengaliError = (err) => {
 
 export default function AuthFlow() {
   const { isLoaded } = useAuth();
+  const clerk = useClerk();
   const { signIn, setActive } = useSignIn();
   const { signUp } = useSignUp();
   const navigate = useNavigate();
@@ -101,6 +102,12 @@ export default function AuthFlow() {
     console.log("DEBUG: handlePhoneSubmit starting with:", formattedPhone);
 
     try {
+      // Reset any pending/active attempts on the client to avoid state contamination
+      if (clerk?.client) {
+        if (typeof clerk.client.resetSignIn === "function") clerk.client.resetSignIn();
+        if (typeof clerk.client.resetSignUp === "function") clerk.client.resetSignUp();
+      }
+
       console.log("DEBUG: Calling signIn.create...");
       const res = await signIn.create({ identifier: formattedPhone });
       console.log("DEBUG: signIn.create succeeded:", res);
@@ -120,7 +127,7 @@ export default function AuthFlow() {
           const signUpRes = await signUp.create({ phoneNumber: formattedPhone });
           console.log("DEBUG: signUp.create succeeded:", signUpRes);
           console.log("DEBUG: Calling signUp.preparePhoneNumberVerification...");
-          const prepRes = await signUp.preparePhoneNumberVerification();
+          const prepRes = await signUp.preparePhoneNumberVerification({ strategy: "phone_code" });
           console.log("DEBUG: signUp.preparePhoneNumberVerification succeeded:", prepRes);
           setDirection(1);
           setStep("OTP");
@@ -305,6 +312,9 @@ export default function AuthFlow() {
                       autoFocus
                     />
                   </div>
+
+                  {/* CAPTCHA Widget Container */}
+                  <div id="clerk-captcha" className="mt-2 flex justify-center empty:hidden"></div>
 
                   <Button
                     type="submit"
