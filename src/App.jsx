@@ -13,6 +13,8 @@ import OMREvaluation from './pages/OMREvaluation/OMREvaluation';
 import Institution from './pages/Institution/Institution';
 import Subscription from './pages/Subscription/Subscription';
 import Support from './pages/Support/Support';
+import StaffManagement from './pages/Staff/StaffManagement';
+import RoleRouteGuard from './components/RoleRouteGuard';
 
 export default function App() {
   return (
@@ -24,15 +26,67 @@ export default function App() {
         
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Overview />} />
-          <Route path="generate" element={<Generator />} />
-          <Route path="bank" element={<QuestionBank />} />
-          <Route path="my-questions" element={<MyQuestions />} />
-          <Route path="add-question" element={<AddQuestion />} />
-          <Route path="exams" element={<Exams />} />
-          <Route path="omr" element={<OMREvaluation />} />
-          <Route path="institution" element={<Institution />} />
-          <Route path="subscription" element={<Subscription />} />
-          <Route path="support" element={<Support />} />
+          
+          <Route path="staff" element={
+            <RoleRouteGuard allowedRoles={['Super Admin', 'Admin']}>
+              <StaffManagement />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="generate" element={
+            <RoleRouteGuard allowedRoles={['Subscriber']}>
+              <Generator />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="bank" element={
+            <RoleRouteGuard allowedRoles={['Subscriber', 'Super Admin', 'Admin', 'Content Manager']}>
+              <QuestionBank />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="my-questions" element={
+            <RoleRouteGuard allowedRoles={['Subscriber', 'Question Creator']}>
+              <MyQuestions />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="add-question" element={
+            <RoleRouteGuard allowedRoles={['Question Creator']}>
+              <AddQuestion />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="exams" element={
+            <RoleRouteGuard allowedRoles={['Subscriber']}>
+              <Exams />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="omr" element={
+            <RoleRouteGuard allowedRoles={['Subscriber']}>
+              <OMREvaluation />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="institution" element={
+            <RoleRouteGuard allowedRoles={['Subscriber']}>
+              <Institution />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="subscription" element={
+            <RoleRouteGuard allowedRoles={['Subscriber']}>
+              <Subscription />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="support" element={
+            <RoleRouteGuard allowedRoles={['Subscriber', 'Support Team']}>
+              <Support />
+            </RoleRouteGuard>
+          } />
+          
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
 

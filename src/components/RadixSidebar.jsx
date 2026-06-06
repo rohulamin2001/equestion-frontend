@@ -45,8 +45,10 @@ import {
   ScanLine,
   Sparkles,
   Sparkles as SparklesIcon,
+  Users,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { useUserContext } from '@/context/UserContext';
 
 const DATA = {
   teams: [
@@ -64,6 +66,7 @@ const DATA = {
           title: 'ড্যাশবোর্ড',
           url: '/dashboard',
           icon: LayoutDashboard,
+          roles: ['Super Admin', 'Admin', 'Content Manager', 'Question Creator', 'Support Team', 'Subscriber'],
         }
       ]
     },
@@ -74,21 +77,25 @@ const DATA = {
           title: '১ ক্লিকে প্রশ্ন তৈরি',
           url: '/dashboard/generate',
           icon: Sparkles,
+          roles: ['Subscriber'],
         },
         {
           title: 'প্রশ্নব্যাংক',
           url: '/dashboard/bank',
           icon: Database,
+          roles: ['Subscriber', 'Super Admin', 'Admin', 'Content Manager'],
         },
         {
           title: 'আমার তৈরি প্রশ্ন',
           url: '/dashboard/my-questions',
           icon: FolderOpen,
+          roles: ['Subscriber', 'Question Creator'],
         },
         {
           title: 'নতুন প্রশ্ন যোগ',
           url: '/dashboard/add-question',
           icon: PlusCircle,
+          roles: ['Question Creator'],
         }
       ]
     },
@@ -99,11 +106,13 @@ const DATA = {
           title: 'অনলাইন পরীক্ষা',
           url: '/dashboard/exams',
           icon: Monitor,
+          roles: ['Subscriber'],
         },
         {
           title: 'OMR মূল্যায়ন',
           url: '/dashboard/omr',
           icon: ScanLine,
+          roles: ['Subscriber'],
         }
       ]
     },
@@ -111,14 +120,22 @@ const DATA = {
       label: 'ব্যবস্থাপনা',
       items: [
         {
+          title: 'স্টাফ ব্যবস্থাপনা',
+          url: '/dashboard/staff',
+          icon: Users,
+          roles: ['Super Admin', 'Admin'],
+        },
+        {
           title: 'আমার প্রতিষ্ঠান',
           url: '/dashboard/institution',
           icon: HomeIcon,
+          roles: ['Subscriber'],
         },
         {
           title: 'সাবস্ক্রিপশন ও প্যাকেজ',
           url: '/dashboard/subscription',
           icon: CreditCard,
+          roles: ['Subscriber'],
         }
       ]
     },
@@ -129,6 +146,7 @@ const DATA = {
           title: 'যোগাযোগ ও সাপোর্ট',
           url: '/dashboard/support',
           icon: HelpCircle,
+          roles: ['Subscriber', 'Support Team'],
         }
       ]
     }
@@ -140,10 +158,21 @@ export const RadixSidebar = () => {
   const location = useLocation();
   const { user } = useUser();
   const { toggleSidebar } = useSidebar();
+  const { role } = useUserContext();
 
   const userInitials = user?.fullName
     ? user.fullName.split(' ').map(n => n[0]).join('').toUpperCase()
     : 'US';
+
+  const currentRole = role || 'Subscriber';
+  const filteredNavGroups = DATA.navGroups
+    .map((group) => {
+      const items = group.items.filter(
+        (item) => currentRole === 'Super Admin' || item.roles.includes(currentRole)
+      );
+      return { ...group, items };
+    })
+    .filter((group) => group.items.length > 0);
 
   return (
     <Sidebar collapsible={isMobile ? "icon" : "none"} className="border-r border-slate-200">
@@ -181,7 +210,7 @@ export const RadixSidebar = () => {
       </SidebarHeader>
 
       <SidebarContent className="px-2">
-        {DATA.navGroups.map((group) => (
+        {filteredNavGroups.map((group) => (
           <SidebarGroup key={group.label} className="py-2">
             <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden text-slate-400 font-semibold text-[15px] mb-2 px-3">
               {group.label}
