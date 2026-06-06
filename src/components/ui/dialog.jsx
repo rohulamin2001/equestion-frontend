@@ -26,7 +26,7 @@ const DialogPortal = ({ children, ...props }) => {
   const { open } = React.useContext(DialogContext)
   return (
     <DialogPrimitive.Portal forceMount {...props}>
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {open && children}
       </AnimatePresence>
     </DialogPrimitive.Portal>
@@ -58,6 +58,8 @@ const DialogContent = React.forwardRef(
       showCloseButton = true,
       from = "top",
       transition = { type: "spring", stiffness: 150, damping: 25 },
+      onPointerDownOutside,
+      onEscapeKeyDown,
       ...props
     },
     ref
@@ -89,8 +91,14 @@ const DialogContent = React.forwardRef(
 
     return (
       <DialogPortal>
-        <DialogOverlay />
-        <DialogPrimitive.Content asChild ref={ref}>
+        <DialogOverlay key="dialog-overlay" />
+        <DialogPrimitive.Content 
+          key="dialog-content"
+          asChild 
+          ref={ref}
+          onPointerDownOutside={onPointerDownOutside}
+          onEscapeKeyDown={onEscapeKeyDown}
+        >
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
               initial={directionVariants.initial}

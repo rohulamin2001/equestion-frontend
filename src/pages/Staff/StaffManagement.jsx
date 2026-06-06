@@ -1,8 +1,5 @@
-import React, { useState } from 'react';
-import { useAuth } from '@clerk/react';
-import { useUserContext } from '@/context/UserContext';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import apiClient from '@/lib/apiClient';
+import React from 'react';
+import { useStaffManagement } from './hook/useStaffManagement';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -20,7 +17,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogPopup,
@@ -59,151 +56,42 @@ const BENGALI_ROLES = {
 };
 
 export default function StaffManagement() {
-  const { getToken } = useAuth();
-  const { userProfile } = useUserContext();
-  const queryClient = useQueryClient();
-  
-  // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [staffToDelete, setStaffToDelete] = useState(null);
-  const [activeDropdownMemberId, setActiveDropdownMemberId] = useState(null);
-  const [formError, setFormError] = useState(null);
-  const [formSuccess, setFormSuccess] = useState(null);
-  
-  // Form fields
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('Question Creator');
-  const [showPassword, setShowPassword] = useState(false);
-  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
-
-  // Fetch staff members query
   const {
-    data: staffList = [],
-    isLoading: loading,
-    error: fetchError,
-    refetch: fetchStaff,
-  } = useQuery({
-    queryKey: ['staffList'],
-    queryFn: async () => {
-      const token = await getToken();
-      const response = await apiClient.get('/users/staff', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data.staff;
-    },
-  });
-
-  const error = fetchError
-    ? fetchError.response?.data?.error || fetchError.message || 'স্টাফ তালিকা লোড করতে ব্যর্থ হয়েছে'
-    : null;
-
-  // Handle staff registration mutation
-  const addStaffMutation = useMutation({
-    mutationFn: async (newStaff) => {
-      const token = await getToken();
-      const response = await apiClient.post('/users/staff', newStaff, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staffList'] });
-      setFormSuccess('নতুন স্টাফ সফলভাবে যুক্ত করা হয়েছে!');
-      // Reset form
-      setFirstName('');
-      setLastName('');
-      setEmail('');
-      setPassword('');
-      setRole('Question Creator');
-      
-      // Auto close modal after delay
-      setTimeout(() => {
-        setIsModalOpen(false);
-        setFormSuccess(null);
-      }, 1500);
-    },
-    onError: (err) => {
-      console.error(err);
-      setFormError(err.response?.data?.error || err.message || 'স্টাফ যুক্ত করতে ব্যর্থ হয়েছে');
-    },
-  });
-
-  const formLoading = addStaffMutation.isPending;
-
-  const handleAddStaff = async (e) => {
-    e.preventDefault();
-    setFormError(null);
-    setFormSuccess(null);
-
-    addStaffMutation.mutate({
-      firstName,
-      lastName,
-      email,
-      password,
-      role,
-    });
-  };
-
-  // Handle role modification mutation
-  const updateRoleMutation = useMutation({
-    mutationFn: async ({ userId, newRole }) => {
-      const token = await getToken();
-      const response = await apiClient.put(`/users/staff/${userId}/role`, { role: newRole }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return { userId, newRole, data: response.data };
-    },
-    onSuccess: ({ userId, newRole }) => {
-      queryClient.setQueryData(['staffList'], (oldList) => {
-        if (!oldList) return [];
-        return oldList.map((member) =>
-          member._id === userId ? { ...member, role: newRole } : member
-        );
-      });
-    },
-    onError: (err) => {
-      alert(err.response?.data?.error || err.message || 'রোল আপডেট করতে ব্যর্থ হয়েছে');
-    },
-  });
-
-  const handleRoleChange = async (userId, newRole) => {
-    updateRoleMutation.mutate({ userId, newRole });
-  };
-
-  // Handle staff deletion mutation
-  const deleteStaffMutation = useMutation({
-    mutationFn: async (userId) => {
-      const token = await getToken();
-      await apiClient.delete(`/users/staff/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return { userId };
-    },
-    onSuccess: ({ userId }) => {
-      queryClient.setQueryData(['staffList'], (oldList) => {
-        if (!oldList) return [];
-        return oldList.filter((member) => member._id !== userId);
-      });
-    },
-    onError: (err) => {
-      alert(err.response?.data?.error || err.message || 'স্টাফ মুছতে ব্যর্থ হয়েছে');
-    },
-  });
-
-  const handleDeleteStaff = async (userId) => {
-    setStaffToDelete(userId);
-  };
+    userProfile,
+    isModalOpen,
+    setIsModalOpen,
+    staffToDelete,
+    setStaffToDelete,
+    activeDropdownMemberId,
+    setActiveDropdownMemberId,
+    formError,
+    formSuccess,
+    firstName,
+    setFirstName,
+    lastName,
+    setLastName,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    role,
+    setRole,
+    showPassword,
+    setShowPassword,
+    isRoleDropdownOpen,
+    setIsRoleDropdownOpen,
+    staffList,
+    loading,
+    error,
+    fetchStaff,
+    formLoading,
+    deleteStaffPending,
+    deleteStaffVariables,
+    handleAddStaff,
+    handleRoleChange,
+    handleDeleteStaff,
+    deleteStaffMutation,
+  } = useStaffManagement();
 
   return (
     <div className="space-y-6">
@@ -297,19 +185,19 @@ export default function StaffManagement() {
                             <DropdownMenuTrigger asChild>
                               <button
                                 type="button"
-                                className="inline-flex items-center justify-between gap-2 px-3 py-1.5 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-semibold text-slate-700 transition-all cursor-pointer min-w-[140px]"
+                                className="inline-flex items-center justify-between gap-2 px-3 py-1.5 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-semibold text-slate-700 transition-all duration-300 ease-out cursor-pointer min-w-[140px] hover:-translate-y-[1px] active:translate-y-0 group"
                               >
                                 <span className="flex items-center gap-2">
-                                  <span className={`size-1.5 rounded-full ${
-                                    member.role === 'Admin' ? 'bg-orange-500' :
-                                    member.role === 'Content Manager' ? 'bg-blue-500' :
-                                    member.role === 'Question Creator' ? 'bg-emerald-500' :
-                                    member.role === 'Support Team' ? 'bg-purple-500' :
+                                  <span className={`size-1.5 rounded-full transition-all duration-300 group-hover:scale-125 ${
+                                    member.role === 'Admin' ? 'bg-orange-500 group-hover:shadow-[0_0_6px_rgba(249,115,22,0.6)]' :
+                                    member.role === 'Content Manager' ? 'bg-blue-500 group-hover:shadow-[0_0_6px_rgba(59,130,246,0.6)]' :
+                                    member.role === 'Question Creator' ? 'bg-emerald-500 group-hover:shadow-[0_0_6px_rgba(16,185,129,0.6)]' :
+                                    member.role === 'Support Team' ? 'bg-purple-500 group-hover:shadow-[0_0_6px_rgba(168,85,247,0.6)]' :
                                     'bg-slate-500'
                                   }`} />
                                   {BENGALI_ROLES[member.role] || member.role}
                                 </span>
-                                <ChevronDown className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdownMemberId === member._id ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`size-4 text-slate-400 transition-all duration-300 group-hover:text-slate-600 group-hover:translate-y-[1px] ${activeDropdownMemberId === member._id ? 'rotate-180' : ''}`} />
                               </button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent 
@@ -322,18 +210,18 @@ export default function StaffManagement() {
                                   <DropdownMenuItem
                                     key={roleKey}
                                     onSelect={() => handleRoleChange(member._id, roleKey)}
-                                    className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-primary/5 focus:text-primary ${
+                                    className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center justify-between cursor-pointer focus:bg-primary/5 focus:text-primary hover:bg-slate-50/80 hover:translate-x-1 group/item ${
                                       isSelected 
                                         ? 'bg-primary/5 text-primary' 
                                         : 'text-slate-700'
                                     }`}
                                   >
                                     <span className="flex items-center gap-1.5">
-                                      <span className={`size-1.5 rounded-full ${
-                                        roleKey === 'Admin' ? 'bg-orange-500' :
-                                        roleKey === 'Content Manager' ? 'bg-blue-500' :
-                                        roleKey === 'Question Creator' ? 'bg-emerald-500' :
-                                        roleKey === 'Support Team' ? 'bg-purple-500' :
+                                      <span className={`size-1.5 rounded-full transition-all duration-300 group-hover/item:scale-125 ${
+                                        roleKey === 'Admin' ? 'bg-orange-500 group-hover/item:shadow-[0_0_6px_rgba(249,115,22,0.6)]' :
+                                        roleKey === 'Content Manager' ? 'bg-blue-500 group-hover/item:shadow-[0_0_6px_rgba(59,130,246,0.6)]' :
+                                        roleKey === 'Question Creator' ? 'bg-emerald-500 group-hover/item:shadow-[0_0_6px_rgba(16,185,129,0.6)]' :
+                                        roleKey === 'Support Team' ? 'bg-purple-500 group-hover/item:shadow-[0_0_6px_rgba(168,85,247,0.6)]' :
                                         'bg-slate-500'
                                       }`} />
                                       {BENGALI_ROLES[roleKey]}
@@ -364,9 +252,9 @@ export default function StaffManagement() {
                             className="text-red-500 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg"
                             title="স্থায়ীভাবে মুছুন"
                             onClick={() => handleDeleteStaff(member._id)}
-                            disabled={deleteStaffMutation.isPending}
+                            disabled={deleteStaffPending}
                           >
-                            {deleteStaffMutation.isPending && deleteStaffMutation.variables === member._id ? (
+                            {deleteStaffPending && deleteStaffVariables === member._id ? (
                               <Loader2 className="size-[18px] animate-spin text-red-500" />
                             ) : (
                               <Trash2 className="size-[18px]" />
@@ -406,6 +294,9 @@ export default function StaffManagement() {
               <UserPlus className="size-5 text-primary" />
               নতুন স্টাফ মেম্বার যোগ করুন
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              নতুন স্টাফ রেজিস্টার করার ফর্ম
+            </DialogDescription>
           </div>
 
           <form onSubmit={handleAddStaff} className="p-6 space-y-4">
@@ -501,57 +392,58 @@ export default function StaffManagement() {
                   <ChevronDown className={`size-4 text-slate-400 transition-transform duration-200 ${isRoleDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
+                {isRoleDropdownOpen && (
+                  /* Invisible backdrop to close the dropdown when clicking outside */
+                  <div 
+                    className="fixed inset-0 z-10" 
+                    onClick={() => setIsRoleDropdownOpen(false)} 
+                  />
+                )}
+
                 <AnimatePresence>
                   {isRoleDropdownOpen && (
-                    <>
-                      {/* Invisible backdrop to close the dropdown when clicking outside */}
-                      <div 
-                        className="fixed inset-0 z-10" 
-                        onClick={() => setIsRoleDropdownOpen(false)} 
-                      />
-                      
-                      <motion.div
-                        initial={{ opacity: 0, y: -8, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                        transition={{ duration: 0.15, ease: 'easeOut' }}
-                        className="absolute left-0 right-0 mt-1.5 bg-white border border-slate-100 rounded-xl shadow-lg overflow-hidden z-20"
-                      >
-                        <div className="p-1.5 space-y-0.5">
-                          {['Admin', 'Content Manager', 'Question Creator', 'Support Team'].map((roleKey) => {
-                            const isSelected = role === roleKey;
-                            return (
-                              <button
-                                key={roleKey}
-                                type="button"
-                                onClick={() => {
-                                  setRole(roleKey);
-                                  setIsRoleDropdownOpen(false);
-                                }}
-                                className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition flex items-center justify-between ${
-                                  isSelected 
-                                    ? 'bg-primary/5 text-primary' 
-                                    : 'text-slate-700 hover:bg-slate-50'
-                                }`}
-                              >
-                                <span className="flex items-center gap-2">
-                                  <span className={`size-1.5 rounded-full ${
-                                    roleKey === 'Admin' ? 'bg-orange-500' :
-                                    roleKey === 'Content Manager' ? 'bg-blue-500' :
-                                    roleKey === 'Question Creator' ? 'bg-emerald-500' :
-                                    'bg-purple-500'
-                                  }`} />
-                                  {BENGALI_ROLES[roleKey]}
-                                </span>
-                                {isSelected && (
-                                  <span className="size-1.5 rounded-full bg-primary" />
-                                )}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    </>
+                    <motion.div
+                      key="role-dropdown-content"
+                      initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      className="absolute left-0 right-0 mt-1.5 bg-white border border-slate-100 rounded-xl shadow-lg overflow-hidden z-20"
+                    >
+                      <div className="p-1.5 space-y-0.5">
+                        {['Admin', 'Content Manager', 'Question Creator', 'Support Team'].map((roleKey) => {
+                          const isSelected = role === roleKey;
+                          return (
+                            <button
+                              key={roleKey}
+                              type="button"
+                              onClick={() => {
+                                setRole(roleKey);
+                                setIsRoleDropdownOpen(false);
+                              }}
+                              className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition flex items-center justify-between ${
+                                isSelected 
+                                  ? 'bg-primary/5 text-primary' 
+                                  : 'text-slate-700 hover:bg-slate-50'
+                              }`}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span className={`size-1.5 rounded-full ${
+                                  roleKey === 'Admin' ? 'bg-orange-500' :
+                                  roleKey === 'Content Manager' ? 'bg-blue-500' :
+                                  roleKey === 'Question Creator' ? 'bg-emerald-500' :
+                                  'bg-purple-500'
+                                }`} />
+                                {BENGALI_ROLES[roleKey]}
+                              </span>
+                              {isSelected && (
+                                <span className="size-1.5 rounded-full bg-primary" />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
                   )}
                 </AnimatePresence>
               </div>
@@ -590,7 +482,7 @@ export default function StaffManagement() {
       <AlertDialog 
         open={!!staffToDelete} 
         onOpenChange={(open) => { 
-          if (!open && !deleteStaffMutation.isPending) {
+          if (!open && !deleteStaffPending) {
             setStaffToDelete(null); 
           }
         }}
@@ -608,9 +500,9 @@ export default function StaffManagement() {
           <AlertDialogFooter>
             <AlertDialogCancel 
               className="w-full sm:w-auto" 
-              disabled={deleteStaffMutation.isPending}
+              disabled={deleteStaffPending}
               onClick={() => {
-                if (!deleteStaffMutation.isPending) {
+                if (!deleteStaffPending) {
                   setStaffToDelete(null);
                 }
               }}
@@ -619,7 +511,7 @@ export default function StaffManagement() {
             </AlertDialogCancel>
             <AlertDialogAction 
               className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold flex items-center justify-center gap-2"
-              disabled={deleteStaffMutation.isPending}
+              disabled={deleteStaffPending}
               onClick={async (e) => {
                 e.preventDefault();
                 if (staffToDelete) {
@@ -632,7 +524,7 @@ export default function StaffManagement() {
                 }
               }}
             >
-              {deleteStaffMutation.isPending ? (
+              {deleteStaffPending ? (
                 <>
                   <Loader2 className="size-4 animate-spin text-white" />
                   মুছে ফেলা হচ্ছে...

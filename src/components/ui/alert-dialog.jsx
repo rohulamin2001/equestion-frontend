@@ -25,7 +25,7 @@ const AlertDialogPortal = ({ children, ...props }) => {
   const { open } = React.useContext(AlertDialogContext)
   return (
     <AlertDialogPrimitive.Portal forceMount {...props}>
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {open && children}
       </AnimatePresence>
     </AlertDialogPrimitive.Portal>
@@ -87,8 +87,8 @@ const AlertDialogPopup = React.forwardRef(
 
     return (
       <AlertDialogPortal>
-        <AlertDialogOverlay />
-        <AlertDialogPrimitive.Content asChild ref={ref}>
+        <AlertDialogOverlay key="alert-dialog-overlay" />
+        <AlertDialogPrimitive.Content key="alert-dialog-content" asChild ref={ref}>
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
               initial={directionVariants.initial}
