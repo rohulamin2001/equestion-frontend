@@ -1,6 +1,7 @@
 import React from 'react';
 import { useStaffManagement } from './hook/useStaffManagement';
-import { Button } from '@/components/ui/button';
+import { Button, ModalCancelButton, ModalSubmitButton } from '@/components/ui/button';
+import { RippleButton, RippleButtonRipples } from '@/components/ui/ripple-button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
@@ -17,7 +18,15 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogTitle, 
+  DialogDescription,
+  DialogHeader,
+  DialogFooter,
+  DialogClose
+} from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogPopup,
@@ -101,13 +110,14 @@ export default function StaffManagement() {
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">স্টাফ ব্যবস্থাপনা</h1>
           <p className="text-slate-500 text-sm mt-1">প্যানেলের অন্যান্য এডমিন ও কন্টেন্ট মেম্বারদের সরাসরি এখানে যুক্ত ও পরিচালনা করুন।</p>
         </div>
-        <Button 
+        <RippleButton 
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 px-5 py-6 rounded-xl bg-primary text-white hover:bg-primary/95 transition font-semibold"
         >
           <UserPlus className="size-[18px]" />
           নতুন স্টাফ যোগ করুন
-        </Button>
+          <RippleButtonRipples color="rgba(255, 255, 255, 0.3)" />
+        </RippleButton>
       </div>
 
       {/* Main Content */}
@@ -276,7 +286,6 @@ export default function StaffManagement() {
       </div>
 
       {/* Add Staff Modal */}
-      {/* Add Staff Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent
           from="top"
@@ -287,183 +296,162 @@ export default function StaffManagement() {
           onEscapeKeyDown={(e) => {
             if (formLoading) e.preventDefault();
           }}
-          className="max-w-lg p-0 border border-slate-100 overflow-visible"
+          className="max-w-lg p-0 border border-slate-200/60 overflow-hidden bg-white shadow-2xl rounded-2xl relative"
         >
-          <div className="flex items-center bg-slate-50/50 px-6 py-4 border-b border-slate-100 rounded-t-2xl">
-            <DialogTitle className="font-bold text-slate-800 text-lg flex items-center gap-2">
-              <UserPlus className="size-5 text-primary" />
-              নতুন স্টাফ মেম্বার যোগ করুন
-            </DialogTitle>
-            <DialogDescription className="sr-only">
-              নতুন স্টাফ রেজিস্টার করার ফর্ম
-            </DialogDescription>
-          </div>
-
-          <form onSubmit={handleAddStaff} className="p-6 space-y-4">
-            {formError && (
-              <div className="flex items-center gap-2 bg-red-50 border border-red-100 text-red-700 p-3.5 rounded-xl text-sm">
-                <AlertCircle className="size-4 shrink-0" />
-                <span>{formError}</span>
+          <form onSubmit={handleAddStaff} className="flex flex-col h-full max-h-[85vh]">
+            <DialogHeader className="bg-white px-6 pt-6 pb-5 border-b border-slate-100/80 relative flex flex-col space-y-0 mb-0 text-left">
+              <div className="flex items-start gap-4 pr-8">
+                <div className="p-2 bg-indigo-50 border border-indigo-100/40 text-indigo-600 rounded-xl shrink-0 mt-0.5 shadow-sm shadow-indigo-100/10">
+                  <UserPlus className="size-5" />
+                </div>
+                <div className="space-y-1">
+                  <DialogTitle className="font-bold text-slate-800 text-[17px] tracking-tight leading-snug">
+                    নতুন স্টাফ মেম্বার যোগ করুন
+                  </DialogTitle>
+                  <DialogDescription className="text-slate-500 text-[13px] font-normal leading-relaxed">
+                    নতুন স্টাফ রেজিস্টার করার ফর্ম
+                  </DialogDescription>
+                </div>
               </div>
-            )}
+            </DialogHeader>
 
-            {formSuccess && (
-              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 text-emerald-700 p-3.5 rounded-xl text-sm">
-                <CheckCircle className="size-4 shrink-0" />
-                <span>{formSuccess}</span>
-              </div>
-            )}
+            <div className="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+              {formError && (
+                <div className="flex items-center gap-3 bg-red-50 border border-red-100 text-red-700 p-4 rounded-xl text-sm shadow-sm animate-in fade-in slide-in-from-top-1 duration-200">
+                  <AlertCircle className="size-4 shrink-0 text-red-500" />
+                  <span className="font-semibold">{formError}</span>
+                </div>
+              )}
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase">First Name (নামের প্রথম অংশ)</label>
-                <Input
-                  required
-                  placeholder="e.g. Rohul"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  disabled={formLoading}
-                  className="px-4 py-5 rounded-xl border-slate-200"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase">Last Name (নামের শেষ অংশ)</label>
-                <Input
-                  required
-                  placeholder="e.g. Amin"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  disabled={formLoading}
-                  className="px-4 py-5 rounded-xl border-slate-200"
-                />
-              </div>
-            </div>
+              {formSuccess && (
+                <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-xl text-sm shadow-sm animate-in fade-in slide-in-from-top-1 duration-200">
+                  <CheckCircle className="size-4 shrink-0 text-emerald-500" />
+                  <span className="font-semibold">{formSuccess}</span>
+                </div>
+              )}
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase">Email Address (ইমেইল)</label>
-              <Input
-                required
-                type="email"
-                placeholder="e.g. example@gmail.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={formLoading}
-                className="px-4 py-5 rounded-xl border-slate-200"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase">Password (পাসওয়ার্ড)</label>
-              <div className="relative">
-                <Input
-                  required
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="নূন্যতম ৮ অক্ষরের পাসওয়ার্ড"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={formLoading}
-                  minLength={8}
-                  className="pl-4 pr-11 py-5 rounded-xl border-slate-200 w-full"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition p-1 rounded-md"
-                >
-                  {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-1.5 relative">
-              <label className="text-xs font-bold text-slate-500 uppercase">Staff Role (পদবি নির্বাচন)</label>
-              
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-                  disabled={formLoading}
-                  className="w-full px-4 py-3.5 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 transition focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-semibold text-slate-700 flex justify-between items-center"
-                >
-                  <span className="flex items-center gap-2">
-                    <Shield className="size-4 text-slate-400" />
-                    {BENGALI_ROLES[role] || role}
-                  </span>
-                  <ChevronDown className={`size-4 text-slate-400 transition-transform duration-200 ${isRoleDropdownOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {isRoleDropdownOpen && (
-                  /* Invisible backdrop to close the dropdown when clicking outside */
-                  <div 
-                    className="fixed inset-0 z-10" 
-                    onClick={() => setIsRoleDropdownOpen(false)} 
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">First Name (নামের প্রথম অংশ)</label>
+                  <Input
+                    required
+                    placeholder="e.g. Rohul"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    disabled={formLoading}
+                    className="px-4 py-3 rounded-xl border-slate-250 focus-visible:ring-indigo-150 focus-visible:border-indigo-500 h-11 transition-all shadow-sm focus-visible:ring-4 focus-visible:ring-offset-0"
                   />
-                )}
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Last Name (নামের শেষ অংশ)</label>
+                  <Input
+                    required
+                    placeholder="e.g. Amin"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    disabled={formLoading}
+                    className="px-4 py-3 rounded-xl border-slate-250 focus-visible:ring-indigo-150 focus-visible:border-indigo-500 h-11 transition-all shadow-sm focus-visible:ring-4 focus-visible:ring-offset-0"
+                  />
+                </div>
+              </div>
 
-                <AnimatePresence>
-                  {isRoleDropdownOpen && (
-                    <motion.div
-                      key="role-dropdown-content"
-                      initial={{ opacity: 0, y: -8, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                      transition={{ duration: 0.15, ease: 'easeOut' }}
-                      className="absolute left-0 right-0 mt-1.5 bg-white border border-slate-100 rounded-xl shadow-lg overflow-hidden z-20"
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Email Address (ইমেইল)</label>
+                <Input
+                  required
+                  type="email"
+                  placeholder="e.g. example@gmail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={formLoading}
+                  className="px-4 py-3 rounded-xl border-slate-250 focus-visible:ring-indigo-150 focus-visible:border-indigo-500 h-11 transition-all shadow-sm focus-visible:ring-4 focus-visible:ring-offset-0"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Password (পাসওয়ার্ড)</label>
+                <div className="relative">
+                  <Input
+                    required
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="নূন্যতম ৮ অক্ষরের পাসওয়ার্ড"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={formLoading}
+                    minLength={8}
+                    className="pl-4 pr-11 py-3 rounded-xl border-slate-250 focus-visible:ring-indigo-150 focus-visible:border-indigo-500 h-11 transition-all shadow-sm focus-visible:ring-4 focus-visible:ring-offset-0 w-full"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition p-1 rounded-md"
+                  >
+                    {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Staff Role (পদবি নির্বাচন)</label>
+                
+                <DropdownMenu open={isRoleDropdownOpen} onOpenChange={setIsRoleDropdownOpen}>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      disabled={formLoading}
+                      className="w-full px-4 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm disabled:bg-slate-50 disabled:text-slate-400 cursor-pointer"
                     >
-                      <div className="p-1.5 space-y-0.5">
-                        {['Admin', 'Content Manager', 'Question Creator', 'Support Team'].map((roleKey) => {
-                          const isSelected = role === roleKey;
-                          return (
-                            <button
-                              key={roleKey}
-                              type="button"
-                              onClick={() => {
-                                setRole(roleKey);
-                                setIsRoleDropdownOpen(false);
-                              }}
-                              className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition flex items-center justify-between ${
-                                isSelected 
-                                  ? 'bg-primary/5 text-primary' 
-                                  : 'text-slate-700 hover:bg-slate-50'
-                              }`}
-                            >
-                              <span className="flex items-center gap-2">
-                                <span className={`size-1.5 rounded-full ${
-                                  roleKey === 'Admin' ? 'bg-orange-500' :
-                                  roleKey === 'Content Manager' ? 'bg-blue-500' :
-                                  roleKey === 'Question Creator' ? 'bg-emerald-500' :
-                                  'bg-purple-500'
-                                }`} />
-                                {BENGALI_ROLES[roleKey]}
-                              </span>
-                              {isSelected && (
-                                <span className="size-1.5 rounded-full bg-primary" />
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <span className="flex items-center gap-2">
+                        <Shield className="size-4 text-indigo-500" />
+                        {BENGALI_ROLES[role] || role}
+                      </span>
+                      <ChevronDown className={`size-4 text-slate-400 transition-transform duration-200 ${isRoleDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent
+                    align="start"
+                    className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
+                  >
+                    {['Admin', 'Content Manager', 'Question Creator', 'Support Team'].map((roleKey) => {
+                      const isSelected = role === roleKey;
+                      return (
+                        <DropdownMenuItem
+                          key={roleKey}
+                          onSelect={() => setRole(roleKey)}
+                          className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50/80 group ${
+                            isSelected 
+                              ? 'bg-indigo-50 text-indigo-600' 
+                              : 'text-slate-700'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className={`size-1.5 rounded-full ${
+                              roleKey === 'Admin' ? 'bg-orange-500' :
+                              roleKey === 'Content Manager' ? 'bg-blue-500' :
+                              roleKey === 'Question Creator' ? 'bg-emerald-500' :
+                              'bg-purple-500'
+                            }`} />
+                            {BENGALI_ROLES[roleKey]}
+                          </span>
+                          {isSelected && (
+                            <span className="size-1.5 rounded-full bg-indigo-500" />
+                          )}
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsModalOpen(false)}
-                disabled={formLoading}
-                className="px-5 py-5 rounded-xl"
-              >
-                বাতিল করুন
-              </Button>
-              <Button
-                type="submit"
-                disabled={formLoading}
-                className="flex items-center gap-2 px-5 py-5 rounded-xl bg-primary hover:bg-primary/95 text-white font-semibold"
-              >
+            <DialogFooter className="bg-slate-50/70 px-6 py-3.5 border-t border-slate-100/85 flex flex-col-reverse sm:flex-row justify-end gap-2.5 mt-0">
+              <DialogClose asChild>
+                <ModalCancelButton disabled={formLoading}>
+                  বাতিল করুন
+                </ModalCancelButton>
+              </DialogClose>
+              <ModalSubmitButton type="submit" disabled={formLoading}>
                 {formLoading ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
@@ -472,8 +460,8 @@ export default function StaffManagement() {
                 ) : (
                   'যুক্ত করুন'
                 )}
-              </Button>
-            </div>
+              </ModalSubmitButton>
+            </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>

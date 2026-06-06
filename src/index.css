@@ -113,6 +113,7 @@
   }
   * {
     border-color: var(--border);
+    font-family: var(--font-sans);
   }
   body {
     background-color: var(--background);

@@ -126,6 +126,12 @@ const DATA = {
           roles: ['Super Admin', 'Admin'],
         },
         {
+          title: 'সিলেবাস ব্যবস্থাপনা',
+          url: '/dashboard/syllabus',
+          icon: BookOpen,
+          roles: ['Super Admin', 'Admin', 'Content Manager'],
+        },
+        {
           title: 'আমার প্রতিষ্ঠান',
           url: '/dashboard/institution',
           icon: HomeIcon,

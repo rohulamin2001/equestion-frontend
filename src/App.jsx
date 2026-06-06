@@ -14,6 +14,7 @@ import Institution from './pages/Institution/Institution';
 import Subscription from './pages/Subscription/Subscription';
 import Support from './pages/Support/Support';
 import StaffManagement from './pages/Staff/StaffManagement';
+import SyllabusManagement from './pages/Syllabus/SyllabusManagement';
 import RoleRouteGuard from './components/RoleRouteGuard';
 
 export default function App() {
@@ -30,6 +31,12 @@ export default function App() {
           <Route path="staff" element={
             <RoleRouteGuard allowedRoles={['Super Admin', 'Admin']}>
               <StaffManagement />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="syllabus" element={
+            <RoleRouteGuard allowedRoles={['Super Admin', 'Admin', 'Content Manager']}>
+              <SyllabusManagement />
             </RoleRouteGuard>
           } />
           
