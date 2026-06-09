@@ -42,36 +42,60 @@ import {
 import { useState } from 'react';
 import { useSyllabusManagement } from './hook/useSyllabusManagement';
 
-const CLASSES_MAP = [
-  { value: 'Class 3', label: '৩য় শ্রেণী' },
-  { value: 'Class 4', label: '৪র্থ শ্রেণী' },
-  { value: 'Class 5', label: '৫ম শ্রেণী' },
-  { value: 'Class 6', label: '৬ষ্ঠ শ্রেণী' },
-  { value: 'Class 7', label: '৭ম শ্রেণী' },
-  { value: 'Class 8', label: '৮ম শ্রেণী' },
-  { value: 'Class 9', label: '৯ম শ্রেণী' },
-  { value: 'Class 10', label: '১০ম শ্রেণী' },
-  { value: 'Class 11', label: '১১শ শ্রেণী' },
-  { value: 'Class 12', label: 'দ্বাদশ শ্রেণী' },
-];
+const TYPE_LABELS = {
+  School: 'স্কুল (School)',
+  College: 'কলেজ (College)',
+  Madrasah: 'মাদ্রাসা (Madrasah)'
+};
+
+const LEVEL_LABELS = {
+  Primary: 'প্রাথমিক (Primary)',
+  Secondary: 'মাধ্যমিক (Secondary)',
+  'Higher Secondary': 'উচ্চমাধ্যমিক (Higher Secondary)',
+  Ebtedayee: 'ইবতেদায়ী (Ebtedayee)',
+  Dakhil: 'দাখিল (Dakhil)',
+  Alim: 'আলিম (Alim)'
+};
+
+const getGroupLabel = (groupName) => {
+  switch (groupName) {
+    case 'Science': return 'বিজ্ঞান';
+    case 'Humanities': return 'মানবিক';
+    case 'Commerce': return 'ব্যবসায় শিক্ষা';
+    default: return '';
+  }
+};
 
 export default function SyllabusManagement() {
   const {
     userRole,
+    selectedType,
+    setSelectedType,
+    selectedLevel,
+    setSelectedLevel,
     selectedClass,
     setSelectedClass,
+    allowedClasses,
+    configLoading,
     isModalOpen,
     setIsModalOpen,
     editingSyllabus,
     syllabusToDelete,
     setSyllabusToDelete,
+    formType,
+    setFormType,
+    formLevel,
+    setFormLevel,
     formClass,
     setFormClass,
     formSubject,
     setFormSubject,
+    formGroup,
+    setFormGroup,
+    formYears,
+    handleAddYear,
+    handleRemoveYear,
     formChapters,
-    formError,
-    formSuccess,
     formLoading,
     deletePending,
     syllabusList,
@@ -89,13 +113,69 @@ export default function SyllabusManagement() {
 
   // Expanded subject tracking
   const [expandedSubjectId, setExpandedSubjectId] = useState(null);
+  
+  // Modal dropdown states
+  const [isFormTypeDropdownOpen, setIsFormTypeDropdownOpen] = useState(false);
+  const [isFormLevelDropdownOpen, setIsFormLevelDropdownOpen] = useState(false);
   const [isFormClassDropdownOpen, setIsFormClassDropdownOpen] = useState(false);
 
   const toggleSubject = (id) => {
     setExpandedSubjectId(prev => (prev === id ? null : id));
   };
 
-  const currentClassLabel = CLASSES_MAP.find(c => c.value === selectedClass)?.label || selectedClass;
+  const handleTypeChange = (type) => {
+    setSelectedType(type);
+    const levels = Array.from(new Set(allowedClasses.filter(c => c.type === type).map(c => c.level)));
+    if (levels.length > 0) {
+      const firstLevel = levels[0];
+      setSelectedLevel(firstLevel);
+      const classes = allowedClasses.filter(c => c.type === type && c.level === firstLevel);
+      if (classes.length > 0) {
+        setSelectedClass(classes[0].value);
+      }
+    }
+  };
+
+  const handleLevelChange = (level) => {
+    setSelectedLevel(level);
+    const classes = allowedClasses.filter(c => c.type === selectedType && c.level === level);
+    if (classes.length > 0) {
+      setSelectedClass(classes[0].value);
+    }
+  };
+
+  const handleFormTypeChange = (type) => {
+    setFormType(type);
+    const levels = Array.from(new Set(allowedClasses.filter(c => c.type === type).map(c => c.level)));
+    if (levels.length > 0) {
+      const firstLevel = levels[0];
+      setFormLevel(firstLevel);
+      const classes = allowedClasses.filter(c => c.type === type && c.level === firstLevel);
+      if (classes.length > 0) {
+        setFormClass(classes[0].value);
+      }
+    }
+  };
+
+  const handleFormLevelChange = (level) => {
+    setFormLevel(level);
+    const classes = allowedClasses.filter(c => c.type === formType && c.level === level);
+    if (classes.length > 0) {
+      setFormClass(classes[0].value);
+    }
+  };
+
+  const activeTypes = Array.from(new Set(allowedClasses.map(c => c.type)));
+  const activeLevels = Array.from(
+    new Set(allowedClasses.filter(c => c.type === selectedType).map(c => c.level))
+  );
+  const classesForLevel = allowedClasses.filter(
+    c => c.type === selectedType && c.level === selectedLevel
+  );
+
+  const currentClassLabel = allowedClasses.find(
+    c => c.value === selectedClass && c.type === selectedType && c.level === selectedLevel
+  )?.label || selectedClass;
 
   return (
     <div className="space-y-6">
@@ -116,28 +196,93 @@ export default function SyllabusManagement() {
       </div>
 
       {/* Classes Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
-        <div className="flex gap-2 min-w-max">
-          {CLASSES_MAP.map((cls) => {
-            const isActive = selectedClass === cls.value;
-            return (
-              <button
-                key={cls.value}
-                onClick={() => {
-                  setSelectedClass(cls.value);
-                  setExpandedSubjectId(null);
-                }}
-                className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer ${
-                  isActive 
-                    ? 'bg-primary text-white shadow-sm shadow-primary/20 scale-[1.02]' 
-                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent'
-                }`}
-              >
-                {cls.label}
-              </button>
-            );
-          })}
-        </div>
+      <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
+        {/* Type Selector */}
+        {activeTypes.length > 0 && (
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider pl-1 flex items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-indigo-500"></span>
+              প্রতিষ্ঠান এর ধরণ (Institution Type)
+            </h4>
+            <div className="flex flex-wrap gap-2.5">
+              {activeTypes.map((type) => {
+                const isActive = selectedType === type;
+                return (
+                  <button
+                    key={type}
+                    onClick={() => handleTypeChange(type)}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer flex-1 sm:flex-none min-w-[100px] text-center ${
+                      isActive 
+                        ? 'bg-primary text-white shadow-sm shadow-primary/20' 
+                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-sm'
+                    }`}
+                  >
+                    {TYPE_LABELS[type] || type}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Level Selector */}
+        {activeLevels.length > 0 && (
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-extrabold text-indigo-500 uppercase tracking-wider pl-1 flex items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-indigo-500"></span>
+              শিক্ষার স্তর (Academic Level)
+            </h4>
+            <div className="flex flex-wrap gap-2.5">
+              {activeLevels.map((level) => {
+                const isActive = selectedLevel === level;
+                return (
+                  <button
+                    key={level}
+                    onClick={() => handleLevelChange(level)}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer flex-1 sm:flex-none min-w-[100px] text-center ${
+                      isActive 
+                        ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20' 
+                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-sm'
+                    }`}
+                  >
+                    {LEVEL_LABELS[level] || level}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Class Selector */}
+        {classesForLevel.length > 0 && (
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-extrabold text-emerald-600 uppercase tracking-wider pl-1 flex items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-emerald-500"></span>
+              শ্রেণী নির্বাচন (Class Selection)
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {classesForLevel.map((cls) => {
+                const isActive = selectedClass === cls.value;
+                return (
+                  <button
+                    key={cls.value}
+                    onClick={() => {
+                      setSelectedClass(cls.value);
+                      setExpandedSubjectId(null);
+                    }}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer flex-1 sm:flex-none min-w-[90px] text-center ${
+                      isActive 
+                        ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' 
+                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-sm'
+                    }`}
+                  >
+                    {cls.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Main Content Area */}
@@ -181,7 +326,19 @@ export default function SyllabusManagement() {
                         <BookOpen className="size-5" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-slate-800 text-lg leading-tight">{subject.subjectName}</h3>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-slate-800 text-lg leading-tight">{subject.subjectName}</h3>
+                          {subject.group && subject.group !== 'General' && (
+                            <span className="inline-flex items-center bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+                              {getGroupLabel(subject.group)}
+                            </span>
+                          )}
+                          {subject.years && subject.years.length > 0 && (
+                            <span className="inline-flex items-center bg-amber-50 border border-amber-200 text-amber-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+                              সাল: {subject.years.join(', ')}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-slate-500 mt-1">{subject.chapters?.length || 0} টি অধ্যায় সংযুক্ত</p>
                       </div>
                     </div>
@@ -313,86 +470,296 @@ export default function SyllabusManagement() {
             </DialogHeader>
 
             <div className="px-6 py-5 space-y-5 overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
-              {formError && (
-                <div className="flex items-center gap-3 bg-red-50 border border-red-100 text-red-700 p-4 rounded-xl text-sm shadow-sm animate-in fade-in slide-in-from-top-1 duration-200">
-                  <AlertCircle className="size-4 shrink-0 text-red-500" />
-                  <span className="font-semibold">{formError}</span>
-                </div>
-              )}
 
-              {formSuccess && (
-                <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-xl text-sm shadow-sm animate-in fade-in slide-in-from-top-1 duration-200">
-                  <CheckCircle2 className="size-4 shrink-0 text-emerald-500" />
-                  <span className="font-semibold">{formSuccess}</span>
-                </div>
-              )}
+              {/* Form cascading selectors for Type, Level, and Class */}
+              {(() => {
+                const formActiveTypes = Array.from(new Set(allowedClasses.map(c => c.type)));
+                const formActiveLevels = Array.from(
+                  new Set(allowedClasses.filter(c => c.type === formType).map(c => c.level))
+                );
+                const formActiveClasses = allowedClasses.filter(
+                  c => c.type === formType && c.level === formLevel
+                );
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="space-y-2">
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {/* Type Selection */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                        প্রতিষ্ঠান এর ধরণ (Institution Type)
+                      </label>
+                      <DropdownMenu 
+                        open={isFormTypeDropdownOpen} 
+                        onOpenChange={(open) => {
+                          if (!formLoading && !editingSyllabus) {
+                            setIsFormTypeDropdownOpen(open);
+                          }
+                        }}
+                      >
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            disabled={formLoading || !!editingSyllabus}
+                            className="w-full px-4 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm disabled:bg-slate-50 disabled:text-slate-400 disabled:border-slate-100 disabled:pointer-events-none cursor-pointer"
+                          >
+                            <span className="flex items-center gap-2">
+                              <Book className="size-4 text-indigo-500" />
+                              {TYPE_LABELS[formType] || formType}
+                            </span>
+                            <ChevronDown className={`size-4 text-slate-400 transition-transform duration-300 ${isFormTypeDropdownOpen ? 'rotate-180' : ''}`} />
+                          </button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent
+                          align="start"
+                          className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
+                        >
+                          {formActiveTypes.map((type) => {
+                            const isSelected = formType === type;
+                            return (
+                              <DropdownMenuItem
+                                key={type}
+                                onSelect={() => handleFormTypeChange(type)}
+                                className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50/80 group ${
+                                  isSelected 
+                                    ? 'bg-indigo-50 text-indigo-600' 
+                                    : 'text-slate-700'
+                                }`}
+                              >
+                                <span>{TYPE_LABELS[type] || type}</span>
+                                {isSelected && (
+                                  <span className="size-1.5 rounded-full bg-indigo-500" />
+                                )}
+                              </DropdownMenuItem>
+                            );
+                          })}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+
+                    {/* Level Selection */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                        শিক্ষার স্তর (Academic Level)
+                      </label>
+                      <DropdownMenu 
+                        open={isFormLevelDropdownOpen} 
+                        onOpenChange={(open) => {
+                          if (!formLoading && !editingSyllabus) {
+                            setIsFormLevelDropdownOpen(open);
+                          }
+                        }}
+                      >
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            disabled={formLoading || !!editingSyllabus}
+                            className="w-full px-4 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm disabled:bg-slate-50 disabled:text-slate-400 disabled:border-slate-100 disabled:pointer-events-none cursor-pointer"
+                          >
+                            <span className="flex items-center gap-2">
+                              <Book className="size-4 text-indigo-500" />
+                              {LEVEL_LABELS[formLevel] || formLevel}
+                            </span>
+                            <ChevronDown className={`size-4 text-slate-400 transition-transform duration-300 ${isFormLevelDropdownOpen ? 'rotate-180' : ''}`} />
+                          </button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent
+                          align="start"
+                          className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
+                        >
+                          {formActiveLevels.map((level) => {
+                            const isSelected = formLevel === level;
+                            return (
+                              <DropdownMenuItem
+                                key={level}
+                                onSelect={() => handleFormLevelChange(level)}
+                                className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50/80 group ${
+                                  isSelected 
+                                    ? 'bg-indigo-50 text-indigo-600' 
+                                    : 'text-slate-700'
+                                }`}
+                              >
+                                <span>{LEVEL_LABELS[level] || level}</span>
+                                {isSelected && (
+                                  <span className="size-1.5 rounded-full bg-indigo-500" />
+                                )}
+                              </DropdownMenuItem>
+                            );
+                          })}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+
+                    {/* Class Selection */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                        শ্রেণী নির্বাচন (Class)
+                      </label>
+                      <DropdownMenu 
+                        open={isFormClassDropdownOpen} 
+                        onOpenChange={(open) => {
+                          if (!formLoading && !editingSyllabus) {
+                            setIsFormClassDropdownOpen(open);
+                          }
+                        }}
+                      >
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            disabled={formLoading || !!editingSyllabus}
+                            className="w-full px-4 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm disabled:bg-slate-50 disabled:text-slate-400 disabled:border-slate-100 disabled:pointer-events-none cursor-pointer"
+                          >
+                            <span className="flex items-center gap-2">
+                              <Book className="size-4 text-indigo-500" />
+                              {formActiveClasses.find(c => c.value === formClass)?.label || formClass}
+                            </span>
+                            <ChevronDown className={`size-4 text-slate-400 transition-transform duration-300 ${isFormClassDropdownOpen ? 'rotate-180' : ''}`} />
+                          </button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent
+                          align="start"
+                          className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
+                        >
+                          {formActiveClasses.map((cls) => {
+                            const isSelected = formClass === cls.value;
+                            return (
+                              <DropdownMenuItem
+                                key={cls.value}
+                                onSelect={() => setFormClass(cls.value)}
+                                className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50/80 group ${
+                                  isSelected 
+                                    ? 'bg-indigo-50 text-indigo-600' 
+                                    : 'text-slate-700'
+                                }`}
+                              >
+                                <span>{cls.label}</span>
+                                {isSelected && (
+                                  <span className="size-1.5 rounded-full bg-indigo-500" />
+                                )}
+                              </DropdownMenuItem>
+                            );
+                          })}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+
+                    {/* Subject Name Input */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                        বিষয়ের নাম (Subject Name)
+                      </label>
+                      <Input
+                        required
+                        placeholder="যেমন: গণিত, বিজ্ঞান, English"
+                        value={formSubject}
+                        onChange={(e) => setFormSubject(e.target.value)}
+                        disabled={formLoading}
+                        className="px-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all duration-200 h-11 text-sm font-semibold outline-none shadow-sm disabled:bg-slate-50 disabled:text-slate-400"
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Group selection for Class 9-12 */}
+              {['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(formClass) && (
+                <div className="space-y-2.5 p-4 rounded-xl border border-slate-100 bg-slate-50/30">
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                    শ্রেণী নির্বাচন (Class)
+                    বিভাগ / গ্রুপ (Curriculum Group) <span className="text-red-500">*</span>
                   </label>
-                  <DropdownMenu 
-                    open={isFormClassDropdownOpen} 
-                    onOpenChange={(open) => {
-                      if (!formLoading && !editingSyllabus) {
-                        setIsFormClassDropdownOpen(open);
+                  <div className="flex flex-wrap gap-2.5">
+                    {[
+                      { value: 'Science', label: 'বিজ্ঞান (Science)' },
+                      { value: 'Humanities', label: 'মানবিক (Humanities)' },
+                      { value: 'Commerce', label: 'ব্যবসায় শিক্ষা (Commerce)' }
+                    ].map((grp) => {
+                      const isSelected = formGroup === grp.value;
+                      return (
+                        <button
+                          key={grp.value}
+                          type="button"
+                          disabled={formLoading}
+                          onClick={() => setFormGroup(grp.value)}
+                          className={`px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200 cursor-pointer flex-1 min-w-[120px] text-center ${
+                            isSelected
+                              ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm shadow-indigo-600/20'
+                              : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                          }`}
+                        >
+                          {grp.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Years Management Section */}
+              <div className="space-y-3 p-4 rounded-xl border border-slate-100 bg-slate-50/30">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                  সক্রিয় শিক্ষাবর্ষ / বছর (Active Years)
+                </label>
+                
+                {/* Add a Year Input */}
+                <div className="flex gap-2 items-center">
+                  <Input
+                    type="number"
+                    id="new-year-input"
+                    placeholder="বছর লিখুন (যেমন: ২০২৬)"
+                    disabled={formLoading}
+                    className=" px-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all duration-200 h-10 text-sm font-semibold outline-none shadow-sm disabled:bg-slate-50 disabled:text-slate-400"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const val = e.target.value.trim();
+                        if (val) {
+                          handleAddYear(val);
+                          e.target.value = '';
+                        }
                       }
                     }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={formLoading}
+                    onClick={() => {
+                      const input = document.getElementById('new-year-input');
+                      if (input && input.value.trim()) {
+                        handleAddYear(input.value.trim());
+                        input.value = '';
+                      }
+                    }}
+                    className="h-10 px-4 rounded-xl border border-indigo-200 hover:border-indigo-400 text-indigo-600 hover:bg-indigo-50 active:scale-95 transition-all text-xs font-bold shadow-sm"
                   >
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        type="button"
-                        disabled={formLoading || !!editingSyllabus}
-                        className="w-full px-4 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm disabled:bg-slate-50 disabled:text-slate-400 disabled:border-slate-100 disabled:pointer-events-none cursor-pointer"
-                      >
-                        <span className="flex items-center gap-2">
-                          <Book className="size-4 text-indigo-500" />
-                          {CLASSES_MAP.find(c => c.value === formClass)?.label || formClass}
-                        </span>
-                        <ChevronDown className={`size-4 text-slate-400 transition-transform duration-300 ${isFormClassDropdownOpen ? 'rotate-180' : ''}`} />
-                      </button>
-                    </DropdownMenuTrigger>
-
-                    <DropdownMenuContent
-                      align="start"
-                      className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
-                    >
-                      {CLASSES_MAP.map((cls) => {
-                        const isSelected = formClass === cls.value;
-                        return (
-                          <DropdownMenuItem
-                            key={cls.value}
-                            onSelect={() => setFormClass(cls.value)}
-                            className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50/80 group ${
-                              isSelected 
-                                ? 'bg-indigo-50 text-indigo-600' 
-                                : 'text-slate-700'
-                            }`}
-                          >
-                            <span>{cls.label}</span>
-                            {isSelected && (
-                              <span className="size-1.5 rounded-full bg-indigo-500" />
-                            )}
-                          </DropdownMenuItem>
-                        );
-                      })}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                    যোগ করুন
+                  </Button>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                    বিষয়ের নাম (Subject Name)
-                  </label>
-                  <Input
-                    required
-                    placeholder="যেমন: গণিত, বিজ্ঞান, English"
-                    value={formSubject}
-                    onChange={(e) => setFormSubject(e.target.value)}
-                    disabled={formLoading}
-                    className="px-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all duration-200 h-11 text-sm font-semibold outline-none shadow-sm disabled:bg-slate-50 disabled:text-slate-400"
-                  />
+                {/* Years Badges */}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {formYears && formYears.length > 0 ? (
+                    formYears.map((yr) => (
+                      <span
+                        key={yr}
+                        className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500/10 to-orange-500/10 text-amber-800 font-bold text-xs px-3 py-1.5 rounded-lg border border-amber-100/50 transition-all shadow-sm"
+                      >
+                        {yr}
+                        <button
+                          type="button"
+                          disabled={formLoading}
+                          onClick={() => handleRemoveYear(yr)}
+                          className="text-amber-500 hover:text-amber-700 font-bold ml-1.5 rounded-full w-4 h-4 inline-flex items-center justify-center hover:bg-amber-100/50 cursor-pointer disabled:pointer-events-none"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))
+                  ) : (
+                    <p className="text-xs text-red-500 italic font-semibold">কমপক্ষে একটি বছর সিলেক্ট করতে হবে</p>
+                  )}
                 </div>
               </div>
 

@@ -3,6 +3,7 @@ import { useAuth } from '@clerk/react';
 import { useUserContext } from '@/context/UserContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/apiClient';
+import { toast } from 'sonner';
 
 export function useStaffManagement() {
   const { getToken } = useAuth();
@@ -13,8 +14,6 @@ export function useStaffManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [staffToDelete, setStaffToDelete] = useState(null);
   const [activeDropdownMemberId, setActiveDropdownMemberId] = useState(null);
-  const [formError, setFormError] = useState(null);
-  const [formSuccess, setFormSuccess] = useState(null);
   
   // Form fields
   const [firstName, setFirstName] = useState('');
@@ -61,7 +60,7 @@ export function useStaffManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['staffList'] });
-      setFormSuccess('নতুন স্টাফ সফলভাবে যুক্ত করা হয়েছে!');
+      toast.success('নতুন স্টাফ সফলভাবে যুক্ত করা হয়েছে!');
       // Reset form
       setFirstName('');
       setLastName('');
@@ -70,14 +69,11 @@ export function useStaffManagement() {
       setRole('Question Creator');
       
       // Auto close modal after delay
-      setTimeout(() => {
-        setIsModalOpen(false);
-        setFormSuccess(null);
-      }, 1500);
+      setIsModalOpen(false);
     },
     onError: (err) => {
       console.error(err);
-      setFormError(err.response?.data?.error || err.message || 'স্টাফ যুক্ত করতে ব্যর্থ হয়েছে');
+      toast.error(err.response?.data?.error || err.message || 'স্টাফ যুক্ত করতে ব্যর্থ হয়েছে');
     },
   });
 
@@ -85,8 +81,6 @@ export function useStaffManagement() {
 
   const handleAddStaff = async (e) => {
     e.preventDefault();
-    setFormError(null);
-    setFormSuccess(null);
 
     addStaffMutation.mutate({
       firstName,
@@ -115,9 +109,10 @@ export function useStaffManagement() {
           member._id === userId ? { ...member, role: newRole } : member
         );
       });
+      toast.success('স্টাফ মেম্বারের রোল সফলভাবে পরিবর্তন করা হয়েছে!');
     },
     onError: (err) => {
-      alert(err.response?.data?.error || err.message || 'রোল আপডেট করতে ব্যর্থ হয়েছে');
+      toast.error(err.response?.data?.error || err.message || 'রোল আপডেট করতে ব্যর্থ হয়েছে');
     },
   });
 
@@ -141,9 +136,10 @@ export function useStaffManagement() {
         if (!oldList) return [];
         return oldList.filter((member) => member._id !== userId);
       });
+      toast.success('স্টাফ মেম্বারকে সফলভাবে তালিকা থেকে মুছে ফেলা হয়েছে!');
     },
     onError: (err) => {
-      alert(err.response?.data?.error || err.message || 'স্টাফ মুছতে ব্যর্থ হয়েছে');
+      toast.error(err.response?.data?.error || err.message || 'স্টাফ মুছতে ব্যর্থ হয়েছে');
     },
   });
 
@@ -160,10 +156,6 @@ export function useStaffManagement() {
     setStaffToDelete,
     activeDropdownMemberId,
     setActiveDropdownMemberId,
-    formError,
-    setFormError,
-    formSuccess,
-    setFormSuccess,
     // Form fields
     firstName,
     setFirstName,

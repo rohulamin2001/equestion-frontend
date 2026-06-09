@@ -43,6 +43,7 @@ import {
   Monitor,
   PlusCircle,
   ScanLine,
+  Sliders,
   Sparkles,
   Sparkles as SparklesIcon,
   Users,
@@ -130,6 +131,12 @@ const DATA = {
           url: '/dashboard/syllabus',
           icon: BookOpen,
           roles: ['Super Admin', 'Admin', 'Content Manager'],
+        },
+        {
+          title: 'অ্যাকাডেমিক সেটআপ',
+          url: '/dashboard/academic-setup',
+          icon: Sliders,
+          roles: ['Super Admin'],
         },
         {
           title: 'আমার প্রতিষ্ঠান',

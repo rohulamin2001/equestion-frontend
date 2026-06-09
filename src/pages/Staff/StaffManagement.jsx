@@ -73,8 +73,6 @@ export default function StaffManagement() {
     setStaffToDelete,
     activeDropdownMemberId,
     setActiveDropdownMemberId,
-    formError,
-    formSuccess,
     firstName,
     setFirstName,
     lastName,
@@ -316,19 +314,6 @@ export default function StaffManagement() {
             </DialogHeader>
 
             <div className="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
-              {formError && (
-                <div className="flex items-center gap-3 bg-red-50 border border-red-100 text-red-700 p-4 rounded-xl text-sm shadow-sm animate-in fade-in slide-in-from-top-1 duration-200">
-                  <AlertCircle className="size-4 shrink-0 text-red-500" />
-                  <span className="font-semibold">{formError}</span>
-                </div>
-              )}
-
-              {formSuccess && (
-                <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-xl text-sm shadow-sm animate-in fade-in slide-in-from-top-1 duration-200">
-                  <CheckCircle className="size-4 shrink-0 text-emerald-500" />
-                  <span className="font-semibold">{formSuccess}</span>
-                </div>
-              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">

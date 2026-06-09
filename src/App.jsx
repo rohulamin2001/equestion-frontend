@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import Home from './pages/Home/Home';
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
@@ -15,11 +16,13 @@ import Subscription from './pages/Subscription/Subscription';
 import Support from './pages/Support/Support';
 import StaffManagement from './pages/Staff/StaffManagement';
 import SyllabusManagement from './pages/Syllabus/SyllabusManagement';
+import AcademicSetup from './pages/AcademicSetup/AcademicSetup';
 import RoleRouteGuard from './components/RoleRouteGuard';
 
 export default function App() {
   return (
     <BrowserRouter>
+      <Toaster richColors position="top-center" />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login/*" element={<Login />} />
@@ -37,6 +40,12 @@ export default function App() {
           <Route path="syllabus" element={
             <RoleRouteGuard allowedRoles={['Super Admin', 'Admin', 'Content Manager']}>
               <SyllabusManagement />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="academic-setup" element={
+            <RoleRouteGuard allowedRoles={['Super Admin']}>
+              <AcademicSetup />
             </RoleRouteGuard>
           } />
           

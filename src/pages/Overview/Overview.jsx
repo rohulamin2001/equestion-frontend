@@ -53,7 +53,7 @@ export default function Overview() {
         </div>
       </div>
 
-      <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm text-center max-w-2xl mx-auto py-12 space-y-4">
+      <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm text-center py-12 space-y-4">
         <h2 className="text-xl font-bold text-slate-800">স্বাগতম ইপ্রশ্নব্যাংক-এ!</h2>
         <p className="text-sm text-slate-500 leading-relaxed">
           আপনার প্রতিষ্ঠানের জন্য পরীক্ষার প্রশ্নপত্র তৈরি করতে বাম পাশের মেনু থেকে **"১ ক্লিকে প্রশ্ন তৈরি"** অথবা **"প্রশ্নব্যাংক"** অপশনটি নির্বাচন করুন।
