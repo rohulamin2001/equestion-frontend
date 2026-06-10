@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
+import { CLASSES_MAP } from "@/constants/classes";
 import { useUserContext } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

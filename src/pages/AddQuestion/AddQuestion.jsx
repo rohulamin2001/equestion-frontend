@@ -1,5 +1,6 @@
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
 import { useLocation, useNavigate } from "react-router-dom";
+import { CLASSES_MAP } from "@/constants/classes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button";

@@ -17,6 +17,7 @@ import Support from './pages/Support/Support';
 import StaffManagement from './pages/Staff/StaffManagement';
 import SyllabusManagement from './pages/Syllabus/SyllabusManagement';
 import AcademicSetup from './pages/AcademicSetup/AcademicSetup';
+import SubjectSetup from './pages/SubjectSetup/SubjectSetup';
 import RoleRouteGuard from './components/RoleRouteGuard';
 
 export default function App() {
@@ -46,6 +47,12 @@ export default function App() {
           <Route path="academic-setup" element={
             <RoleRouteGuard allowedRoles={['Super Admin']}>
               <AcademicSetup />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="subject-setup" element={
+            <RoleRouteGuard allowedRoles={['Super Admin', 'Admin']}>
+              <SubjectSetup />
             </RoleRouteGuard>
           } />
           

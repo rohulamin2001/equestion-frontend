@@ -133,6 +133,12 @@ const DATA = {
           roles: ['Super Admin', 'Admin', 'Content Manager'],
         },
         {
+          title: 'সাবজেক্ট সেটআপ',
+          url: '/dashboard/subject-setup',
+          icon: Sliders,
+          roles: ['Super Admin', 'Admin'],
+        },
+        {
           title: 'অ্যাকাডেমিক সেটআপ',
           url: '/dashboard/academic-setup',
           icon: Sliders,

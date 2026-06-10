@@ -237,8 +237,8 @@ export default function AcademicSetup() {
                             return (
                               <label key={cls.value} className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
                                 isClsChecked 
-                                  ? 'bg-indigo-50 border-indigo-300 text-indigo-750 font-bold' 
-                                  : 'bg-white border-slate-200 text-slate-655 hover:bg-slate-50'
+                                  ? 'bg-indigo-50 border-indigo-300 text-indigo-700 font-bold' 
+                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                               }`}>
                                 <input
                                   type="checkbox"
@@ -287,8 +287,8 @@ export default function AcademicSetup() {
                             return (
                               <label key={cls.value} className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
                                 isClsChecked 
-                                  ? 'bg-indigo-50 border-indigo-300 text-indigo-750 font-bold' 
-                                  : 'bg-white border-slate-200 text-slate-655 hover:bg-slate-50'
+                                  ? 'bg-indigo-50 border-indigo-300 text-indigo-700 font-bold' 
+                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                               }`}>
                                 <input
                                   type="checkbox"
@@ -334,8 +334,8 @@ export default function AcademicSetup() {
                         return (
                           <label key={cls.value} className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
                             isClsChecked 
-                              ? 'bg-amber-50 border-amber-300 text-amber-750 font-bold' 
-                              : 'bg-white border-slate-200 text-slate-655 hover:bg-slate-50'
+                              ? 'bg-amber-50 border-amber-300 text-amber-700 font-bold' 
+                              : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                           }`}>
                             <input
                               type="checkbox"
@@ -390,8 +390,8 @@ export default function AcademicSetup() {
                             return (
                               <label key={cls.value} className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
                                 isClsChecked 
-                                  ? 'bg-emerald-50 border-emerald-300 text-emerald-750 font-bold' 
-                                  : 'bg-white border-slate-200 text-slate-655 hover:bg-slate-50'
+                                  ? 'bg-emerald-50 border-emerald-300 text-emerald-700 font-bold' 
+                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                               }`}>
                                 <input
                                   type="checkbox"
@@ -440,8 +440,8 @@ export default function AcademicSetup() {
                             return (
                               <label key={cls.value} className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
                                 isClsChecked 
-                                  ? 'bg-emerald-50 border-emerald-300 text-emerald-750 font-bold' 
-                                  : 'bg-white border-slate-200 text-slate-655 hover:bg-slate-50'
+                                  ? 'bg-emerald-50 border-emerald-300 text-emerald-700 font-bold' 
+                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                               }`}>
                                 <input
                                   type="checkbox"
@@ -487,8 +487,8 @@ export default function AcademicSetup() {
                             return (
                               <label key={cls.value} className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
                                 isClsChecked 
-                                  ? 'bg-emerald-50 border-emerald-300 text-emerald-750 font-bold' 
-                                  : 'bg-white border-slate-200 text-slate-655 hover:bg-slate-50'
+                                  ? 'bg-emerald-50 border-emerald-300 text-emerald-700 font-bold' 
+                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                               }`}>
                                 <input
                                   type="checkbox"

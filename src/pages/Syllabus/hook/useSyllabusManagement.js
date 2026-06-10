@@ -42,11 +42,41 @@ export function useSyllabusManagement() {
   const [formLevel, setFormLevel] = useState('Secondary');
   const [formClass, setFormClass] = useState('Class 6');
   const [formSubject, setFormSubject] = useState('');
+  const [formSubjectId, setFormSubjectId] = useState('');
+  const [formSubjectCode, setFormSubjectCode] = useState('');
   const [formGroup, setFormGroup] = useState('General');
   const [formYears, setFormYears] = useState([new Date().getFullYear()]);
   const [formChapters, setFormChapters] = useState([
     { chapterNumber: 1, chapterName: '', topicsString: '' }
   ]);
+
+  // Fetch configured subjects dynamically for the selected Type, Level, Class in the form
+  const { data: formSubjects = [], isLoading: subjectsLoading } = useQuery({
+    queryKey: ['subjects-form', formType, formLevel, formClass],
+    queryFn: async () => {
+      const token = await getToken();
+      const response = await apiClient.get('/subjects', {
+        params: {
+          className: formClass,
+          institutionType: formType,
+          academicLevel: formLevel
+        },
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data.subjects;
+    },
+    enabled: !!formClass
+  });
+
+  // Reset subject states when class/type/level changes (unless editing)
+  useEffect(() => {
+    if (!editingSyllabus) {
+      setFormSubject('');
+      setFormSubjectId('');
+      setFormSubjectCode('');
+      setFormYears([new Date().getFullYear()]);
+    }
+  }, [formClass, formType, formLevel, editingSyllabus]);
 
   const handleAddYear = (year) => {
     const y = Number(year);
@@ -158,6 +188,8 @@ export function useSyllabusManagement() {
     setFormLevel(selectedLevel);
     setFormClass(selectedClass);
     setFormSubject('');
+    setFormSubjectId('');
+    setFormSubjectCode('');
     setFormGroup('General');
     setFormYears([new Date().getFullYear()]);
     setFormChapters([{ chapterNumber: 1, chapterName: '', topicsString: '' }]);
@@ -177,6 +209,8 @@ export function useSyllabusManagement() {
     setFormLevel(syllabus.academicLevel || 'Secondary');
     setFormClass(syllabus.className);
     setFormSubject(syllabus.subjectName);
+    setFormSubjectId(syllabus.subjectId || '');
+    setFormSubjectCode(syllabus.subjectCode || '');
     setFormGroup(syllabus.group || 'General');
     setFormYears(syllabus.years && syllabus.years.length > 0 ? syllabus.years : [new Date().getFullYear()]);
     
@@ -239,6 +273,8 @@ export function useSyllabusManagement() {
     const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(formClass);
     const payload = {
       className: formClass,
+      subjectId: formSubjectId,
+      subjectCode: formSubjectCode,
       subjectName: formSubject.trim(),
       group: isClass9to12 ? formGroup : 'General',
       years: formYears,
@@ -287,6 +323,12 @@ export function useSyllabusManagement() {
     setFormClass,
     formSubject,
     setFormSubject,
+    formSubjectId,
+    setFormSubjectId,
+    formSubjectCode,
+    setFormSubjectCode,
+    formSubjects,
+    subjectsLoading,
     formGroup,
     setFormGroup,
     formYears,
