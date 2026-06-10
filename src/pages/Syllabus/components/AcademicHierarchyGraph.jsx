@@ -25,18 +25,18 @@ const TYPE_ICONS = {
 
 const TYPE_COLORS = {
   School: {
-    bg: 'bg-indigo-50/40 border-indigo-200 text-indigo-700 shadow-indigo-100',
-    activeBg: 'bg-indigo-600 border-indigo-600 text-white shadow-indigo-200 shadow-md',
-    glow: 'from-indigo-500 to-indigo-600',
+    bg: 'bg-white/45 border-slate-200/50 text-slate-700 hover:bg-white/70 shadow-sm',
+    activeBg: 'bg-[#4F46E5] border-[#4F46E5] text-white shadow-indigo-100 shadow-md',
+    glow: 'from-[#4F46E5] to-[#8B5CF6]',
   },
   College: {
-    bg: 'bg-amber-50/40 border-amber-200 text-amber-700 shadow-amber-100',
-    activeBg: 'bg-amber-500 border-amber-500 text-white shadow-amber-200 shadow-md',
-    glow: 'from-amber-400 to-amber-500',
+    bg: 'bg-white/45 border-slate-200/50 text-slate-700 hover:bg-white/70 shadow-sm',
+    activeBg: 'bg-[#8B5CF6] border-[#8B5CF6] text-white shadow-purple-100 shadow-md',
+    glow: 'from-[#8B5CF6] to-[#A78BFA]',
   },
   Madrasah: {
-    bg: 'bg-emerald-50/40 border-emerald-200 text-emerald-700 shadow-emerald-100',
-    activeBg: 'bg-emerald-600 border-emerald-600 text-white shadow-emerald-200 shadow-md',
+    bg: 'bg-white/45 border-slate-200/50 text-slate-700 hover:bg-white/70 shadow-sm',
+    activeBg: 'bg-emerald-600 border-emerald-600 text-white shadow-emerald-100 shadow-md',
     glow: 'from-emerald-500 to-emerald-600',
   },
 };
@@ -104,13 +104,16 @@ export default function AcademicHierarchyGraph({
       setCoords({ typeToLevel, levelToClass });
     };
 
-    const timer = setTimeout(updateCoords, 100);
+    updateCoords();
     window.addEventListener('resize', updateCoords);
+    // Trigger on dynamic layout changes
+    const timer = setTimeout(updateCoords, 100);
+
     return () => {
-      clearTimeout(timer);
       window.removeEventListener('resize', updateCoords);
+      clearTimeout(timer);
     };
-  }, [selectedType, selectedLevel, selectedClass, allowedClasses, activeTypes]);
+  }, [selectedType, selectedLevel, selectedClass, allowedClasses, activeLevels.length, classesForLevel.length]);
 
   // Helper for generating Bezier path
   const getBezierPath = (c) => {
@@ -126,7 +129,7 @@ export default function AcademicHierarchyGraph({
   const activeColor = TYPE_COLORS[selectedType] || TYPE_COLORS.School;
 
   return (
-    <div className="relative w-full bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6 overflow-hidden">
+    <div className="relative w-full bg-glass p-6 rounded-2xl border shadow-sm space-y-6 overflow-hidden">
       {/* Background SVG for Connecting Lines (only shown on md and larger screens) */}
       <svg
         id="hierarchy-svg"
@@ -134,9 +137,9 @@ export default function AcademicHierarchyGraph({
       >
         <defs>
           <linearGradient id="glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#818cf8" />
-            <stop offset="50%" stopColor="#a78bfa" />
-            <stop offset="100%" stopColor="#34d399" />
+            <stop offset="0%" stopColor="#4F46E5" />
+            <stop offset="50%" stopColor="#8B5CF6" />
+            <stop offset="100%" stopColor="#10B981" />
           </linearGradient>
         </defs>
 
@@ -169,7 +172,7 @@ export default function AcademicHierarchyGraph({
                 key={`${type}-${lvl}`}
                 d={getBezierPath({ x1, y1, x2, y2 })}
                 fill="none"
-                stroke="#f1f5f9"
+                stroke="rgba(0,0,0,0.06)"
                 strokeWidth="2"
               />
             );
@@ -236,7 +239,7 @@ export default function AcademicHierarchyGraph({
         {/* Column 1: Institution Type */}
         <div className="space-y-4">
           <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider pl-1 flex items-center gap-1.5 font-sans">
-            <span className="size-2 rounded-full bg-indigo-500"></span>
+            <span className="size-2 rounded-full bg-[#4F46E5]"></span>
             প্রতিষ্ঠানের ধরণ (Type)
           </h4>
           <div className="flex flex-col gap-3">
@@ -259,13 +262,13 @@ export default function AcademicHierarchyGraph({
                   <div className="flex items-center gap-3">
                     <div
                       className={`p-2.5 rounded-xl ${
-                        isActive ? 'bg-white/20 text-white' : 'bg-slate-100/80 text-slate-600'
+                        isActive ? 'bg-white/20 text-white' : 'bg-black/[0.03] text-slate-700'
                       }`}
                     >
                       <IconComp className="size-5" />
                     </div>
                     <div>
-                      <span className="font-bold text-[14px] font-sans block">
+                      <span className={`font-bold text-[14px] font-sans block ${isActive ? 'text-white' : 'text-slate-800'}`}>
                         {TYPE_LABELS[type] || type}
                       </span>
                       <span
@@ -287,7 +290,7 @@ export default function AcademicHierarchyGraph({
         {/* Column 2: Academic Level */}
         <div className="space-y-4">
           <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider pl-1 flex items-center gap-1.5 font-sans">
-            <span className="size-2 rounded-full bg-indigo-500"></span>
+            <span className="size-2 rounded-full bg-[#8B5CF6]"></span>
             শিক্ষার স্তর (Level)
           </h4>
           <div className="flex flex-col gap-3">
@@ -308,16 +311,16 @@ export default function AcademicHierarchyGraph({
                     className={`p-4 rounded-2xl border text-left flex items-center justify-between transition-all duration-300 cursor-pointer ${
                       isActive
                         ? activeColor.activeBg
-                        : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 shadow-sm'
+                        : 'bg-white/45 border-slate-200/50 text-slate-700 hover:border-slate-300 hover:bg-white/70 shadow-sm'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
                         className={`size-2.5 rounded-full ${
-                          isActive ? 'bg-white animate-pulse' : 'bg-slate-300'
+                          isActive ? 'bg-white animate-pulse' : 'bg-slate-350'
                         }`}
                       />
-                      <span className="font-bold text-[14px] font-sans">
+                      <span className={`font-bold text-[14px] font-sans ${isActive ? 'text-white' : 'text-slate-800'}`}>
                         {LEVEL_LABELS[level] || level}
                       </span>
                     </div>
@@ -335,7 +338,7 @@ export default function AcademicHierarchyGraph({
             <span className="size-2 rounded-full bg-emerald-500"></span>
             শ্রেণী নির্বাচন (Class)
           </h4>
-          <div className="p-5 rounded-2xl border border-slate-100 bg-slate-50/45 min-h-[120px] flex items-center justify-center">
+          <div className="p-5 rounded-2xl border border-black/[0.04] bg-black/[0.01] min-h-[120px] flex items-center justify-center">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 w-full">
               <AnimatePresence mode="popLayout">
                 {classesForLevel.map((cls) => {
@@ -355,7 +358,7 @@ export default function AcademicHierarchyGraph({
                       className={`p-3 py-3.5 rounded-xl text-center text-xs font-bold transition-all duration-300 cursor-pointer ${
                         isActive
                           ? 'bg-emerald-600 border-emerald-600 text-white shadow-md shadow-emerald-200'
-                          : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 shadow-sm'
+                          : 'bg-white/45 border border-slate-200/50 text-slate-650 hover:border-slate-300 hover:bg-white/70 hover:text-slate-900 shadow-sm'
                       }`}
                     >
                       <div className="flex flex-col items-center gap-1">

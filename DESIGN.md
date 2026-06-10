@@ -27,28 +27,31 @@ fonts:
 # COLORS
 # ─────────────────────────────────────────────
 colors:
-  background:       "#0A0F1E"
-  surface-glass:    "rgba(255,255,255,0.06)"
-  surface-elevated: "rgba(255,255,255,0.10)"
-  surface-hover:    "rgba(255,255,255,0.14)"
+  background:       "#F5F5F7"             # Clean Light Grey (⚪ 25%)
+  surface-glass:    "rgba(255,255,255,0.45)" # Translucent Light Glass
+  surface-elevated: "rgba(255,255,255,0.65)"
+  surface-hover:    "rgba(255,255,255,0.85)"
 
-  primary:          "#6366F1"
-  primary-glow:     "rgba(99,102,241,0.35)"
-  secondary:        "#8B5CF6"
-  accent-cyan:      "#06B6D4"
-  accent-emerald:   "#10B981"
-  accent-amber:     "#F59E0B"
-  accent-rose:      "#F43F5E"
+  primary:          "#4F46E5"             # Deep Royal Purple (🟣 70%)
+  primary-glow:     "rgba(79,70,229,0.15)"
+  secondary:        "#8B5CF6"             # Supporting Purple
+  accent-orange:    "#F97316"             # Accent Orange (🟠 5%)
+  accent-white:     "#FFFFFF"             # Crisp White
 
-  text-primary:     "#F1F5F9"
-  text-secondary:   "#94A3B8"
-  text-muted:       "#475569"
+  # Palette Ratio Guideline
+  ratio_purple:     "70%"                 # 🟣 Primary brand identity & active items
+  ratio_white:      "25%"                 # ⚪ Supporting background & surface glass elements
+  ratio_orange:     "5%"                  # 🟠 Contrast CTA highlights, warnings, notifications
 
-  border-glass:     "rgba(255,255,255,0.10)"
-  border-accent:    "rgba(99,102,241,0.40)"
+  text-primary:     "#1E293B"             # High-contrast Slate Text
+  text-secondary:   "#64748B"
+  text-muted:       "#94A3B8"
+
+  border-glass:     "rgba(0,0,0,0.06)"    # Soft border for light glass
+  border-accent:    "rgba(79,70,229,0.20)"
 
   success:          "#10B981"
-  warning:          "#F59E0B"
+  warning:          "#F97316"
   danger:           "#F43F5E"
   info:             "#06B6D4"
 
@@ -149,43 +152,43 @@ rounded:
 # ─────────────────────────────────────────────
 effects:
   glass-base:
-    background:     "rgba(255,255,255,0.06)"
-    backdropFilter: "blur(20px) saturate(180%)"
-    border:         "1px solid rgba(255,255,255,0.10)"
-    boxShadow:      "0 8px 32px rgba(0,0,0,0.37)"
+    background:     "rgba(255,255,255,0.45)"
+    backdropFilter: "blur(20px) saturate(190%)"
+    border:         "1px solid rgba(0,0,0,0.06)"
+    boxShadow:      "0 8px 32px rgba(31,38,135,0.04), inset 0 1px 1px rgba(255,255,255,0.80)" # Soft light-mode shadow + inner glow
 
   glass-elevated:
-    background:     "rgba(255,255,255,0.10)"
+    background:     "rgba(255,255,255,0.70)"
     backdropFilter: "blur(24px) saturate(200%)"
-    border:         "1px solid rgba(255,255,255,0.15)"
-    boxShadow:      "0 16px 48px rgba(0,0,0,0.45)"
+    border:         "1px solid rgba(0,0,0,0.08)"
+    boxShadow:      "0 16px 48px rgba(0,0,0,0.06), inset 0 1px 1px rgba(255,255,255,0.90)"
 
   glass-sidebar:
-    background:     "rgba(255,255,255,0.04)"
+    background:     "rgba(255,255,255,0.30)"
     backdropFilter: "blur(40px)"
-    borderRight:    "1px solid rgba(255,255,255,0.07)"
+    borderRight:    "1px solid rgba(0,0,0,0.05)"
 
   inner-glow:
-    boxShadow:      "inset 0 1px 0 rgba(255,255,255,0.12)"
+    boxShadow:      "inset 0 1px 0 rgba(255,255,255,0.80)"
 
-  accent-glow-indigo:
-    boxShadow:      "0 0 24px rgba(99,102,241,0.35), 0 0 48px rgba(99,102,241,0.15)"
+  accent-glow-purple:
+    boxShadow:      "0 8px 24px rgba(79,70,229,0.15)"
 
 # ─────────────────────────────────────────────
 # AMBIENT BACKGROUND
 # ─────────────────────────────────────────────
 background_system:
-  base: "#0A0F1E"
+  base: "#F5F5F7"
   orbs:
-    - color: "rgba(99,102,241,0.18)"
+    - color: "rgba(79,70,229,0.06)"
       size:  "600px"
       blur:  "120px"
       position: "top-left"
-    - color: "rgba(139,92,246,0.12)"
+    - color: "rgba(139,92,246,0.04)"
       size:  "500px"
       blur:  "100px"
       position: "top-right"
-    - color: "rgba(6,182,212,0.08)"
+    - color: "rgba(249,115,22,0.02)"
       size:  "400px"
       blur:  "80px"
       position: "bottom-center"
@@ -203,10 +206,10 @@ components:
       height:          "40px"
       borderRadius:    "10px"
       font:            "label-bengali"
-      activeBackground: "rgba(99,102,241,0.20)"
-      activeBorder:    "1px solid rgba(99,102,241,0.35)"
-      activeGlow:      "0 0 16px rgba(99,102,241,0.20)"
-      hoverBackground: "rgba(255,255,255,0.06)"
+      activeBackground: "rgba(79,70,229,0.15)"
+      activeBorder:    "1px solid rgba(79,70,229,0.30)"
+      activeGlow:      "0 0 16px rgba(79,70,229,0.15)"
+      hoverBackground: "rgba(255,255,255,0.04)"
 
   topbar:
     height:          "60px"
@@ -229,7 +232,7 @@ components:
     change_text:     "body-sm"            # বাংলায় পরিবর্তন বার্তা
     accent_bar:
       height:        "3px"
-      colors:        ["#6366F1", "#10B981", "#F59E0B", "#F43F5E"]
+      colors:        ["#4F46E5", "#10B981", "#F97316", "#F43F5E"]
     hover:
       effect:        "glass-elevated"
       transform:     "translateY(-2px)"
@@ -243,8 +246,8 @@ components:
       gridColor:     "rgba(255,255,255,0.05)"
       axisColor:     "rgba(255,255,255,0.15)"
       axisFont:      "'Noto Sans Bengali', sans-serif"  # chart axis এও Bengali font
-      tooltipBackground: "rgba(15,23,42,0.95)"
-      tooltipBorder: "1px solid rgba(99,102,241,0.35)"
+      tooltipBackground: "rgba(10,15,30,0.95)"
+      tooltipBorder: "1px solid rgba(79,70,229,0.30)"
       tooltipFont:   "'Noto Sans Bengali', sans-serif"
 
   table_card:
@@ -280,16 +283,16 @@ components:
   button:
     font:            "body-md"            # Bengali button text
     primary:
-      background:    "#6366F1"
-      hoverBackground: "#4F46E5"
-      glow:          "0 0 20px rgba(99,102,241,0.45)"
+      background:    "#4F46E5"
+      hoverBackground: "#3B32C5"
+      glow:          "0 0 20px rgba(79,70,229,0.40)"
       borderRadius:  "10px"
       padding:       "10px 20px"
       fontWeight:    600
     ghost:
-      background:    "rgba(255,255,255,0.06)"
-      border:        "1px solid rgba(255,255,255,0.10)"
-      hoverBackground: "rgba(255,255,255,0.10)"
+      background:    "rgba(255,255,255,0.04)"
+      border:        "1px solid rgba(255,255,255,0.08)"
+      hoverBackground: "rgba(255,255,255,0.08)"
       borderRadius:  "10px"
 
 # ─────────────────────────────────────────────
@@ -307,16 +310,29 @@ layout:
   content_padding:   "28px 32px"
 
 # ─────────────────────────────────────────────
-# ANIMATION
+# ANIMATION (Framer Motion Integration)
 # ─────────────────────────────────────────────
 animation:
+  framer_motion:
+    layout:
+      layout: "position"
+      transition: { type: "spring", stiffness: 300, damping: 30 }
+    fade_in:
+      initial: { opacity: 0, y: 15 }
+      animate: { opacity: 1, y: 0 }
+      exit: { opacity: 0, y: -15 }
+      transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
+    hover_lift:
+      whileHover: { y: -4, scale: 1.01, transition: { type: "spring", stiffness: 400, damping: 25 } }
+    tap_press:
+      whileTap: { scale: 0.97 }
   enter_card:
     from:      "opacity:0; transform:translateY(12px)"
     to:        "opacity:1; transform:translateY(0)"
     duration:  "0.4s"
     easing:    "cubic-bezier(0.16,1,0.3,1)"
     stagger:   "0.06s"
-  hover_lift:
+  hover_lift_css:
     transform:  "translateY(-2px)"
     transition: "0.25s ease"
   glow_pulse:

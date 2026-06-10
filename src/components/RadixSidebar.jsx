@@ -1,55 +1,55 @@
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from '@/components/animate-ui/components/radix/dropdown-menu';
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail,
-  useSidebar,
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupLabel,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarRail,
+    useSidebar,
 } from '@/components/animate-ui/components/radix/sidebar';
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
 } from '@/components/ui/avatar';
+import { useUserContext } from '@/context/UserContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SignOutButton, useUser } from '@clerk/react';
 import {
-  BadgeCheck,
-  Bell,
-  BookOpen,
-  ChevronLeft,
-  ChevronsUpDown,
-  CreditCard,
-  Database,
-  FolderOpen,
-  HelpCircle,
-  Home as HomeIcon,
-  LayoutDashboard,
-  LogOut,
-  Monitor,
-  PlusCircle,
-  ScanLine,
-  Sliders,
-  Sparkles,
-  Sparkles as SparklesIcon,
-  Users,
+    BadgeCheck,
+    Bell,
+    BookOpen,
+    ChevronLeft,
+    ChevronsUpDown,
+    CreditCard,
+    Database,
+    FolderOpen,
+    HelpCircle,
+    Home as HomeIcon,
+    LayoutDashboard,
+    LogOut,
+    Monitor,
+    PlusCircle,
+    ScanLine,
+    Sliders,
+    Sparkles,
+    Sparkles as SparklesIcon,
+    Users,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { useUserContext } from '@/context/UserContext';
 
 const DATA = {
   teams: [
@@ -194,13 +194,13 @@ export const RadixSidebar = () => {
     .filter((group) => group.items.length > 0);
 
   return (
-    <Sidebar collapsible={isMobile ? "icon" : "none"} className="border-r border-slate-200">
+    <Sidebar collapsible={isMobile ? "icon" : "none"} className="border-r border-black/[0.05] bg-glass-sidebar">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex p-2 items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-slate-800 text-white shadow-md shadow-primary/20 transition-all duration-300">
+                <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#4F46E5] to-[#8B5CF6] text-white shadow-md shadow-indigo-500/10 transition-all duration-300">
                   <BookOpen className="size-5" />
                 </div>
                 <div className="grid flex-1 text-left text-[15px] leading-tight group-data-[collapsible=icon]:hidden">
@@ -231,7 +231,7 @@ export const RadixSidebar = () => {
       <SidebarContent className="px-2">
         {filteredNavGroups.map((group) => (
           <SidebarGroup key={group.label} className="py-2">
-            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden text-slate-400 font-semibold text-[15px] mb-2 px-3">
+            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden text-slate-400/80 font-bold text-[12px] uppercase tracking-wider mb-2 px-4 font-bengali">
               {group.label}
             </SidebarGroupLabel>
             <SidebarMenu className="gap-1.5">
@@ -244,12 +244,12 @@ export const RadixSidebar = () => {
                       tooltip={item.title}
                       className={
                         isActive 
-                          ? 'bg-primary/10 text-primary font-semibold text-[15px] h-10 px-3.5 rounded-lg shadow-sm shadow-primary/5 transition-all duration-200' 
-                          : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 font-semibold text-[15px] h-10 px-3.5 rounded-lg transition-all duration-200'
+                          ? 'bg-[#4F46E5]/[0.10] text-[#4F46E5] font-bold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali' 
+                          : 'text-slate-700 hover:text-slate-900 hover:bg-black/[0.03] font-semibold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali'
                       }
                     >
                       <Link to={item.url} className="flex items-center gap-3 w-full">
-                        <item.icon className={isActive ? 'text-primary size-[18px]' : 'text-slate-500 group-hover/menu-item:text-slate-800 size-[18px] transition-colors'} />
+                        <item.icon className={isActive ? 'text-[#4F46E5] size-[18px]' : 'text-slate-500 group-hover/menu-item:text-slate-800 size-[18px] transition-colors'} />
                         <span className="font-sans tracking-tight">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -268,7 +268,7 @@ export const RadixSidebar = () => {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  className="data-[state=open]:bg-black/[0.03] data-[state=open]:text-slate-800"
                 >
                   <Avatar className="h-8 w-8 rounded-lg border border-slate-200">
                     <AvatarImage
@@ -291,13 +291,13 @@ export const RadixSidebar = () => {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl border border-black/[0.05] bg-white/95 backdrop-blur-xl shadow-lg p-1.5 z-50"
                 side={isMobile ? 'bottom' : 'right'}
                 align="end"
                 sideOffset={4}
               >
                 <DropdownMenuLabel className="p-0 font-normal">
-                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                  <div className="flex items-center gap-2 px-2.5 py-2 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
                         src={user?.imageUrl}
@@ -308,45 +308,45 @@ export const RadixSidebar = () => {
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">
+                      <span className="truncate font-semibold text-slate-850">
                         {user?.fullName || 'ব্যবহারকারী'}
                       </span>
-                      <span className="truncate text-xs text-slate-500">
+                      <span className="truncate text-xs text-slate-400">
                         {user?.primaryEmailAddress?.emailAddress || ''}
                       </span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-black/[0.04]" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
                     <Link to="/dashboard/subscription" className="flex items-center gap-2 w-full">
                       <SparklesIcon className="size-4 text-amber-500" />
-                      Upgrade to Pro
+                      প্রো-তে আপগ্রেড করুন
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-black/[0.04]" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
                     <Link to="/dashboard/institution" className="flex items-center gap-2 w-full">
                       <BadgeCheck className="size-4" />
-                      Institution Profile
+                      প্রতিষ্ঠানের প্রোফাইল
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
                     <Link to="/dashboard/support" className="flex items-center gap-2 w-full">
                       <Bell className="size-4" />
-                      Support
+                      যোগাযোগ ও সাপোর্ট
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="p-0">
+                <DropdownMenuSeparator className="bg-black/[0.04]" />
+                <DropdownMenuItem className="p-0 focus:bg-transparent">
                   <SignOutButton>
-                    <button className="flex w-full items-center gap-2 px-2 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-md">
+                    <button className="flex w-full items-center gap-2 px-2.5 py-2 text-[13px] font-semibold text-red-650 hover:bg-red-500/10 rounded-lg transition-colors font-bengali">
                       <LogOut className="size-4" />
-                      Log out
+                      লগ আউট
                     </button>
                   </SignOutButton>
                 </DropdownMenuItem>

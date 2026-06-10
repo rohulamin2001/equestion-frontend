@@ -110,7 +110,7 @@ export default function SubjectSetup() {
   return (
     <div className="space-y-6 pb-12 w-full">
       {/* Header section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans flex items-center gap-2">
             <Sliders className="size-6 text-primary" />
@@ -123,7 +123,7 @@ export default function SubjectSetup() {
       </div>
 
       {/* Cascading Filter Selection (Hierarchy tabs styled) */}
-      <div className="relative w-full bg-white p-6 rounded-2xl border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="relative w-full bg-glass p-6 rounded-2xl border shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Column 1: Type Selection */}
         <div className="space-y-3.5">
           <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider pl-1 flex items-center gap-1.5 font-sans">
@@ -171,7 +171,7 @@ export default function SubjectSetup() {
                   className={`p-3 px-4 rounded-xl border text-left flex items-center justify-between transition-all duration-200 cursor-pointer ${
                     isActive
                       ? activeColor.activeBg
-                      : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 shadow-sm'
+                      : 'bg-white/45 border-slate-200/50 text-slate-700 hover:border-slate-350 hover:bg-white/70 shadow-sm'
                   }`}
                 >
                   <span className="font-bold text-[13px]">{LEVEL_LABELS[level] || level}</span>
@@ -188,7 +188,7 @@ export default function SubjectSetup() {
             <span className="size-2 rounded-full bg-emerald-500"></span>
             শ্রেণী নির্বাচন (Class)
           </h4>
-          <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/45 min-h-[120px] flex items-center justify-center">
+          <div className="p-4 rounded-xl border border-black/[0.04] bg-black/[0.01] min-h-[120px] flex items-center justify-center">
             <div className="grid grid-cols-2 gap-2 w-full">
               {classesForLevel.map((cls) => {
                 const isActive = selectedClass === cls.value;
@@ -199,7 +199,7 @@ export default function SubjectSetup() {
                     className={`p-2.5 py-3 rounded-lg text-center text-xs font-bold transition-all duration-200 cursor-pointer ${
                       isActive
                         ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm'
-                        : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                        : 'bg-white/45 border border-slate-200/50 text-slate-600 hover:border-slate-350 hover:bg-white/70 shadow-sm'
                     }`}
                   >
                     <span className="font-extrabold">{cls.label}</span>
@@ -214,7 +214,7 @@ export default function SubjectSetup() {
       {/* Main Setup Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left Side: Create Subject Form (1 col) */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-5">
+        <div className="bg-glass p-6 rounded-2xl border shadow-sm space-y-5">
           <h3 className="font-bold text-slate-800 text-base border-b pb-3 flex items-center gap-2">
             <Plus className="size-4.5 text-indigo-500" />
             <span>নতুন বিষয় যোগ করুন ({currentClassLabel})</span>
@@ -386,9 +386,8 @@ export default function SubjectSetup() {
           </form>
         </div>
 
-        {/* Right Side: Subjects List Grid (2 cols) */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center">
+          <div className="bg-glass p-5 rounded-2xl border shadow-sm flex justify-between items-center">
             <h3 className="font-bold text-slate-800 text-base flex items-center gap-2">
               <BookOpen className="size-5 text-emerald-500" />
               <span>বিষয়ের তালিকা ({currentClassLabel})</span>
@@ -399,12 +398,12 @@ export default function SubjectSetup() {
           </div>
 
           {subjectsLoading ? (
-            <div className="bg-white rounded-2xl border border-slate-100 p-16 flex flex-col items-center justify-center space-y-3">
+            <div className="bg-glass rounded-2xl border p-16 flex flex-col items-center justify-center space-y-3">
               <Loader2 className="size-8 text-primary animate-spin" />
               <p className="text-slate-500 text-sm">বিষয়ের তালিকা লোড হচ্ছে...</p>
             </div>
           ) : subjects.length === 0 ? (
-            <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-16 text-center max-w-md mx-auto">
+            <div className="bg-glass border rounded-2xl shadow-sm p-16 text-center max-w-md mx-auto">
               <BookOpen className="size-12 text-slate-400 mb-3 mx-auto" />
               <p className="text-slate-800 font-semibold mb-1">কোনো বিষয় পাওয়া যায়নি</p>
               <p className="text-slate-500 text-xs leading-relaxed">
@@ -417,7 +416,7 @@ export default function SubjectSetup() {
               {subjects.map((sub) => (
                 <div
                   key={sub._id}
-                  className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm space-y-4 hover:shadow-md transition-all duration-200 relative group flex flex-col justify-between"
+                  className="bg-glass border p-5 rounded-2xl shadow-sm space-y-4 hover:shadow-md transition-all duration-200 hover:bg-white/[0.60] relative group flex flex-col justify-between"
                 >
                   <div className="space-y-2.5">
                     {/* Top Row: Code Badge & Actions */}
@@ -509,16 +508,13 @@ export default function SubjectSetup() {
       </div>
 
       {/* Edit Subject Modal */}
-      <Dialog
-        open={isEditModalOpen}
-        onOpenChange={(open) => {
-          if (!open && !updateSubjectMutation.isPending) {
-            setIsEditModalOpen(false);
-            setEditingSubject(null);
-          }
-        }}
-      >
-        <DialogContent className="max-w-md p-6 bg-white rounded-2xl relative shadow-2xl">
+      <Dialog open={isEditModalOpen} onOpenChange={(open) => {
+        if (!open && !updateSubjectMutation.isPending) {
+          setIsEditModalOpen(false);
+          setEditingSubject(null);
+        }
+      }}>
+        <DialogContent className="max-w-md p-6 bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-2xl relative shadow-2xl">
           <DialogHeader className="text-left">
             <DialogTitle className="font-bold text-slate-800 text-[16px] tracking-tight">বিষয় তথ্য সংশোধন</DialogTitle>
             <DialogDescription className="text-slate-500 text-xs">
