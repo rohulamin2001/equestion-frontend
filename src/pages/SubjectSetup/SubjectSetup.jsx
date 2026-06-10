@@ -1,20 +1,3 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAcademicConfig } from '@/hooks/useAcademicConfig';
-import apiClient from '@/lib/apiClient';
-import { Button, ModalCancelButton, ModalSubmitButton } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { RippleButton, RippleButtonRipples } from '@/components/ui/ripple-button';
-import { 
-  Dialog, 
-  DialogClose, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
-} from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,20 +8,37 @@ import {
   AlertDialogPopup,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { 
-  Loader2, 
-  Plus, 
-  Sliders, 
-  BookOpen, 
-  Edit, 
-  Trash2, 
-  Code,
-  GraduationCap,
-  School,
-  ChevronRight
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { Button, ModalCancelButton, ModalSubmitButton } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { RippleButton, RippleButtonRipples } from '@/components/ui/ripple-button';
 import { CATEGORIES_MAP } from '@/constants/categories';
+import { useAcademicConfig } from '@/hooks/useAcademicConfig';
+import apiClient from '@/lib/apiClient';
+import { useAuth } from '@clerk/react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  BookOpen,
+  ChevronRight,
+  Code,
+  Edit,
+  GraduationCap,
+  Loader2,
+  Plus,
+  School,
+  Sliders,
+  Trash2
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 const TYPE_LABELS = {
   School: 'স্কুল (School)',
@@ -88,9 +88,7 @@ const getGroupLabel = (groupName) => {
   }
 };
 
-const PREDEFINED_CATEGORIES = CATEGORIES_MAP.map((c) =>
-  c.value === 'BroadQuestion' ? { ...c, label: 'বর্ণনামূলক / কাঠামোবদ্ধ' } : c
-);
+const PREDEFINED_CATEGORIES = CATEGORIES_MAP.map(c =>c);
 
 export default function SubjectSetup() {
   const { getToken } = useAuth();
