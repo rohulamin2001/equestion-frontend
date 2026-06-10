@@ -16,15 +16,17 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { RippleButton, RippleButtonRipples } from '@/components/ui/ripple-button';
-import { CATEGORIES_MAP } from '@/constants/categories';
-import { useAcademicConfig } from '@/hooks/useAcademicConfig';
-import apiClient from '@/lib/apiClient';
-import { useAuth } from '@clerk/react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  LEVEL_LABELS,
+  PREDEFINED_CATEGORIES,
+  TYPE_LABELS,
+  getGroupLabel,
+  useSubjectSetup,
+} from './hook/useSubjectSetup';
 import {
   BookOpen,
   ChevronRight,
@@ -35,25 +37,8 @@ import {
   Plus,
   School,
   Sliders,
-  Trash2
+  Trash2,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-
-const TYPE_LABELS = {
-  School: 'স্কুল (School)',
-  College: 'কলেজ (College)',
-  Madrasah: 'মাদ্রাসা (Madrasah)',
-};
-
-const LEVEL_LABELS = {
-  Primary: 'প্রাথমিক (Primary)',
-  Secondary: 'মাধ্যমিক (Secondary)',
-  'Higher Secondary': 'উচ্চমাধ্যমিক (Higher Secondary)',
-  Ebtedayee: 'ইবতেদায়ী (Ebtedayee)',
-  Dakhil: 'দাখিল (Dakhil)',
-  Alim: 'আলিম (Alim)',
-};
 
 const TYPE_ICONS = {
   School: School,
@@ -79,231 +64,48 @@ const TYPE_COLORS = {
   },
 };
 
-const getGroupLabel = (groupName) => {
-  switch (groupName) {
-    case 'Science': return 'বিজ্ঞান';
-    case 'Humanities': return 'মানবিক';
-    case 'Commerce': return 'ব্যবসায় শিক্ষা';
-    default: return 'সাধারণ';
-  }
-};
-
-const PREDEFINED_CATEGORIES = CATEGORIES_MAP.map(c =>c);
-
 export default function SubjectSetup() {
-  const { getToken } = useAuth();
-  const queryClient = useQueryClient();
-  const { allowedClasses } = useAcademicConfig();
-
-  // Active filter state
-  const [selectedType, setSelectedType] = useState('School');
-  const [selectedLevel, setSelectedLevel] = useState('Secondary');
-  const [selectedClass, setSelectedClass] = useState('Class 6');
-
-  // Form Fields
-  const [subjectName, setSubjectName] = useState('');
-  const [subjectCode, setSubjectCode] = useState('');
-  const [subjectGroup, setSubjectGroup] = useState('General');
-  const [subjectYears, setSubjectYears] = useState([new Date().getFullYear()]);
-  const [subjectCategories, setSubjectCategories] = useState(['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']);
-
-  // Modal / Editing states
-  const [editingSubject, setEditingSubject] = useState(null);
-  const [subjectToDelete, setSubjectToDelete] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  // Sync state when allowedClasses changes or loaded
-  useEffect(() => {
-    if (allowedClasses && allowedClasses.length > 0) {
-      const exists = allowedClasses.some(
-        (c) => c.value === selectedClass && c.type === selectedType && c.level === selectedLevel
-      );
-      if (!exists) {
-        const first = allowedClasses[0];
-        setSelectedType(first.type);
-        setSelectedLevel(first.level);
-        setSelectedClass(first.value);
-      }
-    }
-  }, [allowedClasses]);
-
-  const activeTypes = Array.from(new Set(allowedClasses.map((c) => c.type)));
-  const activeLevels = Array.from(
-    new Set(allowedClasses.filter((c) => c.type === selectedType).map((c) => c.level))
-  );
-  const classesForLevel = allowedClasses.filter(
-    (c) => c.type === selectedType && c.level === selectedLevel
-  );
-
-  const currentClassLabel = allowedClasses.find(
-    (c) => c.value === selectedClass && c.type === selectedType && c.level === selectedLevel
-  )?.label || selectedClass;
-
-  // Fetch Subjects Query
-  const { data: subjects = [], isLoading: subjectsLoading } = useQuery({
-    queryKey: ['subjects', selectedType, selectedLevel, selectedClass],
-    queryFn: async () => {
-      const token = await getToken();
-      const response = await apiClient.get('/subjects', {
-        params: {
-          className: selectedClass,
-          institutionType: selectedType,
-          academicLevel: selectedLevel,
-        },
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return response.data.subjects;
-    },
-    enabled: !!selectedClass,
-  });
-
-  // Add Subject Mutation
-  const addSubjectMutation = useMutation({
-    mutationFn: async (payload) => {
-      const token = await getToken();
-      return apiClient.post('/subjects', payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subjects'] });
-      toast.success('বিষয় সফলভাবে যুক্ত করা হয়েছে!');
-      resetForm();
-    },
-    onError: (err) => {
-      toast.error(err.response?.data?.error || err.message || 'বিষয় যুক্ত করতে ব্যর্থ হয়েছে');
-    },
-  });
-
-  // Update Subject Mutation
-  const updateSubjectMutation = useMutation({
-    mutationFn: async ({ id, payload }) => {
-      const token = await getToken();
-      return apiClient.put(`/subjects/${id}`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subjects'] });
-      toast.success('বিষয় সফলভাবে আপডেট করা হয়েছে!');
-      setIsEditModalOpen(false);
-      setEditingSubject(null);
-    },
-    onError: (err) => {
-      toast.error(err.response?.data?.error || err.message || 'বিষয় আপডেট করতে ব্যর্থ হয়েছে');
-    },
-  });
-
-  // Delete Subject Mutation
-  const deleteSubjectMutation = useMutation({
-    mutationFn: async (id) => {
-      const token = await getToken();
-      return apiClient.delete(`/subjects/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subjects'] });
-      toast.success('বিষয় সফলভাবে মুছে ফেলা হয়েছে!');
-      setSubjectToDelete(null);
-    },
-    onError: (err) => {
-      toast.error(err.response?.data?.error || err.message || 'বিষয় মুছতে ব্যর্থ হয়েছে');
-    },
-  });
-
-  const handleAddYear = (year, isEdit = false) => {
-    const y = Number(year);
-    if (!y || isNaN(y)) return;
-    if (isEdit) {
-      if (editingSubject.years.includes(y)) return;
-      setEditingSubject({ ...editingSubject, years: [...editingSubject.years, y].sort((a, b) => a - b) });
-    } else {
-      if (subjectYears.includes(y)) return;
-      setSubjectYears([...subjectYears, y].sort((a, b) => a - b));
-    }
-  };
-
-  const handleRemoveYear = (year, isEdit = false) => {
-    const y = Number(year);
-    if (isEdit) {
-      setEditingSubject({ ...editingSubject, years: editingSubject.years.filter((item) => item !== y) });
-    } else {
-      setSubjectYears(subjectYears.filter((item) => item !== y));
-    }
-  };
-
-  const handleToggleCategory = (catVal, isEdit = false) => {
-    if (isEdit) {
-      const currentCats = editingSubject.categories || [];
-      const updated = currentCats.includes(catVal)
-        ? currentCats.filter((c) => c !== catVal)
-        : [...currentCats, catVal];
-      setEditingSubject({ ...editingSubject, categories: updated });
-    } else {
-      const updated = subjectCategories.includes(catVal)
-        ? subjectCategories.filter((c) => c !== catVal)
-        : [...subjectCategories, catVal];
-      setSubjectCategories(updated);
-    }
-  };
-
-  const resetForm = () => {
-    setSubjectName('');
-    setSubjectCode('');
-    setSubjectGroup('General');
-    setSubjectYears([new Date().getFullYear()]);
-    setSubjectCategories(['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']);
-  };
-
-  const handleCreateSubjectSubmit = (e) => {
-    e.preventDefault();
-    if (!selectedClass) return;
-    const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(selectedClass);
-
-    addSubjectMutation.mutate({
-      className: selectedClass,
-      subjectName: subjectName.trim(),
-      subjectCode: subjectCode.trim(),
-      group: isClass9to12 ? subjectGroup : 'General',
-      years: subjectYears,
-      categories: subjectCategories,
-      institutionType: selectedType,
-      academicLevel: selectedLevel,
-    });
-  };
-
-  const handleEditSubjectSubmit = (e) => {
-    e.preventDefault();
-    if (!editingSubject) return;
-    const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(editingSubject.className);
-
-    updateSubjectMutation.mutate({
-      id: editingSubject._id,
-      payload: {
-        className: editingSubject.className,
-        subjectName: editingSubject.subjectName.trim(),
-        subjectCode: editingSubject.subjectCode.trim(),
-        group: isClass9to12 ? editingSubject.group : 'General',
-        years: editingSubject.years,
-        categories: editingSubject.categories || ['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion'],
-        institutionType: editingSubject.institutionType,
-        academicLevel: editingSubject.academicLevel,
-      },
-    });
-  };
-
-  const handleOpenEditModal = (sub) => {
-    setEditingSubject({
-      ...sub,
-      categories: sub.categories && sub.categories.length > 0 ? sub.categories : ['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']
-    });
-    setIsEditModalOpen(true);
-  };
+  const {
+    allowedClasses,
+    selectedType,
+    selectedLevel,
+    selectedClass,
+    setSelectedClass,
+    activeTypes,
+    activeLevels,
+    classesForLevel,
+    currentClassLabel,
+    handleTypeChange,
+    handleLevelChange,
+    subjectName,
+    setSubjectName,
+    subjectCode,
+    setSubjectCode,
+    subjectGroup,
+    setSubjectGroup,
+    subjectYears,
+    subjectCategories,
+    editingSubject,
+    setEditingSubject,
+    subjectToDelete,
+    setSubjectToDelete,
+    isEditModalOpen,
+    setIsEditModalOpen,
+    subjects,
+    subjectsLoading,
+    addSubjectMutation,
+    updateSubjectMutation,
+    deleteSubjectMutation,
+    handleAddYear,
+    handleRemoveYear,
+    handleToggleCategory,
+    handleCreateSubjectSubmit,
+    handleEditSubjectSubmit,
+    handleOpenEditModal,
+    isClass9to12,
+  } = useSubjectSetup();
 
   const activeColor = TYPE_COLORS[selectedType] || TYPE_COLORS.School;
-
-  const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(selectedClass);
 
   return (
     <div className="space-y-6 pb-12 w-full">
@@ -315,7 +117,7 @@ export default function SubjectSetup() {
             সাবজেক্ট ও কোড সেটআপ
           </h1>
           <p className="text-slate-500 text-sm mt-1">
-            প্রতিষ্ঠানের স্তর ও শ্রেণীভিত্তিক স্থায়ী বিষয়সমূহ কোড ও সক্রিয় শিক্ষাবর্ষসহ কনফিগার করুন।
+            প্রতিষ্ঠানের স্তর ও শ্রেণীভিত্তিক স্থায়ী বিষয়সমূহ কোড ও সক্রিয় শিক্ষাবর্ষসহ কনফিগার করুন।
           </p>
         </div>
       </div>
@@ -337,15 +139,7 @@ export default function SubjectSetup() {
               return (
                 <button
                   key={type}
-                  onClick={() => {
-                    setSelectedType(type);
-                    const lvls = Array.from(new Set(allowedClasses.filter((c) => c.type === type).map((c) => c.level)));
-                    if (lvls.length > 0) {
-                      setSelectedLevel(lvls[0]);
-                      const cls = allowedClasses.filter((c) => c.type === type && c.level === lvls[0]);
-                      if (cls.length > 0) setSelectedClass(cls[0].value);
-                    }
-                  }}
+                  onClick={() => handleTypeChange(type)}
                   className={`p-3 px-4 rounded-xl border text-left flex items-center justify-between transition-all duration-200 cursor-pointer ${
                     isActive ? colStyle.activeBg : colStyle.bg
                   }`}
@@ -373,11 +167,7 @@ export default function SubjectSetup() {
               return (
                 <button
                   key={level}
-                  onClick={() => {
-                    setSelectedLevel(level);
-                    const cls = allowedClasses.filter((c) => c.type === selectedType && c.level === level);
-                    if (cls.length > 0) setSelectedClass(cls[0].value);
-                  }}
+                  onClick={() => handleLevelChange(level)}
                   className={`p-3 px-4 rounded-xl border text-left flex items-center justify-between transition-all duration-200 cursor-pointer ${
                     isActive
                       ? activeColor.activeBg
@@ -427,7 +217,7 @@ export default function SubjectSetup() {
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-5">
           <h3 className="font-bold text-slate-800 text-base border-b pb-3 flex items-center gap-2">
             <Plus className="size-4.5 text-indigo-500" />
-            <span>নতুন বিষয় যোগ করুন ({currentClassLabel})</span>
+            <span>নতুন বিষয় যোগ করুন ({currentClassLabel})</span>
           </h3>
 
           <form onSubmit={handleCreateSubjectSubmit} className="space-y-4">
@@ -466,9 +256,12 @@ export default function SubjectSetup() {
                     { value: 'General', label: 'সাধারণ (General)' },
                     { value: 'Science', label: 'বিজ্ঞান (Science)' },
                     { value: 'Humanities', label: 'মানবিক (Humanities)' },
-                    { value: 'Commerce', label: 'ব্যবসায় শিক্ষা (Commerce)' }
+                    { value: 'Commerce', label: 'ব্যবসায় শিক্ষা (Commerce)' },
                   ].map((grp) => (
-                    <label key={grp.value} className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                    <label
+                      key={grp.value}
+                      className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none"
+                    >
                       <input
                         type="radio"
                         name="subjectGroup"
@@ -486,7 +279,7 @@ export default function SubjectSetup() {
 
             {/* Active Years setup */}
             <div className="space-y-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/30">
-              <label className="text-xs font-semibold text-slate-600 mb-1.5 block">সক্রিয় শিক্ষাবর্ষ / বছর</label>
+              <label className="text-xs font-semibold text-slate-600 mb-1.5 block">সক্রিয় শিক্ষাবর্ষ / বছর</label>
               <div className="flex gap-2 items-center">
                 <Input
                   type="number"
@@ -585,7 +378,7 @@ export default function SubjectSetup() {
               ) : (
                 <>
                   <Plus className="size-4" />
-                  বিষয় যুক্ত করুন
+                  বিষয় যুক্ত করুন
                 </>
               )}
               <RippleButtonRipples color="rgba(255, 255, 255, 0.3)" />
@@ -598,30 +391,31 @@ export default function SubjectSetup() {
           <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center">
             <h3 className="font-bold text-slate-800 text-base flex items-center gap-2">
               <BookOpen className="size-5 text-emerald-500" />
-              <span>বিষয়ের তালিকা ({currentClassLabel})</span>
+              <span>বিষয়ের তালিকা ({currentClassLabel})</span>
             </h3>
             <span className="text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full">
-              মোট {subjects.length} টি বিষয় কনফিগারড
+              মোট {subjects.length} টি বিষয় কনফিগারড
             </span>
           </div>
 
           {subjectsLoading ? (
             <div className="bg-white rounded-2xl border border-slate-100 p-16 flex flex-col items-center justify-center space-y-3">
               <Loader2 className="size-8 text-primary animate-spin" />
-              <p className="text-slate-500 text-sm">বিষয়ের তালিকা লোড হচ্ছে...</p>
+              <p className="text-slate-500 text-sm">বিষয়ের তালিকা লোড হচ্ছে...</p>
             </div>
           ) : subjects.length === 0 ? (
             <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-16 text-center max-w-md mx-auto">
               <BookOpen className="size-12 text-slate-400 mb-3 mx-auto" />
-              <p className="text-slate-800 font-semibold mb-1">কোনো বিষয় পাওয়া যায়নি</p>
+              <p className="text-slate-800 font-semibold mb-1">কোনো বিষয় পাওয়া যায়নি</p>
               <p className="text-slate-500 text-xs leading-relaxed">
-                {currentClassLabel}-এর অধীনে এখন পর্যন্ত কোনো বিষয় কনফিগার করা হয়নি। বামপাশের ফর্ম ব্যবহার করে নতুন বিষয় যুক্ত করুন।
+                {currentClassLabel}-এর অধীনে এখন পর্যন্ত কোনো বিষয় কনফিগার করা হয়নি। বামপাশের ফর্ম ব্যবহার করে নতুন বিষয়
+                যুক্ত করুন।
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {subjects.map((sub) => (
-                <div 
+                <div
                   key={sub._id}
                   className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm space-y-4 hover:shadow-md transition-all duration-200 relative group flex flex-col justify-between"
                 >
@@ -632,7 +426,7 @@ export default function SubjectSetup() {
                         <Code className="size-3.5" />
                         কোড: {sub.subjectCode}
                       </span>
-                      
+
                       <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
                           variant="ghost"
@@ -668,14 +462,15 @@ export default function SubjectSetup() {
                   {/* Active Years badges */}
                   <div className="pt-3 border-t border-slate-50 flex flex-wrap gap-1 items-center">
                     <span className="text-[10px] font-bold text-slate-400 mr-1 uppercase">শিক্ষাবর্ষ:</span>
-                    {sub.years && sub.years.map((yr) => (
-                      <span 
-                        key={yr}
-                        className="bg-amber-50 border border-amber-100 text-amber-700 font-extrabold text-[10px] px-2 py-0.5 rounded-md"
-                      >
-                        {yr}
-                      </span>
-                    ))}
+                    {sub.years &&
+                      sub.years.map((yr) => (
+                        <span
+                          key={yr}
+                          className="bg-amber-50 border border-amber-100 text-amber-700 font-extrabold text-[10px] px-2 py-0.5 rounded-md"
+                        >
+                          {yr}
+                        </span>
+                      ))}
                   </div>
 
                   {/* Configured Categories badges */}
@@ -683,15 +478,27 @@ export default function SubjectSetup() {
                     <span className="text-[10px] font-bold text-slate-400 mr-1 uppercase">ক্যাটাগরি:</span>
                     {sub.categories && sub.categories.length > 0 ? (
                       sub.categories.map((cat) => (
-                        <span 
+                        <span
                           key={cat}
                           className="bg-indigo-50 border border-indigo-100 text-indigo-700 font-extrabold text-[10px] px-2 py-0.5 rounded-md"
                         >
-                          {cat === 'MCQ' ? 'MCQ' : cat === 'Creative' ? 'সৃজনশীল' : cat === 'ShortAnswer' ? 'সংক্ষিপ্ত' : cat === 'BroadQuestion' ? 'বর্ণনামূলক' : cat === 'FillInBlanks' ? 'শূন্যস্থান' : cat === 'Matching' ? 'ডানবাম' : cat}
+                          {cat === 'MCQ'
+                            ? 'MCQ'
+                            : cat === 'Creative'
+                            ? 'সৃজনশীল'
+                            : cat === 'ShortAnswer'
+                            ? 'সংক্ষিপ্ত'
+                            : cat === 'BroadQuestion'
+                            ? 'বর্ণনামূলক'
+                            : cat === 'FillInBlanks'
+                            ? 'শূন্যস্থান'
+                            : cat === 'Matching'
+                            ? 'ডানবাম'
+                            : cat}
                         </span>
                       ))
                     ) : (
-                      <span className="text-[10px] text-slate-400 italic">কোনোটি নয় (ডিফল্ট)</span>
+                      <span className="text-[10px] text-slate-400 italic">কোনোটি নয় (ডিফল্ট)</span>
                     )}
                   </div>
                 </div>
@@ -702,17 +509,20 @@ export default function SubjectSetup() {
       </div>
 
       {/* Edit Subject Modal */}
-      <Dialog open={isEditModalOpen} onOpenChange={(open) => {
-        if (!open && !updateSubjectMutation.isPending) {
-          setIsEditModalOpen(false);
-          setEditingSubject(null);
-        }
-      }}>
+      <Dialog
+        open={isEditModalOpen}
+        onOpenChange={(open) => {
+          if (!open && !updateSubjectMutation.isPending) {
+            setIsEditModalOpen(false);
+            setEditingSubject(null);
+          }
+        }}
+      >
         <DialogContent className="max-w-md p-6 bg-white rounded-2xl relative shadow-2xl">
           <DialogHeader className="text-left">
-            <DialogTitle className="font-bold text-slate-800 text-[16px] tracking-tight">বিষয় তথ্য সংশোধন</DialogTitle>
+            <DialogTitle className="font-bold text-slate-800 text-[16px] tracking-tight">বিষয় তথ্য সংশোধন</DialogTitle>
             <DialogDescription className="text-slate-500 text-xs">
-              বিষয়ের বিবরণ, বিষয় কোড এবং সক্রিয় শিক্ষাবর্ষের শিক্ষাবর্ষ সংশোধন করুন।
+              বিষয়ের বিবরণ, বিষয় কোড এবং সক্রিয় শিক্ষাবর্ষের শিক্ষাবর্ষ সংশোধন করুন।
             </DialogDescription>
           </DialogHeader>
 
@@ -749,7 +559,7 @@ export default function SubjectSetup() {
                       { value: 'General', label: 'সাধারণ' },
                       { value: 'Science', label: 'বিজ্ঞান' },
                       { value: 'Humanities', label: 'মানবিক' },
-                      { value: 'Commerce', label: 'ব্যবসায়' }
+                      { value: 'Commerce', label: 'ব্যবসায়' },
                     ].map((grp) => (
                       <label key={grp.value} className="flex items-center gap-1.5 text-xs font-semibold cursor-pointer select-none">
                         <input
@@ -769,7 +579,7 @@ export default function SubjectSetup() {
 
               {/* Edit Years setup */}
               <div className="space-y-2 p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                <label className="text-xs font-semibold text-slate-600 mb-1 block">সক্রিয় শিক্ষাবর্ষ</label>
+                <label className="text-xs font-semibold text-slate-600 mb-1 block">সক্রিয় শিক্ষাবর্ষ</label>
                 <div className="flex gap-2">
                   <Input
                     type="number"
@@ -806,8 +616,8 @@ export default function SubjectSetup() {
                 </div>
                 <div className="flex flex-wrap gap-1.5 pt-1.5">
                   {editingSubject.years.map((yr) => (
-                    <span 
-                      key={yr} 
+                    <span
+                      key={yr}
                       className="inline-flex items-center gap-1 bg-amber-500/10 text-amber-800 font-semibold text-xs px-2.5 py-0.5 rounded-md border border-amber-100"
                     >
                       {yr}
@@ -854,9 +664,7 @@ export default function SubjectSetup() {
 
               <DialogFooter className="pt-4 flex gap-2 justify-end border-t border-slate-100">
                 <DialogClose asChild>
-                  <ModalCancelButton disabled={updateSubjectMutation.isPending}>
-                    বাতিল
-                  </ModalCancelButton>
+                  <ModalCancelButton disabled={updateSubjectMutation.isPending}>বাতিল</ModalCancelButton>
                 </DialogClose>
                 <ModalSubmitButton type="submit" disabled={updateSubjectMutation.isPending}>
                   {updateSubjectMutation.isPending ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
@@ -868,11 +676,11 @@ export default function SubjectSetup() {
       </Dialog>
 
       {/* Delete Confirmation Alert Dialog */}
-      <AlertDialog 
-        open={!!subjectToDelete} 
-        onOpenChange={(open) => { 
+      <AlertDialog
+        open={!!subjectToDelete}
+        onOpenChange={(open) => {
           if (!open && !deleteSubjectMutation.isPending) {
-            setSubjectToDelete(null); 
+            setSubjectToDelete(null);
           }
         }}
       >
@@ -883,19 +691,23 @@ export default function SubjectSetup() {
             </div>
             <AlertDialogTitle className="text-center font-bold text-slate-900 text-base">আপনি কি নিশ্চিত?</AlertDialogTitle>
             <AlertDialogDescription className="text-center text-slate-500 text-xs mt-1.5 leading-relaxed">
-              আপনি কি নিশ্চিত যে আপনি <strong>{subjectToDelete?.subjectName} ({subjectToDelete?.subjectCode})</strong> বিষয়টিকে স্থায়ীভাবে ডিলিট করতে চান?
-              এটি মুছে ফেললে এই বিষয়ের সাথে সংযুক্ত যেকোনো সিলেবাস এবং প্রশ্ন ক্ষতিগ্রস্ত হতে পারে!
+              আপনি কি নিশ্চিত যে আপনি{' '}
+              <strong>
+                {subjectToDelete?.subjectName} ({subjectToDelete?.subjectCode})
+              </strong>{' '}
+              বিষয়টিকে স্থায়ীভাবে ডিলিট করতে চান? এটি মুছে ফেললে এই বিষয়ের সাথে সংযুক্ত যেকোনো সিলেবাস এবং প্রশ্ন ক্ষতিগ্রস্ত
+              হতে পারে!
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel 
-              className="w-full sm:w-auto text-xs" 
+            <AlertDialogCancel
+              className="w-full sm:w-auto text-xs"
               disabled={deleteSubjectMutation.isPending}
               onClick={() => setSubjectToDelete(null)}
             >
               না, বাতিল করুন
             </AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
               disabled={deleteSubjectMutation.isPending}
               onClick={(e) => {
