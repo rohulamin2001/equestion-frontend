@@ -1,10 +1,9 @@
-import { Outlet, useLocation, Navigate } from 'react-router-dom';
-import { useAuth, UserButton } from '@clerk/react';
 import {
-  SidebarProvider,
   SidebarInset,
+  SidebarProvider,
   SidebarTrigger,
 } from '@/components/animate-ui/components/radix/sidebar';
+import { RadixSidebar } from '@/components/RadixSidebar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,8 +13,9 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
-import { RadixSidebar } from '@/components/RadixSidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { useAuth, UserButton } from '@clerk/react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 const ROUTE_TITLES = {
   '/dashboard': 'ড্যাশবোর্ড ওভারভিউ',
@@ -52,24 +52,34 @@ export default function DashboardLayout() {
   return (
     <TooltipProvider>
       <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-slate-50/50">
-          <RadixSidebar />
-          <SidebarInset className="flex-1 flex flex-col min-w-0 bg-transparent">
-            {/* Top Header */}
-            <header className="flex h-16 shrink-0 items-center justify-between border-b bg-white/80 backdrop-blur px-4 sticky top-0 z-10 transition-[width,height] ease-linear">
+        <div className="flex h-screen w-full bg-[#F5F5F7] text-[#1E293B] relative overflow-hidden">
+          {/* Ambient Glowing Background Orbs */}
+          <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+            {/* Top-Left Orb: Royal Purple */}
+            <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-[#4F46E5]/[0.06] blur-[120px]" />
+            {/* Top-Right Orb: Violet */}
+            <div className="absolute top-[-5%] right-[-5%] w-[500px] h-[500px] rounded-full bg-[#8B5CF6]/[0.04] blur-[100px]" />
+            {/* Bottom-Center Orb: Accent Orange */}
+            <div className="absolute bottom-[-10%] left-[30%] w-[400px] h-[400px] rounded-full bg-[#F97316]/[0.02] blur-[80px]" />
+          </div>
+
+          <RadixSidebar className="relative z-10" />
+          <SidebarInset className="flex-1 flex flex-col min-w-0 bg-transparent relative z-10">
+            {/* Top Header - Saturated Light Glass Layer */}
+            <header className="flex h-16 shrink-0 items-center justify-between border-b border-black/[0.05] bg-white/[0.40] backdrop-blur-[20px] saturate-[180%] px-6 sticky top-0 z-50 transition-[width,height] ease-linear">
               <div className="flex items-center gap-2">
-                <SidebarTrigger className="lg:hidden -ml-1 text-slate-500 hover:text-slate-900" />
+                <SidebarTrigger className="lg:hidden -ml-1 text-slate-500 hover:text-slate-800" />
                 <Separator orientation="vertical" className="lg:hidden mx-2 h-4 bg-slate-200" />
                 <Breadcrumb>
                   <BreadcrumbList>
                     <BreadcrumbItem className="hidden lg:block">
-                      <BreadcrumbLink className="text-slate-500 hover:text-slate-900 transition">
+                      <BreadcrumbLink className="text-slate-500 hover:text-[#4F46E5] transition font-sans">
                         ইপ্রশ্নব্যাংক
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator className="hidden lg:block text-slate-400" />
                     <BreadcrumbItem>
-                      <BreadcrumbPage className="font-semibold text-slate-800">
+                      <BreadcrumbPage className="font-semibold text-slate-800 font-bengali">
                         {currentTitle}
                       </BreadcrumbPage>
                     </BreadcrumbItem>
@@ -82,7 +92,7 @@ export default function DashboardLayout() {
             </header>
 
             {/* Dashboard Content Workspace */}
-            <main className="flex-1 overflow-y-auto p-6 lg:p-8 w-full">
+            <main className="flex-1 overflow-y-auto p-6 lg:p-8 w-full relative z-10">
               <Outlet />
             </main>
           </SidebarInset>

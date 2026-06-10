@@ -188,7 +188,7 @@ export default function SyllabusManagement() {
   return (
     <div className="space-y-6">
       {/* Header section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">সিলেবাস ও টপিক ব্যবস্থাপনা</h1>
           <p className="text-slate-500 text-sm mt-1">শ্রেণীভিত্তিক পরীক্ষার প্রশ্নের অধ্যায় ও সুনির্দিষ্ট টপিকসমূহ আগে থেকে প্রস্তুত করুন।</p>
@@ -219,19 +219,19 @@ export default function SyllabusManagement() {
       {/* Main Content Area */}
       <div className="space-y-4">
         {loading ? (
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-16 flex flex-col items-center justify-center space-y-3">
-            <Loader2 className="size-8 text-primary animate-spin" />
+          <div className="bg-glass rounded-2xl border shadow-sm p-16 flex flex-col items-center justify-center space-y-3">
+            <Loader2 className="size-8 text-[#4F46E5] animate-spin" />
             <p className="text-slate-500 text-sm">{currentClassLabel}-এর সিলেবাস লোড হচ্ছে...</p>
           </div>
         ) : error ? (
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-16 text-center max-w-md mx-auto">
+          <div className="bg-glass rounded-2xl border shadow-sm p-16 text-center max-w-md mx-auto">
             <AlertCircle className="size-10 text-red-500 mb-3 mx-auto" />
             <p className="text-slate-800 font-semibold mb-1">সিলেবাস লোড করা যায়নি</p>
             <p className="text-slate-500 text-sm mb-4">{error}</p>
             <Button onClick={refetch} variant="outline">আবার চেষ্টা করুন</Button>
           </div>
         ) : syllabusList.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-16 text-center max-w-md mx-auto">
+          <div className="bg-glass rounded-2xl border shadow-sm p-16 text-center max-w-md mx-auto">
             <Book className="size-12 text-slate-400 mb-3 mx-auto" />
             <p className="text-slate-800 font-semibold mb-1">কোনো সিলেবাস পাওয়া যায়নি</p>
             <p className="text-slate-500 text-sm">
@@ -245,12 +245,12 @@ export default function SyllabusManagement() {
               return (
                 <div 
                   key={subject._id} 
-                  className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md"
+                  className="bg-glass border rounded-2xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:bg-white/[0.60]"
                 >
                   {/* Subject Title Bar */}
                   <div 
                     onClick={() => toggleSubject(subject._id)}
-                    className="flex justify-between items-center px-6 py-5 cursor-pointer select-none hover:bg-slate-50/50 transition-colors"
+                    className="flex justify-between items-center px-6 py-5 cursor-pointer select-none hover:bg-white/[0.04] transition-colors"
                   >
                     <div className="flex items-center gap-4">
                       <div className="p-2.5 bg-primary/5 text-primary rounded-xl shrink-0">
@@ -313,7 +313,7 @@ export default function SyllabusManagement() {
                         animate={{ height: 'auto' }}
                         exit={{ height: 0 }}
                         transition={{ duration: 0.2, ease: 'easeInOut' }}
-                        className="border-t border-slate-50 bg-slate-50/20"
+                        className="border-t border-black/[0.04] bg-black/[0.01]"
                       >
                         <div className="p-6 space-y-4">
                           {subject.chapters && subject.chapters.length > 0 ? (
@@ -323,7 +323,7 @@ export default function SyllabusManagement() {
                                 .map((chap) => (
                                   <div 
                                     key={chap._id || chap.chapterNumber}
-                                    className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm "
+                                    className="bg-white/45 p-5 rounded-xl border border-slate-200/50 shadow-sm transition-all hover:bg-white/70"
                                   >
                                     <div className="flex items-start gap-3">
                                       <span className="inline-flex items-center justify-center size-7 rounded-lg bg-primary/10 text-primary font-bold text-xs shrink-0 mt-0.5">
@@ -381,12 +381,12 @@ export default function SyllabusManagement() {
           onEscapeKeyDown={(e) => {
             if (formLoading) e.preventDefault();
           }}
-          className="max-w-2xl p-0 border border-slate-200/60 overflow-hidden bg-white shadow-2xl rounded-2xl relative"
+          className="max-w-2xl p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative"
         >
           <form onSubmit={handleSubmit} className="flex flex-col h-full max-h-[85vh]">
-            <DialogHeader className="bg-white px-6 pt-6 pb-5 border-b border-slate-100/80 relative flex flex-col space-y-0 mb-0 text-left">
+            <DialogHeader className="bg-transparent px-6 pt-6 pb-5 border-b border-black/[0.05] relative flex flex-col space-y-0 mb-0 text-left">
               <div className="flex items-start gap-4 pr-8">
-                <div className="p-2 bg-indigo-50 border border-indigo-100/40 text-indigo-600 rounded-xl shrink-0 mt-0.5 shadow-sm shadow-indigo-100/10">
+                <div className="p-2 bg-[#4F46E5]/10 border border-[#4F46E5]/20 text-[#4F46E5] rounded-xl shrink-0 mt-0.5 shadow-sm shadow-indigo-100/10">
                   <FolderPlus className="size-5" />
                 </div>
                 <div className="space-y-1">

@@ -124,9 +124,9 @@ export default function AddQuestion() {
   };
 
   return (
-    <div className="space-y-6 pb-12 w-full">
+    <div className="space-y-6 pb-12 w-full font-bengali">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">নতুন প্রশ্ন যোগ করুন</h1>
           <p className="text-slate-500 text-sm mt-1">
@@ -136,19 +136,19 @@ export default function AddQuestion() {
         <Button
           variant="outline"
           onClick={qm.resetForm}
-          className="border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl"
+          className="border-black/[0.08] text-slate-600 hover:bg-black/[0.03] rounded-xl bg-white/[0.45] backdrop-blur-sm shadow-sm"
         >
           রিসেট ফর্ম
         </Button>
       </div>
 
       {/* Wizard Step Progress Bar */}
-      <div className="bg-white px-6 pt-6 pb-10 rounded-2xl border border-slate-100 shadow-sm">
+      <div className="bg-glass px-6 pt-6 pb-10 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
         <div className="flex items-center justify-between max-w-xl mx-auto relative px-[18px]">
           {/* Progress bar line */}
-          <div className="absolute left-[18px] right-[18px] top-1/2 -translate-y-1/2 h-0.5 bg-slate-100 -z-0">
+          <div className="absolute left-[18px] right-[18px] top-1/2 -translate-y-1/2 h-0.5 bg-black/[0.05] -z-0">
             <div
-              className="h-full bg-indigo-500 transition-all duration-300"
+              className="h-full bg-[#4F46E5] transition-all duration-300"
               style={{ width: `${((qm.activeStep - 1) / 2) * 100}%` }}
             />
           </div>
@@ -172,17 +172,17 @@ export default function AddQuestion() {
                   disabled={item.step > 2 && !isStep1Valid()}
                   className={`size-9 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 cursor-pointer ${
                     isCompleted
-                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-200"
+                      ? "bg-[#4F46E5] text-white shadow-md shadow-purple-500/10"
                       : isActive
-                      ? "bg-white border-2 border-indigo-600 text-indigo-600 scale-110 shadow-md shadow-indigo-100"
-                      : "bg-white border-2 border-slate-200 text-slate-400"
+                      ? "bg-white border-2 border-[#4F46E5] text-[#4F46E5] scale-110 shadow-md shadow-purple-500/5"
+                      : "bg-white/[0.45] border-2 border-black/[0.08] text-slate-400"
                   }`}
                 >
                   {isCompleted ? "✓" : item.step}
                 </button>
                 <span
                   className={`text-[11px] font-bold absolute top-11 whitespace-nowrap text-center left-1/2 -translate-x-1/2 font-sans transition-all duration-300 ${
-                    isActive ? "text-indigo-600 font-semibold" : "text-slate-400"
+                    isActive ? "text-[#4F46E5] font-semibold" : "text-slate-400"
                   }`}
                 >
                   {item.label}
@@ -207,9 +207,9 @@ export default function AddQuestion() {
               className="grid grid-cols-1 md:grid-cols-3 gap-6"
             >
               {/* Left Column: Syllabus Fields */}
-              <div className="md:col-span-2 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-5">
-                <h3 className="font-bold text-slate-800 text-[16px] border-b pb-2 flex items-center gap-2">
-                  <BookOpen className="size-4 text-indigo-500" />
+              <div className="md:col-span-2 bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-5">
+                <h3 className="font-bold text-slate-800 text-[16px] border-b border-black/[0.05] pb-2 flex items-center gap-2">
+                  <BookOpen className="size-4 text-[#4F46E5]" />
                   সিলেবাস ও অধ্যায় লিঙ্ক করুন
                 </h3>
 
@@ -221,7 +221,7 @@ export default function AddQuestion() {
                       <button
                         type="button"
                         onClick={() => setActiveDropdown(activeDropdown === "type" ? null : "type")}
-                        className="w-full px-4 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm"
+                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm"
                       >
                         {TYPE_LABELS[qm.formType] || qm.formType}
                         <ChevronRight className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "type" ? "rotate-90" : ""}`} />
@@ -230,7 +230,7 @@ export default function AddQuestion() {
                       {activeDropdown === "type" && (
                         <>
                           <div className="fixed inset-0 z-10" onClick={() => setActiveDropdown(null)} />
-                          <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5">
+                          <div className="absolute left-0 right-0 mt-1 bg-white/[0.90] border border-black/[0.08] backdrop-blur-xl rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
                             {formActiveTypes.map((type) => (
                               <button
                                 key={type}
@@ -240,7 +240,7 @@ export default function AddQuestion() {
                                   setActiveDropdown(null);
                                 }}
                                 className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
-                                  qm.formType === type ? "bg-indigo-50 text-indigo-600" : "text-slate-700 hover:bg-slate-50"
+                                  qm.formType === type ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "text-slate-700 hover:bg-slate-50"
                                 }`}
                               >
                                 {TYPE_LABELS[type] || type}
@@ -259,7 +259,7 @@ export default function AddQuestion() {
                       <button
                         type="button"
                         onClick={() => setActiveDropdown(activeDropdown === "level" ? null : "level")}
-                        className="w-full px-4 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm"
+                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm"
                       >
                         {LEVEL_LABELS[qm.formLevel] || qm.formLevel}
                         <ChevronRight className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "level" ? "rotate-90" : ""}`} />
@@ -268,7 +268,7 @@ export default function AddQuestion() {
                       {activeDropdown === "level" && (
                         <>
                           <div className="fixed inset-0 z-10" onClick={() => setActiveDropdown(null)} />
-                          <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5">
+                          <div className="absolute left-0 right-0 mt-1 bg-white/[0.90] border border-black/[0.08] backdrop-blur-xl rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
                             {formActiveLevels.map((level) => (
                               <button
                                 key={level}
@@ -278,7 +278,7 @@ export default function AddQuestion() {
                                   setActiveDropdown(null);
                                 }}
                                 className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
-                                  qm.formLevel === level ? "bg-indigo-50 text-indigo-600" : "text-slate-700 hover:bg-slate-50"
+                                  qm.formLevel === level ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "text-slate-700 hover:bg-slate-50"
                                 }`}
                               >
                                 {LEVEL_LABELS[level] || level}
@@ -297,7 +297,7 @@ export default function AddQuestion() {
                       <button
                         type="button"
                         onClick={() => setActiveDropdown(activeDropdown === "class" ? null : "class")}
-                        className="w-full px-4 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm"
+                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm"
                       >
                         {formActiveClasses.find((c) => c.value === qm.formClass)?.label || qm.formClass}
                         <ChevronRight className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "class" ? "rotate-90" : ""}`} />
@@ -306,7 +306,7 @@ export default function AddQuestion() {
                       {activeDropdown === "class" && (
                         <>
                           <div className="fixed inset-0 z-10" onClick={() => setActiveDropdown(null)} />
-                          <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5">
+                          <div className="absolute left-0 right-0 mt-1 bg-white/[0.90] border border-black/[0.08] backdrop-blur-xl rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
                             {formActiveClasses.map((cls) => (
                               <button
                                 key={cls.value}
@@ -320,7 +320,7 @@ export default function AddQuestion() {
                                   setActiveDropdown(null);
                                 }}
                                 className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
-                                  qm.formClass === cls.value ? "bg-indigo-50 text-indigo-600" : "text-slate-700 hover:bg-slate-50"
+                                  qm.formClass === cls.value ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "text-slate-700 hover:bg-slate-50"
                                 }`}
                               >
                                 {cls.label}
@@ -340,7 +340,7 @@ export default function AddQuestion() {
                         <button
                           type="button"
                           onClick={() => setActiveDropdown(activeDropdown === "group" ? null : "group")}
-                          className="w-full px-4 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm"
+                          className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm"
                         >
                           {qm.formGroup === "Science" ? "বিজ্ঞান (Science)" : qm.formGroup === "Humanities" ? "মানবিক (Humanities)" : qm.formGroup === "Commerce" ? "ব্যবসায় শিক্ষা (Commerce)" : "সাধারণ (General)"}
                           <ChevronRight className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "group" ? "rotate-90" : ""}`} />
@@ -349,7 +349,7 @@ export default function AddQuestion() {
                         {activeDropdown === "group" && (
                           <>
                             <div className="fixed inset-0 z-10" onClick={() => setActiveDropdown(null)} />
-                            <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5">
+                            <div className="absolute left-0 right-0 mt-1 bg-white/[0.90] border border-black/[0.08] backdrop-blur-xl rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
                               {[
                                 { value: "General", label: "সাধারণ (General)" },
                                 { value: "Science", label: "বিজ্ঞান (Science)" },
@@ -367,7 +367,7 @@ export default function AddQuestion() {
                                     setActiveDropdown(null);
                                   }}
                                   className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
-                                    qm.formGroup === grp.value ? "bg-indigo-50 text-indigo-600" : "text-slate-700 hover:bg-slate-50"
+                                    qm.formGroup === grp.value ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "text-slate-700 hover:bg-slate-50"
                                   }`}
                                 >
                                   {grp.label}
@@ -387,7 +387,7 @@ export default function AddQuestion() {
                       <button
                         type="button"
                         onClick={() => setActiveDropdown(activeDropdown === "subject" ? null : "subject")}
-                        className="w-full px-4 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm disabled:bg-slate-50 disabled:text-slate-400"
+                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm disabled:bg-slate-50/50 disabled:text-slate-400"
                         disabled={qm.formSubjects.length === 0}
                       >
                         {qm.formSubjects.find((s) => s._id === qm.formSubjectId)?.subjectName || "বিষয় নির্বাচন করুন"}
@@ -397,7 +397,7 @@ export default function AddQuestion() {
                       {activeDropdown === "subject" && (
                         <>
                           <div className="fixed inset-0 z-10" onClick={() => setActiveDropdown(null)} />
-                          <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5">
+                          <div className="absolute left-0 right-0 mt-1 bg-white/[0.90] border border-black/[0.08] backdrop-blur-xl rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
                             {qm.formSubjects.map((sub) => (
                               <button
                                 key={sub._id}
@@ -409,7 +409,7 @@ export default function AddQuestion() {
                                   setActiveDropdown(null);
                                 }}
                                 className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
-                                  qm.formSubjectId === sub._id ? "bg-indigo-50 text-indigo-600" : "text-slate-700 hover:bg-slate-50"
+                                  qm.formSubjectId === sub._id ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "text-slate-700 hover:bg-slate-50"
                                 }`}
                               >
                                 {sub.subjectName}
@@ -430,7 +430,7 @@ export default function AddQuestion() {
                       <button
                         type="button"
                         onClick={() => setActiveDropdown(activeDropdown === "chapter" ? null : "chapter")}
-                        className="w-full px-4 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm disabled:bg-slate-50 disabled:text-slate-400"
+                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm disabled:bg-slate-50/50 disabled:text-slate-400"
                         disabled={!qm.formSubjectId}
                       >
                         {qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber)
@@ -442,7 +442,7 @@ export default function AddQuestion() {
                       {activeDropdown === "chapter" && (
                         <>
                           <div className="fixed inset-0 z-10" onClick={() => setActiveDropdown(null)} />
-                          <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5">
+                          <div className="absolute left-0 right-0 mt-1 bg-white/[0.90] border border-black/[0.08] backdrop-blur-xl rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
                             {qm.formChapters.map((chap) => (
                               <button
                                 key={chap.chapterNumber}
@@ -453,7 +453,7 @@ export default function AddQuestion() {
                                   setActiveDropdown(null);
                                 }}
                                 className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
-                                  qm.formChapterNumber === chap.chapterNumber.toString() ? "bg-indigo-50 text-indigo-600" : "text-slate-700 hover:bg-slate-50"
+                                  qm.formChapterNumber === chap.chapterNumber.toString() ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "text-slate-700 hover:bg-slate-50"
                                 }`}
                               >
                                 {chap.chapterNumber}. {chap.chapterName}
@@ -479,8 +479,8 @@ export default function AddQuestion() {
                             onClick={() => qm.setFormDifficulty(diffKey)}
                             className={`px-3 py-2.5 rounded-xl border text-sm font-semibold transition cursor-pointer flex justify-center items-center ${
                               isSelected
-                                ? config.color + " ring-4 ring-indigo-50"
-                                : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                                ? config.color + " ring-4 ring-[#4F46E5]/10"
+                                : "bg-white/[0.45] border-black/[0.08] text-slate-600 hover:bg-white/[0.60] backdrop-blur-sm"
                             }`}
                           >
                             {config.label}
@@ -505,8 +505,8 @@ export default function AddQuestion() {
                             onClick={() => handleTopicToggle(topic)}
                             className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
                               isSelected
-                                ? "bg-indigo-50 border-indigo-200 text-indigo-700 font-bold"
-                                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                                ? "bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5] font-bold"
+                                : "bg-white/[0.45] border-black/[0.06] text-slate-600 hover:bg-white/[0.60] backdrop-blur-sm"
                             }`}
                           >
                             {isSelected ? `✓ #${topic}` : `#${topic}`}
@@ -522,9 +522,9 @@ export default function AddQuestion() {
               </div>
 
               {/* Right Column: Question Category Select */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                <h3 className="font-bold text-slate-800 text-[16px] border-b pb-2 flex items-center gap-2">
-                  <FileText className="size-4 text-indigo-500" />
+              <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4">
+                <h3 className="font-bold text-slate-800 text-[16px] border-b border-black/[0.05] pb-2 flex items-center gap-2">
+                  <FileText className="size-4 text-[#4F46E5]" />
                   প্রশ্ন ক্যাটাগরি
                 </h3>
 
@@ -555,12 +555,12 @@ export default function AddQuestion() {
                           onClick={() => qm.setFormCategory(cat.value)}
                           className={`w-full text-left px-4 py-3 rounded-xl border text-sm font-semibold transition cursor-pointer flex justify-between items-center ${
                             isSelected
-                              ? "bg-indigo-50 border-indigo-200 text-indigo-700 ring-4 ring-indigo-50/50"
-                              : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                              ? "bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5] ring-4 ring-[#4F46E5]/10 font-bold"
+                              : "bg-white/[0.45] border-black/[0.06] text-slate-600 hover:bg-white/[0.60] hover:border-black/[0.12] backdrop-blur-sm"
                           }`}
                         >
                           {cat.label}
-                          {isSelected && <span className="size-2 rounded-full bg-indigo-600" />}
+                          {isSelected && <span className="size-2 rounded-full bg-[#4F46E5]" />}
                         </button>
                       );
                     });
@@ -571,7 +571,7 @@ export default function AddQuestion() {
                   <RippleButton
                     onClick={handleNextStep}
                     disabled={!isStep1Valid()}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold h-11 rounded-xl shadow-md shadow-indigo-100 disabled:opacity-50 disabled:pointer-events-none"
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] hover:from-[#4338CA] hover:to-[#7C3AED] text-white font-semibold h-11 rounded-xl shadow-md shadow-purple-500/10 disabled:opacity-50 disabled:pointer-events-none"
                   >
                     পরবর্তী ধাপ
                     <ChevronRight className="size-4" />
@@ -589,14 +589,14 @@ export default function AddQuestion() {
               initial={{ opacity: 0, x: 15 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -15 }}
-              className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6"
+              className="bg-glass p-6 sm:p-8 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-6"
             >
-              <div className="flex justify-between items-center border-b pb-3.5">
+              <div className="flex justify-between items-center border-b border-black/[0.05] pb-3.5">
                 <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
-                  <HelpCircle className="size-5 text-indigo-500" />
+                  <HelpCircle className="size-5 text-[#4F46E5]" />
                   <span>প্রশ্ন এডিটর - {CATEGORIES_MAP.find((c) => c.value === qm.formCategory)?.label}</span>
                 </h3>
-                <span className="bg-slate-100 text-slate-600 font-bold text-xs px-3 py-1 rounded-full">
+                <span className="bg-white/[0.45] border border-black/[0.06] backdrop-blur-sm text-slate-600 font-bold text-xs px-3 py-1 rounded-full">
                   {CLASSES_MAP.find((c) => c.value === qm.formClass)?.label} •{" "}
                   {qm.formSubjects.find((s) => s._id === qm.formSubjectId)?.subjectName}
                 </span>
@@ -621,7 +621,7 @@ export default function AddQuestion() {
                             value={item.value}
                             checked={qm.mcqType === item.value}
                             onChange={(e) => qm.setMcqType(e.target.value)}
-                            className="accent-indigo-600 size-4"
+                            className="accent-[#4F46E5] size-4"
                           />
                           {item.label}
                         </label>
@@ -638,14 +638,14 @@ export default function AddQuestion() {
                         placeholder="যেমন: নিচের অনুচ্ছেদটি পড়ো এবং প্রশ্নের উত্তর দাও..."
                         value={qm.mcqStem}
                         onChange={(e) => qm.setMcqStem(e.target.value)}
-                        className="w-full border border-slate-200 rounded-xl text-sm p-4 focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 font-semibold text-slate-700 placeholder-slate-400 hover:border-slate-300 transition-all resize-none bg-white shadow-sm"
+                        className="w-full border border-black/[0.08] rounded-xl text-sm p-4 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 placeholder-slate-400 hover:border-black/[0.15] transition-all resize-none bg-white/[0.45] backdrop-blur-sm shadow-sm"
                       />
                     </div>
                   )}
 
                   {/* Statements inputs (only for Multiple Completion) */}
                   {qm.mcqType === "MultipleCompletion" && (
-                    <div className="space-y-3 p-5 bg-slate-50/50 border border-slate-100 rounded-2xl animate-in fade-in duration-200">
+                    <div className="space-y-3 p-5 bg-black/[0.02] border border-black/[0.05] rounded-2xl animate-in fade-in duration-200">
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">বিবৃতিসমূহ (Statements)</label>
                       {qm.mcqStatements.map((statement, idx) => (
                         <div key={idx} className="flex items-center gap-2">
@@ -660,7 +660,7 @@ export default function AddQuestion() {
                               updated[idx] = e.target.value;
                               qm.setMcqStatements(updated);
                             }}
-                            className="bg-white border-slate-200 focus-visible:ring-indigo-100"
+                            className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5]"
                           />
                         </div>
                       ))}
@@ -675,7 +675,7 @@ export default function AddQuestion() {
                       placeholder="যেমন: নিচের কোনটি মৌলিক সংখ্যা?"
                       value={qm.mcqQuestionText}
                       onChange={(e) => qm.setMcqQuestionText(e.target.value)}
-                      className="bg-white border-slate-200 focus-visible:ring-indigo-100 h-11"
+                      className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11"
                     />
                   </div>
 
@@ -689,7 +689,7 @@ export default function AddQuestion() {
                           <div
                             key={idx}
                             className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${
-                              isCorrect ? "bg-emerald-50/30 border-emerald-500" : "bg-white border-slate-200"
+                              isCorrect ? "bg-emerald-500/5 border-emerald-500/30 backdrop-blur-sm shadow-sm" : "bg-white/[0.45] border-black/[0.06] backdrop-blur-sm"
                             }`}
                           >
                             <button
@@ -698,7 +698,7 @@ export default function AddQuestion() {
                               className={`size-6 rounded-full border flex items-center justify-center shrink-0 transition-all font-bold text-xs ${
                                 isCorrect
                                   ? "bg-emerald-500 border-emerald-500 text-white"
-                                  : "border-slate-300 hover:border-indigo-500 text-transparent"
+                                  : "border-black/[0.15] hover:border-[#4F46E5] text-transparent"
                               }`}
                             >
                               ✓
@@ -732,7 +732,7 @@ export default function AddQuestion() {
                       placeholder="সঠিক উত্তর কিভাবে আসলো তার সংক্ষিপ্ত ব্যাখ্যা..."
                       value={qm.mcqExplanation}
                       onChange={(e) => qm.setMcqExplanation(e.target.value)}
-                      className="w-full border border-slate-200 rounded-xl text-sm p-3.5 focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 font-semibold text-slate-700 placeholder-slate-400 hover:border-slate-300 transition-all resize-none bg-white shadow-sm"
+                      className="w-full border border-black/[0.08] rounded-xl text-sm p-3.5 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 placeholder-slate-400 hover:border-black/[0.15] transition-all resize-none bg-white/[0.45] backdrop-blur-sm shadow-sm"
                     />
                   </div>
                 </div>
@@ -749,12 +749,12 @@ export default function AddQuestion() {
                       placeholder="দৃশ্যপট/অনুচ্ছেদ/তথ্যচিত্র এখানে লিখুন যা পড়ে উপ-প্রশ্নগুলোর উত্তর দিতে হবে..."
                       value={qm.creativeStem}
                       onChange={(e) => qm.setCreativeStem(e.target.value)}
-                      className="w-full border border-slate-200 rounded-xl text-sm p-4 focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 font-semibold text-slate-700 placeholder-slate-400 hover:border-slate-300 transition-all resize-none bg-white shadow-sm"
+                      className="w-full border border-black/[0.08] rounded-xl text-sm p-4 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 placeholder-slate-400 hover:border-black/[0.15] transition-all resize-none bg-white/[0.45] backdrop-blur-sm shadow-sm"
                     />
                   </div>
 
                   {/* Creative sub questions (ক, খ, গ, ঘ) */}
-                  <div className="space-y-4 border-t pt-5">
+                  <div className="space-y-4 border-t border-black/[0.05] pt-5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">উপ-প্রশ্নসমূহ</label>
                     
                     {[
@@ -763,14 +763,14 @@ export default function AddQuestion() {
                       { id: "C", label: "গ) প্রয়োগমূলক (৩ নম্বর)", value: qm.creativeCognitiveC, setter: qm.setCreativeCognitiveC, placeholder: "যেমন: উদ্দীপকের ঘটনার আলোকে প্রমাণ করো..." },
                       { id: "D", label: "ঘ) উচ্চতর চিন্তাদক্ষতা (৪ নম্বর)", value: qm.creativeCognitiveD, setter: qm.setCreativeCognitiveD, placeholder: "যেমন: উদ্দীপকের ঘটনাটির যৌক্তিক মূল্যায়ন করো..." },
                     ].map((item) => (
-                      <div key={item.id} className="space-y-1.5 p-4 border border-slate-100 bg-slate-50/30 rounded-2xl">
+                      <div key={item.id} className="space-y-1.5 p-4 border border-black/[0.04] bg-white/[0.30] rounded-2xl">
                         <label className="text-[12px] font-bold text-slate-600 block">{item.label}</label>
                         <Input
                           required
                           placeholder={item.placeholder}
                           value={item.value}
                           onChange={(e) => item.setter(e.target.value)}
-                          className="bg-white border-slate-200 focus-visible:ring-indigo-100 h-11"
+                          className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11"
                         />
                       </div>
                     ))}
@@ -788,7 +788,7 @@ export default function AddQuestion() {
                       placeholder="গঠনমূলক বা কাঠামোবদ্ধ প্রশ্নের জন্য দৃশ্যপট..."
                       value={qm.generalStem}
                       onChange={(e) => qm.setGeneralStem(e.target.value)}
-                      className="w-full border border-slate-200 rounded-xl text-sm p-4 focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 font-semibold text-slate-700 placeholder-slate-400 hover:border-slate-300 transition-all resize-none bg-white shadow-sm"
+                      className="w-full border border-black/[0.08] rounded-xl text-sm p-4 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 placeholder-slate-400 hover:border-black/[0.15] transition-all resize-none bg-white/[0.45] backdrop-blur-sm shadow-sm"
                     />
                   </div>
 
@@ -801,7 +801,7 @@ export default function AddQuestion() {
                       placeholder="প্রশ্নের বর্ণনা লিখুন..."
                       value={qm.generalQuestionText}
                       onChange={(e) => qm.setGeneralQuestionText(e.target.value)}
-                      className="w-full border border-slate-200 rounded-xl text-sm p-4 focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 font-semibold text-slate-700 placeholder-slate-400 hover:border-slate-300 transition-all resize-none bg-white shadow-sm"
+                      className="w-full border border-black/[0.08] rounded-xl text-sm p-4 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 placeholder-slate-400 hover:border-black/[0.15] transition-all resize-none bg-white/[0.45] backdrop-blur-sm shadow-sm"
                     />
                   </div>
 
@@ -814,7 +814,7 @@ export default function AddQuestion() {
                         required
                         value={qm.generalMarks}
                         onChange={(e) => qm.setGeneralMarks(Number(e.target.value))}
-                        className="bg-white border-slate-200 focus-visible:ring-indigo-100 h-11"
+                        className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11"
                         min={1}
                       />
                     </div>
@@ -825,7 +825,7 @@ export default function AddQuestion() {
                         placeholder="আদর্শ বা সঠিক উত্তর লিখুন"
                         value={qm.generalSuggestedAnswer}
                         onChange={(e) => qm.setGeneralSuggestedAnswer(e.target.value)}
-                        className="bg-white border-slate-200 focus-visible:ring-indigo-100 h-11"
+                        className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11"
                       />
                     </div>
                   </div>
@@ -834,22 +834,22 @@ export default function AddQuestion() {
 
               {/* Draft Questions list inside Step 2 */}
               {!qm.editingQuestion && qm.questionsList.length > 0 && (
-                <div className="space-y-3 pt-5 border-t animate-in fade-in duration-200">
+                <div className="space-y-3 pt-5 border-t border-black/[0.05] animate-in fade-in duration-200">
                   <h4 className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
-                    <Database className="size-4 text-indigo-500" />
+                    <Database className="size-4 text-[#4F46E5]" />
                     <span>যুক্ত করা প্রশ্নসমূহ ({qm.questionsList.length})</span>
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-48 overflow-y-auto pr-1">
                     {qm.questionsList.map((q, idx) => {
                       const catLabel = CATEGORIES_MAP.find((c) => c.value === q.category)?.label || q.category;
                       return (
-                        <div key={q.id || idx} className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-150 rounded-xl text-xs font-semibold text-slate-700">
+                        <div key={q.id || idx} className="flex items-center justify-between p-3.5 bg-white/[0.30] border border-black/[0.05] rounded-xl text-xs font-semibold text-slate-700">
                           <div className="flex items-center gap-3 min-w-0">
-                            <span className="bg-indigo-50 text-indigo-700 font-bold size-5 rounded-full flex items-center justify-center shrink-0">
+                            <span className="bg-[#4F46E5]/10 text-[#4F46E5] font-bold size-5 rounded-full flex items-center justify-center shrink-0">
                               {idx + 1}
                             </span>
                             <div className="min-w-0">
-                              <span className="font-bold text-slate-500 mr-2 uppercase text-[9px] bg-slate-200/50 px-1.5 py-0.5 rounded">
+                              <span className="font-bold text-[#4F46E5] mr-2 uppercase text-[9px] bg-[#4F46E5]/10 px-1.5 py-0.5 rounded">
                                 {catLabel}
                               </span>
                               <span className="truncate block mt-1 font-serif">
@@ -874,12 +874,12 @@ export default function AddQuestion() {
               )}
 
               {/* Step 2 Action Buttons */}
-              <div className="flex justify-between items-center pt-6 border-t">
+              <div className="flex justify-between items-center pt-6 border-t border-black/[0.05]">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handlePrevStep}
-                  className="border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl h-10 px-5 flex items-center gap-1.5 font-semibold cursor-pointer"
+                  className="border-black/[0.10] text-slate-600 hover:bg-black/[0.02] rounded-xl h-10 px-5 flex items-center gap-1.5 font-semibold cursor-pointer"
                 >
                   <ChevronLeft className="size-4" />
                   পেছনে যান
@@ -891,7 +891,7 @@ export default function AddQuestion() {
                       type="button"
                       variant="outline"
                       onClick={qm.addQuestionToList}
-                      className="border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 rounded-xl h-10 px-5 flex items-center gap-1.5 font-semibold cursor-pointer"
+                      className="border-[#4F46E5]/20 text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/40 rounded-xl h-10 px-5 flex items-center gap-1.5 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm"
                     >
                       <Plus className="size-4" />
                       প্রশ্ন যুক্ত করুন
@@ -900,7 +900,7 @@ export default function AddQuestion() {
                   <Button
                     type="button"
                     onClick={handleNextStep}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-10 px-6 flex items-center gap-1.5 font-semibold cursor-pointer"
+                    className="bg-[#4F46E5] hover:bg-[#4F46E5]/90 text-white rounded-xl h-10 px-6 flex items-center gap-1.5 font-semibold cursor-pointer shadow-md shadow-purple-500/10"
                   >
                     প্রিভিউ দেখুন
                     <ChevronRight className="size-4" />
@@ -920,18 +920,18 @@ export default function AddQuestion() {
               className="grid grid-cols-1 lg:grid-cols-3 gap-6"
             >
               {/* Live Preview Paper Card (Left 2 cols) */}
-              <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden flex flex-col">
-                <div className="bg-slate-950 text-white px-6 py-4 flex justify-between items-center">
+              <div className="lg:col-span-2 bg-white/[0.80] backdrop-blur-md rounded-2xl border border-black/[0.08] shadow-xl overflow-hidden flex flex-col">
+                <div className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
                   <h4 className="font-bold text-sm tracking-wide uppercase font-sans">NCTB Live Exam Preview Sheet</h4>
-                  <span className="bg-indigo-500/25 text-indigo-300 text-xs px-3 py-1 rounded-full border border-indigo-500/20">
+                  <span className="bg-[#4F46E5]/25 text-[#4F46E5] text-xs px-3 py-1 rounded-full border border-[#4F46E5]/20">
                     শ্রেণী: {CLASSES_MAP.find((c) => c.value === qm.formClass)?.label}
                   </span>
                 </div>
 
                 {/* Exam Sheet Mockup */}
-                <div className="p-8 flex-1 bg-white text-slate-800 space-y-8 select-none font-serif leading-relaxed max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <div className="p-8 flex-1 bg-white/[0.70] backdrop-blur-sm text-slate-800 space-y-8 select-none font-serif leading-relaxed max-h-[70vh] overflow-y-auto custom-scrollbar">
                   {/* Header details */}
-                  <div className="text-center space-y-1.5 border-b pb-4">
+                  <div className="text-center space-y-1.5 border-b border-black/[0.05] pb-4">
                     <h5 className="font-bold text-lg font-sans">সাময়িক/চূড়ান্ত মূল্যায়ন পরীক্ষা</h5>
                     <div className="text-xs text-slate-500 flex justify-center gap-4 font-sans font-semibold">
                       <span>বিষয়: {qm.formSubjects.find((s) => s._id === qm.formSubjectId)?.subjectName}</span>
@@ -941,7 +941,7 @@ export default function AddQuestion() {
                   </div>
 
                   {qm.questionsList.length > 0 ? (
-                    <div className="space-y-8 divide-y divide-slate-100">
+                    <div className="space-y-8 divide-y divide-black/[0.05]">
                       {qm.questionsList.map((q, idx) => {
                         const diffConfig = DIFFICULTY_MAP[q.difficulty] || DIFFICULTY_MAP.Medium;
                         const catLabel = CATEGORIES_MAP.find((c) => c.value === q.category)?.label || q.category;
@@ -961,7 +961,7 @@ export default function AddQuestion() {
                             {q.category === "MCQ" && q.mcqData && (
                               <div className="space-y-3">
                                 {q.mcqData.mcqType === "Contextual" && q.mcqData.stem && (
-                                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl text-sm italic font-serif leading-relaxed">
+                                  <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm italic font-serif leading-relaxed">
                                     <strong>উদ্দীপক:</strong> {q.mcqData.stem}
                                   </div>
                                 )}
@@ -1009,7 +1009,7 @@ export default function AddQuestion() {
                             {q.category === "Creative" && q.creativeData && (
                               <div className="space-y-5">
                                 {q.creativeData.stem && (
-                                  <div className="p-5 bg-slate-50 border border-slate-100 rounded-xl text-sm leading-relaxed font-serif">
+                                  <div className="p-5 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm leading-relaxed font-serif">
                                     {q.creativeData.stem}
                                   </div>
                                 )}
@@ -1043,7 +1043,7 @@ export default function AddQuestion() {
                             {!["MCQ", "Creative"].includes(q.category) && q.generalData && (
                               <div className="space-y-4">
                                 {q.generalData.stem && (
-                                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl text-sm italic font-serif">
+                                  <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm italic font-serif">
                                     {q.generalData.stem}
                                   </div>
                                 )}
@@ -1057,7 +1057,7 @@ export default function AddQuestion() {
                                 </div>
 
                                 {q.generalData.suggestedAnswer && (
-                                  <div className="p-3 bg-indigo-50/20 border border-indigo-50/50 rounded-xl text-xs font-sans text-indigo-900/80">
+                                  <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-indigo-900/80">
                                     <strong>আদর্শ উত্তর:</strong> {q.generalData.suggestedAnswer}
                                   </div>
                                 )}
@@ -1073,7 +1073,7 @@ export default function AddQuestion() {
                       {qm.formCategory === "MCQ" && qm.mcqQuestionText && (
                         <div className="space-y-4">
                           {qm.mcqType === "Contextual" && qm.mcqStem && (
-                            <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl text-sm italic font-serif">
+                            <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm italic font-serif">
                               <strong>উদ্দীপক:</strong> {qm.mcqStem}
                             </div>
                           )}
@@ -1109,7 +1109,7 @@ export default function AddQuestion() {
                             </div>
 
                             {/* Correct Answer Badge */}
-                            <div className="mt-6 pt-4 border-t border-slate-100 text-xs font-sans flex items-center gap-2 text-emerald-600 bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100">
+                            <div className="mt-6 pt-4 border-t border-black/[0.05] text-xs font-sans flex items-center gap-2 text-emerald-600 bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100">
                               <CheckCircle2 className="size-4 shrink-0" />
                               <span>
                                 <strong>সঠিক উত্তর:</strong>{" "}
@@ -1129,7 +1129,7 @@ export default function AddQuestion() {
                       {qm.formCategory === "Creative" && qm.creativeStem && (
                         <div className="space-y-5">
                           {qm.creativeStem && (
-                            <div className="p-5 bg-slate-50 border border-slate-100 rounded-xl text-sm leading-relaxed font-serif">
+                            <div className="p-5 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm leading-relaxed font-serif">
                               {qm.creativeStem}
                             </div>
                           )}
@@ -1162,7 +1162,7 @@ export default function AddQuestion() {
                       {!["MCQ", "Creative"].includes(qm.formCategory) && qm.generalQuestionText && (
                         <div className="space-y-4">
                           {qm.generalStem && (
-                            <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl text-sm italic font-serif">
+                            <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm italic font-serif">
                               {qm.generalStem}
                             </div>
                           )}
@@ -1182,9 +1182,9 @@ export default function AddQuestion() {
               </div>
 
               {/* Action Sidebar (Right 1 col) */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4 h-fit">
-                <h4 className="font-bold text-slate-800 text-[16px] border-b pb-2 flex items-center gap-2">
-                  <Database className="size-4 text-indigo-500" />
+              <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4 h-fit">
+                <h4 className="font-bold text-slate-800 text-[16px] border-b border-black/[0.05] pb-2 flex items-center gap-2">
+                  <Database className="size-4 text-[#4F46E5]" />
                   সংরক্ষণ করুন
                 </h4>
 
@@ -1196,7 +1196,7 @@ export default function AddQuestion() {
                   <RippleButton
                     onClick={qm.handleSaveQuestion}
                     disabled={qm.formLoading}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold h-11 rounded-xl shadow-md"
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] hover:from-[#4338CA] hover:to-[#7C3AED] text-white font-semibold h-11 rounded-xl shadow-md shadow-purple-500/10"
                   >
                     <Save className="size-4" />
                     {qm.formLoading ? "সংরক্ষণ হচ্ছে..." : "ডাটাবেজে সেভ করুন"}
@@ -1208,7 +1208,7 @@ export default function AddQuestion() {
                     variant="outline"
                     onClick={handlePrevStep}
                     disabled={qm.formLoading}
-                    className="w-full border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl h-10 px-5 flex items-center justify-center gap-1.5 font-semibold"
+                    className="w-full border-black/[0.10] text-slate-600 hover:bg-black/[0.02] rounded-xl h-10 px-5 flex items-center justify-center gap-1.5 font-semibold bg-white/[0.45] backdrop-blur-sm shadow-sm"
                   >
                     <ChevronLeft className="size-4" />
                     পেছনে যান

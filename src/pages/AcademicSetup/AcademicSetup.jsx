@@ -48,7 +48,7 @@ export default function AcademicSetup() {
   // Check if role is strictly Super Admin
   if (role !== 'Super Admin') {
     return (
-      <div className="bg-white rounded-2xl border border-red-100 shadow-sm p-16 text-center max-w-md mx-auto space-y-4">
+      <div className="bg-glass rounded-2xl border border-red-200/40 backdrop-blur-md shadow-sm p-16 text-center max-w-md mx-auto space-y-4 font-bengali">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-600">
           <ShieldAlert className="h-6 w-6" />
         </div>
@@ -143,30 +143,30 @@ export default function AcademicSetup() {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-16 flex flex-col items-center justify-center space-y-3">
-        <Loader2 className="size-8 text-primary animate-spin" />
+      <div className="bg-glass rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm p-16 flex flex-col items-center justify-center space-y-3 font-bengali">
+        <Loader2 className="size-8 text-[#4F46E5] animate-spin" />
         <p className="text-slate-500 text-sm">কনফিগারেশন লোড হচ্ছে...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 w-full">
+    <div className="space-y-6 w-full font-bengali">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">অ্যাকাডেমিক সেটআপ (সুপার এডমিন)</h1>
           <p className="text-slate-500 text-sm mt-1">আপনার শিক্ষাপ্রতিষ্ঠানের ধরণ, স্তর এবং ভাষা সংস্করণসমূহ কনফিগার করুন।</p>
         </div>
-        <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl shrink-0">
+        <div className="p-3 bg-[#4F46E5]/10 text-[#4F46E5] rounded-2xl shrink-0">
           <Sliders className="size-6" />
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Step 1: Active Types */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-          <h3 className="font-bold text-slate-800 text-lg border-b pb-2">১. প্রতিষ্ঠানের ধরণ (Institution Types)</h3>
+        <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4">
+          <h3 className="font-bold text-slate-800 text-lg border-b border-black/[0.05] pb-2">১. প্রতিষ্ঠানের ধরণ (Institution Types)</h3>
           <p className="text-xs text-slate-500 leading-relaxed">
             আপনার প্রতিষ্ঠানে যে যে শিক্ষাব্যবস্থা চালু আছে তা সিলেক্ট করুন (একাধিক সিলেক্ট করা যাবে):
           </p>
@@ -184,14 +184,14 @@ export default function AcademicSetup() {
                   onClick={() => handleTypeToggle(item.value)}
                   className={`p-5 rounded-2xl border text-left transition-all duration-300 hover:shadow-md cursor-pointer flex flex-col justify-between space-y-3 ${
                     isChecked
-                      ? 'bg-indigo-50/20 border-indigo-500 ring-2 ring-indigo-500/10'
-                      : 'bg-white border-slate-200 hover:border-slate-300'
+                      ? 'bg-[#4F46E5]/10 border-[#4F46E5] ring-2 ring-[#4F46E5]/10'
+                      : 'bg-white/[0.45] border-black/[0.06] hover:border-black/[0.12] hover:bg-white/[0.60] backdrop-blur-sm'
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
                     <span className="font-bold text-slate-800 text-[15px]">{item.label}</span>
                     <span className={`size-5 rounded-full border flex items-center justify-center text-[10px] font-bold ${
-                      isChecked ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300 text-transparent'
+                      isChecked ? 'bg-[#4F46E5] border-[#4F46E5] text-white' : 'border-black/[0.15] text-transparent'
                     }`}>✓</span>
                   </div>
                   <span className="text-slate-500 text-xs">{item.desc}</span>
@@ -203,27 +203,27 @@ export default function AcademicSetup() {
 
         {/* Step 2: Levels Configurations */}
         {(activeTypes.includes('School') || activeTypes.includes('Madrasah') || activeTypes.includes('College')) && (
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
-            <h3 className="font-bold text-slate-800 text-lg border-b pb-2">২. স্তরসমূহ কনফিগার করুন (Levels Configuration)</h3>
+          <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-6">
+            <h3 className="font-bold text-slate-800 text-lg border-b border-black/[0.05] pb-2">২. স্তরসমূহ কনফিগার করুন (Levels Configuration)</h3>
             
             {/* School levels */}
             {activeTypes.includes('School') && (
-              <div className="space-y-4 p-6 rounded-2xl border border-indigo-50 bg-indigo-50/5">
-                <h4 className="font-bold text-indigo-700 text-sm">স্কুল স্তরের সিলেবাসসমূহ ও ক্লাসসমূহ:</h4>
+              <div className="space-y-4 p-6 rounded-2xl border border-[#4F46E5]/10 bg-[#4F46E5]/5">
+                <h4 className="font-bold text-[#4F46E5] text-sm">স্কুল স্তরের সিলেবাসসমূহ ও ক্লাসসমূহ:</h4>
                 <div className="space-y-4">
                   {/* Primary Level */}
-                  <div className="p-4 rounded-xl border border-slate-100 bg-white shadow-sm space-y-3">
+                  <div className="p-4 rounded-xl border border-black/[0.05] bg-white/[0.50] backdrop-blur-sm shadow-sm space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={schoolLevels.includes('Primary')}
                         onChange={() => handleSchoolLevelToggle('Primary')}
-                        className="accent-indigo-600 size-4"
+                        className="accent-[#4F46E5] size-4"
                       />
                       <span className="text-base font-bold text-slate-800">প্রাইমারি স্কুল</span>
                     </label>
                     {schoolLevels.includes('Primary') && (
-                      <div className="pl-7 pt-2 border-t border-slate-100">
+                      <div className="pl-7 pt-2 border-t border-black/[0.05]">
                         <p className="text-xs text-slate-500 mb-2">প্রাইমারি স্কুল স্তরের কোন কোন ক্লাস সক্রিয় থাকবে নির্বাচন করুন:</p>
                         <div className="flex flex-wrap gap-3">
                           {[
@@ -237,8 +237,8 @@ export default function AcademicSetup() {
                             return (
                               <label key={cls.value} className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
                                 isClsChecked 
-                                  ? 'bg-indigo-50 border-indigo-300 text-indigo-700 font-bold' 
-                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                                  ? 'bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5] font-bold' 
+                                  : 'bg-white/[0.30] border-black/[0.06] text-slate-600 hover:bg-white/[0.50]'
                               }`}>
                                 <input
                                   type="checkbox"
@@ -250,7 +250,7 @@ export default function AcademicSetup() {
                                       setSchoolPrimaryClasses([...schoolPrimaryClasses, cls.value]);
                                     }
                                   }}
-                                  className="accent-indigo-600 size-3.5"
+                                  className="accent-[#4F46E5] size-3.5"
                                 />
                                 <span>{cls.label}</span>
                               </label>
@@ -262,18 +262,18 @@ export default function AcademicSetup() {
                   </div>
 
                   {/* Secondary Level */}
-                  <div className="p-4 rounded-xl border border-slate-100 bg-white shadow-sm space-y-3">
+                  <div className="p-4 rounded-xl border border-black/[0.05] bg-white/[0.50] backdrop-blur-sm shadow-sm space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={schoolLevels.includes('Secondary')}
                         onChange={() => handleSchoolLevelToggle('Secondary')}
-                        className="accent-indigo-600 size-4"
+                        className="accent-[#4F46E5] size-4"
                       />
                       <span className="text-base font-bold text-slate-800">মাধ্যমিক স্কুল</span>
                     </label>
                     {schoolLevels.includes('Secondary') && (
-                      <div className="pl-7 pt-2 border-t border-slate-100">
+                      <div className="pl-7 pt-2 border-t border-black/[0.05]">
                         <p className="text-xs text-slate-500 mb-2">মাধ্যমিক স্কুল স্তরের কোন কোন ক্লাস সক্রিয় থাকবে নির্বাচন করুন:</p>
                         <div className="flex flex-wrap gap-3">
                           {[
@@ -287,8 +287,8 @@ export default function AcademicSetup() {
                             return (
                               <label key={cls.value} className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
                                 isClsChecked 
-                                  ? 'bg-indigo-50 border-indigo-300 text-indigo-700 font-bold' 
-                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                                  ? 'bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5] font-bold' 
+                                  : 'bg-white/[0.30] border-black/[0.06] text-slate-600 hover:bg-white/[0.50]'
                               }`}>
                                 <input
                                   type="checkbox"
@@ -300,7 +300,7 @@ export default function AcademicSetup() {
                                       setSchoolSecondaryClasses([...schoolSecondaryClasses, cls.value]);
                                     }
                                   }}
-                                  className="accent-indigo-600 size-3.5"
+                                  className="accent-[#4F46E5] size-3.5"
                                 />
                                 <span>{cls.label}</span>
                               </label>
@@ -316,14 +316,14 @@ export default function AcademicSetup() {
 
             {/* College levels */}
             {activeTypes.includes('College') && (
-              <div className="space-y-4 p-6 rounded-2xl border border-amber-50 bg-amber-50/5">
-                <h4 className="font-bold text-amber-700 text-sm">কলেজ স্তরের সিলেবাসসমূহ ও ক্লাসসমূহ:</h4>
-                <div className="p-4 rounded-xl border border-slate-100 bg-white shadow-sm space-y-3">
+              <div className="space-y-4 p-6 rounded-2xl border border-[#F97316]/10 bg-[#F97316]/5">
+                <h4 className="font-bold text-[#F97316] text-sm">কলেজ স্তরের সিলেবাসসমূহ ও ক্লাসসমূহ:</h4>
+                <div className="p-4 rounded-xl border border-black/[0.05] bg-white/[0.50] backdrop-blur-sm shadow-sm space-y-3">
                   <div className="flex items-center gap-3">
-                    <span className="size-2.5 rounded-full bg-amber-500"></span>
+                    <span className="size-2.5 rounded-full bg-[#F97316]"></span>
                     <span className="text-base font-bold text-slate-800">উচ্চ মাধ্যমিক</span>
                   </div>
-                  <div className="pl-5 pt-2 border-t border-slate-100">
+                  <div className="pl-5 pt-2 border-t border-black/[0.05]">
                     <p className="text-xs text-slate-500 mb-2">উচ্চ মাধ্যমিক স্তরের কোন কোন ক্লাস সক্রিয় থাকবে নির্বাচন করুন:</p>
                     <div className="flex flex-wrap gap-3">
                       {[
@@ -334,8 +334,8 @@ export default function AcademicSetup() {
                         return (
                           <label key={cls.value} className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
                             isClsChecked 
-                              ? 'bg-amber-50 border-amber-300 text-amber-700 font-bold' 
-                              : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                              ? 'bg-[#F97316]/10 border-[#F97316]/30 text-[#F97316] font-bold' 
+                              : 'bg-white/[0.30] border-black/[0.06] text-slate-600 hover:bg-white/[0.50]'
                           }`}>
                             <input
                               type="checkbox"
@@ -347,7 +347,7 @@ export default function AcademicSetup() {
                                   setCollegeClasses([...collegeClasses, cls.value]);
                                 }
                               }}
-                              className="accent-amber-600 size-3.5"
+                              className="accent-[#F97316] size-3.5"
                             />
                             <span>{cls.label}</span>
                           </label>
@@ -361,11 +361,11 @@ export default function AcademicSetup() {
 
             {/* Madrasah levels */}
             {activeTypes.includes('Madrasah') && (
-              <div className="space-y-4 p-6 rounded-2xl border border-emerald-50 bg-emerald-50/5">
-                <h4 className="font-bold text-emerald-700 text-sm">মাদ্রাসা স্তরের সিলেবাসসমূহ ও ক্লাসসমূহ:</h4>
+              <div className="space-y-4 p-6 rounded-2xl border border-emerald-500/10 bg-emerald-500/5">
+                <h4 className="font-bold text-emerald-600 text-sm">মাদ্রাসা স্তরের সিলেবাসসমূহ ও ক্লাসসমূহ:</h4>
                 <div className="space-y-4">
                   {/* Ebtedayee Level */}
-                  <div className="p-4 rounded-xl border border-slate-100 bg-white shadow-sm space-y-3">
+                  <div className="p-4 rounded-xl border border-black/[0.05] bg-white/[0.50] backdrop-blur-sm shadow-sm space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
@@ -376,7 +376,7 @@ export default function AcademicSetup() {
                       <span className="text-base font-bold text-slate-800">ইবতেদায়ী</span>
                     </label>
                     {madrasahLevels.includes('Ebtedayee') && (
-                      <div className="pl-7 pt-2 border-t border-slate-100">
+                      <div className="pl-7 pt-2 border-t border-black/[0.05]">
                         <p className="text-xs text-slate-500 mb-2">ইবতেদায়ী স্তরের কোন কোন ক্লাস সক্রিয় থাকবে নির্বাচন করুন:</p>
                         <div className="flex flex-wrap gap-3">
                           {[
@@ -390,8 +390,8 @@ export default function AcademicSetup() {
                             return (
                               <label key={cls.value} className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
                                 isClsChecked 
-                                  ? 'bg-emerald-50 border-emerald-300 text-emerald-700 font-bold' 
-                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                                  ? 'bg-emerald-50 border-emerald-300/40 text-emerald-700 font-bold' 
+                                  : 'bg-white/[0.30] border-black/[0.06] text-slate-600 hover:bg-white/[0.50]'
                               }`}>
                                 <input
                                   type="checkbox"
@@ -415,7 +415,7 @@ export default function AcademicSetup() {
                   </div>
 
                   {/* Dakhil Level */}
-                  <div className="p-4 rounded-xl border border-slate-100 bg-white shadow-sm space-y-3">
+                  <div className="p-4 rounded-xl border border-black/[0.05] bg-white/[0.50] backdrop-blur-sm shadow-sm space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
@@ -426,7 +426,7 @@ export default function AcademicSetup() {
                       <span className="text-base font-bold text-slate-800">দাখিল</span>
                     </label>
                     {madrasahLevels.includes('Dakhil') && (
-                      <div className="pl-7 pt-2 border-t border-slate-100">
+                      <div className="pl-7 pt-2 border-t border-black/[0.05]">
                         <p className="text-xs text-slate-500 mb-2">দাখিল স্তরের কোন কোন ক্লাস সক্রিয় থাকবে নির্বাচন করুন:</p>
                         <div className="flex flex-wrap gap-3">
                           {[
@@ -440,8 +440,8 @@ export default function AcademicSetup() {
                             return (
                               <label key={cls.value} className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
                                 isClsChecked 
-                                  ? 'bg-emerald-50 border-emerald-300 text-emerald-700 font-bold' 
-                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                                  ? 'bg-emerald-50 border-emerald-300/40 text-emerald-700 font-bold' 
+                                  : 'bg-white/[0.30] border-black/[0.06] text-slate-600 hover:bg-white/[0.50]'
                               }`}>
                                 <input
                                   type="checkbox"
@@ -465,7 +465,7 @@ export default function AcademicSetup() {
                   </div>
 
                   {/* Alim Level */}
-                  <div className="p-4 rounded-xl border border-slate-100 bg-white shadow-sm space-y-3">
+                  <div className="p-4 rounded-xl border border-black/[0.05] bg-white/[0.50] backdrop-blur-sm shadow-sm space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
@@ -476,7 +476,7 @@ export default function AcademicSetup() {
                       <span className="text-base font-bold text-slate-800">আলিম</span>
                     </label>
                     {madrasahLevels.includes('Alim') && (
-                      <div className="pl-7 pt-2 border-t border-slate-100">
+                      <div className="pl-7 pt-2 border-t border-black/[0.05]">
                         <p className="text-xs text-slate-500 mb-2">আলিম স্তরের কোন কোন ক্লাস সক্রিয় থাকবে নির্বাচন করুন:</p>
                         <div className="flex flex-wrap gap-3">
                           {[
@@ -487,8 +487,8 @@ export default function AcademicSetup() {
                             return (
                               <label key={cls.value} className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
                                 isClsChecked 
-                                  ? 'bg-emerald-50 border-emerald-300 text-emerald-700 font-bold' 
-                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                                  ? 'bg-emerald-50 border-emerald-300/40 text-emerald-700 font-bold' 
+                                  : 'bg-white/[0.30] border-black/[0.06] text-slate-600 hover:bg-white/[0.50]'
                               }`}>
                                 <input
                                   type="checkbox"
@@ -517,8 +517,8 @@ export default function AcademicSetup() {
         )}
 
         {/* Step 3: Versions */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-          <h3 className="font-bold text-slate-800 text-lg border-b pb-2">৩. ভাষা সংস্করণ (Active Versions)</h3>
+        <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4">
+          <h3 className="font-bold text-slate-800 text-lg border-b border-black/[0.05] pb-2">৩. ভাষা সংস্করণ (Active Versions)</h3>
           <p className="text-xs text-slate-500">
             আপনার শিক্ষাপ্রতিষ্ঠানে কোন কোন ভাষা সংস্করণ সক্রিয় রয়েছে সিলেক্ট করুন:
           </p>
@@ -529,12 +529,12 @@ export default function AcademicSetup() {
             ].map((ver) => {
               const isChecked = versions.includes(ver.value);
               return (
-                <label key={ver.value} className="flex items-center gap-3 bg-white p-4 px-5 rounded-xl border border-slate-200 cursor-pointer shadow-sm hover:border-indigo-400 transition-all">
+                <label key={ver.value} className="flex items-center gap-3 bg-white/[0.45] p-4 px-5 rounded-xl border border-black/[0.06] cursor-pointer shadow-sm hover:border-[#4F46E5]/40 transition-all backdrop-blur-sm">
                   <input
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => handleVersionToggle(ver.value)}
-                    className="accent-indigo-600 size-4"
+                    className="accent-[#4F46E5] size-4"
                   />
                   <span className="text-sm font-bold text-slate-700">{ver.label}</span>
                 </label>
@@ -548,7 +548,7 @@ export default function AcademicSetup() {
           <RippleButton
             type="submit"
             disabled={saveMutation.isPending}
-            className="flex items-center gap-2 px-8 py-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-150 transition-all duration-200"
+            className="flex items-center gap-2 px-8 py-6 rounded-xl bg-[#4F46E5] hover:bg-[#4F46E5]/90 text-white font-bold text-sm shadow-lg shadow-purple-500/10 transition-all duration-200"
           >
             {saveMutation.isPending ? (
               <>
