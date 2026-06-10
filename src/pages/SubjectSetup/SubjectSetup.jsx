@@ -35,11 +35,10 @@ import {
   Code,
   GraduationCap,
   School,
-  Calendar,
-  Sparkles,
   ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { CATEGORIES_MAP } from '@/constants/categories';
 
 const TYPE_LABELS = {
   School: 'স্কুল (School)',
@@ -89,10 +88,14 @@ const getGroupLabel = (groupName) => {
   }
 };
 
+const PREDEFINED_CATEGORIES = CATEGORIES_MAP.map((c) =>
+  c.value === 'BroadQuestion' ? { ...c, label: 'বর্ণনামূলক / কাঠামোবদ্ধ' } : c
+);
+
 export default function SubjectSetup() {
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
-  const { allowedClasses, isLoading: configLoading } = useAcademicConfig();
+  const { allowedClasses } = useAcademicConfig();
 
   // Active filter state
   const [selectedType, setSelectedType] = useState('School');
@@ -104,6 +107,7 @@ export default function SubjectSetup() {
   const [subjectCode, setSubjectCode] = useState('');
   const [subjectGroup, setSubjectGroup] = useState('General');
   const [subjectYears, setSubjectYears] = useState([new Date().getFullYear()]);
+  const [subjectCategories, setSubjectCategories] = useState(['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']);
 
   // Modal / Editing states
   const [editingSubject, setEditingSubject] = useState(null);
@@ -138,7 +142,7 @@ export default function SubjectSetup() {
   )?.label || selectedClass;
 
   // Fetch Subjects Query
-  const { data: subjects = [], isLoading: subjectsLoading, refetch } = useQuery({
+  const { data: subjects = [], isLoading: subjectsLoading } = useQuery({
     queryKey: ['subjects', selectedType, selectedLevel, selectedClass],
     queryFn: async () => {
       const token = await getToken();
@@ -231,11 +235,27 @@ export default function SubjectSetup() {
     }
   };
 
+  const handleToggleCategory = (catVal, isEdit = false) => {
+    if (isEdit) {
+      const currentCats = editingSubject.categories || [];
+      const updated = currentCats.includes(catVal)
+        ? currentCats.filter((c) => c !== catVal)
+        : [...currentCats, catVal];
+      setEditingSubject({ ...editingSubject, categories: updated });
+    } else {
+      const updated = subjectCategories.includes(catVal)
+        ? subjectCategories.filter((c) => c !== catVal)
+        : [...subjectCategories, catVal];
+      setSubjectCategories(updated);
+    }
+  };
+
   const resetForm = () => {
     setSubjectName('');
     setSubjectCode('');
     setSubjectGroup('General');
     setSubjectYears([new Date().getFullYear()]);
+    setSubjectCategories(['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']);
   };
 
   const handleCreateSubjectSubmit = (e) => {
@@ -249,6 +269,7 @@ export default function SubjectSetup() {
       subjectCode: subjectCode.trim(),
       group: isClass9to12 ? subjectGroup : 'General',
       years: subjectYears,
+      categories: subjectCategories,
       institutionType: selectedType,
       academicLevel: selectedLevel,
     });
@@ -267,6 +288,7 @@ export default function SubjectSetup() {
         subjectCode: editingSubject.subjectCode.trim(),
         group: isClass9to12 ? editingSubject.group : 'General',
         years: editingSubject.years,
+        categories: editingSubject.categories || ['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion'],
         institutionType: editingSubject.institutionType,
         academicLevel: editingSubject.academicLevel,
       },
@@ -274,7 +296,10 @@ export default function SubjectSetup() {
   };
 
   const handleOpenEditModal = (sub) => {
-    setEditingSubject({ ...sub });
+    setEditingSubject({
+      ...sub,
+      categories: sub.categories && sub.categories.length > 0 ? sub.categories : ['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']
+    });
     setIsEditModalOpen(true);
   };
 
@@ -520,6 +545,35 @@ export default function SubjectSetup() {
               </div>
             </div>
 
+            {/* Question Categories setup */}
+            <div className="space-y-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/30">
+              <label className="text-xs font-semibold text-slate-600 mb-1.5 block">প্রশ্নের ক্যাটাগরি সমূহ</label>
+              <div className="grid grid-cols-2 gap-2">
+                {PREDEFINED_CATEGORIES.map((cat) => {
+                  const isChecked = subjectCategories.includes(cat.value);
+                  return (
+                    <label
+                      key={cat.value}
+                      className={`flex items-center gap-2.5 p-2 px-3 rounded-xl border text-xs font-semibold select-none cursor-pointer transition-all duration-150 ${
+                        isChecked
+                          ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-bold shadow-sm'
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => handleToggleCategory(cat.value)}
+                        disabled={addSubjectMutation.isPending}
+                        className="accent-indigo-600 size-4 rounded cursor-pointer"
+                      />
+                      <span>{cat.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
             <RippleButton
               type="submit"
               disabled={addSubjectMutation.isPending}
@@ -624,6 +678,23 @@ export default function SubjectSetup() {
                         {yr}
                       </span>
                     ))}
+                  </div>
+
+                  {/* Configured Categories badges */}
+                  <div className="pt-2 flex flex-wrap gap-1 items-center">
+                    <span className="text-[10px] font-bold text-slate-400 mr-1 uppercase">ক্যাটাগরি:</span>
+                    {sub.categories && sub.categories.length > 0 ? (
+                      sub.categories.map((cat) => (
+                        <span 
+                          key={cat}
+                          className="bg-indigo-50 border border-indigo-100 text-indigo-700 font-extrabold text-[10px] px-2 py-0.5 rounded-md"
+                        >
+                          {cat === 'MCQ' ? 'MCQ' : cat === 'Creative' ? 'সৃজনশীল' : cat === 'ShortAnswer' ? 'সংক্ষিপ্ত' : cat === 'BroadQuestion' ? 'বর্ণনামূলক' : cat === 'FillInBlanks' ? 'শূন্যস্থান' : cat === 'Matching' ? 'ডানবাম' : cat}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-[10px] text-slate-400 italic">কোনোটি নয় (ডিফল্ট)</span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -751,6 +822,35 @@ export default function SubjectSetup() {
                       </button>
                     </span>
                   ))}
+                </div>
+              </div>
+
+              {/* Edit Categories setup */}
+              <div className="space-y-2 p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                <label className="text-xs font-semibold text-slate-600 mb-1 block">প্রশ্নের ক্যাটাগরি সমূহ</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {PREDEFINED_CATEGORIES.map((cat) => {
+                    const isChecked = (editingSubject.categories || []).includes(cat.value);
+                    return (
+                      <label
+                        key={cat.value}
+                        className={`flex items-center gap-2.5 p-2 px-3 rounded-xl border text-xs font-semibold select-none cursor-pointer transition-all duration-150 ${
+                          isChecked
+                            ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-bold shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleToggleCategory(cat.value, true)}
+                          disabled={updateSubjectMutation.isPending}
+                          className="accent-indigo-600 size-4 rounded cursor-pointer"
+                        />
+                        <span>{cat.label}</span>
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 

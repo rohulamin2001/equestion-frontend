@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
 import { CLASSES_MAP } from "@/constants/classes";
+import { CATEGORIES_MAP } from "@/constants/categories";
 import { useUserContext } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,14 +54,7 @@ const DIFFICULTY_MAP = {
   Hard: { label: "কঠিন", color: "bg-red-50 text-red-700 border-red-100" },
 };
 
-const CATEGORIES_MAP = [
-  { value: "MCQ", label: "বহুনির্বাচনি (MCQ)" },
-  { value: "Creative", label: "সৃজনশীল প্রশ্ন (CQ)" },
-  { value: "ShortAnswer", label: "সংক্ষিপ্ত উত্তর" },
-  { value: "FillInBlanks", label: "শূন্যস্থান পূরণ" },
-  { value: "Matching", label: "ডানবাম মিলকরণ" },
-  { value: "BroadQuestion", label: "বর্ণনামূলক প্রশ্ন" },
-];
+
 
 export default function MyQuestions() {
   const navigate = useNavigate();
@@ -361,7 +355,7 @@ export default function MyQuestions() {
                   const activeCategories = isPrimary
                     ? [
                         { value: "MCQ", label: "বহুনির্বাচনি (MCQ)" },
-                        { value: "ShortAnswer", label: "সংক্ষিপ্ত উত্তর" },
+                        { value: "ShortAnswer", label: "সংক্ষিপ্ত প্রশ্ন" },
                         { value: "FillInBlanks", label: "শূন্যস্থান পূরণ" },
                         { value: "Matching", label: "ডানবাম মিলকরণ" },
                         { value: "BroadQuestion", label: "কাঠামোবদ্ধ যোগ্যতাভিত্তিক" },
@@ -369,7 +363,7 @@ export default function MyQuestions() {
                     : [
                         { value: "MCQ", label: "বহুনির্বাচনি (MCQ)" },
                         { value: "Creative", label: "সৃজনশীল প্রশ্ন (CQ)" },
-                        { value: "ShortAnswer", label: "সংক্ষিপ্ত উত্তর" },
+                        { value: "ShortAnswer", label: "সংক্ষিপ্ত প্রশ্ন" },
                         { value: "BroadQuestion", label: "বর্ণনামূলক প্রশ্ন" },
                       ];
 

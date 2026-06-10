@@ -1,6 +1,7 @@
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CLASSES_MAP } from "@/constants/classes";
+import { CATEGORIES_MAP } from "@/constants/categories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button";
@@ -43,14 +44,7 @@ const DIFFICULTY_MAP = {
   Hard: { label: "কঠিন", color: "bg-red-50 text-red-700 border-red-200" },
 };
 
-const CATEGORIES_MAP = [
-  { value: "MCQ", label: "বহুনির্বাচনি (MCQ)" },
-  { value: "Creative", label: "সৃজনশীল প্রশ্ন (CQ)" },
-  { value: "ShortAnswer", label: "সংক্ষিপ্ত উত্তর" },
-  { value: "FillInBlanks", label: "শূন্যস্থান পূরণ" },
-  { value: "Matching", label: "ডানবাম মিলকরণ" },
-  { value: "BroadQuestion", label: "বর্ণনামূলক প্রশ্ন" },
-];
+
 
 export default function AddQuestion() {
   const qm = useQuestionManagement();
@@ -530,21 +524,40 @@ export default function AddQuestion() {
 
                 <div className="flex flex-col gap-2">
                   {(() => {
-                    const isPrimary = ["Class 3", "Class 4", "Class 5"].includes(qm.formClass);
-                    const activeCategories = isPrimary
-                      ? [
-                          { value: "MCQ", label: "বহুনির্বাচনি (MCQ)" },
-                          { value: "ShortAnswer", label: "সংক্ষিপ্ত উত্তর" },
-                          { value: "FillInBlanks", label: "শূন্যস্থান পূরণ" },
-                          { value: "Matching", label: "ডানবাম মিলকরণ" },
-                          { value: "BroadQuestion", label: "কাঠামোবদ্ধ যোগ্যতাভিত্তিক" },
-                        ]
-                      : [
-                          { value: "MCQ", label: "বহুনির্বাচনি (MCQ)" },
-                          { value: "Creative", label: "সৃজনশীল প্রশ্ন (CQ)" },
-                          { value: "ShortAnswer", label: "সংক্ষিপ্ত উত্তর" },
-                          { value: "BroadQuestion", label: "বর্ণনামূলক প্রশ্ন" },
-                        ];
+                    const subjectConfiguredCategories = qm.selectedSyllabusObj?.subjectId?.categories;
+                    
+                    const ALL_CATEGORIES = [
+                      { value: "MCQ", label: "বহুনির্বাচনি (MCQ)" },
+                      { value: "Creative", label: "সৃজনশীল প্রশ্ন (CQ)" },
+                      { value: "ShortAnswer", label: "সংক্ষিপ্ত প্রশ্ন" },
+                      { value: "FillInBlanks", label: "শূন্যস্থান পূরণ" },
+                      { value: "Matching", label: "ডানবাম মিলকরণ" },
+                      { value: "BroadQuestion", label: ["Class 3", "Class 4", "Class 5"].includes(qm.formClass) ? "কাঠামোবদ্ধ যোগ্যতাভিত্তিক" : "বর্ণনামূলক প্রশ্ন" },
+                    ];
+
+                    if (!qm.formSubjectId || !qm.selectedSyllabusObj) {
+                      return (
+                        <p className="text-xs text-slate-500 italic text-center py-4 font-bengali">
+                          প্রথমে বিষয় নির্বাচন করুন
+                        </p>
+                      );
+                    }
+
+                    let activeCategories = [];
+                    if (subjectConfiguredCategories && Array.isArray(subjectConfiguredCategories) && subjectConfiguredCategories.length > 0) {
+                      activeCategories = subjectConfiguredCategories.map(catVal => {
+                        const matched = ALL_CATEGORIES.find(c => c.value === catVal);
+                        return matched || { value: catVal, label: catVal };
+                      });
+                    }
+
+                    if (activeCategories.length === 0) {
+                      return (
+                        <p className="text-xs text-red-500 italic text-center py-4 font-bengali">
+                          এই বিষয়ের জন্য কোনো প্রশ্ন ক্যাটাগরি সেট করা নেই
+                        </p>
+                      );
+                    }
 
                     return activeCategories.map((cat) => {
                       const isSelected = qm.formCategory === cat.value;

@@ -100,6 +100,7 @@ export default function SyllabusManagement() {
     formGroup,
     setFormGroup,
     formYears,
+    setFormYears,
     handleAddYear,
     handleRemoveYear,
     formChapters,

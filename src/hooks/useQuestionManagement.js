@@ -34,61 +34,6 @@ export function useQuestionManagement() {
   const [formCategory, setFormCategory] = useState('MCQ');
   const [formDifficulty, setFormDifficulty] = useState('Medium');
 
-  // Sync filter state when allowedClasses changes or loads
-  useEffect(() => {
-    if (allowedClasses && allowedClasses.length > 0) {
-      const exists = allowedClasses.some(
-        c => c.value === filterClass && c.type === filterType && c.level === filterLevel
-      );
-      if (!exists) {
-        const first = allowedClasses[0];
-        setFilterType(first.type);
-        setFilterLevel(first.level);
-        setFilterClass(first.value);
-      }
-    }
-  }, [allowedClasses, filterClass, filterType, filterLevel]);
-
-  // Sync form state when allowedClasses changes or loads
-  useEffect(() => {
-    if (allowedClasses && allowedClasses.length > 0) {
-      const exists = allowedClasses.some(
-        c => c.value === formClass && c.type === formType && c.level === formLevel
-      );
-      if (!exists) {
-        const first = allowedClasses[0];
-        setFormType(first.type);
-        setFormLevel(first.level);
-        setFormClass(first.value);
-      }
-    }
-  }, [allowedClasses, formClass, formType, formLevel]);
-
-  // Curriculum Alignment validation
-  useEffect(() => {
-    const primaryLevels = ["Primary", "Ebtedayee"];
-    const primaryCats = ["MCQ", "ShortAnswer", "FillInBlanks", "Matching", "BroadQuestion"];
-    const secondaryCats = ["MCQ", "Creative", "ShortAnswer", "BroadQuestion"];
-
-    const isPrimary = primaryLevels.includes(formLevel);
-    const allowed = isPrimary ? primaryCats : secondaryCats;
-    if (!allowed.includes(formCategory)) {
-      setFormCategory("MCQ");
-    }
-  }, [formLevel, formCategory]);
-
-  useEffect(() => {
-    const primaryLevels = ["Primary", "Ebtedayee"];
-    const primaryCats = ["MCQ", "ShortAnswer", "FillInBlanks", "Matching", "BroadQuestion"];
-    const secondaryCats = ["MCQ", "Creative", "ShortAnswer", "BroadQuestion"];
-
-    const isPrimary = primaryLevels.includes(filterLevel);
-    const allowed = isPrimary ? primaryCats : secondaryCats;
-    if (filterCategory && !allowed.includes(filterCategory)) {
-      setFilterCategory("");
-    }
-  }, [filterLevel, filterCategory]);
-
   // Draft list for batch question creation
   const [questionsList, setQuestionsList] = useState([]);
 
@@ -144,6 +89,71 @@ export function useQuestionManagement() {
   // Get active chapters for selected subject inside the form
   const selectedSyllabusObj = syllabusList.find(s => s._id === formSubjectId);
   const formChapters = selectedSyllabusObj?.chapters || [];
+
+  // Sync filter state when allowedClasses changes or loads
+  useEffect(() => {
+    if (allowedClasses && allowedClasses.length > 0) {
+      const exists = allowedClasses.some(
+        c => c.value === filterClass && c.type === filterType && c.level === filterLevel
+      );
+      if (!exists) {
+        const first = allowedClasses[0];
+        setFilterType(first.type);
+        setFilterLevel(first.level);
+        setFilterClass(first.value);
+      }
+    }
+  }, [allowedClasses, filterClass, filterType, filterLevel]);
+
+  // Sync form state when allowedClasses changes or loads
+  useEffect(() => {
+    if (allowedClasses && allowedClasses.length > 0) {
+      const exists = allowedClasses.some(
+        c => c.value === formClass && c.type === formType && c.level === formLevel
+      );
+      if (!exists) {
+        const first = allowedClasses[0];
+        setFormType(first.type);
+        setFormLevel(first.level);
+        setFormClass(first.value);
+      }
+    }
+  }, [allowedClasses, formClass, formType, formLevel]);
+
+  // Curriculum Alignment validation
+  useEffect(() => {
+    if (!formSubjectId || !selectedSyllabusObj) {
+      setFormCategory('');
+      return;
+    }
+
+    const subjectConfiguredCategories = selectedSyllabusObj?.subjectId?.categories;
+    let allowed = [];
+
+    if (subjectConfiguredCategories && Array.isArray(subjectConfiguredCategories) && subjectConfiguredCategories.length > 0) {
+      allowed = subjectConfiguredCategories;
+    }
+
+    if (allowed.length > 0) {
+      if (!allowed.includes(formCategory)) {
+        setFormCategory(allowed[0]);
+      }
+    } else {
+      setFormCategory('');
+    }
+  }, [formSubjectId, selectedSyllabusObj, formCategory]);
+
+  useEffect(() => {
+    const primaryLevels = ["Primary", "Ebtedayee"];
+    const primaryCats = ["MCQ", "ShortAnswer", "FillInBlanks", "Matching", "BroadQuestion"];
+    const secondaryCats = ["MCQ", "Creative", "ShortAnswer", "BroadQuestion"];
+
+    const isPrimary = primaryLevels.includes(filterLevel);
+    const allowed = isPrimary ? primaryCats : secondaryCats;
+    if (filterCategory && !allowed.includes(filterCategory)) {
+      setFilterCategory("");
+    }
+  }, [filterLevel, filterCategory]);
 
   // Reset Form
   const resetForm = useCallback(() => {
