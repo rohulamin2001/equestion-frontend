@@ -139,6 +139,12 @@ const DATA = {
           roles: ['Super Admin', 'Admin'],
         },
         {
+          title: 'মেটাডাটা সেটআপ',
+          url: '/dashboard/metadata-setup',
+          icon: Sliders,
+          roles: ['Super Admin', 'Admin', 'Content Manager'],
+        },
+        {
           title: 'অ্যাকাডেমিক সেটআপ',
           url: '/dashboard/academic-setup',
           icon: Sliders,

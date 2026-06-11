@@ -40,6 +40,11 @@ export default function AddQuestion() {
     handleNextStep,
     handlePrevStep,
     handleTopicToggle,
+    activeSchools,
+    activeBoards,
+    activeYears,
+    activeLevels,
+    activeSpecialSearches,
   } = useAddQuestion();
 
   return (
@@ -340,104 +345,6 @@ export default function AddQuestion() {
                     </div>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Chapter Selection */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">অধ্যায় (Chapter)</label>
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() => setActiveDropdown(activeDropdown === "chapter" ? null : "chapter")}
-                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm disabled:bg-slate-50/50 disabled:text-slate-400"
-                        disabled={!qm.formSubjectId}
-                      >
-                        {qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber)
-                          ? `অধ্যায় ${qm.formChapterNumber}: ${qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber).chapterName}`
-                          : "অধ্যায় নির্বাচন করুন"}
-                        <ChevronRight className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "chapter" ? "rotate-90" : ""}`} />
-                      </button>
-
-                      {activeDropdown === "chapter" && (
-                        <>
-                          <div className="fixed inset-0 z-10" onClick={() => setActiveDropdown(null)} />
-                          <div className="absolute left-0 right-0 mt-1 bg-white/[0.90] border border-black/[0.08] backdrop-blur-xl rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
-                            {qm.formChapters.map((chap) => (
-                              <button
-                                key={chap.chapterNumber}
-                                type="button"
-                                onClick={() => {
-                                  qm.setFormChapterNumber(chap.chapterNumber.toString());
-                                  qm.setFormTopics([]);
-                                  setActiveDropdown(null);
-                                }}
-                                className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
-                                  qm.formChapterNumber === chap.chapterNumber.toString() ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "text-slate-700 hover:bg-slate-50"
-                                }`}
-                              >
-                                {chap.chapterNumber}. {chap.chapterName}
-                              </button>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Difficulty Selection */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">কাঠিন্যের স্তর (Difficulty)</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {Object.keys(DIFFICULTY_MAP).map((diffKey) => {
-                        const isSelected = qm.formDifficulty === diffKey;
-                        const config = DIFFICULTY_MAP[diffKey];
-                        return (
-                          <button
-                            key={diffKey}
-                            type="button"
-                            onClick={() => qm.setFormDifficulty(diffKey)}
-                            className={`px-3 py-2.5 rounded-xl border text-sm font-semibold transition cursor-pointer flex justify-center items-center ${
-                              isSelected
-                                ? config.color + " ring-4 ring-[#4F46E5]/10"
-                                : "bg-white/[0.45] border-black/[0.08] text-slate-600 hover:bg-white/[0.60] backdrop-blur-sm"
-                            }`}
-                          >
-                            {config.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Topics Tags Multi Selection */}
-                {qm.formChapterNumber && (
-                  <div className="space-y-2 pt-2 animate-in fade-in duration-300">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">নির্দিষ্ট টপিক সিলেক্ট করুন (ঐচ্ছিক)</label>
-                    <div className="flex flex-wrap gap-2">
-                      {(qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber)?.topics || []).map((topic, index) => {
-                        const isSelected = qm.formTopics.includes(topic);
-                        return (
-                          <button
-                            key={index}
-                            type="button"
-                            onClick={() => handleTopicToggle(topic)}
-                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
-                              isSelected
-                                ? "bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5] font-bold"
-                                : "bg-white/[0.45] border-black/[0.06] text-slate-600 hover:bg-white/[0.60] backdrop-blur-sm"
-                            }`}
-                          >
-                            {isSelected ? `✓ #${topic}` : `#${topic}`}
-                          </button>
-                        );
-                      })}
-                      {(qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber)?.topics || []).length === 0 && (
-                        <p className="text-xs text-slate-400 italic">এই অধ্যায়ের অধীনে কোনো নির্দিষ্ট টপিক যুক্ত করা হয়নি।</p>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Right Column: Question Category Select */}
@@ -538,6 +445,104 @@ export default function AddQuestion() {
                   {CLASSES_MAP.find((c) => c.value === qm.formClass)?.label} •{" "}
                   {qm.formSubjects.find((s) => s._id === qm.formSubjectId)?.subjectName}
                 </span>
+              </div>
+
+              {/* Chapter & Difficulty Selection at the top of Step 2 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-black/[0.01] p-4 rounded-xl border border-black/[0.03]">
+                {/* Chapter Selection */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">অধ্যায় (Chapter)</label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setActiveDropdown(activeDropdown === "chapter" ? null : "chapter")}
+                      className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm"
+                    >
+                      {qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber)
+                        ? `অধ্যায় ${qm.formChapterNumber}: ${qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber).chapterName}`
+                        : "অধ্যায় নির্বাচন করুন"}
+                      <ChevronRight className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "chapter" ? "rotate-90" : ""}`} />
+                    </button>
+
+                    {activeDropdown === "chapter" && (
+                      <>
+                        <div className="fixed inset-0 z-10" onClick={() => setActiveDropdown(null)} />
+                        <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                          {qm.formChapters.map((chap) => (
+                            <button
+                              key={chap.chapterNumber}
+                              type="button"
+                              onClick={() => {
+                                qm.setFormChapterNumber(chap.chapterNumber.toString());
+                                qm.setFormTopics([]);
+                                setActiveDropdown(null);
+                              }}
+                              className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
+                                qm.formChapterNumber === chap.chapterNumber.toString() ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "text-slate-700 hover:bg-slate-50"
+                              }`}
+                            >
+                              {chap.chapterNumber}. {chap.chapterName}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Difficulty Selection */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">কাঠিন্যের স্তর (Difficulty)</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {Object.keys(DIFFICULTY_MAP).map((diffKey) => {
+                      const isSelected = qm.formDifficulty === diffKey;
+                      const config = DIFFICULTY_MAP[diffKey];
+                      return (
+                        <button
+                          key={diffKey}
+                          type="button"
+                          onClick={() => qm.setFormDifficulty(diffKey)}
+                          className={`px-3 py-2 rounded-xl border text-sm font-semibold transition cursor-pointer flex justify-center items-center h-10 ${
+                            isSelected
+                              ? config.color + " ring-4 ring-[#4F46E5]/10"
+                              : "bg-white border-black/[0.08] text-slate-600 hover:bg-slate-55"
+                          }`}
+                        >
+                          {config.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Topics tags multi selection */}
+                {qm.formChapterNumber && (
+                  <div className="md:col-span-2 space-y-2 pt-2 border-t border-black/[0.03] animate-in fade-in duration-300">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">নির্দিষ্ট টপিক সিলেক্ট করুন (ঐচ্ছিক)</label>
+                    <div className="flex flex-wrap gap-2">
+                      {(qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber)?.topics || []).map((topic, index) => {
+                        const isSelected = qm.formTopics.includes(topic);
+                        return (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => handleTopicToggle(topic)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
+                              isSelected
+                                ? "bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5] font-bold"
+                                : "bg-white border-black/[0.06] text-slate-600 hover:bg-slate-50"
+                            }`}
+                          >
+                            {isSelected ? `✓ #${topic}` : `#${topic}`}
+                          </button>
+                        );
+                      })}
+                      {(qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber)?.topics || []).length === 0 && (
+                        <p className="text-xs text-slate-400 italic">এই অধ্যায়ের অধীনে কোনো নির্দিষ্ট টপিক যুক্ত করা হয়নি।</p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* DYNAMIC FORMS BASED ON CATEGORY */}
@@ -770,6 +775,238 @@ export default function AddQuestion() {
                 </div>
               )}
 
+              {/* Question Metadata Link Section (School, Board, Year, Level, Special Search) */}
+              <div className="p-5 bg-black/[0.01] border border-black/[0.04] rounded-2xl space-y-4 pt-4">
+                <h4 className="font-bold text-slate-800 text-sm flex items-center gap-1.5 border-b border-black/[0.04] pb-2">
+                  <Database className="size-4 text-[#4F46E5]" />
+                  <span>প্রশ্ন মেটাডাটা লিঙ্ক করুন (ঐচ্ছিক)</span>
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Year Selection */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">সাল / শিক্ষাবর্ষ</label>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setActiveDropdown(activeDropdown === "year" ? null : "year")}
+                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm"
+                      >
+                        {qm.formYear || "সাল নির্বাচন করুন"}
+                        <ChevronRight className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "year" ? "rotate-90" : ""}`} />
+                      </button>
+
+                      {activeDropdown === "year" && (
+                        <>
+                          <div className="fixed inset-0 z-10" onClick={() => setActiveDropdown(null)} />
+                          <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-52 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                qm.setFormYear("");
+                                setActiveDropdown(null);
+                              }}
+                              className="w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:bg-slate-50"
+                            >
+                              রিসেট / খালি করুন
+                            </button>
+                            {activeYears.map((yr) => (
+                              <button
+                                key={yr._id}
+                                type="button"
+                                onClick={() => {
+                                  qm.setFormYear(yr.name);
+                                  setActiveDropdown(null);
+                                }}
+                                className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
+                                  qm.formYear === yr.name ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "text-slate-700 hover:bg-slate-50"
+                                }`}
+                              >
+                                {yr.name}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Board Selection */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">বোর্ড (Board)</label>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setActiveDropdown(activeDropdown === "board" ? null : "board")}
+                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm"
+                      >
+                        {qm.formBoard || "বোর্ড নির্বাচন করুন"}
+                        <ChevronRight className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "board" ? "rotate-90" : ""}`} />
+                      </button>
+
+                      {activeDropdown === "board" && (
+                        <>
+                          <div className="fixed inset-0 z-10" onClick={() => setActiveDropdown(null)} />
+                          <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-52 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                qm.setFormBoard("");
+                                setActiveDropdown(null);
+                              }}
+                              className="w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:bg-slate-55"
+                            >
+                              রিসেট / খালি করুন
+                            </button>
+                            {activeBoards.map((bd) => (
+                              <button
+                                key={bd._id}
+                                type="button"
+                                onClick={() => {
+                                  qm.setFormBoard(bd.name);
+                                  setActiveDropdown(null);
+                                }}
+                                className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
+                                  qm.formBoard === bd.name ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "text-slate-700 hover:bg-slate-55"
+                                }`}
+                              >
+                                {bd.name} {bd.shortName && `(${bd.shortName})`}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* School Selection */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">শীর্ষস্থানীয় স্কুল</label>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setActiveDropdown(activeDropdown === "school" ? null : "school")}
+                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm"
+                      >
+                        {qm.formSchool || "স্কুল নির্বাচন করুন"}
+                        <ChevronRight className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "school" ? "rotate-90" : ""}`} />
+                      </button>
+
+                      {activeDropdown === "school" && (
+                        <>
+                          <div className="fixed inset-0 z-10" onClick={() => setActiveDropdown(null)} />
+                          <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-52 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                qm.setFormSchool("");
+                                setActiveDropdown(null);
+                              }}
+                              className="w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:bg-slate-50"
+                            >
+                              রিসেট / খালি করুন
+                            </button>
+                            {activeSchools.map((sch) => (
+                              <button
+                                key={sch._id}
+                                type="button"
+                                onClick={() => {
+                                  qm.setFormSchool(sch.name);
+                                  setActiveDropdown(null);
+                                }}
+                                className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
+                                  qm.formSchool === sch.name ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "text-slate-700 hover:bg-slate-50"
+                                }`}
+                              >
+                                {sch.name}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Level Tag Selection */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">লেভেল (Level)</label>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setActiveDropdown(activeDropdown === "levelTag" ? null : "levelTag")}
+                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm"
+                      >
+                        {qm.formLevelTag || "লেভেল নির্বাচন করুন"}
+                        <ChevronRight className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "levelTag" ? "rotate-90" : ""}`} />
+                      </button>
+
+                      {activeDropdown === "levelTag" && (
+                        <>
+                          <div className="fixed inset-0 z-10" onClick={() => setActiveDropdown(null)} />
+                          <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-52 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                qm.setFormLevelTag("");
+                                setActiveDropdown(null);
+                              }}
+                              className="w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:bg-slate-50"
+                            >
+                              রিসেট / খালি করুন
+                            </button>
+                            {activeLevels.map((lvl) => (
+                              <button
+                                key={lvl._id}
+                                type="button"
+                                onClick={() => {
+                                  qm.setFormLevelTag(lvl.name);
+                                  setActiveDropdown(null);
+                                }}
+                                className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
+                                  qm.formLevelTag === lvl.name ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "text-slate-700 hover:bg-slate-50"
+                                }`}
+                              >
+                                {lvl.name}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Special Search Keywords Multi-Select Tags */}
+                {activeSpecialSearches.length > 0 && (
+                  <div className="space-y-2 pt-2 border-t border-black/[0.03] animate-in fade-in duration-300">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">স্পেশাল সার্চ কিওয়ার্ড লিঙ্ক করুন (ঐচ্ছিক)</label>
+                    <div className="flex flex-wrap gap-2">
+                      {activeSpecialSearches.map((ss) => {
+                        const isSelected = qm.formSpecialSearch.includes(ss.name);
+                        return (
+                          <button
+                            key={ss._id}
+                            type="button"
+                            onClick={() => {
+                              qm.setFormSpecialSearch((prev) =>
+                                prev.includes(ss.name) ? prev.filter((t) => t !== ss.name) : [...prev, ss.name]
+                              );
+                            }}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
+                              isSelected
+                                ? "bg-[#8B5CF6]/10 border-[#8B5CF6]/30 text-[#8B5CF6] font-bold"
+                                : "bg-white border-black/[0.06] text-slate-600 hover:bg-slate-50"
+                            }`}
+                          >
+                            {isSelected ? `✓ #${ss.name}` : `#${ss.name}`}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Draft Questions list inside Step 2 */}
               {!qm.editingQuestion && qm.questionsList.length > 0 && (
                 <div className="space-y-3 pt-5 border-t border-black/[0.05] animate-in fade-in duration-200">
@@ -887,12 +1124,42 @@ export default function AddQuestion() {
                         return (
                           <div key={q.id || idx} className={`space-y-4 ${idx > 0 ? "pt-6" : ""}`}>
                             {/* Header tags for this item if multiple */}
-                            <div className="flex gap-2 items-center text-[10px] font-sans font-bold text-slate-400 mb-2">
+                            <div className="flex flex-wrap gap-2 items-center text-[10px] font-sans font-bold text-slate-400 mb-2">
                               <span>প্রশ্ন {idx + 1}</span>
                               <span>•</span>
                               <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded uppercase">{catLabel}</span>
                               <span>•</span>
                               <span className={`px-2 py-0.5 rounded border ${diffConfig.color}`}>{diffConfig.label}</span>
+                              {q.year && (
+                                <>
+                                  <span>•</span>
+                                  <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">{q.year}</span>
+                                </>
+                              )}
+                              {q.board && (
+                                <>
+                                  <span>•</span>
+                                  <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">{q.board}</span>
+                                </>
+                              )}
+                              {q.school && (
+                                <>
+                                  <span>•</span>
+                                  <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[150px]">{q.school}</span>
+                                </>
+                              )}
+                              {q.level && (
+                                <>
+                                  <span>•</span>
+                                  <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">{q.level}</span>
+                                </>
+                              )}
+                              {q.specialSearch && q.specialSearch.length > 0 && (
+                                <>
+                                  <span>•</span>
+                                  <span className="bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">{q.specialSearch.join(", ")}</span>
+                                </>
+                              )}
                             </div>
 
                             {/* MCQ */}

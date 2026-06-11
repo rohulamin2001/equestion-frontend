@@ -18,6 +18,7 @@ import StaffManagement from './pages/Staff/StaffManagement';
 import SyllabusManagement from './pages/Syllabus/SyllabusManagement';
 import AcademicSetup from './pages/AcademicSetup/AcademicSetup';
 import SubjectSetup from './pages/SubjectSetup/SubjectSetup';
+import MetadataSetup from './pages/MetadataSetup/MetadataSetup';
 import RoleRouteGuard from './components/RoleRouteGuard';
 
 export default function App() {
@@ -31,6 +32,12 @@ export default function App() {
         
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Overview />} />
+          
+          <Route path="metadata-setup" element={
+            <RoleRouteGuard allowedRoles={['Super Admin', 'Admin', 'Content Manager']}>
+              <MetadataSetup />
+            </RoleRouteGuard>
+          } />
           
           <Route path="staff" element={
             <RoleRouteGuard allowedRoles={['Super Admin', 'Admin']}>

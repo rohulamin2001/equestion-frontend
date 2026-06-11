@@ -34,6 +34,13 @@ export function useQuestionManagement() {
   const [formCategory, setFormCategory] = useState('MCQ');
   const [formDifficulty, setFormDifficulty] = useState('Medium');
 
+  // New metadata fields
+  const [formYear, setFormYear] = useState('');
+  const [formBoard, setFormBoard] = useState('');
+  const [formSchool, setFormSchool] = useState('');
+  const [formLevelTag, setFormLevelTag] = useState('');
+  const [formSpecialSearch, setFormSpecialSearch] = useState([]);
+
   // Draft list for batch question creation
   const [questionsList, setQuestionsList] = useState([]);
 
@@ -169,6 +176,13 @@ export function useQuestionManagement() {
     setFormDifficulty('Medium');
     setQuestionsList([]);
 
+    // Reset new metadata
+    setFormYear('');
+    setFormBoard('');
+    setFormSchool('');
+    setFormLevelTag('');
+    setFormSpecialSearch([]);
+
     setMcqType('Simple');
     setMcqStem('');
     setMcqQuestionText('');
@@ -205,6 +219,13 @@ export function useQuestionManagement() {
     setFormTopics(question.topics || []);
     setFormCategory(question.category);
     setFormDifficulty(question.difficulty);
+
+    // Load new metadata
+    setFormYear(question.year || '');
+    setFormBoard(question.board || '');
+    setFormSchool(question.school || '');
+    setFormLevelTag(question.level || '');
+    setFormSpecialSearch(question.specialSearch || []);
 
     if (question.category === 'MCQ') {
       setMcqType(question.mcqData?.mcqType || 'Simple');
@@ -342,6 +363,11 @@ export function useQuestionManagement() {
       difficulty: formDifficulty,
       institutionType: formType,
       academicLevel: formLevel,
+      year: formYear,
+      board: formBoard,
+      school: formSchool,
+      level: formLevelTag,
+      specialSearch: formSpecialSearch,
     };
 
     if (formCategory === 'MCQ') {
@@ -443,6 +469,13 @@ export function useQuestionManagement() {
     setMcqExplanation('');
 
     setCreativeStem('');
+
+    // Clear new metadata
+    setFormYear('');
+    setFormBoard('');
+    setFormSchool('');
+    setFormLevelTag('');
+    setFormSpecialSearch([]);
     setCreativeCognitiveA('');
     setCreativeCognitiveB('');
     setCreativeCognitiveC('');
@@ -538,6 +571,17 @@ export function useQuestionManagement() {
     setFormCategory,
     formDifficulty,
     setFormDifficulty,
+
+    formYear,
+    setFormYear,
+    formBoard,
+    setFormBoard,
+    formSchool,
+    setFormSchool,
+    formLevelTag,
+    setFormLevelTag,
+    formSpecialSearch,
+    setFormSpecialSearch,
 
     // MCQ fields & setters
     mcqType,

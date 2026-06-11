@@ -3,6 +3,9 @@ import { CLASSES_MAP } from "@/constants/classes";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@clerk/react";
+import apiClient from "@/lib/apiClient";
 
 // Exported constants used by both hook and UI
 export const TYPE_LABELS = {
@@ -29,10 +32,30 @@ export const DIFFICULTY_MAP = {
 export { CATEGORIES_MAP, CLASSES_MAP };
 
 export function useAddQuestion() {
+  const { getToken } = useAuth();
   const qm = useQuestionManagement();
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeDropdown, setActiveDropdown] = useState(null); // 'class' | 'subject' | 'chapter' | null
+  const [activeDropdown, setActiveDropdown] = useState(null); // 'class' | 'subject' | 'chapter' | 'school' | 'board' | 'year' | 'levelTag' | null
+
+  // Fetch all active metadata options
+  const { data: metadataList = [], isLoading: loadingMetadata } = useQuery({
+    queryKey: ["activeMetadataList"],
+    queryFn: async () => {
+      const token = await getToken();
+      const response = await apiClient.get("/question-metadata", {
+        params: { activeOnly: "true" },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data.metadata || [];
+    },
+  });
+
+  const activeSchools = metadataList.filter((m) => m.type === "School");
+  const activeBoards = metadataList.filter((m) => m.type === "Board");
+  const activeYears = metadataList.filter((m) => m.type === "Year");
+  const activeLevels = metadataList.filter((m) => m.type === "Level");
+  const activeSpecialSearches = metadataList.filter((m) => m.type === "SpecialSearch");
 
   useEffect(() => {
     if (location.state?.editQuestion) {
@@ -92,7 +115,6 @@ export function useAddQuestion() {
       qm.formLevel &&
       qm.formClass &&
       qm.formSubjectId &&
-      qm.formChapterNumber &&
       qm.formCategory
     );
   };
@@ -126,5 +148,11 @@ export function useAddQuestion() {
     handleNextStep,
     handlePrevStep,
     handleTopicToggle,
+    activeSchools,
+    activeBoards,
+    activeYears,
+    activeLevels,
+    activeSpecialSearches,
+    loadingMetadata,
   };
 }

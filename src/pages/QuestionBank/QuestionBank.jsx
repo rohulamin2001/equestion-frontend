@@ -552,6 +552,26 @@ export default function QuestionBank() {
                     <span>অধ্যায়: {selectedPreviewQuestion.chapterNumber}</span>
                     <span>পূর্ণমান: {selectedPreviewQuestion.category === "MCQ" ? "১" : selectedPreviewQuestion.category === "Creative" ? "১০" : selectedPreviewQuestion.generalData?.marks || "১"}</span>
                   </div>
+                  {/* Metadata Tags */}
+                  {(selectedPreviewQuestion.year || selectedPreviewQuestion.board || selectedPreviewQuestion.school || selectedPreviewQuestion.level || (selectedPreviewQuestion.specialSearch && selectedPreviewQuestion.specialSearch.length > 0)) && (
+                    <div className="flex flex-wrap gap-2 justify-center items-center text-[10px] font-sans font-bold text-slate-400 mt-2">
+                      {selectedPreviewQuestion.year && (
+                        <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">{selectedPreviewQuestion.year}</span>
+                      )}
+                      {selectedPreviewQuestion.board && (
+                        <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">{selectedPreviewQuestion.board}</span>
+                      )}
+                      {selectedPreviewQuestion.school && (
+                        <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[200px]">{selectedPreviewQuestion.school}</span>
+                      )}
+                      {selectedPreviewQuestion.level && (
+                        <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">{selectedPreviewQuestion.level}</span>
+                      )}
+                      {selectedPreviewQuestion.specialSearch && selectedPreviewQuestion.specialSearch.length > 0 && (
+                        <span className="bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">{selectedPreviewQuestion.specialSearch.join(", ")}</span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* MCQ Mode */}
