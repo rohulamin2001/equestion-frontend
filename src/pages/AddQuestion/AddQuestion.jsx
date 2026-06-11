@@ -67,50 +67,105 @@ export default function AddQuestion() {
       </div>
 
       {/* Wizard Step Progress Bar */}
-      <div className="bg-glass px-6 pt-6 pb-10 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
-        <div className="flex items-center justify-between max-w-xl mx-auto relative px-[18px]">
-          {/* Progress bar line */}
-          <div className="absolute left-[18px] right-[18px] top-1/2 -translate-y-1/2 h-0.5 bg-black/[0.05] -z-0">
-            <div
-              className="h-full bg-[#4F46E5] transition-all duration-300"
-              style={{ width: `${((qm.activeStep - 1) / 2) * 100}%` }}
-            />
-          </div>
+      <div className="bg-glass px-8 pt-8 pb-14 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm overflow-hidden">
+        {/* Step labels row */}
+        <div className="flex items-start justify-between max-w-5xl mx-auto relative">
+
+          {/* Background track line — from right edge of circle 1 to left edge of circle 3 */}
+          <div
+            className="absolute top-[30px] h-[3px] bg-slate-200/80 rounded-full"
+            style={{ left: "calc(16.667% + 30px)", right: "calc(16.667% + 30px)" }}
+          />
+
+          {/* Animated progress fill */}
+          <motion.div
+            className="absolute top-[30px] h-[3px] bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full origin-left"
+            initial={false}
+            animate={{ scaleX: (qm.activeStep - 1) / 2 }}
+            transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
+            style={{ left: "calc(16.667% + 30px)", right: "calc(16.667% + 30px)", transformOrigin: "left" }}
+          />
 
           {[
-            { step: 1, label: "ক্যাটাগরি ও মেটাডাটা" },
-            { step: 2, label: "প্রশ্ন এডিটর" },
-            { step: 3, label: "প্রিভিউ ও সংরক্ষণ" },
+            { step: 1, label: "ক্যাটাগরি ও মেটাডাটা", icon: <Database size={20} /> },
+            { step: 2, label: "প্রশ্ন এডিটর", icon: <FileText size={20} /> },
+            { step: 3, label: "প্রিভিউ ও সংরক্ষণ", icon: <Save size={20} /> },
           ].map((item) => {
             const isCompleted = qm.activeStep > item.step;
             const isActive = qm.activeStep === item.step;
 
             return (
-              <div key={item.step} className="flex flex-col items-center relative z-10 size-9">
-                <button
+              <div key={item.step} className="flex flex-col items-center relative z-10 gap-3" style={{ flex: "1 1 0", maxWidth: "33.33%" }}>
+                <motion.button
                   onClick={() => {
                     if (item.step < qm.activeStep || (item.step === 2 && isStep1Valid())) {
                       qm.setActiveStep(item.step);
                     }
                   }}
                   disabled={item.step > 2 && !isStep1Valid()}
-                  className={`size-9 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 cursor-pointer ${
+                  whileHover={{ scale: isCompleted || isActive ? 1.08 : 1.04 }}
+                  whileTap={{ scale: 0.94 }}
+                  animate={
+                    isActive
+                      ? { scale: 1.1, boxShadow: "0 8px 30px rgba(79,70,229,0.35)" }
+                      : isCompleted
+                      ? { scale: 1, boxShadow: "0 4px 14px rgba(79,70,229,0.22)" }
+                      : { scale: 1, boxShadow: "none" }
+                  }
+                  transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                  className={`w-[60px] h-[60px] rounded-full flex items-center justify-center transition-colors duration-300 cursor-pointer outline-none ${
                     isCompleted
-                      ? "bg-[#4F46E5] text-white shadow-md shadow-purple-500/10"
+                      ? "bg-gradient-to-br from-indigo-500 to-violet-600 text-white border-0"
                       : isActive
-                      ? "bg-white border-2 border-[#4F46E5] text-[#4F46E5] scale-110 shadow-md shadow-purple-500/5"
-                      : "bg-white/[0.45] border-2 border-black/[0.08] text-slate-400"
+                      ? "bg-white border-[3px] border-indigo-500 text-indigo-600"
+                      : "bg-white/60 border-2 border-slate-200 text-slate-400"
                   }`}
                 >
-                  {isCompleted ? "✓" : item.step}
-                </button>
-                <span
-                  className={`text-[11px] font-bold absolute top-11 whitespace-nowrap text-center left-1/2 -translate-x-1/2 font-sans transition-all duration-300 ${
-                    isActive ? "text-[#4F46E5] font-semibold" : "text-slate-400"
-                  }`}
-                >
-                  {item.label}
-                </span>
+                  <AnimatePresence mode="wait">
+                    {isCompleted ? (
+                      <motion.span
+                        key="check"
+                        initial={{ scale: 0, rotate: -90 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        exit={{ scale: 0, rotate: 90 }}
+                        transition={{ duration: 0.3, ease: "backOut" }}
+                      >
+                        <CheckCircle2 size={26} className="text-white" strokeWidth={2.5} />
+                      </motion.span>
+                    ) : (
+                      <motion.span
+                        key={`icon-${item.step}`}
+                        initial={{ scale: 0.6, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.6, opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="flex items-center justify-center"
+                      >
+                        {item.icon}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+
+                <div className="flex flex-col items-center gap-1 text-center">
+                  <motion.span
+                    animate={{
+                      color: isActive ? "#4F46E5" : isCompleted ? "#6D28D9" : "#94a3b8",
+                      fontWeight: isActive ? 700 : 600,
+                    }}
+                    transition={{ duration: 0.3 }}
+                    className="text-[13px] font-sans leading-tight whitespace-nowrap"
+                  >
+                    {item.label}
+                  </motion.span>
+                  <motion.span
+                    animate={{ opacity: isActive ? 1 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-[10px] font-sans text-indigo-400 font-medium"
+                  >
+                    চলমান
+                  </motion.span>
+                </div>
               </div>
             );
           })}
