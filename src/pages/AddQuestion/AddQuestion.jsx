@@ -1,7 +1,3 @@
-import { useQuestionManagement } from "@/hooks/useQuestionManagement";
-import { useLocation, useNavigate } from "react-router-dom";
-import { CLASSES_MAP } from "@/constants/classes";
-import { CATEGORIES_MAP } from "@/constants/categories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button";
@@ -21,101 +17,30 @@ import {
   Sparkles,
   Trash2,
 } from "lucide-react";
-import { useState, useEffect } from "react";
-
-const TYPE_LABELS = {
-  School: "স্কুল (School)",
-  College: "কলেজ (College)",
-  Madrasah: "মাদ্রাসা (Madrasah)",
-};
-
-const LEVEL_LABELS = {
-  Primary: "প্রাথমিক (Primary)",
-  Secondary: "মাধ্যমিক (Secondary)",
-  "Higher Secondary": "উচ্চমাধ্যমিক (Higher Secondary)",
-  Ebtedayee: "ইবতেদায়ী (Ebtedayee)",
-  Dakhil: "দাখিল (Dakhil)",
-  Alim: "আলিম (Alim)",
-};
-
-const DIFFICULTY_MAP = {
-  Easy: { label: "সহজ", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  Medium: { label: "মধ্যম", color: "bg-amber-50 text-amber-700 border-amber-200" },
-  Hard: { label: "কঠিন", color: "bg-red-50 text-red-700 border-red-200" },
-};
-
-
+import {
+  CATEGORIES_MAP,
+  CLASSES_MAP,
+  DIFFICULTY_MAP,
+  LEVEL_LABELS,
+  TYPE_LABELS,
+  useAddQuestion,
+} from "./hook/useAddQuestion";
 
 export default function AddQuestion() {
-  const qm = useQuestionManagement();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [activeDropdown, setActiveDropdown] = useState(null); // 'class' | 'subject' | 'chapter' | null
-
-  useEffect(() => {
-    if (location.state?.editQuestion) {
-      qm.handleOpenEditMode(location.state.editQuestion);
-      // Clear navigation state so that refresh doesn't trigger edit mode again
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-  }, [location.state, qm, navigate, location.pathname]);
-
-  const formActiveTypes = Array.from(new Set(qm.allowedClasses.map(c => c.type)));
-  const formActiveLevels = Array.from(
-    new Set(qm.allowedClasses.filter(c => c.type === qm.formType).map(c => c.level))
-  );
-  const formActiveClasses = qm.allowedClasses.filter(
-    c => c.type === qm.formType && c.level === qm.formLevel
-  );
-
-  const handleFormTypeChange = (type) => {
-    qm.setFormType(type);
-    const levels = Array.from(new Set(qm.allowedClasses.filter(c => c.type === type).map(c => c.level)));
-    if (levels.length > 0) {
-      const firstLevel = levels[0];
-      qm.setFormLevel(firstLevel);
-      const classes = qm.allowedClasses.filter(c => c.type === type && c.level === firstLevel);
-      if (classes.length > 0) {
-        qm.setFormClass(classes[0].value);
-        qm.setFormGroup("General");
-        qm.setFormSubjectId("");
-        qm.setFormChapterNumber("");
-        qm.setFormTopics([]);
-      }
-    }
-  };
-
-  const handleFormLevelChange = (level) => {
-    qm.setFormLevel(level);
-    const classes = qm.allowedClasses.filter(c => c.type === qm.formType && c.level === level);
-    if (classes.length > 0) {
-      qm.setFormClass(classes[0].value);
-      qm.setFormGroup("General");
-      qm.setFormSubjectId("");
-      qm.setFormChapterNumber("");
-      qm.setFormTopics([]);
-    }
-  };
-
-  // Helper validation for steps
-  const isStep1Valid = () => {
-    return qm.formType && qm.formLevel && qm.formClass && qm.formSubjectId && qm.formChapterNumber && qm.formCategory;
-  };
-
-  const handleNextStep = () => {
-    if (qm.activeStep === 1 && !isStep1Valid()) return;
-    qm.setActiveStep((prev) => prev + 1);
-  };
-
-  const handlePrevStep = () => {
-    qm.setActiveStep((prev) => prev - 1);
-  };
-
-  const handleTopicToggle = (topic) => {
-    qm.setFormTopics((prev) =>
-      prev.includes(topic) ? prev.filter((t) => t !== topic) : [...prev, topic]
-    );
-  };
+  const {
+    qm,
+    activeDropdown,
+    setActiveDropdown,
+    formActiveTypes,
+    formActiveLevels,
+    formActiveClasses,
+    handleFormTypeChange,
+    handleFormLevelChange,
+    isStep1Valid,
+    handleNextStep,
+    handlePrevStep,
+    handleTopicToggle,
+  } = useAddQuestion();
 
   return (
     <div className="space-y-6 pb-12 w-full font-bengali">
