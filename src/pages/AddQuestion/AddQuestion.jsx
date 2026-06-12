@@ -308,6 +308,43 @@ export default function AddQuestion() {
                     </div>
                   </div>
 
+                  {/* Version Selection (Only shown if both Bangla and English versions are active in config) */}
+                  {(!qm.config?.versions || qm.config.versions.length > 1) && (
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">ভাষা সংস্করণ</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { value: "Bangla", label: "বাংলা" },
+                          { value: "English", label: "ইংরেজি" },
+                        ].map((ver) => {
+                          const isSelected = qm.formVersion === ver.value;
+                          return (
+                            <label
+                              key={ver.value}
+                              className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border text-xs font-bold select-none transition-all duration-200 h-11 ${
+                                qm.formLoading ? "pointer-events-none" : "cursor-pointer"
+                              } ${
+                                isSelected
+                                  ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200"
+                                  : "bg-white/[0.45] border-black/[0.08] text-slate-600 hover:border-indigo-300 hover:text-indigo-600 hover:bg-white/[0.60]"
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name="formVersion"
+                                checked={isSelected}
+                                onChange={() => qm.changeFormVersion(ver.value)}
+                                disabled={qm.formLoading}
+                                className="sr-only"
+                              />
+                              {ver.label}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Group Selection (Only for Class 9-12) */}
                   {['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(qm.formClass) && (
                     <div className="space-y-1.5">

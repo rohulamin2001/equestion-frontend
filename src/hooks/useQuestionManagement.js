@@ -1,15 +1,15 @@
-import { useState, useCallback } from 'react';
-import { useAuth } from '@clerk/react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/apiClient';
-import { useAcademicConfig } from './useAcademicConfig';
+import { useAuth } from '@clerk/react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
+import { useAcademicConfig } from './useAcademicConfig';
 
 export function useQuestionManagement(options = {}) {
   const { isPersonalOnly = false, skipFetch = false } = options;
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
-  const { allowedClasses, isLoading: configLoading } = useAcademicConfig();
+  const { allowedClasses, config, isLoading: configLoading } = useAcademicConfig();
 
   // Wizard Step State
   const [activeStep, setActiveStep] = useState(1);
@@ -85,6 +85,17 @@ export function useQuestionManagement(options = {}) {
     }
   };
 
+  const [userFormVersion, setUserFormVersion] = useState(null);
+  const defaultVersion = config?.versions && config.versions.length > 0 ? config.versions[0] : 'Bangla';
+  const formVersion = userFormVersion ?? defaultVersion;
+
+  const changeFormVersion = (val) => {
+    setUserFormVersion(val);
+    setFormSubjectId('');
+    setFormChapterNumber('');
+    setFormTopics([]);
+  };
+
   const [formSubjectId, setFormSubjectId] = useState('');
   const [formGroup, setFormGroup] = useState('General');
   const [formChapterNumber, setFormChapterNumber] = useState('');
@@ -107,6 +118,9 @@ export function useQuestionManagement(options = {}) {
     if (s.className !== formClass) return false;
     if (s.institutionType !== formType) return false;
     if (s.academicLevel !== formLevel) return false;
+    
+    const syllabusVersion = s.version || 'Bangla';
+    if (syllabusVersion !== formVersion) return false;
     const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(formClass);
     if (isClass9to12) {
       // Show subjects matching selected group OR general group
@@ -172,6 +186,7 @@ export function useQuestionManagement(options = {}) {
     setFormType(filterType);
     setFormLevel(filterLevel);
     setFormClass(filterClass);
+    setUserFormVersion(null);
     setFormSubjectId('');
     setFormGroup('General');
     setFormChapterNumber('');
@@ -217,6 +232,7 @@ export function useQuestionManagement(options = {}) {
     setFormType(question.institutionType || 'School');
     setFormLevel(question.academicLevel || 'Secondary');
     setFormClass(question.className);
+    setUserFormVersion(question.subjectId?.version || 'Bangla');
     setFormSubjectId(question.subjectId._id || question.subjectId);
     setFormGroup(question.subjectId?.group || 'General');
     setFormChapterNumber(question.chapterNumber.toString());
@@ -578,6 +594,9 @@ export function useQuestionManagement(options = {}) {
     setFormCategory,
     formDifficulty,
     setFormDifficulty,
+    formVersion,
+    changeFormVersion,
+    config,
 
     formYear,
     setFormYear,

@@ -10,7 +10,7 @@ export function useSyllabusManagement() {
   const { getToken } = useAuth();
   const { role: userRole } = useUserContext();
   const queryClient = useQueryClient();
-  const { allowedClasses, isLoading: configLoading } = useAcademicConfig();
+  const { allowedClasses, config, isLoading: configLoading } = useAcademicConfig();
 
   // Active filter state - Derived State Pattern
   const [userSelectedType, setUserSelectedType] = useState(null);
@@ -54,6 +54,20 @@ export function useSyllabusManagement() {
   const [formSubjectCode, setFormSubjectCode] = useState('');
   const [formGroup, setFormGroup] = useState('General');
   const [formYears, setFormYears] = useState([new Date().getFullYear()]);
+  
+  // Derived / Dynamic Version State
+  const [userFormVersion, setUserFormVersion] = useState(null);
+  const defaultVersion = config?.versions && config.versions.length > 0 ? config.versions[0] : 'Bangla';
+  const formVersion = userFormVersion ?? defaultVersion;
+  const setFormVersion = (val) => {
+    setUserFormVersion(val);
+    if (!editingSyllabus) {
+      setFormSubject('');
+      setFormSubjectId('');
+      setFormSubjectCode('');
+    }
+  };
+
   const [formChapters, setFormChapters] = useState([
     { chapterNumber: 1, chapterName: '', topicsString: '' }
   ]);
@@ -88,16 +102,17 @@ export function useSyllabusManagement() {
     }
   };
 
-  // Fetch configured subjects dynamically for the selected Type, Level, Class in the form
+  // Fetch configured subjects dynamically for the selected Type, Level, Class, Version in the form
   const { data: formSubjects = [], isLoading: subjectsLoading } = useQuery({
-    queryKey: ['subjects-form', formType, formLevel, formClass],
+    queryKey: ['subjects-form', formType, formLevel, formClass, formVersion],
     queryFn: async () => {
       const token = await getToken();
       const response = await apiClient.get('/subjects', {
         params: {
           className: formClass,
           institutionType: formType,
-          academicLevel: formLevel
+          academicLevel: formLevel,
+          version: formVersion
         },
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -220,6 +235,7 @@ export function useSyllabusManagement() {
     setFormSubjectCode('');
     setFormGroup('General');
     setFormYears([new Date().getFullYear()]);
+    setUserFormVersion(null);
     setFormChapters([{ chapterNumber: 1, chapterName: '', topicsString: '' }]);
     setEditingSyllabus(null);
   };
@@ -241,6 +257,7 @@ export function useSyllabusManagement() {
     setFormSubjectCode(syllabus.subjectCode || '');
     setFormGroup(syllabus.group || 'General');
     setFormYears(syllabus.years && syllabus.years.length > 0 ? syllabus.years : [new Date().getFullYear()]);
+    setUserFormVersion(syllabus.version || 'Bangla');
     
     // Map chapters to include topicsString (comma-separated list for easy textarea editing)
     const mappedChapters = syllabus.chapters.map(c => ({
@@ -308,7 +325,8 @@ export function useSyllabusManagement() {
       years: formYears,
       chapters: formattedChapters,
       institutionType: formType,
-      academicLevel: formLevel
+      academicLevel: formLevel,
+      version: formVersion
     };
 
     if (editingSyllabus) {
@@ -363,6 +381,9 @@ export function useSyllabusManagement() {
     setFormYears,
     handleAddYear,
     handleRemoveYear,
+    formVersion,
+    setFormVersion,
+    config,
     formChapters,
     formLoading,
     deletePending: deleteSyllabusMutation.isPending,

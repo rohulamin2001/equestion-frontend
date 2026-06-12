@@ -31,7 +31,6 @@ import {
   AlertCircle,
   Book,
   BookOpen,
-  CheckCircle2,
   ChevronDown,
   Edit,
   FolderPlus,
@@ -69,7 +68,6 @@ const getGroupLabel = (groupName) => {
 
 export default function SyllabusManagement() {
   const {
-    userRole,
     selectedType,
     setSelectedType,
     selectedLevel,
@@ -77,7 +75,6 @@ export default function SyllabusManagement() {
     selectedClass,
     setSelectedClass,
     allowedClasses,
-    configLoading,
     isModalOpen,
     setIsModalOpen,
     editingSyllabus,
@@ -101,8 +98,9 @@ export default function SyllabusManagement() {
     setFormGroup,
     formYears,
     setFormYears,
-    handleAddYear,
-    handleRemoveYear,
+    formVersion,
+    setFormVersion,
+    config,
     formChapters,
     formLoading,
     deletePending,
@@ -175,12 +173,6 @@ export default function SyllabusManagement() {
   };
 
   const activeTypes = Array.from(new Set(allowedClasses.map(c => c.type)));
-  const activeLevels = Array.from(
-    new Set(allowedClasses.filter(c => c.type === selectedType).map(c => c.level))
-  );
-  const classesForLevel = allowedClasses.filter(
-    c => c.type === selectedType && c.level === selectedLevel
-  );
 
   const currentClassLabel = allowedClasses.find(
     c => c.value === selectedClass && c.type === selectedType && c.level === selectedLevel
@@ -260,6 +252,15 @@ export default function SyllabusManagement() {
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="font-bold text-slate-800 text-lg leading-tight">{subject.subjectName}</h3>
+                          {(!config?.versions || config.versions.length > 1) && (
+                            <span className={`inline-flex items-center border text-xs px-2.5 py-0.5 rounded-full font-semibold ${
+                              subject.version === 'English'
+                                ? 'bg-blue-50 border-blue-200 text-blue-700'
+                                : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                            }`}>
+                              {subject.version === 'English' ? 'ইংরেজি সংস্করণ' : 'বাংলা সংস্করণ'}
+                            </span>
+                          )}
                           {subject.group && subject.group !== 'General' && (
                             <span className="inline-flex items-center bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">
                               {getGroupLabel(subject.group)}
@@ -577,8 +578,53 @@ export default function SyllabusManagement() {
                       </DropdownMenu>
                     </div>
 
+                    {/* Version Selection (Only shown if both Bangla and English versions are active in config) */}
+                    {(!config?.versions || config.versions.length > 1) && (
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                          ভাষা সংস্করণ (Language Version) <span className="text-indigo-400">*</span>
+                        </label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            { value: 'Bangla', label: 'বাংলা সংস্করণ' },
+                            { value: 'English', label: 'ইংরেজি সংস্করণ' },
+                          ].map((ver) => {
+                            const isSelected = formVersion === ver.value;
+                            return (
+                              <label
+                                key={ver.value}
+                                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold select-none transition-all duration-200 h-11 ${
+                                  editingSyllabus
+                                    ? 'pointer-events-none'
+                                    : 'cursor-pointer'
+                                } ${
+                                  isSelected
+                                    ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200'
+                                    : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600'
+                                } ${
+                                  editingSyllabus && !isSelected
+                                    ? 'opacity-50'
+                                    : ''
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name="formVersion"
+                                  checked={isSelected}
+                                  onChange={() => setFormVersion(ver.value)}
+                                  disabled={formLoading || !!editingSyllabus}
+                                  className="sr-only"
+                                />
+                                {ver.label}
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Subject Selection Dropdown */}
-                    <div className="space-y-2">
+                    <div className={`space-y-2 ${(!config?.versions || config.versions.length > 1) ? 'sm:col-span-2' : ''}`}>
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
                         বিষয় নির্বাচন (Subject)
                       </label>
@@ -848,7 +894,7 @@ export default function SyllabusManagement() {
                 if (syllabusToDelete) {
                   try {
                     await handleDelete();
-                  } catch (err) {
+                  } catch {
                     // Handled in mutation
                   }
                 }
