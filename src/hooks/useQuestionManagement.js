@@ -1,11 +1,12 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useAuth } from '@clerk/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/apiClient';
 import { useAcademicConfig } from './useAcademicConfig';
 import { toast } from 'sonner';
 
-export function useQuestionManagement() {
+export function useQuestionManagement(options = {}) {
+  const { isPersonalOnly = false, skipFetch = false } = options;
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
   const { allowedClasses, isLoading: configLoading } = useAcademicConfig();
@@ -13,25 +14,121 @@ export function useQuestionManagement() {
   // Wizard Step State
   const [activeStep, setActiveStep] = useState(1);
 
-  // Active list filters (for QuestionBank and MyQuestions pages)
-  const [filterType, setFilterType] = useState('School');
-  const [filterLevel, setFilterLevel] = useState('Secondary');
-  const [filterClass, setFilterClass] = useState('Class 6');
+  // Active list filters (for QuestionBank and MyQuestions pages) - Derived State Pattern
+  const [userFilterType, setUserFilterType] = useState(null);
+  const [userFilterLevel, setUserFilterLevel] = useState(null);
+  const [userFilterClass, setUserFilterClass] = useState(null);
+
+  const firstAllowed = allowedClasses && allowedClasses.length > 0 ? allowedClasses[0] : null;
+
+  const isFilterSelectionValid = allowedClasses.some(
+    c => c.value === userFilterClass && c.type === userFilterType && c.level === userFilterLevel
+  );
+
+  const filterType = isFilterSelectionValid ? userFilterType : (firstAllowed ? firstAllowed.type : 'School');
+  const filterLevel = isFilterSelectionValid ? userFilterLevel : (firstAllowed ? firstAllowed.level : 'Secondary');
+  const filterClass = isFilterSelectionValid ? userFilterClass : (firstAllowed ? firstAllowed.value : 'Class 6');
+
+  const setFilterType = setUserFilterType;
+  const setFilterLevel = setUserFilterLevel;
+  const setFilterClass = (clsVal) => {
+    const clsObj = allowedClasses.find((c) => c.value === clsVal);
+    if (clsObj) {
+      setUserFilterType(clsObj.type);
+      setUserFilterLevel(clsObj.level);
+      setUserFilterClass(clsVal);
+    } else {
+      setUserFilterClass(clsVal);
+    }
+  };
+
   const [filterSubjectId, setFilterSubjectId] = useState('');
   const [filterChapter, setFilterChapter] = useState('');
-  const [filterCategory, setFilterCategory] = useState('');
+
+  // Derived filter category based on primary/secondary level limits
+  const [userFilterCategory, setUserFilterCategory] = useState('');
+  const primaryLevels = ["Primary", "Ebtedayee"];
+  const primaryCats = ["MCQ", "ShortAnswer", "FillInBlanks", "Matching", "BroadQuestion"];
+  const secondaryCats = ["MCQ", "Creative", "ShortAnswer", "BroadQuestion"];
+
+  const isPrimary = primaryLevels.includes(filterLevel);
+  const allowedCats = isPrimary ? primaryCats : secondaryCats;
+  const filterCategory = allowedCats.includes(userFilterCategory) ? userFilterCategory : '';
+  const setFilterCategory = setUserFilterCategory;
+
   const [filterDifficulty, setFilterDifficulty] = useState('');
   const [filterSearch, setFilterSearch] = useState('');
 
-  // Form Field States
-  const [formType, setFormType] = useState('School');
-  const [formLevel, setFormLevel] = useState('Secondary');
-  const [formClass, setFormClass] = useState('Class 6');
+  // Form Field States - Derived State Pattern
+  const [userFormType, setUserFormType] = useState(null);
+  const [userFormLevel, setUserFormLevel] = useState(null);
+  const [userFormClass, setUserFormClass] = useState(null);
+
+  const isFormSelectionValid = allowedClasses.some(
+    c => c.value === userFormClass && c.type === userFormType && c.level === userFormLevel
+  );
+
+  const formType = isFormSelectionValid ? userFormType : (firstAllowed ? firstAllowed.type : 'School');
+  const formLevel = isFormSelectionValid ? userFormLevel : (firstAllowed ? firstAllowed.level : 'Secondary');
+  const formClass = isFormSelectionValid ? userFormClass : (firstAllowed ? firstAllowed.value : 'Class 6');
+
+  const setFormType = setUserFormType;
+  const setFormLevel = setUserFormLevel;
+  const setFormClass = (clsVal) => {
+    const clsObj = allowedClasses.find((c) => c.value === clsVal);
+    if (clsObj) {
+      setUserFormType(clsObj.type);
+      setUserFormLevel(clsObj.level);
+      setUserFormClass(clsVal);
+    } else {
+      setUserFormClass(clsVal);
+    }
+  };
+
   const [formSubjectId, setFormSubjectId] = useState('');
   const [formGroup, setFormGroup] = useState('General');
   const [formChapterNumber, setFormChapterNumber] = useState('');
   const [formTopics, setFormTopics] = useState([]);
-  const [formCategory, setFormCategory] = useState('MCQ');
+
+  // Fetch Syllabus list (for populating Class & Subject dropdowns)
+  const { data: syllabusList = [], isLoading: loadingSyllabus } = useQuery({
+    queryKey: ['globalSyllabusList'],
+    queryFn: async () => {
+      const token = await getToken();
+      const response = await apiClient.get('/syllabus', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data.syllabus;
+    },
+  });
+
+  // Get active subjects for selected class inside the form, filtering by group if class 9-12
+  const formSubjects = syllabusList.filter(s => {
+    if (s.className !== formClass) return false;
+    if (s.institutionType !== formType) return false;
+    if (s.academicLevel !== formLevel) return false;
+    const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(formClass);
+    if (isClass9to12) {
+      // Show subjects matching selected group OR general group
+      return s.group === formGroup || s.group === 'General' || !s.group;
+    }
+    return true;
+  });
+  // Get active chapters for selected subject inside the form
+  const selectedSyllabusObj = syllabusList.find(s => s._id === formSubjectId);
+  const formChapters = selectedSyllabusObj?.chapters || [];
+
+  // Derived formCategory based on subject allowed categories
+  const [userFormCategory, setUserFormCategory] = useState('MCQ');
+  const allowedCategoriesForSubject = (formSubjectId && selectedSyllabusObj)
+    ? (selectedSyllabusObj?.subjectId?.categories || [])
+    : [];
+
+  const formCategory = allowedCategoriesForSubject.length > 0
+    ? (allowedCategoriesForSubject.includes(userFormCategory) ? userFormCategory : allowedCategoriesForSubject[0])
+    : '';
+  const setFormCategory = setUserFormCategory;
+
   const [formDifficulty, setFormDifficulty] = useState('Medium');
 
   // New metadata fields
@@ -68,99 +165,6 @@ export function useQuestionManagement() {
   const [generalMarks, setGeneralMarks] = useState(1);
 
   const [editingQuestion, setEditingQuestion] = useState(null); // null if creating
-
-  // Fetch Syllabus list (for populating Class & Subject dropdowns)
-  const { data: syllabusList = [], isLoading: loadingSyllabus } = useQuery({
-    queryKey: ['globalSyllabusList'],
-    queryFn: async () => {
-      const token = await getToken();
-      const response = await apiClient.get('/syllabus', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return response.data.syllabus;
-    },
-  });
-
-  // Get active subjects for selected class inside the form, filtering by group if class 9-12
-  const formSubjects = syllabusList.filter(s => {
-    if (s.className !== formClass) return false;
-    if (s.institutionType !== formType) return false;
-    if (s.academicLevel !== formLevel) return false;
-    const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(formClass);
-    if (isClass9to12) {
-      // Show subjects matching selected group OR general group
-      return s.group === formGroup || s.group === 'General' || !s.group;
-    }
-    return true;
-  });
-  // Get active chapters for selected subject inside the form
-  const selectedSyllabusObj = syllabusList.find(s => s._id === formSubjectId);
-  const formChapters = selectedSyllabusObj?.chapters || [];
-
-  // Sync filter state when allowedClasses changes or loads
-  useEffect(() => {
-    if (allowedClasses && allowedClasses.length > 0) {
-      const exists = allowedClasses.some(
-        c => c.value === filterClass && c.type === filterType && c.level === filterLevel
-      );
-      if (!exists) {
-        const first = allowedClasses[0];
-        setFilterType(first.type);
-        setFilterLevel(first.level);
-        setFilterClass(first.value);
-      }
-    }
-  }, [allowedClasses, filterClass, filterType, filterLevel]);
-
-  // Sync form state when allowedClasses changes or loads
-  useEffect(() => {
-    if (allowedClasses && allowedClasses.length > 0) {
-      const exists = allowedClasses.some(
-        c => c.value === formClass && c.type === formType && c.level === formLevel
-      );
-      if (!exists) {
-        const first = allowedClasses[0];
-        setFormType(first.type);
-        setFormLevel(first.level);
-        setFormClass(first.value);
-      }
-    }
-  }, [allowedClasses, formClass, formType, formLevel]);
-
-  // Curriculum Alignment validation
-  useEffect(() => {
-    if (!formSubjectId || !selectedSyllabusObj) {
-      setFormCategory('');
-      return;
-    }
-
-    const subjectConfiguredCategories = selectedSyllabusObj?.subjectId?.categories;
-    let allowed = [];
-
-    if (subjectConfiguredCategories && Array.isArray(subjectConfiguredCategories) && subjectConfiguredCategories.length > 0) {
-      allowed = subjectConfiguredCategories;
-    }
-
-    if (allowed.length > 0) {
-      if (!allowed.includes(formCategory)) {
-        setFormCategory(allowed[0]);
-      }
-    } else {
-      setFormCategory('');
-    }
-  }, [formSubjectId, selectedSyllabusObj, formCategory]);
-
-  useEffect(() => {
-    const primaryLevels = ["Primary", "Ebtedayee"];
-    const primaryCats = ["MCQ", "ShortAnswer", "FillInBlanks", "Matching", "BroadQuestion"];
-    const secondaryCats = ["MCQ", "Creative", "ShortAnswer", "BroadQuestion"];
-
-    const isPrimary = primaryLevels.includes(filterLevel);
-    const allowed = isPrimary ? primaryCats : secondaryCats;
-    if (filterCategory && !allowed.includes(filterCategory)) {
-      setFilterCategory("");
-    }
-  }, [filterLevel, filterCategory]);
 
   // Reset Form
   const resetForm = useCallback(() => {
@@ -253,41 +257,40 @@ export function useQuestionManagement() {
   }, []);
 
   // Fetch Questions list (for QuestionBank and MyQuestions)
-  const fetchQuestionsQuery = (isPersonalOnly = false) => {
-    return useQuery({
-      queryKey: [
-        isPersonalOnly ? 'myQuestionsList' : 'globalQuestionsList',
-        filterType,
-        filterLevel,
-        filterClass,
-        filterSubjectId,
-        filterChapter,
-        filterCategory,
-        filterDifficulty,
-        filterSearch,
-      ],
-      queryFn: async () => {
-        const token = await getToken();
-        const params = {
-          className: filterClass,
-          personal: isPersonalOnly ? 'true' : 'false',
-          institutionType: filterType,
-          academicLevel: filterLevel,
-        };
-        if (filterSubjectId) params.subjectId = filterSubjectId;
-        if (filterChapter) params.chapterNumber = filterChapter;
-        if (filterCategory) params.category = filterCategory;
-        if (filterDifficulty) params.difficulty = filterDifficulty;
-        if (filterSearch) params.search = filterSearch;
+  const questionsQuery = useQuery({
+    queryKey: [
+      isPersonalOnly ? 'myQuestionsList' : 'globalQuestionsList',
+      filterType,
+      filterLevel,
+      filterClass,
+      filterSubjectId,
+      filterChapter,
+      filterCategory,
+      filterDifficulty,
+      filterSearch,
+    ],
+    enabled: !skipFetch,
+    queryFn: async () => {
+      const token = await getToken();
+      const params = {
+        className: filterClass,
+        personal: isPersonalOnly ? 'true' : 'false',
+        institutionType: filterType,
+        academicLevel: filterLevel,
+      };
+      if (filterSubjectId) params.subjectId = filterSubjectId;
+      if (filterChapter) params.chapterNumber = filterChapter;
+      if (filterCategory) params.category = filterCategory;
+      if (filterDifficulty) params.difficulty = filterDifficulty;
+      if (filterSearch) params.search = filterSearch;
 
-        const response = await apiClient.get('/questions', {
-          params,
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        return response.data.questions;
-      },
-    });
-  };
+      const response = await apiClient.get('/questions', {
+        params,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data.questions;
+    },
+  });
 
   // Add Question Mutation
   const addQuestionMutation = useMutation({
@@ -506,9 +509,13 @@ export function useQuestionManagement() {
       return;
     }
 
-    let payloads = [];
+    let payloads;
     if (questionsList.length > 0) {
-      payloads = questionsList.map(({ id, ...rest }) => rest);
+      payloads = questionsList.map((q) => {
+        const payload = { ...q };
+        delete payload.id;
+        return payload;
+      });
     } else {
       const singlePayload = buildPayloadFromForm();
       if (!singlePayload) return;
@@ -624,7 +631,7 @@ export function useQuestionManagement() {
     setGeneralMarks,
 
     // CRUD Queries & Mutations
-    fetchQuestionsQuery,
+    questionsQuery,
     deleteQuestionMutation,
     handleSaveQuestion,
     handleOpenEditMode,

@@ -3,7 +3,7 @@ import { useAcademicConfig } from '@/hooks/useAcademicConfig';
 import apiClient from '@/lib/apiClient';
 import { useAuth } from '@clerk/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 export const PREDEFINED_CATEGORIES = CATEGORIES_MAP.map((c) => c);
@@ -35,12 +35,37 @@ export const getGroupLabel = (groupName) => {
 export function useSubjectSetup() {
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
-  const { allowedClasses } = useAcademicConfig();
+  const { allowedClasses, config } = useAcademicConfig();
 
-  // Active filter state
-  const [selectedType, setSelectedType] = useState('School');
-  const [selectedLevel, setSelectedLevel] = useState('Secondary');
-  const [selectedClass, setSelectedClass] = useState('Class 6');
+  // Active filter state (raw user choices)
+  const [userSelectedType, setUserSelectedType] = useState(null);
+  const [userSelectedLevel, setUserSelectedLevel] = useState(null);
+  const [userSelectedClass, setUserSelectedClass] = useState(null);
+  const [listVersionFilter, setListVersionFilter] = useState('All');
+
+  // Fallback defaults from config
+  const firstAllowed = allowedClasses && allowedClasses.length > 0 ? allowedClasses[0] : null;
+
+  // Validate user selection
+  const isSelectionValid = allowedClasses.some(
+    (c) => c.value === userSelectedClass && c.type === userSelectedType && c.level === userSelectedLevel
+  );
+
+  const selectedType = isSelectionValid ? userSelectedType : (firstAllowed ? firstAllowed.type : 'School');
+  const selectedLevel = isSelectionValid ? userSelectedLevel : (firstAllowed ? firstAllowed.level : 'Secondary');
+  const selectedClass = isSelectionValid ? userSelectedClass : (firstAllowed ? firstAllowed.value : 'Class 6');
+
+  // Custom setter for class selection
+  const setSelectedClass = (clsVal) => {
+    const clsObj = allowedClasses.find((c) => c.value === clsVal);
+    if (clsObj) {
+      setUserSelectedType(clsObj.type);
+      setUserSelectedLevel(clsObj.level);
+      setUserSelectedClass(clsVal);
+    } else {
+      setUserSelectedClass(clsVal);
+    }
+  };
 
   // Form Fields
   const [subjectName, setSubjectName] = useState('');
@@ -49,25 +74,16 @@ export function useSubjectSetup() {
   const [subjectYears, setSubjectYears] = useState([new Date().getFullYear()]);
   const [subjectCategories, setSubjectCategories] = useState(['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']);
 
+  // Version Field using derived state pattern
+  const [userSelectedVersion, setUserSelectedVersion] = useState(null);
+  const defaultVersion = config?.versions && config.versions.length > 0 ? config.versions[0] : 'Bangla';
+  const subjectVersion = userSelectedVersion ?? defaultVersion;
+  const setSubjectVersion = setUserSelectedVersion;
+
   // Modal / Editing states
   const [editingSubject, setEditingSubject] = useState(null);
   const [subjectToDelete, setSubjectToDelete] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  // Sync state when allowedClasses changes or loaded
-  useEffect(() => {
-    if (allowedClasses && allowedClasses.length > 0) {
-      const exists = allowedClasses.some(
-        (c) => c.value === selectedClass && c.type === selectedType && c.level === selectedLevel
-      );
-      if (!exists) {
-        const first = allowedClasses[0];
-        setSelectedType(first.type);
-        setSelectedLevel(first.level);
-        setSelectedClass(first.value);
-      }
-    }
-  }, [allowedClasses]);
 
   const activeTypes = Array.from(new Set(allowedClasses.map((c) => c.type)));
   const activeLevels = Array.from(
@@ -84,15 +100,19 @@ export function useSubjectSetup() {
 
   // Fetch Subjects Query
   const { data: subjects = [], isLoading: subjectsLoading } = useQuery({
-    queryKey: ['subjects', selectedType, selectedLevel, selectedClass],
+    queryKey: ['subjects', selectedType, selectedLevel, selectedClass, listVersionFilter],
     queryFn: async () => {
       const token = await getToken();
+      const params = {
+        className: selectedClass,
+        institutionType: selectedType,
+        academicLevel: selectedLevel,
+      };
+      if (listVersionFilter !== 'All') {
+        params.version = listVersionFilter;
+      }
       const response = await apiClient.get('/subjects', {
-        params: {
-          className: selectedClass,
-          institutionType: selectedType,
-          academicLevel: selectedLevel,
-        },
+        params,
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.subjects;
@@ -197,6 +217,7 @@ export function useSubjectSetup() {
     setSubjectGroup('General');
     setSubjectYears([new Date().getFullYear()]);
     setSubjectCategories(['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']);
+    setUserSelectedVersion(null);
   };
 
   const handleCreateSubjectSubmit = (e) => {
@@ -213,6 +234,7 @@ export function useSubjectSetup() {
       categories: subjectCategories,
       institutionType: selectedType,
       academicLevel: selectedLevel,
+      version: subjectVersion,
     });
   };
 
@@ -232,6 +254,7 @@ export function useSubjectSetup() {
         categories: editingSubject.categories || ['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion'],
         institutionType: editingSubject.institutionType,
         academicLevel: editingSubject.academicLevel,
+        version: editingSubject.version || 'Bangla',
       },
     });
   };
@@ -243,22 +266,23 @@ export function useSubjectSetup() {
         sub.categories && sub.categories.length > 0
           ? sub.categories
           : ['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion'],
+      version: sub.version || (config?.versions && config.versions.length > 0 ? config.versions[0] : 'Bangla'),
     });
     setIsEditModalOpen(true);
   };
 
   const handleTypeChange = (type) => {
-    setSelectedType(type);
+    setUserSelectedType(type);
     const lvls = Array.from(new Set(allowedClasses.filter((c) => c.type === type).map((c) => c.level)));
     if (lvls.length > 0) {
-      setSelectedLevel(lvls[0]);
+      setUserSelectedLevel(lvls[0]);
       const cls = allowedClasses.filter((c) => c.type === type && c.level === lvls[0]);
       if (cls.length > 0) setSelectedClass(cls[0].value);
     }
   };
 
   const handleLevelChange = (level) => {
-    setSelectedLevel(level);
+    setUserSelectedLevel(level);
     const cls = allowedClasses.filter((c) => c.type === selectedType && c.level === level);
     if (cls.length > 0) setSelectedClass(cls[0].value);
   };
@@ -269,9 +293,9 @@ export function useSubjectSetup() {
     // Filter state & derived
     allowedClasses,
     selectedType,
-    setSelectedType,
+    setSelectedType: setUserSelectedType,
     selectedLevel,
-    setSelectedLevel,
+    setSelectedLevel: setUserSelectedLevel,
     selectedClass,
     setSelectedClass,
     activeTypes,
@@ -280,6 +304,8 @@ export function useSubjectSetup() {
     currentClassLabel,
     handleTypeChange,
     handleLevelChange,
+    listVersionFilter,
+    setListVersionFilter,
 
     // Form fields
     subjectName,
@@ -290,6 +316,9 @@ export function useSubjectSetup() {
     setSubjectGroup,
     subjectYears,
     subjectCategories,
+    subjectVersion,
+    setSubjectVersion,
+    config,
 
     // Modal / editing state
     editingSubject,

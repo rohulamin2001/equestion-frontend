@@ -5,7 +5,7 @@ import { useUserContext } from "@/context/UserContext";
 
 export function useQuestionBank() {
   const navigate = useNavigate();
-  const qm = useQuestionManagement();
+  const qm = useQuestionManagement({ isPersonalOnly: false });
   const { userProfile, role } = useUserContext();
 
   // Dialog / Modal States
@@ -14,7 +14,7 @@ export function useQuestionBank() {
   const [showFilters, setShowFilters] = useState(false);
 
   // Fetch global questions (personal = false)
-  const { data: questions = [], isLoading, isError, refetch } = qm.fetchQuestionsQuery(false);
+  const { data: questions = [], isLoading, isError, refetch } = qm.questionsQuery;
 
   // Cascading helpers
   const filterActiveTypes = Array.from(new Set(qm.allowedClasses.map(c => c.type)));

@@ -33,7 +33,7 @@ export { CATEGORIES_MAP, CLASSES_MAP };
 
 export function useAddQuestion() {
   const { getToken } = useAuth();
-  const qm = useQuestionManagement();
+  const qm = useQuestionManagement({ skipFetch: true });
   const location = useLocation();
   const navigate = useNavigate();
   const [activeDropdown, setActiveDropdown] = useState(null); // 'class' | 'subject' | 'chapter' | 'school' | 'board' | 'year' | 'levelTag' | null

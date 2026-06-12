@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/react';
 import { useUserContext } from '@/context/UserContext';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import apiClient from '@/lib/apiClient';
 import { useAcademicConfig } from '@/hooks/useAcademicConfig';
+import apiClient from '@/lib/apiClient';
+import { useAuth } from '@clerk/react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 export function useSyllabusManagement() {
@@ -12,25 +12,33 @@ export function useSyllabusManagement() {
   const queryClient = useQueryClient();
   const { allowedClasses, isLoading: configLoading } = useAcademicConfig();
 
-  // Active filter state
-  const [selectedType, setSelectedType] = useState('School');
-  const [selectedLevel, setSelectedLevel] = useState('Secondary');
-  const [selectedClass, setSelectedClass] = useState('Class 6');
+  // Active filter state - Derived State Pattern
+  const [userSelectedType, setUserSelectedType] = useState(null);
+  const [userSelectedLevel, setUserSelectedLevel] = useState(null);
+  const [userSelectedClass, setUserSelectedClass] = useState(null);
 
-  // Sync state when allowedClasses changes or loaded
-  useEffect(() => {
-    if (allowedClasses && allowedClasses.length > 0) {
-      const exists = allowedClasses.some(
-        c => c.value === selectedClass && c.type === selectedType && c.level === selectedLevel
-      );
-      if (!exists) {
-        const first = allowedClasses[0];
-        setSelectedType(first.type);
-        setSelectedLevel(first.level);
-        setSelectedClass(first.value);
-      }
+  const firstAllowed = allowedClasses && allowedClasses.length > 0 ? allowedClasses[0] : null;
+
+  const isSelectionValid = allowedClasses.some(
+    c => c.value === userSelectedClass && c.type === userSelectedType && c.level === userSelectedLevel
+  );
+
+  const selectedType = isSelectionValid ? userSelectedType : (firstAllowed ? firstAllowed.type : 'School');
+  const selectedLevel = isSelectionValid ? userSelectedLevel : (firstAllowed ? firstAllowed.level : 'Secondary');
+  const selectedClass = isSelectionValid ? userSelectedClass : (firstAllowed ? firstAllowed.value : 'Class 6');
+
+  const setSelectedType = setUserSelectedType;
+  const setSelectedLevel = setUserSelectedLevel;
+  const setSelectedClass = (clsVal) => {
+    const clsObj = allowedClasses.find((c) => c.value === clsVal);
+    if (clsObj) {
+      setUserSelectedType(clsObj.type);
+      setUserSelectedLevel(clsObj.level);
+      setUserSelectedClass(clsVal);
+    } else {
+      setUserSelectedClass(clsVal);
     }
-  }, [allowedClasses, selectedClass, selectedType, selectedLevel]);
+  };
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,9 +46,9 @@ export function useSyllabusManagement() {
   const [syllabusToDelete, setSyllabusToDelete] = useState(null); // contains syllabus object to delete
 
   // Form Fields
-  const [formType, setFormType] = useState('School');
-  const [formLevel, setFormLevel] = useState('Secondary');
-  const [formClass, setFormClass] = useState('Class 6');
+  const [formType, setFormTypeState] = useState('School');
+  const [formLevel, setFormLevelState] = useState('Secondary');
+  const [formClass, setFormClassState] = useState('Class 6');
   const [formSubject, setFormSubject] = useState('');
   const [formSubjectId, setFormSubjectId] = useState('');
   const [formSubjectCode, setFormSubjectCode] = useState('');
@@ -49,6 +57,36 @@ export function useSyllabusManagement() {
   const [formChapters, setFormChapters] = useState([
     { chapterNumber: 1, chapterName: '', topicsString: '' }
   ]);
+
+  const setFormType = (val) => {
+    setFormTypeState(val);
+    if (!editingSyllabus) {
+      setFormSubject('');
+      setFormSubjectId('');
+      setFormSubjectCode('');
+      setFormYears([new Date().getFullYear()]);
+    }
+  };
+
+  const setFormLevel = (val) => {
+    setFormLevelState(val);
+    if (!editingSyllabus) {
+      setFormSubject('');
+      setFormSubjectId('');
+      setFormSubjectCode('');
+      setFormYears([new Date().getFullYear()]);
+    }
+  };
+
+  const setFormClass = (clsVal) => {
+    setFormClassState(clsVal);
+    if (!editingSyllabus) {
+      setFormSubject('');
+      setFormSubjectId('');
+      setFormSubjectCode('');
+      setFormYears([new Date().getFullYear()]);
+    }
+  };
 
   // Fetch configured subjects dynamically for the selected Type, Level, Class in the form
   const { data: formSubjects = [], isLoading: subjectsLoading } = useQuery({
@@ -67,16 +105,6 @@ export function useSyllabusManagement() {
     },
     enabled: !!formClass
   });
-
-  // Reset subject states when class/type/level changes (unless editing)
-  useEffect(() => {
-    if (!editingSyllabus) {
-      setFormSubject('');
-      setFormSubjectId('');
-      setFormSubjectCode('');
-      setFormYears([new Date().getFullYear()]);
-    }
-  }, [formClass, formType, formLevel, editingSyllabus]);
 
   const handleAddYear = (year) => {
     const y = Number(year);

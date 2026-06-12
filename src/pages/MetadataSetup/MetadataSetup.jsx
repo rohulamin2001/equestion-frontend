@@ -1,42 +1,42 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@clerk/react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "framer-motion";
-import apiClient from "@/lib/apiClient";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
-  AlertDialogPopup,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogPopup,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button";
+import { Button } from "@/components/ui/button";
 import {
-  School,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button";
+import apiClient from "@/lib/apiClient";
+import { useAuth } from "@clerk/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AnimatePresence, motion } from "framer-motion";
+import {
   Award,
   Calendar,
-  Layers,
-  Search,
-  Plus,
-  Edit2,
-  Trash2,
   ChevronLeft,
   ChevronRight,
+  Edit2,
+  Layers,
   Loader2,
+  Plus,
+  School,
+  Search,
+  Trash2,
 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const TABS = [
   { id: "School", label: "শীর্ষস্থানীয় স্কুল", icon: School, placeholder: "যেমন: মতিঝিল আইডিয়াল স্কুল" },
@@ -63,12 +63,12 @@ export default function MetadataSetup() {
   const [editShortName, setEditShortName] = useState("");
   const [deletingItem, setDeletingItem] = useState(null);
 
-  // Reset page when switching tabs
-  useEffect(() => {
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
     setCurrentPage(1);
     setNewValue("");
     setNewShortValue("");
-  }, [activeTab]);
+  };
 
   // Fetch metadata options
   const { data: rawMetadata = [], isLoading } = useQuery({
@@ -227,7 +227,7 @@ export default function MetadataSetup() {
           return (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabChange(tab.id)}
               className={`relative flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition cursor-pointer select-none ${
                 isActive
                   ? "text-white"

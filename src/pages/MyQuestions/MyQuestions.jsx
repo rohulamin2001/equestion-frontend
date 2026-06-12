@@ -1,37 +1,32 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useQuestionManagement } from "@/hooks/useQuestionManagement";
-import { CLASSES_MAP } from "@/constants/classes";
-import { CATEGORIES_MAP } from "@/constants/categories";
-import { useUserContext } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  FolderOpen,
-  Plus,
-  Search,
-  Edit3,
-  Trash2,
-  Filter,
-  Loader2,
-  BookOpen,
-  HelpCircle,
-  Check,
-  CheckCircle2,
-  AlertCircle,
-  Calendar,
-  ChevronDown,
-  X,
-} from "lucide-react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
+  DialogHeader,
+  DialogTitle
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { CATEGORIES_MAP } from "@/constants/categories";
+import { CLASSES_MAP } from "@/constants/classes";
+import { useQuestionManagement } from "@/hooks/useQuestionManagement";
+import {
+  AlertCircle,
+  Calendar,
+  Check,
+  ChevronDown,
+  Edit3,
+  Filter,
+  FolderOpen,
+  Loader2,
+  Plus,
+  Search,
+  Trash2,
+  X
+} from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const TYPE_LABELS = {
   School: "স্কুল (School)",
@@ -58,15 +53,14 @@ const DIFFICULTY_MAP = {
 
 export default function MyQuestions() {
   const navigate = useNavigate();
-  const qm = useQuestionManagement();
-  const { userProfile } = useUserContext();
+  const qm = useQuestionManagement({ isPersonalOnly: true });
 
   // Dialog State
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
 
   // Fetch personal questions
-  const { data: questions = [], isLoading, isError, refetch } = qm.fetchQuestionsQuery(true);
+  const { data: questions = [], isLoading, isError, refetch } = qm.questionsQuery;
 
   // Cascading helpers
   const filterActiveTypes = Array.from(new Set(qm.allowedClasses.map(c => c.type)));
