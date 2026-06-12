@@ -21,13 +21,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { RippleButton, RippleButtonRipples } from '@/components/ui/ripple-button';
 import {
-  LEVEL_LABELS,
-  PREDEFINED_CATEGORIES,
-  TYPE_LABELS,
-  getGroupLabel,
-  useSubjectSetup,
-} from './hook/useSubjectSetup';
-import {
   BookOpen,
   ChevronRight,
   Code,
@@ -39,6 +32,13 @@ import {
   Sliders,
   Trash2,
 } from 'lucide-react';
+import {
+  LEVEL_LABELS,
+  PREDEFINED_CATEGORIES,
+  TYPE_LABELS,
+  getGroupLabel,
+  useSubjectSetup,
+} from './hook/useSubjectSetup';
 
 const TYPE_ICONS = {
   School: School,
@@ -66,7 +66,6 @@ const TYPE_COLORS = {
 
 export default function SubjectSetup() {
   const {
-    allowedClasses,
     selectedType,
     selectedLevel,
     selectedClass,
@@ -220,47 +219,58 @@ export default function SubjectSetup() {
             <span>নতুন বিষয় যোগ করুন ({currentClassLabel})</span>
           </h3>
 
-          <form onSubmit={handleCreateSubjectSubmit} className="space-y-4">
-            {/* Subject Name Input */}
+          <form onSubmit={handleCreateSubjectSubmit} className="space-y-5">
+
+            {/* Subject Name */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-600 mb-1.5 block">বিষয়ের নাম (Subject Name)</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
+                বিষয়ের নাম <span className="text-indigo-400">*</span>
+              </label>
               <Input
                 required
                 placeholder="যেমন: বাংলা ১ম পত্র, সাধারণ গণিত"
                 value={subjectName}
                 onChange={(e) => setSubjectName(e.target.value)}
                 disabled={addSubjectMutation.isPending}
-                className="px-3.5 h-10.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-150"
+                className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
               />
             </div>
 
-            {/* Subject Code Input */}
+            {/* Subject Code */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-600 mb-1.5 block">বিষয় কোড (Subject Code)</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
+                বিষয় কোড <span className="text-indigo-400">*</span>
+              </label>
               <Input
                 required
                 placeholder="যেমন: ১০১, ১০২, BAN101"
                 value={subjectCode}
                 onChange={(e) => setSubjectCode(e.target.value)}
                 disabled={addSubjectMutation.isPending}
-                className="px-3.5 h-10.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-150"
+                className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
               />
             </div>
 
             {/* Group Selection (Only for Class 9-12) */}
             {isClass9to12 && (
-              <div className="space-y-2.5 p-3.5 rounded-xl border border-slate-100 bg-slate-50/30">
-                <label className="text-xs font-semibold text-slate-600 mb-1.5 block">বিভাগ / গ্রুপ (Group)</label>
-                <div className="flex flex-col gap-1.5">
+              <div className="space-y-2.5">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
+                  বিভাগ / গ্রুপ
+                </label>
+                <div className="grid grid-cols-2 gap-2">
                   {[
-                    { value: 'General', label: 'সাধারণ (General)' },
-                    { value: 'Science', label: 'বিজ্ঞান (Science)' },
-                    { value: 'Humanities', label: 'মানবিক (Humanities)' },
-                    { value: 'Commerce', label: 'ব্যবসায় শিক্ষা (Commerce)' },
+                    { value: 'General', label: 'সাধারণ' },
+                    { value: 'Science', label: 'বিজ্ঞান' },
+                    { value: 'Humanities', label: 'মানবিক' },
+                    { value: 'Commerce', label: 'ব্যবসায় শিক্ষা' },
                   ].map((grp) => (
                     <label
                       key={grp.value}
-                      className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none"
+                      className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all duration-200 ${
+                        subjectGroup === grp.value
+                          ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200'
+                          : 'bg-white/60 border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600'
+                      }`}
                     >
                       <input
                         type="radio"
@@ -268,66 +278,62 @@ export default function SubjectSetup() {
                         checked={subjectGroup === grp.value}
                         onChange={() => setSubjectGroup(grp.value)}
                         disabled={addSubjectMutation.isPending}
-                        className="accent-indigo-600 size-4"
+                        className="sr-only"
                       />
-                      <span>{grp.label}</span>
+                      {grp.label}
                     </label>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Active Years setup */}
-            <div className="space-y-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/30">
-              <label className="text-xs font-semibold text-slate-600 mb-1.5 block">সক্রিয় শিক্ষাবর্ষ / বছর</label>
-              <div className="flex gap-2 items-center">
+            {/* Active Years */}
+            <div className="space-y-3">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
+                সক্রিয় শিক্ষাবর্ষ
+              </label>
+              <div className="flex gap-2">
                 <Input
                   type="number"
                   id="new-year-setup-input"
-                  placeholder="বছর লিখুন (যেমন: ২০২৬)"
+                  placeholder="বছর (যেমন: ২০২৬)"
                   disabled={addSubjectMutation.isPending}
-                  className="px-3.5 h-10 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-150"
+                  className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
                       const val = e.target.value.trim();
-                      if (val) {
-                        handleAddYear(val);
-                        e.target.value = '';
-                      }
+                      if (val) { handleAddYear(val); e.target.value = ''; }
                     }
                   }}
                 />
                 <Button
                   type="button"
-                  variant="outline"
                   disabled={addSubjectMutation.isPending}
                   onClick={() => {
                     const input = document.getElementById('new-year-setup-input');
-                    if (input && input.value.trim()) {
-                      handleAddYear(input.value.trim());
-                      input.value = '';
-                    }
+                    if (input?.value.trim()) { handleAddYear(input.value.trim()); input.value = ''; }
                   }}
-                  className="h-10 px-4 rounded-xl border border-indigo-200 text-indigo-600 text-xs font-bold hover:bg-indigo-50/50"
+                  className="h-11 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
                 >
-                  যোগ
+                  <Plus className="size-3.5" />
                 </Button>
               </div>
-
-              {/* Badges list */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
+              <div className="flex flex-wrap gap-2 min-h-[28px]">
+                {subjectYears.length === 0 && (
+                  <span className="text-[11px] text-slate-400 italic">কোনো বছর যোগ করা হয়নি</span>
+                )}
                 {subjectYears.map((yr) => (
                   <span
                     key={yr}
-                    className="inline-flex items-center gap-1 bg-amber-500/10 text-amber-800 font-semibold text-xs px-2.5 py-1.5 rounded-lg border border-amber-100 shadow-sm"
+                    className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 font-bold text-xs px-3 py-1.5 rounded-full border border-amber-200 shadow-sm"
                   >
                     {yr}
                     <button
                       type="button"
                       disabled={addSubjectMutation.isPending}
                       onClick={() => handleRemoveYear(yr)}
-                      className="text-amber-600 font-bold ml-1 rounded-full w-3.5 h-3.5 inline-flex items-center justify-center hover:bg-amber-200/50 cursor-pointer"
+                      className="size-4 rounded-full flex items-center justify-center bg-amber-200/60 hover:bg-amber-300 text-amber-700 font-black leading-none cursor-pointer transition-colors"
                     >
                       ×
                     </button>
@@ -336,29 +342,40 @@ export default function SubjectSetup() {
               </div>
             </div>
 
-            {/* Question Categories setup */}
-            <div className="space-y-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/30">
-              <label className="text-xs font-semibold text-slate-600 mb-1.5 block">প্রশ্নের ক্যাটাগরি সমূহ</label>
+            {/* Question Categories */}
+            <div className="space-y-2.5">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
+                প্রশ্নের ক্যাটাগরি
+              </label>
               <div className="grid grid-cols-2 gap-2">
                 {PREDEFINED_CATEGORIES.map((cat) => {
                   const isChecked = subjectCategories.includes(cat.value);
                   return (
                     <label
                       key={cat.value}
-                      className={`flex items-center gap-2.5 p-2 px-3 rounded-xl border text-xs font-semibold select-none cursor-pointer transition-all duration-150 ${
+                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all duration-150 ${
                         isChecked
-                          ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-bold shadow-sm'
-                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                          ? 'bg-indigo-50 border-indigo-300 text-indigo-700 shadow-sm'
+                          : 'bg-white/60 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-white/80'
                       }`}
                     >
+                      <span className={`size-4 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
+                        isChecked ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-slate-300'
+                      }`}>
+                        {isChecked && (
+                          <svg className="size-2.5 text-white" viewBox="0 0 10 10" fill="none">
+                            <path d="M1.5 5L4 7.5L8.5 2.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        )}
+                      </span>
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => handleToggleCategory(cat.value)}
                         disabled={addSubjectMutation.isPending}
-                        className="accent-indigo-600 size-4 rounded cursor-pointer"
+                        className="sr-only"
                       />
-                      <span>{cat.label}</span>
+                      <span className="leading-tight">{cat.label}</span>
                     </label>
                   );
                 })}
@@ -368,7 +385,7 @@ export default function SubjectSetup() {
             <RippleButton
               type="submit"
               disabled={addSubjectMutation.isPending}
-              className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold h-11 rounded-xl shadow-md cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold h-12 rounded-xl shadow-md shadow-indigo-200 cursor-pointer transition-all"
             >
               {addSubjectMutation.isPending ? (
                 <>
@@ -426,7 +443,7 @@ export default function SubjectSetup() {
                         কোড: {sub.subjectCode}
                       </span>
 
-                      <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1.5 opacity-30 group-hover:opacity-100 transition-opacity">
                         <Button
                           variant="ghost"
                           size="icon"
@@ -481,19 +498,7 @@ export default function SubjectSetup() {
                           key={cat}
                           className="bg-indigo-50 border border-indigo-100 text-indigo-700 font-extrabold text-[10px] px-2 py-0.5 rounded-md"
                         >
-                          {cat === 'MCQ'
-                            ? 'MCQ'
-                            : cat === 'Creative'
-                            ? 'সৃজনশীল'
-                            : cat === 'ShortAnswer'
-                            ? 'সংক্ষিপ্ত'
-                            : cat === 'BroadQuestion'
-                            ? 'বর্ণনামূলক'
-                            : cat === 'FillInBlanks'
-                            ? 'শূন্যস্থান'
-                            : cat === 'Matching'
-                            ? 'ডানবাম'
-                            : cat}
+                          {PREDEFINED_CATEGORIES.find((c) => c.value === cat)?.label ?? cat}
                         </span>
                       ))
                     ) : (

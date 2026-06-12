@@ -3,8 +3,6 @@ import { Input } from "@/components/ui/input";
 import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  AlertCircle,
-  Book,
   BookOpen,
   CheckCircle2,
   ChevronLeft,
@@ -14,8 +12,7 @@ import {
   HelpCircle,
   Plus,
   Save,
-  Sparkles,
-  Trash2,
+  Trash2
 } from "lucide-react";
 import {
   CATEGORIES_MAP,
@@ -413,14 +410,7 @@ export default function AddQuestion() {
                   {(() => {
                     const subjectConfiguredCategories = qm.selectedSyllabusObj?.subjectId?.categories;
                     
-                    const ALL_CATEGORIES = [
-                      { value: "MCQ", label: "বহুনির্বাচনি (MCQ)" },
-                      { value: "Creative", label: "সৃজনশীল প্রশ্ন (CQ)" },
-                      { value: "ShortAnswer", label: "সংক্ষিপ্ত প্রশ্ন" },
-                      { value: "FillInBlanks", label: "শূন্যস্থান পূরণ" },
-                      { value: "Matching", label: "ডানবাম মিলকরণ" },
-                      { value: "BroadQuestion", label: ["Class 3", "Class 4", "Class 5"].includes(qm.formClass) ? "কাঠামোবদ্ধ যোগ্যতাভিত্তিক" : "বর্ণনামূলক প্রশ্ন" },
-                    ];
+                    const ALL_CATEGORIES = CATEGORIES_MAP;
 
                     if (!qm.formSubjectId || !qm.selectedSyllabusObj) {
                       return (
