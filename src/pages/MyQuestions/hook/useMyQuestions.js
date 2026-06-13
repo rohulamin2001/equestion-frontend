@@ -1,20 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
-import { useUserContext } from "@/context/UserContext";
 import { CATEGORIES_MAP } from "@/constants/categories";
 
-export function useQuestionBank() {
+export function useMyQuestions() {
   const navigate = useNavigate();
-  const qm = useQuestionManagement({ isPersonalOnly: false });
-  const { userProfile, role } = useUserContext();
+  const qm = useQuestionManagement({ isPersonalOnly: true });
 
-  // Dialog / Modal States
-  const [selectedPreviewQuestion, setSelectedPreviewQuestion] = useState(null);
+  // Dialog State
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Fetch global questions (personal = false)
+  // Fetch personal questions
   const { data: questions = [], isLoading, isError, refetch } = qm.questionsQuery;
 
   // Cascading helpers
@@ -94,14 +91,6 @@ export function useQuestionBank() {
     }
   };
 
-  // Check management permission (creator or Super Admin / Admin)
-  const canManageQuestion = (q) => {
-    if (!q || !userProfile) return false;
-    const isCreator = q.creatorId?._id === userProfile._id || q.creatorId === userProfile._id;
-    const isAdmin = ["Super Admin", "Admin"].includes(role);
-    return isCreator || isAdmin;
-  };
-
   // Bengali Date helper
   const formatBengaliDate = (dateString) => {
     if (!dateString) return "";
@@ -167,17 +156,14 @@ export function useQuestionBank() {
   return {
     navigate,
     qm,
-    role,
-    questions,
-    isLoading,
-    isError,
-    refetch,
-    selectedPreviewQuestion,
-    setSelectedPreviewQuestion,
     deleteConfirmId,
     setDeleteConfirmId,
     showFilters,
     setShowFilters,
+    questions,
+    isLoading,
+    isError,
+    refetch,
     filterActiveTypes,
     filterActiveLevels,
     filterActiveClasses,
@@ -189,7 +175,6 @@ export function useQuestionBank() {
     handleResetFilters,
     handleEdit,
     handleDeleteConfirm,
-    canManageQuestion,
     formatBengaliDate,
     getActiveCategories,
     totalCount,

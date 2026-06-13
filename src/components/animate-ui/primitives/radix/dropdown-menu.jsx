@@ -1,12 +1,12 @@
 'use client';;
-import * as React from 'react';
-import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
 import { AnimatePresence, motion } from 'motion/react';
+import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
+import * as React from 'react';
 
 import { Highlight, HighlightItem } from '@/components/animate-ui/primitives/effects/highlight';
-import { getStrictContext } from '@/lib/get-strict-context';
 import { useControlledState } from '@/hooks/use-controlled-state';
 import { useDataState } from '@/hooks/use-data-state';
+import { getStrictContext } from '@/lib/get-strict-context';
 
 const [DropdownMenuProvider, useDropdownMenu] =
   getStrictContext('DropdownMenuContext');
@@ -65,9 +65,10 @@ function DropdownMenuSubTrigger({
   ...props
 }) {
   const { setHighlightedValue } = useDropdownMenu();
-  const [, highlightedRef] = useDataState('highlighted', undefined, (value) => {
+  const elementRef = React.useRef(null);
+  const [, highlightedRef] = useDataState('highlighted', elementRef, (value) => {
     if (value === true) {
-      const el = highlightedRef.current;
+      const el = elementRef.current;
       const v = el?.dataset.value || el?.id || null;
       if (v) setHighlightedValue(v);
     }
@@ -227,9 +228,10 @@ function DropdownMenuItem({
   ...props
 }) {
   const { setHighlightedValue } = useDropdownMenu();
-  const [, highlightedRef] = useDataState('highlighted', undefined, (value) => {
+  const elementRef = React.useRef(null);
+  const [, highlightedRef] = useDataState('highlighted', elementRef, (value) => {
     if (value === true) {
-      const el = highlightedRef.current;
+      const el = elementRef.current;
       const v = el?.dataset.value || el?.id || null;
       if (v) setHighlightedValue(v);
     }
@@ -256,9 +258,10 @@ function DropdownMenuCheckboxItem({
   ...props
 }) {
   const { setHighlightedValue } = useDropdownMenu();
-  const [, highlightedRef] = useDataState('highlighted', undefined, (value) => {
+  const elementRef = React.useRef(null);
+  const [, highlightedRef] = useDataState('highlighted', elementRef, (value) => {
     if (value === true) {
-      const el = highlightedRef.current;
+      const el = elementRef.current;
       const v = el?.dataset.value || el?.id || null;
       if (v) setHighlightedValue(v);
     }
@@ -289,9 +292,10 @@ function DropdownMenuRadioItem({
   ...props
 }) {
   const { setHighlightedValue } = useDropdownMenu();
-  const [, highlightedRef] = useDataState('highlighted', undefined, (value) => {
+  const elementRef = React.useRef(null);
+  const [, highlightedRef] = useDataState('highlighted', elementRef, (value) => {
     if (value === true) {
-      const el = highlightedRef.current;
+      const el = elementRef.current;
       const v = el?.dataset.value || el?.id || null;
       if (v) setHighlightedValue(v);
     }
@@ -330,4 +334,5 @@ function DropdownMenuItemIndicator(props) {
   );
 }
 
-export { DropdownMenu, DropdownMenuTrigger, DropdownMenuHighlight, DropdownMenuContent, DropdownMenuItem, DropdownMenuItemIndicator, DropdownMenuHighlightItem, DropdownMenuCheckboxItem, DropdownMenuRadioItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuGroup, DropdownMenuPortal, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuRadioGroup, useDropdownMenu, useDropdownMenuSub };
+export { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuHighlight, DropdownMenuHighlightItem, DropdownMenuItem, DropdownMenuItemIndicator, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger };
+

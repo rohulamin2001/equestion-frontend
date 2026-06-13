@@ -44,6 +44,7 @@ export function useQuestionManagement(options = {}) {
 
   const [filterSubjectId, setFilterSubjectId] = useState('');
   const [filterChapter, setFilterChapter] = useState('');
+  const [filterVersion, setFilterVersion] = useState('');
 
   // Derived filter category based on primary/secondary level limits
   const [userFilterCategory, setUserFilterCategory] = useState('');
@@ -284,6 +285,7 @@ export function useQuestionManagement(options = {}) {
       filterCategory,
       filterDifficulty,
       filterSearch,
+      filterVersion,
     ],
     enabled: !skipFetch,
     queryFn: async () => {
@@ -299,6 +301,7 @@ export function useQuestionManagement(options = {}) {
       if (filterCategory) params.category = filterCategory;
       if (filterDifficulty) params.difficulty = filterDifficulty;
       if (filterSearch) params.search = filterSearch;
+      if (filterVersion) params.version = filterVersion;
 
       const response = await apiClient.get('/questions', {
         params,
@@ -574,6 +577,8 @@ export function useQuestionManagement(options = {}) {
     setFilterDifficulty,
     filterSearch,
     setFilterSearch,
+    filterVersion,
+    setFilterVersion,
 
     // Form fields & setters
     formType,
