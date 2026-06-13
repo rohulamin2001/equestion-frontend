@@ -1178,9 +1178,9 @@ export default function AddQuestion() {
             >
               {/* Live Preview Paper Card (Left 2 cols) */}
               <div className="lg:col-span-2 bg-white/[0.80] backdrop-blur-md rounded-2xl border border-black/[0.08] shadow-xl overflow-hidden flex flex-col">
-                <div className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
-                  <h4 className="font-bold text-sm tracking-wide uppercase font-sans">NCTB Live Exam Preview Sheet</h4>
-                  <span className="bg-[#4F46E5]/25 text-[#4F46E5] text-xs px-3 py-1 rounded-full border border-[#4F46E5]/20">
+                <div className="border-b border-black/[0.05] bg-white/[0.5] backdrop-blur-md px-6 py-4 flex justify-between items-center">
+                  <h4 className="font-bold text-sm text-slate-800 tracking-wide uppercase font-sans">NCTB Live Exam Preview Sheet</h4>
+                  <span className="bg-[#4F46E5]/10 text-[#4F46E5] text-[11px] font-bold px-3 py-1 rounded-full border border-[#4F46E5]/20 whitespace-nowrap">
                     শ্রেণী: {CLASSES_MAP.find((c) => c.value === qm.formClass)?.label}
                   </span>
                 </div>
@@ -1345,7 +1345,7 @@ export default function AddQuestion() {
 
                                 {q.generalData.suggestedAnswer && (
                                   <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-indigo-900/80">
-                                    <strong>আদর্শ উত্তর:</strong> {q.generalData.suggestedAnswer}
+                                    <strong>উত্তর:</strong> {q.generalData.suggestedAnswer}
                                   </div>
                                 )}
                               </div>
@@ -1457,10 +1457,16 @@ export default function AddQuestion() {
                           <div className="font-bold text-[15px] flex justify-between items-start gap-4">
                             <div className="flex gap-2">
                               <span>১.</span>
-                              <div>{qm.generalQuestionText || "প্রশ্ন বিবরণ"}</div>
+                              <div className="font-serif">{qm.generalQuestionText || "প্রশ্ন বিবরণ"}</div>
                             </div>
                             <span className="text-slate-400 text-xs font-serif font-bold pt-1">নম্বর: {qm.generalMarks}</span>
                           </div>
+
+                          {qm.generalSuggestedAnswer && (
+                            <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-indigo-900/80">
+                              <strong>উত্তর:</strong> {qm.generalSuggestedAnswer}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
