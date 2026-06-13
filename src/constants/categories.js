@@ -5,7 +5,7 @@ export const CATEGORIES_MAP = [
   { value: 'ShortAnswer', label: 'সংক্ষিপ্ত প্রশ্ন' },
   { value: 'BroadQuestion', label: 'রচনামূলক প্রশ্ন' },
   { value: 'FillInBlanks', label: 'শূন্যস্থান পূরণ' },
-  { value: 'Matching', label: 'ডানবাম মিলকরণ' },
+  { value: 'Matching', label: 'মিলকরণ' },
   { value: 'Poem', label: 'কবিতা' },
   { value: 'SentenceFormation', label: 'বাক্য গঠন' },
   { value: 'ConjunctLetters', label: 'যুক্তবর্ণ' },

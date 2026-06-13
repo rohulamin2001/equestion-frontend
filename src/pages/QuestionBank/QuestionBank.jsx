@@ -1,19 +1,20 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
 import { AnimatePresence, motion } from "framer-motion";
@@ -21,8 +22,8 @@ import {
   AlertCircle,
   Calendar,
   Check,
-  ChevronDown,
   CheckSquare,
+  ChevronDown,
   Database,
   Edit3,
   Eye,
@@ -82,7 +83,6 @@ export default function QuestionBank() {
     handleFilterTypeChange,
     handleFilterLevelChange,
     filterSubjects,
-    selectedSyllabusObj,
     filterChapters,
     handleResetFilters,
     handleEdit,
@@ -805,21 +805,29 @@ export default function QuestionBank() {
         </div>
       )}
 
-      {/* NCTB Full Preview Modal/Sheet */}
       <Dialog open={!!selectedPreviewQuestion} onOpenChange={(open) => !open && setSelectedPreviewQuestion(null)}>
-        <DialogContent className="max-w-2xl overflow-hidden p-0 rounded-2xl border border-black/[0.08] shadow-2xl bg-white/[0.90] backdrop-blur-xl flex flex-col animate-in fade-in duration-200">
+        <DialogContent showCloseButton={false} className="max-w-2xl overflow-hidden p-0 rounded-2xl border border-black/[0.08] shadow-2xl bg-white/[0.90] backdrop-blur-xl flex flex-col animate-in fade-in duration-200">
           {selectedPreviewQuestion && (
             <>
               {/* Header */}
-              <div className="border-b border-black/[0.05] bg-white/[0.5] backdrop-blur-md px-6 py-4 flex justify-between items-center">
+              <div className="border-b border-black/[0.05] bg-white/[0.5] backdrop-blur-md px-6 py-4 flex justify-between items-center gap-4">
                 <h4 className="font-bold text-sm text-slate-800 tracking-wide uppercase font-sans">NCTB Exam Question Sheet</h4>
-                <div className="flex gap-2">
-                  <span className="bg-[#4F46E5]/10 text-[#4F46E5] text-[11px] font-bold px-3 py-1 rounded-full border border-[#4F46E5]/20">
-                    {CLASSES_MAP.find((c) => c.value === selectedPreviewQuestion.className)?.label || selectedPreviewQuestion.className}
-                  </span>
-                  <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${DIFFICULTY_MAP[selectedPreviewQuestion.difficulty]?.color}`}>
-                    {DIFFICULTY_MAP[selectedPreviewQuestion.difficulty]?.label}
-                  </span>
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-2">
+                    <span className="bg-[#4F46E5]/10 text-[#4F46E5] text-[11px] font-bold px-3 py-1 rounded-full border border-[#4F46E5]/20 whitespace-nowrap">
+                      {CLASSES_MAP.find((c) => c.value === selectedPreviewQuestion.className)?.label || selectedPreviewQuestion.className}
+                    </span>
+                    <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${DIFFICULTY_MAP[selectedPreviewQuestion.difficulty]?.color} whitespace-nowrap`}>
+                      {DIFFICULTY_MAP[selectedPreviewQuestion.difficulty]?.label}
+                    </span>
+                  </div>
+                  
+                  <DialogClose asChild>
+                    <button className="rounded-lg p-1.5 text-slate-400 hover:bg-black/[0.04] hover:text-slate-700 transition-colors focus:outline-none cursor-pointer flex items-center justify-center">
+                      <X className="size-4" />
+                      <span className="sr-only">Close</span>
+                    </button>
+                  </DialogClose>
                 </div>
               </div>
 
@@ -962,7 +970,7 @@ export default function QuestionBank() {
 
                     {selectedPreviewQuestion.generalData.suggestedAnswer && (
                       <div className="p-4 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-slate-700">
-                        <strong>আদর্শ উত্তর:</strong> {selectedPreviewQuestion.generalData.suggestedAnswer}
+                        <strong>উত্তর:</strong> {selectedPreviewQuestion.generalData.suggestedAnswer}
                       </div>
                     )}
                   </div>

@@ -147,8 +147,8 @@ export function useQuestionBank() {
           { value: "MCQ", label: "বহুনির্বাচনি (MCQ)" },
           { value: "ShortAnswer", label: "সংক্ষিপ্ত প্রশ্ন" },
           { value: "FillInBlanks", label: "শূন্যস্থান পূরণ" },
-          { value: "Matching", label: "ডানবাম মিলকরণ" },
-          { value: "BroadQuestion", label: "কাঠামোবদ্ধ যোগ্যতাভিত্তিক" },
+          { value: "Matching", label: "মিলকরণ" },
+          { value: "BroadQuestion", label: "রচনামূলক প্রশ্ন" },
         ]
       : [
           { value: "MCQ", label: "বহুনির্বাচনি (MCQ)" },
