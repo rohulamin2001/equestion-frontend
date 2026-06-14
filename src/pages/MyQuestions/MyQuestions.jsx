@@ -630,8 +630,8 @@ export default function MyQuestions() {
                         </div>
                       )}
 
-                      <div className="font-bold text-[15px] flex gap-2">
-                        <span>১.</span>
+                      <div className="text-[15px] flex gap-2">
+                        <span className="font-bold shrink-0">১.</span>
                         <div className="flex-1">
                           <RichTextRender content={q.mcqData.questionText} className="font-serif" />
                           {q.mcqData.mcqType === "MultipleCompletion" && q.mcqData.statements && (
@@ -649,7 +649,7 @@ export default function MyQuestions() {
                       </div>
 
                       {/* Options Grid */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 text-sm font-sans font-semibold">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 text-sm font-sans">
                         {q.mcqData.options &&
                           q.mcqData.options.map((opt, idx) => {
                             const isCorrect = q.mcqData.correctAnswer === idx;
@@ -670,7 +670,7 @@ export default function MyQuestions() {
                                   }`}>
                                     {idx === 0 ? "ক" : idx === 1 ? "খ" : idx === 2 ? "গ" : "ঘ"}
                                   </span>
-                                  <RichTextRender content={opt} className="inline-block font-sans font-semibold" />
+                                  <RichTextRender content={opt} className={`inline-block font-sans ${isCorrect ? "font-semibold" : "font-normal"}`} />
                                 </div>
                                 {isCorrect && <Check className="size-4 text-emerald-600 shrink-0" />}
                               </div>
@@ -680,7 +680,7 @@ export default function MyQuestions() {
 
                       {q.mcqData.explanation && (
                         <div className="mt-3 p-3 bg-black/[0.02] border border-black/[0.05] rounded-xl text-xs font-sans text-slate-500 backdrop-blur-sm">
-                          <strong>উত্তর বিশ্লেষণ: </strong>
+                          <span className="font-semibold text-sm ">বিশ্লেষণ: </span>
                           <RichTextRender content={q.mcqData.explanation} inline />
                         </div>
                       )}

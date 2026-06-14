@@ -30,6 +30,7 @@ export default function AddQuestion() {
     qm,
     activeDropdown,
     setActiveDropdown,
+    showStep2Error,
     formActiveTypes,
     formActiveLevels,
     formActiveClasses,
@@ -38,6 +39,8 @@ export default function AddQuestion() {
     isStep1Valid,
     handleNextStep,
     handlePrevStep,
+    handleStepClick,
+    handleChapterSelect,
     handleTopicToggle,
     activeSchools,
     activeBoards,
@@ -96,11 +99,7 @@ export default function AddQuestion() {
             return (
               <div key={item.step} className="flex flex-col items-center relative z-10 gap-3" style={{ flex: "1 1 0", maxWidth: "33.33%" }}>
                 <motion.button
-                  onClick={() => {
-                    if (item.step < qm.activeStep || (item.step === 2 && isStep1Valid())) {
-                      qm.setActiveStep(item.step);
-                    }
-                  }}
+                  onClick={() => handleStepClick(item.step)}
                   disabled={item.step > 2 && !isStep1Valid()}
                   whileHover={{ scale: isCompleted || isActive ? 1.08 : 1.04 }}
                   whileTap={{ scale: 0.94 }}
@@ -535,17 +534,32 @@ export default function AddQuestion() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-black/[0.01] p-4 rounded-xl border border-black/[0.03]">
                 {/* Chapter Selection */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">অধ্যায় (Chapter)</label>
+                  <div className="flex justify-between items-center h-4">
+                    <label className={`text-xs font-bold uppercase tracking-wider block ${showStep2Error && !qm.formChapterNumber ? "text-red-500 animate-pulse" : "text-slate-500"}`}>
+                      অধ্যায় (Chapter)
+                    </label>
+                    {showStep2Error && !qm.formChapterNumber && (
+                      <span className="text-[11px] font-bold text-red-500 animate-pulse font-sans">
+                        অধ্যায় নির্বাচন করা আবশ্যক
+                      </span>
+                    )}
+                  </div>
                   <div className="relative">
                     <button
                       type="button"
                       onClick={() => setActiveDropdown(activeDropdown === "chapter" ? null : "chapter")}
-                      className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm"
+                      className={`w-full px-4 rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm transition-all border ${
+                        showStep2Error && !qm.formChapterNumber
+                          ? "border-red-500 bg-red-50/10 focus:ring-red-500/10 focus:border-red-500 hover:bg-red-50/20"
+                          : "border-black/[0.08] bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+                      }`}
                     >
                       {qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber)
                         ? `অধ্যায় ${qm.formChapterNumber}: ${qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber).chapterName}`
                         : "অধ্যায় নির্বাচন করুন"}
-                      <ChevronRight className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "chapter" ? "rotate-90" : ""}`} />
+                      <ChevronRight className={`size-4 transition-transform duration-200 ${
+                        showStep2Error && !qm.formChapterNumber ? "text-red-500" : "text-slate-400"
+                      } ${activeDropdown === "chapter" ? "rotate-90" : ""}`} />
                     </button>
 
                     {activeDropdown === "chapter" && (
@@ -557,8 +571,7 @@ export default function AddQuestion() {
                               key={chap.chapterNumber}
                               type="button"
                               onClick={() => {
-                                qm.setFormChapterNumber(chap.chapterNumber.toString());
-                                qm.setFormTopics([]);
+                                handleChapterSelect(chap.chapterNumber.toString());
                                 setActiveDropdown(null);
                               }}
                               className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
@@ -695,7 +708,7 @@ export default function AddQuestion() {
 
                   {/* Question Text */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">প্রশ্ন বিবরণ (Question Text)</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">প্রশ্ন (Question)</label>
                     <Editor
                       value={qm.mcqQuestionText}
                       onChange={qm.setMcqQuestionText}
@@ -802,22 +815,11 @@ export default function AddQuestion() {
 
               {!["MCQ", "Creative"].includes(qm.formCategory) && (
                 <div className="space-y-5">
-                  {/* General Stem input (optional) */}
-                  {["BroadQuestion", "Poem"].includes(qm.formCategory) && (
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">উদ্দীপক / দৃশ্যপট (ঐচ্ছিক)</label>
-                      <Editor
-                        value={qm.generalStem}
-                        onChange={qm.setGeneralStem}
-                        placeholder="গঠনমূলক বা কাঠামোবদ্ধ প্রশ্নের জন্য দৃশ্যপট..."
-                        height={200}
-                      />
-                    </div>
-                  )}
+
 
                   {/* Main Question Text */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">প্রশ্ন বিবরণ (Question Details)</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">প্রশ্ন (Question)</label>
                     <Editor
                       value={qm.generalQuestionText}
                       onChange={qm.setGeneralQuestionText}
@@ -828,7 +830,7 @@ export default function AddQuestion() {
 
                   {/* Suggested Answer */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">উত্তর (ঐচ্ছিক)</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">উত্তর (Answer) - ঐচ্ছিক</label>
                     <Editor
                       value={qm.generalSuggestedAnswer}
                       onChange={qm.setGeneralSuggestedAnswer}
@@ -1366,15 +1368,16 @@ export default function AddQuestion() {
                           )}
 
                           <div className="space-y-2.5">
-                            <div className="font-bold text-[15px] flex gap-2">
-                              <span>১.</span>
-                              <div>
+                            <div className="text-[15px] flex gap-2">
+                              <span className="font-bold shrink-0">১.</span>
+                              <div className="flex-1">
                                 <RichTextRender content={qm.mcqQuestionText || "প্রশ্ন বিবরণ"} />
                                 {qm.mcqType === "MultipleCompletion" && (
                                   <div className="space-y-1 pl-4 mt-2 font-normal text-sm font-sans">
                                     {qm.mcqStatements.map((st, idx) => st && (
-                                      <div key={idx}>
-                                        {idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "} {st}
+                                      <div key={idx} className="flex gap-1 items-start">
+                                        <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
+                                        <span className="font-normal">{st}</span>
                                       </div>
                                     ))}
                                     <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
@@ -1384,13 +1387,13 @@ export default function AddQuestion() {
                             </div>
 
                             {/* Options Grid */}
-                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 pl-6 text-sm font-sans font-semibold text-slate-700">
+                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 pl-6 text-sm font-sans text-slate-700">
                               {qm.mcqOptions.map((opt, idx) => (
-                                <div key={idx} className="flex gap-1">
-                                  <span className="text-slate-400">
+                                <div key={idx} className="flex gap-1.5 items-start">
+                                  <span className="font-semibold text-slate-500 shrink-0">
                                     {idx === 0 ? "ক)" : idx === 1 ? "খ)" : idx === 2 ? "গ)" : "ঘ)"}
                                   </span>
-                                  <span>{opt || "অপশন..."}</span>
+                                  <span className="font-normal text-slate-600">{opt || "অপশন..."}</span>
                                 </div>
                               ))}
                             </div>

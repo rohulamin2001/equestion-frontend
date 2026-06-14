@@ -46,16 +46,7 @@ export function useQuestionManagement(options = {}) {
   const [filterChapter, setFilterChapter] = useState('');
   const [filterVersion, setFilterVersion] = useState('');
 
-  // Derived filter category based on primary/secondary level limits
-  const [userFilterCategory, setUserFilterCategory] = useState('');
-  const primaryLevels = ["Primary", "Ebtedayee"];
-  const primaryCats = ["MCQ", "ShortAnswer", "FillInBlanks", "Matching", "BroadQuestion"];
-  const secondaryCats = ["MCQ", "Creative", "ShortAnswer", "BroadQuestion"];
-
-  const isPrimary = primaryLevels.includes(filterLevel);
-  const allowedCats = isPrimary ? primaryCats : secondaryCats;
-  const filterCategory = allowedCats.includes(userFilterCategory) ? userFilterCategory : '';
-  const setFilterCategory = setUserFilterCategory;
+  const [filterCategory, setFilterCategory] = useState('');
 
   const [filterDifficulty, setFilterDifficulty] = useState('');
   const [filterSearch, setFilterSearch] = useState('');
@@ -433,7 +424,7 @@ export function useQuestionManagement(options = {}) {
     } else {
       payload.generalData = {
         questionText: generalQuestionText.trim(),
-        stem: ["BroadQuestion", "Poem"].includes(formCategory) ? generalStem.trim() : "",
+        stem: "",
         subQuestions: generalSubQuestions.filter(q => q.text.trim()),
         suggestedAnswer: generalSuggestedAnswer.trim(),
         marks: Number(generalMarks),

@@ -633,8 +633,8 @@ export default function QuestionBank() {
                         </div>
                       )}
 
-                      <div className="font-bold text-[15px] flex gap-2">
-                        <span>১.</span>
+                      <div className="text-[15px] flex gap-2">
+                        <span className="font-bold shrink-0">১.</span>
                         <div className="flex-1">
                           <RichTextRender content={q.mcqData.questionText} className="font-serif" />
                           {q.mcqData.mcqType === "MultipleCompletion" && q.mcqData.statements && (
@@ -652,7 +652,7 @@ export default function QuestionBank() {
                       </div>
 
                       {/* Options Grid */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 text-sm font-sans font-semibold">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 text-sm font-sans">
                         {q.mcqData.options &&
                           q.mcqData.options.slice(0, 4).map((opt, idx) => {
                             const isCorrect = q.mcqData.correctAnswer === idx;
@@ -673,7 +673,7 @@ export default function QuestionBank() {
                                   }`}>
                                     {idx === 0 ? "ক" : idx === 1 ? "খ" : idx === 2 ? "গ" : "ঘ"}
                                   </span>
-                                  <RichTextRender content={opt} className="inline-block font-sans font-semibold" />
+                                  <RichTextRender content={opt} className={`inline-block font-sans ${isCorrect ? "font-semibold" : "font-normal"}`} />
                                 </div>
                                 {isCorrect && <Check className="size-4 text-emerald-600 shrink-0" />}
                               </div>
@@ -878,8 +878,8 @@ export default function QuestionBank() {
                     )}
 
                     <div className="space-y-3">
-                      <div className="font-bold text-[15px] flex gap-2">
-                        <span>১.</span>
+                      <div className="text-[15px] flex gap-2">
+                        <span className="font-bold shrink-0">১.</span>
                         <div className="flex-1">
                           <RichTextRender content={selectedPreviewQuestion.mcqData.questionText} className="font-serif" />
                           {selectedPreviewQuestion.mcqData.mcqType === "MultipleCompletion" && selectedPreviewQuestion.mcqData.statements && (
@@ -897,16 +897,16 @@ export default function QuestionBank() {
                       </div>
 
                       {/* Options Grid */}
-                      <div className="grid grid-cols-2 gap-x-8 gap-y-2.5 pl-6 text-sm font-sans font-semibold text-slate-700">
+                      <div className="grid grid-cols-2 gap-x-8 gap-y-2.5 pl-6 text-sm font-sans text-slate-700">
                         {selectedPreviewQuestion.mcqData.options &&
                           selectedPreviewQuestion.mcqData.options.map((opt, idx) => {
                             const isCorrect = selectedPreviewQuestion.mcqData.correctAnswer === idx;
                             return (
-                              <div key={idx} className={`flex items-start gap-2 ${isCorrect ? "text-emerald-600 font-bold" : ""}`}>
-                                <span className={`shrink-0 ${isCorrect ? "text-emerald-500 font-bold" : "text-slate-400"}`}>
+                              <div key={idx} className={`flex items-start gap-2 ${isCorrect ? "text-emerald-600" : ""}`}>
+                                <span className={`shrink-0 font-bold ${isCorrect ? "text-emerald-500" : "text-slate-400"}`}>
                                   {idx === 0 ? "ক)" : idx === 1 ? "খ)" : idx === 2 ? "গ)" : "ঘ)"}
                                 </span>
-                                <RichTextRender content={opt} className="inline-block font-sans font-semibold" />
+                                <RichTextRender content={opt} className={`inline-block font-sans ${isCorrect ? "font-semibold" : "font-normal"}`} />
                                 {isCorrect && <Check className="size-3.5 inline text-emerald-500 ml-1 shrink-0 mt-0.5" />}
                               </div>
                             );

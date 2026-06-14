@@ -1,11 +1,12 @@
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
+import apiClient from "@/lib/apiClient";
+import { useAuth } from "@clerk/react";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@clerk/react";
-import apiClient from "@/lib/apiClient";
+import { toast } from "sonner";
 
 // Exported constants used by both hook and UI
 export const TYPE_LABELS = {
@@ -37,6 +38,7 @@ export function useAddQuestion() {
   const location = useLocation();
   const navigate = useNavigate();
   const [activeDropdown, setActiveDropdown] = useState(null); // 'class' | 'subject' | 'chapter' | 'school' | 'board' | 'year' | 'levelTag' | null
+  const [showStep2Error, setShowStep2Error] = useState(false);
 
   // Fetch all active metadata options
   const { data: metadataList = [], isLoading: loadingMetadata } = useQuery({
@@ -120,12 +122,47 @@ export function useAddQuestion() {
   };
 
   const handleNextStep = () => {
-    if (qm.activeStep === 1 && !isStep1Valid()) return;
-    qm.setActiveStep((prev) => prev + 1);
+    if (qm.activeStep === 1) {
+      if (!isStep1Valid()) return;
+      qm.setActiveStep(2);
+    } else if (qm.activeStep === 2) {
+      if (!qm.formChapterNumber) {
+        setShowStep2Error(true);
+        toast.error("অধ্যায় নির্বাচন করা আবশ্যক");
+        return;
+      }
+      setShowStep2Error(false);
+      qm.setActiveStep(3);
+    }
   };
 
   const handlePrevStep = () => {
     qm.setActiveStep((prev) => prev - 1);
+  };
+
+  const handleStepClick = (step) => {
+    if (step === 1) {
+      qm.setActiveStep(1);
+    } else if (step === 2) {
+      if (isStep1Valid()) {
+        qm.setActiveStep(2);
+      }
+    } else if (step === 3) {
+      if (!isStep1Valid()) return;
+      if (!qm.formChapterNumber) {
+        setShowStep2Error(true);
+        toast.error("অধ্যায় নির্বাচন করা আবশ্যক");
+        return;
+      }
+      setShowStep2Error(false);
+      qm.setActiveStep(3);
+    }
+  };
+
+  const handleChapterSelect = (chapterNumber) => {
+    qm.setFormChapterNumber(chapterNumber);
+    qm.setFormTopics([]);
+    setShowStep2Error(false);
   };
 
   const handleTopicToggle = (topic) => {
@@ -139,6 +176,8 @@ export function useAddQuestion() {
     navigate,
     activeDropdown,
     setActiveDropdown,
+    showStep2Error,
+    setShowStep2Error,
     formActiveTypes,
     formActiveLevels,
     formActiveClasses,
@@ -147,6 +186,8 @@ export function useAddQuestion() {
     isStep1Valid,
     handleNextStep,
     handlePrevStep,
+    handleStepClick,
+    handleChapterSelect,
     handleTopicToggle,
     activeSchools,
     activeBoards,
