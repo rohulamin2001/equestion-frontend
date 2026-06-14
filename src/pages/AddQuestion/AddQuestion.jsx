@@ -1,3 +1,5 @@
+import Editor from "@/components/Editor";
+import RichTextRender from "@/components/RichTextRender";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button";
@@ -658,12 +660,11 @@ export default function AddQuestion() {
                   {qm.mcqType === "Contextual" && (
                     <div className="space-y-2 animate-in fade-in duration-200">
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">উদ্দীপক (Stem)</label>
-                      <textarea
-                        rows={3}
-                        placeholder="যেমন: নিচের অনুচ্ছেদটি পড়ো এবং প্রশ্নের উত্তর দাও..."
+                      <Editor
                         value={qm.mcqStem}
-                        onChange={(e) => qm.setMcqStem(e.target.value)}
-                        className="w-full border border-black/[0.08] rounded-xl text-sm p-4 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 placeholder-slate-400 hover:border-black/[0.15] transition-all resize-none bg-white/[0.45] backdrop-blur-sm shadow-sm"
+                        onChange={qm.setMcqStem}
+                        placeholder="যেমন: নিচের অনুচ্ছেদটি পড়ো এবং প্রশ্নের উত্তর দাও..."
+                        height={200}
                       />
                     </div>
                   )}
@@ -695,12 +696,11 @@ export default function AddQuestion() {
                   {/* Question Text */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">প্রশ্ন বিবরণ (Question Text)</label>
-                    <Input
-                      required
-                      placeholder="যেমন: নিচের কোনটি মৌলিক সংখ্যা?"
+                    <Editor
                       value={qm.mcqQuestionText}
-                      onChange={(e) => qm.setMcqQuestionText(e.target.value)}
-                      className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11"
+                      onChange={qm.setMcqQuestionText}
+                      placeholder="যেমন: নিচের কোনটি মৌলিক সংখ্যা?"
+                      height={200}
                     />
                   </div>
 
@@ -752,12 +752,11 @@ export default function AddQuestion() {
                   {/* Explanation Input */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">উত্তর বিশ্লেষণ / ব্যাখ্যা (ঐচ্ছিক)</label>
-                    <textarea
-                      rows={2}
-                      placeholder="সঠিক উত্তর কিভাবে আসলো তার সংক্ষিপ্ত ব্যাখ্যা..."
+                    <Editor
                       value={qm.mcqExplanation}
-                      onChange={(e) => qm.setMcqExplanation(e.target.value)}
-                      className="w-full border border-black/[0.08] rounded-xl text-sm p-3.5 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 placeholder-slate-400 hover:border-black/[0.15] transition-all resize-none bg-white/[0.45] backdrop-blur-sm shadow-sm"
+                      onChange={qm.setMcqExplanation}
+                      placeholder="সঠিক উত্তর কিভাবে আসলো তার সংক্ষিপ্ত ব্যাখ্যা..."
+                      height={200}
                     />
                   </div>
                 </div>
@@ -768,13 +767,11 @@ export default function AddQuestion() {
                   {/* Stem input */}
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">উদ্দীপক (Stem)</label>
-                    <textarea
-                      rows={5}
-                      required
-                      placeholder="দৃশ্যপট/অনুচ্ছেদ/তথ্যচিত্র এখানে লিখুন যা পড়ে উপ-প্রশ্নগুলোর উত্তর দিতে হবে..."
+                    <Editor
                       value={qm.creativeStem}
-                      onChange={(e) => qm.setCreativeStem(e.target.value)}
-                      className="w-full border border-black/[0.08] rounded-xl text-sm p-4 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 placeholder-slate-400 hover:border-black/[0.15] transition-all resize-none bg-white/[0.45] backdrop-blur-sm shadow-sm"
+                      onChange={qm.setCreativeStem}
+                      placeholder="दृश्यপট/অনুচ্ছেদ/তথ্যচিত্র এখানে লিখুন যা পড়ে উপ-প্রশ্নগুলোর উত্তর দিতে হবে..."
+                      height={250}
                     />
                   </div>
 
@@ -806,27 +803,37 @@ export default function AddQuestion() {
               {!["MCQ", "Creative"].includes(qm.formCategory) && (
                 <div className="space-y-5">
                   {/* General Stem input (optional) */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">উদ্দীপক / দৃশ্যপট (ঐচ্ছিক)</label>
-                    <textarea
-                      rows={3}
-                      placeholder="গঠনমূলক বা কাঠামোবদ্ধ প্রশ্নের জন্য দৃশ্যপট..."
-                      value={qm.generalStem}
-                      onChange={(e) => qm.setGeneralStem(e.target.value)}
-                      className="w-full border border-black/[0.08] rounded-xl text-sm p-4 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 placeholder-slate-400 hover:border-black/[0.15] transition-all resize-none bg-white/[0.45] backdrop-blur-sm shadow-sm"
-                    />
-                  </div>
+                  {["BroadQuestion", "Poem"].includes(qm.formCategory) && (
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">উদ্দীপক / দৃশ্যপট (ঐচ্ছিক)</label>
+                      <Editor
+                        value={qm.generalStem}
+                        onChange={qm.setGeneralStem}
+                        placeholder="গঠনমূলক বা কাঠামোবদ্ধ প্রশ্নের জন্য দৃশ্যপট..."
+                        height={200}
+                      />
+                    </div>
+                  )}
 
                   {/* Main Question Text */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">প্রশ্ন বিবরণ (Question Details)</label>
-                    <textarea
-                      rows={3}
-                      required
-                      placeholder="প্রশ্নের বর্ণনা লিখুন..."
+                    <Editor
                       value={qm.generalQuestionText}
-                      onChange={(e) => qm.setGeneralQuestionText(e.target.value)}
-                      className="w-full border border-black/[0.08] rounded-xl text-sm p-4 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 placeholder-slate-400 hover:border-black/[0.15] transition-all resize-none bg-white/[0.45] backdrop-blur-sm shadow-sm"
+                      onChange={qm.setGeneralQuestionText}
+                      placeholder="প্রশ্ন লিখুন..."
+                      height={200}
+                    />
+                  </div>
+
+                  {/* Suggested Answer */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">উত্তর (ঐচ্ছিক)</label>
+                    <Editor
+                      value={qm.generalSuggestedAnswer}
+                      onChange={qm.setGeneralSuggestedAnswer}
+                      placeholder="উত্তর লিখুন..."
+                      height={200}
                     />
                   </div>
 
@@ -841,16 +848,6 @@ export default function AddQuestion() {
                         onChange={(e) => qm.setGeneralMarks(Number(e.target.value))}
                         className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11"
                         min={1}
-                      />
-                    </div>
-                    {/* Suggested Answer */}
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">আদর্শ উত্তর (ঐচ্ছিক)</label>
-                      <Input
-                        placeholder="আদর্শ বা সঠিক উত্তর লিখুন"
-                        value={qm.generalSuggestedAnswer}
-                        onChange={(e) => qm.setGeneralSuggestedAnswer(e.target.value)}
-                        className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11"
                       />
                     </div>
                   </div>
@@ -1249,14 +1246,15 @@ export default function AddQuestion() {
                               <div className="space-y-3">
                                 {q.mcqData.mcqType === "Contextual" && q.mcqData.stem && (
                                   <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm italic font-serif leading-relaxed">
-                                    <strong>উদ্দীপক:</strong> {q.mcqData.stem}
+                                    <strong>উদ্দীপক:</strong>
+                                    <RichTextRender content={q.mcqData.stem} className="mt-1" />
                                   </div>
                                 )}
 
                                 <div className="font-bold text-[15px] flex gap-2">
                                   <span>{idx + 1}.</span>
                                   <div>
-                                    {q.mcqData.questionText || "প্রশ্ন বিবরণ..."}
+                                    <RichTextRender content={q.mcqData.questionText || "প্রশ্ন বিবরণ..."} />
                                     {q.mcqData.mcqType === "MultipleCompletion" && q.mcqData.statements && (
                                       <div className="space-y-1 pl-4 mt-2 font-normal text-sm font-sans">
                                         {q.mcqData.statements.map((st, sIdx) => st && (
@@ -1297,7 +1295,7 @@ export default function AddQuestion() {
                               <div className="space-y-5">
                                 {q.creativeData.stem && (
                                   <div className="p-5 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm leading-relaxed font-serif">
-                                    {q.creativeData.stem}
+                                    <RichTextRender content={q.creativeData.stem} />
                                   </div>
                                 )}
 
@@ -1331,21 +1329,22 @@ export default function AddQuestion() {
                               <div className="space-y-4">
                                 {q.generalData.stem && (
                                   <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm italic font-serif">
-                                    {q.generalData.stem}
+                                    <RichTextRender content={q.generalData.stem} />
                                   </div>
                                 )}
 
                                 <div className="font-bold text-[15px] flex justify-between items-start gap-4">
                                   <div className="flex gap-2">
                                     <span>১.</span>
-                                    <div className="font-serif">{q.generalData.questionText || "প্রশ্ন বিবরণ..."}</div>
+                                    <RichTextRender content={q.generalData.questionText || "প্রশ্ন বিবরণ..."} className="font-serif" />
                                   </div>
                                   <span className="text-slate-400 text-xs font-serif font-bold pt-1">নম্বর: {q.generalData.marks}</span>
                                 </div>
 
                                 {q.generalData.suggestedAnswer && (
                                   <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-indigo-900/80">
-                                    <strong>উত্তর:</strong> {q.generalData.suggestedAnswer}
+                                    <strong>উত্তর: </strong>
+                                    <RichTextRender content={q.generalData.suggestedAnswer} inline />
                                   </div>
                                 )}
                               </div>
@@ -1361,7 +1360,8 @@ export default function AddQuestion() {
                         <div className="space-y-4">
                           {qm.mcqType === "Contextual" && qm.mcqStem && (
                             <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm italic font-serif">
-                              <strong>উদ্দীপক:</strong> {qm.mcqStem}
+                              <strong>উদ্দীপক:</strong>
+                              <RichTextRender content={qm.mcqStem} className="mt-1" />
                             </div>
                           )}
 
@@ -1369,7 +1369,7 @@ export default function AddQuestion() {
                             <div className="font-bold text-[15px] flex gap-2">
                               <span>১.</span>
                               <div>
-                                {qm.mcqQuestionText || "প্রশ্ন বিবরণ"}
+                                <RichTextRender content={qm.mcqQuestionText || "প্রশ্ন বিবরণ"} />
                                 {qm.mcqType === "MultipleCompletion" && (
                                   <div className="space-y-1 pl-4 mt-2 font-normal text-sm font-sans">
                                     {qm.mcqStatements.map((st, idx) => st && (
@@ -1417,7 +1417,7 @@ export default function AddQuestion() {
                         <div className="space-y-5">
                           {qm.creativeStem && (
                             <div className="p-5 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm leading-relaxed font-serif">
-                              {qm.creativeStem}
+                              <RichTextRender content={qm.creativeStem} />
                             </div>
                           )}
 
@@ -1450,21 +1450,22 @@ export default function AddQuestion() {
                         <div className="space-y-4">
                           {qm.generalStem && (
                             <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm italic font-serif">
-                              {qm.generalStem}
+                              <RichTextRender content={qm.generalStem} />
                             </div>
                           )}
 
-                          <div className="font-bold text-[15px] flex justify-between items-start gap-4">
+                          <div className="text-[15px] flex justify-between items-start gap-4">
                             <div className="flex gap-2">
-                              <span>১.</span>
-                              <div className="font-serif">{qm.generalQuestionText || "প্রশ্ন বিবরণ"}</div>
+                              <span className="font-bold shrink-0">১.</span>
+                              <RichTextRender content={qm.generalQuestionText || "প্রশ্ন বিবরণ"} className="font-serif" />
                             </div>
                             <span className="text-slate-400 text-xs font-serif font-bold pt-1">নম্বর: {qm.generalMarks}</span>
                           </div>
 
                           {qm.generalSuggestedAnswer && (
                             <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-indigo-900/80">
-                              <strong>উত্তর:</strong> {qm.generalSuggestedAnswer}
+                              <span className="text-sm font-semibold">উত্তর: </span>
+                              <RichTextRender content={qm.generalSuggestedAnswer} inline />
                             </div>
                           )}
                         </div>

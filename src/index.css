@@ -190,3 +190,12 @@
     line-height: 1.75 !important;
   }
 }
+
+/* Hide Jodit 'POWERED BY JODIT' branding — global scope for max specificity */
+.jodit-status-bar a.jodit-status-bar-link,
+.jodit-status-bar__item.jodit-status-bar__item-right a[href*="jodit"],
+.jodit-status-bar a[href*="jodit.pro"],
+.jodit-status-bar a[href*="xdsoft"] {
+  display: none !important;
+  visibility: hidden !important;
+}

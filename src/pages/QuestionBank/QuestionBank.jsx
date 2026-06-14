@@ -37,6 +37,7 @@ import {
   User,
   X,
 } from "lucide-react";
+import RichTextRender from "../../components/RichTextRender.jsx";
 import { useQuestionBank } from "./hook/useQuestionBank";
 
 const TYPE_LABELS = {
@@ -627,19 +628,21 @@ export default function QuestionBank() {
                     <div className="space-y-4">
                       {q.mcqData.mcqType === "Contextual" && q.mcqData.stem && (
                         <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-sm italic font-serif leading-relaxed text-slate-700 backdrop-blur-sm">
-                          <strong>উদ্দীপক:</strong> {q.mcqData.stem}
+                          <strong>উদ্দীপক:</strong>
+                          <RichTextRender content={q.mcqData.stem} className="mt-1 font-serif" />
                         </div>
                       )}
 
                       <div className="font-bold text-[15px] flex gap-2">
                         <span>১.</span>
-                        <div>
-                          {q.mcqData.questionText}
+                        <div className="flex-1">
+                          <RichTextRender content={q.mcqData.questionText} className="font-serif" />
                           {q.mcqData.mcqType === "MultipleCompletion" && q.mcqData.statements && (
                             <div className="space-y-1 pl-4 mt-2 font-normal text-sm font-sans">
                               {q.mcqData.statements.map((st, idx) => (
-                                <div key={idx}>
-                                  {idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}{st}
+                                <div key={idx} className="flex gap-1 items-start">
+                                  <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
+                                  <RichTextRender content={st} className="inline-block font-sans font-normal" />
                                 </div>
                               ))}
                               <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
@@ -670,7 +673,7 @@ export default function QuestionBank() {
                                   }`}>
                                     {idx === 0 ? "ক" : idx === 1 ? "খ" : idx === 2 ? "গ" : "ঘ"}
                                   </span>
-                                  <span>{opt}</span>
+                                  <RichTextRender content={opt} className="inline-block font-sans font-semibold" />
                                 </div>
                                 {isCorrect && <Check className="size-4 text-emerald-600 shrink-0" />}
                               </div>
@@ -680,7 +683,8 @@ export default function QuestionBank() {
 
                       {q.mcqData.explanation && (
                         <div className="mt-3 p-3 bg-black/[0.02] border border-black/[0.05] rounded-xl text-xs font-sans text-slate-500 backdrop-blur-sm">
-                          <strong>উত্তর বিশ্লেষণ:</strong> {q.mcqData.explanation}
+                          <strong>উত্তর বিশ্লেষণ: </strong>
+                          <RichTextRender content={q.mcqData.explanation} inline />
                         </div>
                       )}
                     </div>
@@ -691,29 +695,29 @@ export default function QuestionBank() {
                     <div className="space-y-4">
                       {q.creativeData.stem && (
                         <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[14px] leading-relaxed text-slate-700 font-serif backdrop-blur-sm">
-                          {q.creativeData.stem}
+                          <RichTextRender content={q.creativeData.stem} />
                         </div>
                       )}
 
                       <div className="pl-4 space-y-2.5 text-[14px] font-sans font-semibold text-slate-700">
                         <div className="flex justify-between items-start gap-2">
                           <span className="w-6">ক)</span>
-                          <span className="flex-1 font-serif">{q.creativeData.subQuestions?.cognitiveA?.text}</span>
+                          <RichTextRender content={q.creativeData.subQuestions?.cognitiveA?.text} className="flex-1 font-serif inline-block" />
                           <span className="text-slate-500 text-xs font-serif font-bold">১</span>
                         </div>
                         <div className="flex justify-between items-start gap-2">
                           <span className="w-6">খ)</span>
-                          <span className="flex-1 font-serif">{q.creativeData.subQuestions?.cognitiveB?.text}</span>
+                          <RichTextRender content={q.creativeData.subQuestions?.cognitiveB?.text} className="flex-1 font-serif inline-block" />
                           <span className="text-slate-500 text-xs font-serif font-bold">২</span>
                         </div>
                         <div className="flex justify-between items-start gap-2">
                           <span className="w-6">গ)</span>
-                          <span className="flex-1 font-serif">{q.creativeData.subQuestions?.cognitiveC?.text}</span>
+                          <RichTextRender content={q.creativeData.subQuestions?.cognitiveC?.text} className="flex-1 font-serif inline-block" />
                           <span className="text-slate-500 text-xs font-serif font-bold">৩</span>
                         </div>
                         <div className="flex justify-between items-start gap-2">
                           <span className="w-6">ঘ)</span>
-                          <span className="flex-1 font-serif">{q.creativeData.subQuestions?.cognitiveD?.text}</span>
+                          <RichTextRender content={q.creativeData.subQuestions?.cognitiveD?.text} className="flex-1 font-serif inline-block" />
                           <span className="text-slate-500 text-xs font-serif font-bold">৪</span>
                         </div>
                       </div>
@@ -725,14 +729,14 @@ export default function QuestionBank() {
                     <div className="space-y-3">
                       {q.generalData.stem && (
                         <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-sm italic font-serif leading-relaxed text-slate-700 backdrop-blur-sm">
-                          {q.generalData.stem}
+                          <RichTextRender content={q.generalData.stem} />
                         </div>
                       )}
 
-                      <div className="font-bold text-[15px] flex justify-between items-start gap-4">
+                      <div className="text-[15px] flex justify-between items-start gap-4">
                         <div className="flex gap-2">
-                          <span>১.</span>
-                          <div className="font-serif">{q.generalData.questionText}</div>
+                          <span className="font-bold shrink-0">১.</span>
+                          <RichTextRender content={q.generalData.questionText} className="font-serif" />
                         </div>
                         <span className="text-slate-600 text-xs font-sans font-bold shrink-0 bg-black/[0.04] px-2 py-0.5 rounded border border-black/[0.05]">
                           নম্বর: {q.generalData.marks}
@@ -741,7 +745,8 @@ export default function QuestionBank() {
 
                       {q.generalData.suggestedAnswer && (
                         <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-slate-700">
-                          <strong>উত্তর:</strong> {q.generalData.suggestedAnswer}
+                          <span className="text-sm font-semibold">উত্তর: </span>
+                          <RichTextRender content={q.generalData.suggestedAnswer} inline />
                         </div>
                       )}
                     </div>
@@ -867,20 +872,22 @@ export default function QuestionBank() {
                   <div className="space-y-4">
                     {selectedPreviewQuestion.mcqData.mcqType === "Contextual" && selectedPreviewQuestion.mcqData.stem && (
                       <div className="p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-sm italic font-serif leading-relaxed backdrop-blur-sm">
-                        <strong>উদ্দীপক:</strong> {selectedPreviewQuestion.mcqData.stem}
+                        <strong>উদ্দীপক:</strong>
+                        <RichTextRender content={selectedPreviewQuestion.mcqData.stem} className="mt-1 font-serif" />
                       </div>
                     )}
 
                     <div className="space-y-3">
                       <div className="font-bold text-[15px] flex gap-2">
                         <span>১.</span>
-                        <div>
-                          {selectedPreviewQuestion.mcqData.questionText}
+                        <div className="flex-1">
+                          <RichTextRender content={selectedPreviewQuestion.mcqData.questionText} className="font-serif" />
                           {selectedPreviewQuestion.mcqData.mcqType === "MultipleCompletion" && selectedPreviewQuestion.mcqData.statements && (
                             <div className="space-y-1 pl-4 mt-2 font-normal text-sm font-sans">
                               {selectedPreviewQuestion.mcqData.statements.map((st, idx) => (
-                                <div key={idx}>
-                                  {idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}{st}
+                                <div key={idx} className="flex gap-1 items-start">
+                                  <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
+                                  <RichTextRender content={st} className="inline-block font-sans font-normal" />
                                 </div>
                               ))}
                               <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
@@ -895,12 +902,12 @@ export default function QuestionBank() {
                           selectedPreviewQuestion.mcqData.options.map((opt, idx) => {
                             const isCorrect = selectedPreviewQuestion.mcqData.correctAnswer === idx;
                             return (
-                              <div key={idx} className={`flex items-center gap-2 ${isCorrect ? "text-emerald-600 font-bold" : ""}`}>
-                                <span className={isCorrect ? "text-emerald-500 font-bold" : "text-slate-400"}>
+                              <div key={idx} className={`flex items-start gap-2 ${isCorrect ? "text-emerald-600 font-bold" : ""}`}>
+                                <span className={`shrink-0 ${isCorrect ? "text-emerald-500 font-bold" : "text-slate-400"}`}>
                                   {idx === 0 ? "ক)" : idx === 1 ? "খ)" : idx === 2 ? "গ)" : "ঘ)"}
                                 </span>
-                                <span>{opt}</span>
-                                {isCorrect && <Check className="size-3.5 inline text-emerald-500 ml-1" />}
+                                <RichTextRender content={opt} className="inline-block font-sans font-semibold" />
+                                {isCorrect && <Check className="size-3.5 inline text-emerald-500 ml-1 shrink-0 mt-0.5" />}
                               </div>
                             );
                           })}
@@ -908,7 +915,8 @@ export default function QuestionBank() {
 
                       {selectedPreviewQuestion.mcqData.explanation && (
                         <div className="mt-6 p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-xs font-sans text-slate-500 backdrop-blur-sm">
-                          <strong>উত্তর বিশ্লেষণ/ব্যাখ্যা:</strong> {selectedPreviewQuestion.mcqData.explanation}
+                          <strong>উত্তর বিশ্লেষণ/ব্যাখ্যা: </strong>
+                          <RichTextRender content={selectedPreviewQuestion.mcqData.explanation} inline />
                         </div>
                       )}
                     </div>
@@ -919,30 +927,30 @@ export default function QuestionBank() {
                 {selectedPreviewQuestion.category === "Creative" && selectedPreviewQuestion.creativeData && (
                   <div className="space-y-5">
                     {selectedPreviewQuestion.creativeData.stem && (
-                      <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5] border border-black/[0.05] rounded-r-xl text-[14px] leading-relaxed text-slate-700 backdrop-blur-sm">
-                        {selectedPreviewQuestion.creativeData.stem}
+                      <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5] border border-black/[0.05] rounded-r-xl text-[14px] leading-relaxed text-slate-700 backdrop-blur-sm font-serif">
+                        <RichTextRender content={selectedPreviewQuestion.creativeData.stem} />
                       </div>
                     )}
 
                     <div className="pl-4 space-y-3.5 text-sm font-sans font-semibold text-slate-700">
                       <div className="flex justify-between items-start gap-2">
                         <span className="w-6">ক)</span>
-                        <span className="flex-1 font-serif">{selectedPreviewQuestion.creativeData.subQuestions?.cognitiveA?.text}</span>
+                        <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveA?.text} className="flex-1 font-serif inline-block" />
                         <span className="text-slate-500 text-xs font-serif font-bold">১</span>
                       </div>
                       <div className="flex justify-between items-start gap-2">
                         <span className="w-6">খ)</span>
-                        <span className="flex-1 font-serif">{selectedPreviewQuestion.creativeData.subQuestions?.cognitiveB?.text}</span>
+                        <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveB?.text} className="flex-1 font-serif inline-block" />
                         <span className="text-slate-500 text-xs font-serif font-bold">২</span>
                       </div>
                       <div className="flex justify-between items-start gap-2">
                         <span className="w-6">গ)</span>
-                        <span className="flex-1 font-serif">{selectedPreviewQuestion.creativeData.subQuestions?.cognitiveC?.text}</span>
+                        <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveC?.text} className="flex-1 font-serif inline-block" />
                         <span className="text-slate-500 text-xs font-serif font-bold">৩</span>
                       </div>
                       <div className="flex justify-between items-start gap-2">
                         <span className="w-6">ঘ)</span>
-                        <span className="flex-1 font-serif">{selectedPreviewQuestion.creativeData.subQuestions?.cognitiveD?.text}</span>
+                        <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveD?.text} className="flex-1 font-serif inline-block" />
                         <span className="text-slate-500 text-xs font-serif font-bold">৪</span>
                       </div>
                     </div>
@@ -954,14 +962,14 @@ export default function QuestionBank() {
                   <div className="space-y-4">
                     {selectedPreviewQuestion.generalData.stem && (
                       <div className="p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-sm italic font-serif leading-relaxed backdrop-blur-sm">
-                        {selectedPreviewQuestion.generalData.stem}
+                        <RichTextRender content={selectedPreviewQuestion.generalData.stem} />
                       </div>
                     )}
 
-                    <div className="font-bold text-[15px] flex justify-between items-start gap-4">
+                    <div className="text-[15px] flex justify-between items-start gap-4">
                       <div className="flex gap-2">
-                        <span>১.</span>
-                        <div className="font-serif">{selectedPreviewQuestion.generalData.questionText}</div>
+                        <span className="font-bold shrink-0">১.</span>
+                        <RichTextRender content={selectedPreviewQuestion.generalData.questionText} className="font-serif" />
                       </div>
                       <span className="text-slate-600 text-xs font-sans font-bold shrink-0 bg-black/[0.04] px-2 py-0.5 rounded border border-black/[0.05]">
                         নম্বর: {selectedPreviewQuestion.generalData.marks}
@@ -970,7 +978,8 @@ export default function QuestionBank() {
 
                     {selectedPreviewQuestion.generalData.suggestedAnswer && (
                       <div className="p-4 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-slate-700">
-                        <strong>উত্তর:</strong> {selectedPreviewQuestion.generalData.suggestedAnswer}
+                        <span className="text-sm font-semibold">উত্তর: </span>
+                        <RichTextRender content={selectedPreviewQuestion.generalData.suggestedAnswer} inline />
                       </div>
                     )}
                   </div>

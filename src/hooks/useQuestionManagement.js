@@ -433,7 +433,7 @@ export function useQuestionManagement(options = {}) {
     } else {
       payload.generalData = {
         questionText: generalQuestionText.trim(),
-        stem: generalStem.trim(),
+        stem: ["BroadQuestion", "Poem"].includes(formCategory) ? generalStem.trim() : "",
         subQuestions: generalSubQuestions.filter(q => q.text.trim()),
         suggestedAnswer: generalSuggestedAnswer.trim(),
         marks: Number(generalMarks),
