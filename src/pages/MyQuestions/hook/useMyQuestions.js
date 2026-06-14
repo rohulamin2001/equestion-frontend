@@ -16,15 +16,24 @@ export function useMyQuestions() {
 
   // Cascading helpers
   const filterActiveTypes = Array.from(new Set(qm.allowedClasses.map(c => c.type)));
-  const filterActiveLevels = Array.from(
-    new Set(qm.allowedClasses.filter(c => c.type === qm.filterType).map(c => c.level))
-  );
-  const filterActiveClasses = qm.allowedClasses.filter(
-    c => c.type === qm.filterType && c.level === qm.filterLevel
-  );
+  const filterActiveLevels = qm.filterType
+    ? Array.from(new Set(qm.allowedClasses.filter(c => c.type === qm.filterType).map(c => c.level)))
+    : Array.from(new Set(qm.allowedClasses.map(c => c.level)));
+  const filterActiveClasses = qm.allowedClasses.filter(c => {
+    const typeMatch = !qm.filterType || c.type === qm.filterType;
+    const levelMatch = !qm.filterLevel || c.level === qm.filterLevel;
+    return typeMatch && levelMatch;
+  });
 
   const handleFilterTypeChange = (type) => {
     qm.setFilterType(type);
+    if (!type) {
+      qm.setFilterLevel("");
+      qm.setFilterClass("");
+      qm.setFilterSubjectId("");
+      qm.setFilterChapter("");
+      return;
+    }
     const levels = Array.from(new Set(qm.allowedClasses.filter(c => c.type === type).map(c => c.level)));
     if (levels.length > 0) {
       const firstLevel = levels[0];
@@ -40,6 +49,12 @@ export function useMyQuestions() {
 
   const handleFilterLevelChange = (level) => {
     qm.setFilterLevel(level);
+    if (!level) {
+      qm.setFilterClass("");
+      qm.setFilterSubjectId("");
+      qm.setFilterChapter("");
+      return;
+    }
     const classes = qm.allowedClasses.filter(c => c.type === qm.filterType && c.level === level);
     if (classes.length > 0) {
       qm.setFilterClass(classes[0].value, qm.filterType, level);
@@ -49,24 +64,20 @@ export function useMyQuestions() {
   };
 
   // Active subjects & chapters for filters based on selected class
-  const filterSubjects = qm.syllabusList.filter(
-    (s) => s.className === qm.filterClass && s.institutionType === qm.filterType && s.academicLevel === qm.filterLevel
-  );
+  const filterSubjects = qm.syllabusList.filter((s) => {
+    const typeMatch = !qm.filterType || s.institutionType === qm.filterType;
+    const levelMatch = !qm.filterLevel || s.academicLevel === qm.filterLevel;
+    const classMatch = !qm.filterClass || s.className === qm.filterClass;
+    return typeMatch && levelMatch && classMatch;
+  });
   const selectedSyllabusObj = qm.syllabusList.find((s) => s._id === qm.filterSubjectId);
   const filterChapters = selectedSyllabusObj?.chapters || [];
 
   // Reset filters
   const handleResetFilters = () => {
-    if (qm.allowedClasses && qm.allowedClasses.length > 0) {
-      const first = qm.allowedClasses[0];
-      qm.setFilterType(first.type);
-      qm.setFilterLevel(first.level);
-      qm.setFilterClass(first.value);
-    } else {
-      qm.setFilterType("School");
-      qm.setFilterLevel("Secondary");
-      qm.setFilterClass("Class 6");
-    }
+    qm.setFilterType("");
+    qm.setFilterLevel("");
+    qm.setFilterClass("");
     qm.setFilterSubjectId("");
     qm.setFilterChapter("");
     qm.setFilterCategory("");
@@ -103,8 +114,18 @@ export function useMyQuestions() {
 
   // Get active categories dynamically based on selected class/level/subject configuration
   const getActiveCategories = () => {
-    if (filterSubjects.length === 0) {
+    if (qm.filterClass && filterSubjects.length === 0) {
       return [];
+    }
+    if (!qm.filterClass) {
+      return [
+        { value: "MCQ", label: "বহুনির্বাচনি (MCQ)" },
+        { value: "Creative", label: "সৃজনশীল প্রশ্ন (CQ)" },
+        { value: "ShortAnswer", label: "সংক্ষিপ্ত প্রশ্ন" },
+        { value: "FillInBlanks", label: "শূন্যস্থান পূরণ" },
+        { value: "Matching", label: "মিলকরণ" },
+        { value: "BroadQuestion", label: "রচনামূলক প্রশ্ন" },
+      ];
     }
     if (qm.filterSubjectId && selectedSyllabusObj) {
       const subjectCats = selectedSyllabusObj?.subjectId?.categories || [];
@@ -156,6 +177,27 @@ export function useMyQuestions() {
   const creativeCount = questions.filter((q) => q.category === "Creative").length;
   const otherCount = totalCount - mcqCount - creativeCount;
 
+  // Pagination & Infinite Scroll states
+  const [pageSize, setPageSizeState] = useState(10);
+  const [page, setPage] = useState(1);
+
+  const setPageSize = (size) => {
+    setPageSizeState(size);
+    setPage(1);
+  };
+
+  const visibleQuestions = questions.slice(0, page * pageSize);
+  const hasMore = page * pageSize < questions.length;
+
+  // Adjust page to 1 during render when filters change
+  const filterKey = `${qm.filterType}-${qm.filterLevel}-${qm.filterClass}-${qm.filterSubjectId}-${qm.filterChapter}-${qm.filterCategory}-${qm.filterDifficulty}-${qm.filterSearch}-${qm.filterVersion}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
+    setPage(1);
+  }
+
   return {
     navigate,
     qm,
@@ -184,5 +226,11 @@ export function useMyQuestions() {
     mcqCount,
     creativeCount,
     otherCount,
+    // Pagination & Infinite Scroll exports
+    pageSize,
+    setPageSize,
+    visibleQuestions,
+    hasMore,
+    setPage,
   };
 }

@@ -36,6 +36,7 @@ import {
   Trash2,
   X
 } from "lucide-react";
+import React from "react";
 import { useMyQuestions } from "./hook/useMyQuestions";
 
 const TYPE_LABELS = {
@@ -89,16 +90,30 @@ export default function MyQuestions() {
     mcqCount,
     creativeCount,
     otherCount,
+    // Pagination & Infinite Scroll exports
+    pageSize,
+    setPageSize,
+    visibleQuestions,
+    hasMore,
+    setPage,
   } = useMyQuestions();
 
-  const defaultType = qm.allowedClasses?.[0]?.type || 'School';
-  const defaultLevel = qm.allowedClasses?.[0]?.level || 'Secondary';
-  const defaultClass = qm.allowedClasses?.[0]?.value || 'Class 6';
+  const observerRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!observerRef.current) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prev => prev + 1);
+      }
+    }, { threshold: 0.1 });
+    observer.observe(observerRef.current);
+    return () => observer.disconnect();
+  }, [hasMore, setPage]);
 
   const hasActiveFilters = 
-    qm.filterType !== defaultType ||
-    qm.filterLevel !== defaultLevel ||
-    qm.filterClass !== defaultClass ||
+    qm.filterType ||
+    qm.filterLevel ||
+    qm.filterClass ||
     qm.filterSubjectId ||
     qm.filterChapter ||
     qm.filterCategory ||
@@ -222,11 +237,20 @@ export default function MyQuestions() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
-                    <span>{TYPE_LABELS[qm.filterType] || qm.filterType}</span>
+                    <span>{TYPE_LABELS[qm.filterType] || qm.filterType || "সকল ধরণ"}</span>
                     <ChevronDown className="size-3.5 text-slate-400" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                  <DropdownMenuItem
+                    onSelect={() => handleFilterTypeChange("")}
+                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                      !qm.filterType ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                    }`}
+                  >
+                    <span>সকল ধরণ</span>
+                    {!qm.filterType && <span className="size-1 rounded-full bg-indigo-500" />}
+                  </DropdownMenuItem>
                   {filterActiveTypes.map((type) => {
                     const isSelected = qm.filterType === type;
                     return (
@@ -252,11 +276,20 @@ export default function MyQuestions() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
-                    <span>{LEVEL_LABELS[qm.filterLevel] || qm.filterLevel}</span>
+                    <span>{LEVEL_LABELS[qm.filterLevel] || qm.filterLevel || "সকল স্তর"}</span>
                     <ChevronDown className="size-3.5 text-slate-400" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                  <DropdownMenuItem
+                    onSelect={() => handleFilterLevelChange("")}
+                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                      !qm.filterLevel ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                    }`}
+                  >
+                    <span>সকল স্তর</span>
+                    {!qm.filterLevel && <span className="size-1 rounded-full bg-indigo-500" />}
+                  </DropdownMenuItem>
                   {filterActiveLevels.map((lvl) => {
                     const isSelected = qm.filterLevel === lvl;
                     return (
@@ -282,11 +315,24 @@ export default function MyQuestions() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
-                    <span>{CLASSES_MAP.find((c) => c.value === qm.filterClass)?.label || qm.filterClass}</span>
+                    <span>{CLASSES_MAP.find((c) => c.value === qm.filterClass)?.label || qm.filterClass || "সকল শ্রেণী"}</span>
                     <ChevronDown className="size-3.5 text-slate-400" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      qm.setFilterClass("");
+                      qm.setFilterSubjectId("");
+                      qm.setFilterChapter("");
+                    }}
+                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                      !qm.filterClass ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                    }`}
+                  >
+                    <span>সকল শ্রেণী</span>
+                    {!qm.filterClass && <span className="size-1 rounded-full bg-indigo-500" />}
+                  </DropdownMenuItem>
                   {filterActiveClasses.map((c) => {
                     const isSelected = qm.filterClass === c.value;
                     return (
@@ -316,7 +362,7 @@ export default function MyQuestions() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button 
-                    disabled={filterSubjects.length === 0}
+                    disabled={qm.filterClass && filterSubjects.length === 0}
                     className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
                   >
                     <span>{filterSubjects.find((s) => s._id === qm.filterSubjectId)?.subjectName || "সকল বিষয়"}</span>
@@ -411,7 +457,7 @@ export default function MyQuestions() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button 
-                    disabled={filterSubjects.length === 0}
+                    disabled={qm.filterClass && filterSubjects.length === 0}
                     className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
                   >
                     <span>
@@ -597,7 +643,34 @@ export default function MyQuestions() {
         </div>
       ) : (
         <div className="space-y-4">
-          {questions.map((q) => {
+          <div className="flex justify-between items-center bg-white/[0.45] backdrop-blur-md px-4 py-2 rounded-2xl border border-black/[0.04] text-xs font-semibold text-slate-500">
+            <span>মোট {questions.length.toLocaleString("bn-BD")} টি প্রশ্ন পাওয়া গেছে</span>
+            <div className="flex items-center gap-2">
+              <span>প্রদর্শন:</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="h-8 px-2.5 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-bold text-slate-700 flex items-center gap-1 cursor-pointer select-none">
+                    <span>{pageSize} টি</span>
+                    <ChevronDown className="size-3 text-slate-400" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1 z-[100] w-24">
+                  {[10, 20, 50, 100].map((size) => (
+                    <DropdownMenuItem
+                      key={size}
+                      onSelect={() => setPageSize(size)}
+                      className={`text-center px-2 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
+                        pageSize === size ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                      }`}
+                    >
+                      {size} টি
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+          {visibleQuestions.map((q) => {
             const classLabel = CLASSES_MAP.find((c) => c.value === q.className)?.label || q.className;
             const diffConfig = DIFFICULTY_MAP[q.difficulty] || { label: q.difficulty, color: "bg-slate-50 border-slate-100 text-slate-600" };
             const catLabel = CATEGORIES_MAP.find((c) => c.value === q.category)?.label || q.category;
@@ -799,6 +872,15 @@ export default function MyQuestions() {
               </div>
             );
           })}
+          {hasMore && (
+            <div 
+              ref={observerRef} 
+              className="py-6 flex items-center justify-center gap-2 text-slate-500 text-xs font-semibold"
+            >
+              <Loader2 className="size-4 animate-spin text-indigo-500" />
+              <span>আরও প্রশ্ন লোড হচ্ছে...</span>
+            </div>
+          )}
         </div>
       )}
 

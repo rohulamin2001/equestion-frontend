@@ -15,19 +15,15 @@ export function useQuestionManagement(options = {}) {
   const [activeStep, setActiveStep] = useState(1);
 
   // Active list filters (for QuestionBank and MyQuestions pages) - Derived State Pattern
-  const [userFilterType, setUserFilterType] = useState(null);
-  const [userFilterLevel, setUserFilterLevel] = useState(null);
-  const [userFilterClass, setUserFilterClass] = useState(null);
+  const [userFilterType, setUserFilterType] = useState('');
+  const [userFilterLevel, setUserFilterLevel] = useState('');
+  const [userFilterClass, setUserFilterClass] = useState('');
 
   const firstAllowed = allowedClasses && allowedClasses.length > 0 ? allowedClasses[0] : null;
 
-  const isFilterSelectionValid = allowedClasses.some(
-    c => c.value === userFilterClass && c.type === userFilterType && c.level === userFilterLevel
-  );
-
-  const filterType = isFilterSelectionValid ? userFilterType : (firstAllowed ? firstAllowed.type : 'School');
-  const filterLevel = isFilterSelectionValid ? userFilterLevel : (firstAllowed ? firstAllowed.level : 'Secondary');
-  const filterClass = isFilterSelectionValid ? userFilterClass : (firstAllowed ? firstAllowed.value : 'Class 6');
+  const filterType = userFilterType;
+  const filterLevel = userFilterLevel;
+  const filterClass = userFilterClass;
 
   const setFilterType = setUserFilterType;
   const setFilterLevel = setUserFilterLevel;
