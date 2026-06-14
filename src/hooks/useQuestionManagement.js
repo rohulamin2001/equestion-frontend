@@ -31,14 +31,25 @@ export function useQuestionManagement(options = {}) {
 
   const setFilterType = setUserFilterType;
   const setFilterLevel = setUserFilterLevel;
-  const setFilterClass = (clsVal) => {
-    const clsObj = allowedClasses.find((c) => c.value === clsVal);
+  const setFilterClass = (clsVal, targetTypeOverride = null, targetLevelOverride = null) => {
+    const targetType = targetTypeOverride !== null ? targetTypeOverride : (userFilterType || filterType);
+    const targetLevel = targetLevelOverride !== null ? targetLevelOverride : (userFilterLevel || filterLevel);
+    const clsObj = allowedClasses.find(
+      (c) => c.value === clsVal && c.type === targetType && c.level === targetLevel
+    );
     if (clsObj) {
       setUserFilterType(clsObj.type);
       setUserFilterLevel(clsObj.level);
       setUserFilterClass(clsVal);
     } else {
-      setUserFilterClass(clsVal);
+      const fallbackObj = allowedClasses.find((c) => c.value === clsVal);
+      if (fallbackObj) {
+        setUserFilterType(fallbackObj.type);
+        setUserFilterLevel(fallbackObj.level);
+        setUserFilterClass(clsVal);
+      } else {
+        setUserFilterClass(clsVal);
+      }
     }
   };
 
@@ -66,14 +77,25 @@ export function useQuestionManagement(options = {}) {
 
   const setFormType = setUserFormType;
   const setFormLevel = setUserFormLevel;
-  const setFormClass = (clsVal) => {
-    const clsObj = allowedClasses.find((c) => c.value === clsVal);
+  const setFormClass = (clsVal, targetTypeOverride = null, targetLevelOverride = null) => {
+    const targetType = targetTypeOverride !== null ? targetTypeOverride : (userFormType || formType);
+    const targetLevel = targetLevelOverride !== null ? targetLevelOverride : (userFormLevel || formLevel);
+    const clsObj = allowedClasses.find(
+      (c) => c.value === clsVal && c.type === targetType && c.level === targetLevel
+    );
     if (clsObj) {
       setUserFormType(clsObj.type);
       setUserFormLevel(clsObj.level);
       setUserFormClass(clsVal);
     } else {
-      setUserFormClass(clsVal);
+      const fallbackObj = allowedClasses.find((c) => c.value === clsVal);
+      if (fallbackObj) {
+        setUserFormType(fallbackObj.type);
+        setUserFormLevel(fallbackObj.level);
+        setUserFormClass(clsVal);
+      } else {
+        setUserFormClass(clsVal);
+      }
     }
   };
 

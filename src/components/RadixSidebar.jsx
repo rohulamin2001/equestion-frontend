@@ -182,7 +182,7 @@ export const RadixSidebar = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
   const { user } = useUser();
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, setOpenMobile } = useSidebar();
   const { role } = useUserContext();
 
   const userInitials = user?.fullName
@@ -237,7 +237,7 @@ export const RadixSidebar = () => {
       <SidebarContent className="px-2">
         {filteredNavGroups.map((group) => (
           <SidebarGroup key={group.label} className="py-2">
-            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden text-slate-400/80 font-bold text-[12px] uppercase tracking-wider mb-2 px-4 font-bengali">
+            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden text-slate-600 font-bold text-[12px] uppercase tracking-wider mb-2 px-4 font-bengali">
               {group.label}
             </SidebarGroupLabel>
             <SidebarMenu className="gap-1.5">
@@ -254,7 +254,15 @@ export const RadixSidebar = () => {
                           : 'text-slate-700 hover:text-slate-900 hover:bg-black/[0.03] font-semibold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali'
                       }
                     >
-                      <Link to={item.url} className="flex items-center gap-3 w-full">
+                      <Link 
+                        to={item.url} 
+                        className="flex items-center gap-3 w-full"
+                        onClick={() => {
+                          if (isMobile) {
+                            setOpenMobile(false);
+                          }
+                        }}
+                      >
                         <item.icon className={isActive ? 'text-[#4F46E5] size-[18px]' : 'text-slate-500 group-hover/menu-item:text-slate-800 size-[18px] transition-colors'} />
                         <span className="font-sans tracking-tight">{item.title}</span>
                       </Link>
@@ -326,7 +334,15 @@ export const RadixSidebar = () => {
                 <DropdownMenuSeparator className="bg-black/[0.04]" />
                 <DropdownMenuGroup>
                   <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
-                    <Link to="/dashboard/subscription" className="flex items-center gap-2 w-full">
+                    <Link 
+                      to="/dashboard/subscription" 
+                      className="flex items-center gap-2 w-full"
+                      onClick={() => {
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                    >
                       <SparklesIcon className="size-4 text-amber-500" />
                       প্রো-তে আপগ্রেড করুন
                     </Link>
@@ -335,13 +351,29 @@ export const RadixSidebar = () => {
                 <DropdownMenuSeparator className="bg-black/[0.04]" />
                 <DropdownMenuGroup>
                   <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
-                    <Link to="/dashboard/institution" className="flex items-center gap-2 w-full">
+                    <Link 
+                      to="/dashboard/institution" 
+                      className="flex items-center gap-2 w-full"
+                      onClick={() => {
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                    >
                       <BadgeCheck className="size-4" />
                       প্রতিষ্ঠানের প্রোফাইল
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
-                    <Link to="/dashboard/support" className="flex items-center gap-2 w-full">
+                    <Link 
+                      to="/dashboard/support" 
+                      className="flex items-center gap-2 w-full"
+                      onClick={() => {
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                    >
                       <Bell className="size-4" />
                       যোগাযোগ ও সাপোর্ট
                     </Link>

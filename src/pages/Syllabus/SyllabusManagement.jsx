@@ -138,7 +138,7 @@ export default function SyllabusManagement() {
       setSelectedLevel(firstLevel);
       const classes = allowedClasses.filter(c => c.type === type && c.level === firstLevel);
       if (classes.length > 0) {
-        setSelectedClass(classes[0].value);
+        setSelectedClass(classes[0].value, type, firstLevel);
       }
     }
   };
@@ -147,7 +147,7 @@ export default function SyllabusManagement() {
     setSelectedLevel(level);
     const classes = allowedClasses.filter(c => c.type === selectedType && c.level === level);
     if (classes.length > 0) {
-      setSelectedClass(classes[0].value);
+      setSelectedClass(classes[0].value, selectedType, level);
     }
   };
 

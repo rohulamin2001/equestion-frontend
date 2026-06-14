@@ -1,15 +1,16 @@
-'use client';;
-import * as React from 'react';
-import { Slot } from 'radix-ui';
+'use client';
+/* eslint-disable react-refresh/only-export-components */
 import { cva } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
+import { Slot } from 'radix-ui';
+import * as React from 'react';
 
-import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/animate-ui/components/animate/tooltip';
 import {
   Sheet,
   SheetContent,
@@ -18,16 +19,16 @@ import {
   SheetTitle,
 } from '@/components/animate-ui/components/radix/sheet';
 import {
-  TooltipProvider,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/animate-ui/components/animate/tooltip';
-import {
   Highlight,
   HighlightItem,
 } from '@/components/animate-ui/primitives/effects/highlight';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { getStrictContext } from '@/lib/get-strict-context';
+import { cn } from '@/lib/utils';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -168,7 +169,10 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-[var(--sidebar-width)] p-0 [&>button]:hidden"
+          className={cn(
+            "text-sidebar-foreground w-[var(--sidebar-width)] p-0 [&>button]:hidden !bg-white shadow-2xl border-r border-black/[0.05]",
+            className?.replace('bg-glass-sidebar', '')
+          )}
           style={
             {
               '--sidebar-width': SIDEBAR_WIDTH_MOBILE
@@ -600,9 +604,9 @@ function SidebarMenuSkeleton({
   ...props
 }) {
   // Random width between 50 to 90%.
-  const width = React.useMemo(() => {
+  const [width] = React.useState(() => {
     return `${Math.floor(Math.random() * 40) + 50}%`;
-  }, []);
+  });
 
   return (
     <div
@@ -709,5 +713,6 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar,
+  useSidebar
 };
+

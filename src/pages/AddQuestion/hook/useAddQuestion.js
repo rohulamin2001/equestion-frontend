@@ -87,7 +87,7 @@ export function useAddQuestion() {
         (c) => c.type === type && c.level === firstLevel
       );
       if (classes.length > 0) {
-        qm.setFormClass(classes[0].value);
+        qm.setFormClass(classes[0].value, type, firstLevel);
         qm.setFormGroup("General");
         qm.setFormSubjectId("");
         qm.setFormChapterNumber("");
@@ -102,7 +102,7 @@ export function useAddQuestion() {
       (c) => c.type === qm.formType && c.level === level
     );
     if (classes.length > 0) {
-      qm.setFormClass(classes[0].value);
+      qm.setFormClass(classes[0].value, qm.formType, level);
       qm.setFormGroup("General");
       qm.setFormSubjectId("");
       qm.setFormChapterNumber("");

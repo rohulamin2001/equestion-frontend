@@ -97,6 +97,21 @@ export default function QuestionBank() {
     otherCount,
   } = useQuestionBank();
 
+  const defaultType = qm.allowedClasses?.[0]?.type || 'School';
+  const defaultLevel = qm.allowedClasses?.[0]?.level || 'Secondary';
+  const defaultClass = qm.allowedClasses?.[0]?.value || 'Class 6';
+
+  const hasActiveFilters = 
+    qm.filterType !== defaultType ||
+    qm.filterLevel !== defaultLevel ||
+    qm.filterClass !== defaultClass ||
+    qm.filterSubjectId ||
+    qm.filterChapter ||
+    qm.filterCategory ||
+    qm.filterDifficulty ||
+    qm.filterSearch ||
+    qm.filterVersion;
+
   return (
     <div className="space-y-6 pb-12 w-full font-bengali">
       {/* Page Header */}
@@ -188,7 +203,7 @@ export default function QuestionBank() {
               <ChevronDown className={`size-4 transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`} />
             </Button>
 
-            {(qm.filterClass !== "Class 6" || qm.filterSubjectId || qm.filterChapter || qm.filterCategory || qm.filterDifficulty || qm.filterSearch || qm.filterVersion) && (
+            {hasActiveFilters && (
               <Button
                 variant="ghost"
                 onClick={handleResetFilters}
@@ -405,7 +420,10 @@ export default function QuestionBank() {
                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">প্রশ্ন ধরণ</label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
+                      <button 
+                        disabled={filterSubjects.length === 0}
+                        className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
+                      >
                         <span>
                           {(() => {
                             const activeCats = getActiveCategories();

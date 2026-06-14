@@ -31,7 +31,7 @@ export function useMyQuestions() {
       qm.setFilterLevel(firstLevel);
       const classes = qm.allowedClasses.filter(c => c.type === type && c.level === firstLevel);
       if (classes.length > 0) {
-        qm.setFilterClass(classes[0].value);
+        qm.setFilterClass(classes[0].value, type, firstLevel);
         qm.setFilterSubjectId("");
         qm.setFilterChapter("");
       }
@@ -42,7 +42,7 @@ export function useMyQuestions() {
     qm.setFilterLevel(level);
     const classes = qm.allowedClasses.filter(c => c.type === qm.filterType && c.level === level);
     if (classes.length > 0) {
-      qm.setFilterClass(classes[0].value);
+      qm.setFilterClass(classes[0].value, qm.filterType, level);
       qm.setFilterSubjectId("");
       qm.setFilterChapter("");
     }
@@ -103,6 +103,9 @@ export function useMyQuestions() {
 
   // Get active categories dynamically based on selected class/level/subject configuration
   const getActiveCategories = () => {
+    if (filterSubjects.length === 0) {
+      return [];
+    }
     if (qm.filterSubjectId && selectedSyllabusObj) {
       const subjectCats = selectedSyllabusObj?.subjectId?.categories || [];
       if (subjectCats.length > 0) {

@@ -29,14 +29,25 @@ export function useSyllabusManagement() {
 
   const setSelectedType = setUserSelectedType;
   const setSelectedLevel = setUserSelectedLevel;
-  const setSelectedClass = (clsVal) => {
-    const clsObj = allowedClasses.find((c) => c.value === clsVal);
+  const setSelectedClass = (clsVal, targetTypeOverride = null, targetLevelOverride = null) => {
+    const targetType = targetTypeOverride !== null ? targetTypeOverride : (userSelectedType || selectedType);
+    const targetLevel = targetLevelOverride !== null ? targetLevelOverride : (userSelectedLevel || selectedLevel);
+    const clsObj = allowedClasses.find(
+      (c) => c.value === clsVal && c.type === targetType && c.level === targetLevel
+    );
     if (clsObj) {
       setUserSelectedType(clsObj.type);
       setUserSelectedLevel(clsObj.level);
       setUserSelectedClass(clsVal);
     } else {
-      setUserSelectedClass(clsVal);
+      const fallbackObj = allowedClasses.find((c) => c.value === clsVal);
+      if (fallbackObj) {
+        setUserSelectedType(fallbackObj.type);
+        setUserSelectedLevel(fallbackObj.level);
+        setUserSelectedClass(clsVal);
+      } else {
+        setUserSelectedClass(clsVal);
+      }
     }
   };
 

@@ -5,24 +5,24 @@ import { Input } from "@/components/ui/input";
 import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  BookOpen,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  Database,
-  FileText,
-  HelpCircle,
-  Plus,
-  Save,
-  Trash2
+    BookOpen,
+    CheckCircle2,
+    ChevronLeft,
+    ChevronRight,
+    Database,
+    FileText,
+    HelpCircle,
+    Plus,
+    Save,
+    Trash2
 } from "lucide-react";
 import {
-  CATEGORIES_MAP,
-  CLASSES_MAP,
-  DIFFICULTY_MAP,
-  LEVEL_LABELS,
-  TYPE_LABELS,
-  useAddQuestion,
+    CATEGORIES_MAP,
+    CLASSES_MAP,
+    DIFFICULTY_MAP,
+    LEVEL_LABELS,
+    TYPE_LABELS,
+    useAddQuestion,
 } from "./hook/useAddQuestion";
 
 export default function AddQuestion() {
@@ -682,6 +682,17 @@ export default function AddQuestion() {
                     </div>
                   )}
 
+                  {/* Question Text */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">প্রশ্ন (Question)</label>
+                    <Editor
+                      value={qm.mcqQuestionText}
+                      onChange={qm.setMcqQuestionText}
+                      placeholder="যেমন: নিচের কোনটি মৌলিক সংখ্যা?"
+                      height={200}
+                    />
+                  </div>
+
                   {/* Statements inputs (only for Multiple Completion) */}
                   {qm.mcqType === "MultipleCompletion" && (
                     <div className="space-y-3 p-5 bg-black/[0.02] border border-black/[0.05] rounded-2xl animate-in fade-in duration-200">
@@ -705,17 +716,6 @@ export default function AddQuestion() {
                       ))}
                     </div>
                   )}
-
-                  {/* Question Text */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">প্রশ্ন (Question)</label>
-                    <Editor
-                      value={qm.mcqQuestionText}
-                      onChange={qm.setMcqQuestionText}
-                      placeholder="যেমন: নিচের কোনটি মৌলিক সংখ্যা?"
-                      height={200}
-                    />
-                  </div>
 
                   {/* Options Input */}
                   <div className="space-y-3">
@@ -1373,7 +1373,7 @@ export default function AddQuestion() {
                               <div className="flex-1">
                                 <RichTextRender content={qm.mcqQuestionText || "প্রশ্ন বিবরণ"} />
                                 {qm.mcqType === "MultipleCompletion" && (
-                                  <div className="space-y-1 pl-4 mt-2 font-normal text-sm font-sans">
+                                  <div className="space-y-1 mt-2 font-normal text-sm font-sans">
                                     {qm.mcqStatements.map((st, idx) => st && (
                                       <div key={idx} className="flex gap-1 items-start">
                                         <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
