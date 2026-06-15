@@ -135,7 +135,7 @@ export default function QuestionBank() {
         <div>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">প্রশ্নব্যাংক</h1>
           <p className="text-slate-500 text-sm mt-1">
-            ক্লাস ৩ থেকে ১২ পর্যন্ত সকল বিষয়ের অধ্যায়ভিত্তিক সৃজনশীল ও MCQ প্রশ্নভাণ্ডার
+            সকল বিষয়ের অধ্যায়ভিত্তিক সৃজনশীল ও MCQ প্রশ্নভাণ্ডার
           </p>
         </div>
         {/* Only Question Creator role is allowed to add questions based on App.jsx guard, 
