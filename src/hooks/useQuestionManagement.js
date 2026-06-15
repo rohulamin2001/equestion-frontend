@@ -1,12 +1,12 @@
 import apiClient from '@/lib/apiClient';
 import { useAuth } from '@clerk/react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { useAcademicConfig } from './useAcademicConfig';
 
 export function useQuestionManagement(options = {}) {
-  const { isPersonalOnly = false, skipFetch = false } = options;
+  const { isPersonalOnly = false, skipFetch = false, pageSize = 10 } = options;
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
   const { allowedClasses, config, isLoading: configLoading } = useAcademicConfig();
@@ -283,7 +283,7 @@ export function useQuestionManagement(options = {}) {
   }, []);
 
   // Fetch Questions list (for QuestionBank and MyQuestions)
-  const questionsQuery = useQuery({
+  const questionsQuery = useInfiniteQuery({
     queryKey: [
       isPersonalOnly ? 'myQuestionsList' : 'globalQuestionsList',
       filterType,
@@ -295,15 +295,19 @@ export function useQuestionManagement(options = {}) {
       filterDifficulty,
       filterSearch,
       filterVersion,
+      pageSize,
     ],
     enabled: !skipFetch,
-    queryFn: async () => {
+    initialPageParam: 1,
+    queryFn: async ({ pageParam = 1 }) => {
       const token = await getToken();
       const params = {
         className: filterClass,
         personal: isPersonalOnly ? 'true' : 'false',
         institutionType: filterType,
         academicLevel: filterLevel,
+        page: pageParam,
+        limit: pageSize,
       };
       if (filterSubjectId) params.subjectId = filterSubjectId;
       if (filterChapter) params.chapterNumber = filterChapter;
@@ -316,7 +320,11 @@ export function useQuestionManagement(options = {}) {
         params,
         headers: { Authorization: `Bearer ${token}` },
       });
-      return response.data.questions;
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      const { page, pages } = lastPage.pagination || {};
+      return page < pages ? page + 1 : undefined;
     },
   });
 

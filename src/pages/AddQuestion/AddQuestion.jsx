@@ -1188,11 +1188,9 @@ export default function AddQuestion() {
                 <div className="p-8 flex-1 bg-white/[0.70] backdrop-blur-sm text-slate-800 space-y-8 select-none font-serif leading-relaxed max-h-[70vh] overflow-y-auto custom-scrollbar">
                   {/* Header details */}
                   <div className="text-center space-y-1.5 border-b border-black/[0.05] pb-4">
-                    <h5 className="font-bold text-lg font-sans">সাময়িক/চূড়ান্ত মূল্যায়ন পরীক্ষা</h5>
                     <div className="text-xs text-slate-500 flex justify-center gap-4 font-sans font-semibold">
                       <span>বিষয়: {qm.formSubjects.find((s) => s._id === qm.formSubjectId)?.subjectName}</span>
                       <span>অধ্যায়: {qm.formChapterNumber}</span>
-                      <span>কাঠিন্য: {DIFFICULTY_MAP[qm.formDifficulty]?.label}</span>
                     </div>
                   </div>
 
@@ -1253,31 +1251,38 @@ export default function AddQuestion() {
                                   </div>
                                 )}
 
-                                <div className="font-bold text-[15px] flex gap-2">
-                                  <span>{idx + 1}.</span>
-                                  <div>
+                                <div className="font-bold text-[15px] flex justify-between items-start gap-4 w-full">
+                                  <div className="flex gap-2">
+                                    <span>{idx + 1}.</span>
                                     <RichTextRender content={q.mcqData.questionText || "প্রশ্ন বিবরণ..."} />
-                                    {q.mcqData.mcqType === "MultipleCompletion" && q.mcqData.statements && (
-                                      <div className="space-y-1 pl-4 mt-2 font-normal text-sm font-sans">
-                                        {q.mcqData.statements.map((st, sIdx) => st && (
-                                          <div key={sIdx}>
-                                            {sIdx === 0 ? "i. " : sIdx === 1 ? "ii. " : "iii. "} {st}
-                                          </div>
-                                        ))}
-                                        <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
-                                      </div>
-                                    )}
                                   </div>
+                                  <span className="text-slate-400 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
+                                    [১]
+                                  </span>
                                 </div>
+                                {q.mcqData.mcqType === "MultipleCompletion" && q.mcqData.statements && (
+                                  <div className="space-y-1 pl-8 mt-2 font-normal text-sm font-sans">
+                                    {q.mcqData.statements.map((st, sIdx) => st && (
+                                      <div key={sIdx} className="flex gap-1 items-start">
+                                        <span className="shrink-0">{sIdx === 0 ? "i. " : sIdx === 1 ? "ii. " : "iii. "}</span>
+                                        <RichTextRender content={st} className="inline-block font-sans font-normal" />
+                                      </div>
+                                    ))}
+                                    <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
+                                  </div>
+                                )}
 
                                 {/* Options Grid */}
                                 <div className="grid grid-cols-2 gap-x-8 gap-y-2 pl-6 text-sm font-sans font-semibold text-slate-700">
                                   {q.mcqData.options && q.mcqData.options.map((opt, oIdx) => (
-                                    <div key={oIdx} className="flex gap-1">
-                                      <span className="text-slate-400">
+                                    <div key={oIdx} className="flex gap-1.5 items-start">
+                                      <span className="text-slate-400 shrink-0">
                                         {oIdx === 0 ? "ক)" : oIdx === 1 ? "খ)" : oIdx === 2 ? "গ)" : "ঘ)"}
                                       </span>
-                                      <span>{opt || "অপশন..."}</span>
+                                      <RichTextRender 
+                                        content={opt || "অপশন..."} 
+                                        className="inline-block font-sans [&_p]:inline [&_p]:m-0 font-normal" 
+                                      />
                                     </div>
                                   ))}
                                 </div>
@@ -1335,12 +1340,14 @@ export default function AddQuestion() {
                                   </div>
                                 )}
 
-                                <div className="font-bold text-[15px] flex justify-between items-start gap-4">
+                                <div className="font-bold text-[15px] flex justify-between items-start gap-4 w-full">
                                   <div className="flex gap-2">
                                     <span>১.</span>
-                                    <RichTextRender content={q.generalData.questionText || "প্রশ্ন বিবরণ..."} className="font-serif" />
+                                    <RichTextRender content={q.generalData.questionText || "প্রশ্ন বিবরণ..."} className="font-serif inline-block" />
                                   </div>
-                                  <span className="text-slate-400 text-xs font-serif font-bold pt-1">নম্বর: {q.generalData.marks}</span>
+                                  <span className="text-slate-400 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
+                                    {q.generalData.marks}
+                                  </span>
                                 </div>
 
                                 {q.generalData.suggestedAnswer && (
@@ -1368,23 +1375,26 @@ export default function AddQuestion() {
                           )}
 
                           <div className="space-y-2.5">
-                            <div className="text-[15px] flex gap-2">
-                              <span className="font-bold shrink-0">১.</span>
-                              <div className="flex-1">
+                            <div className="text-[15px] flex justify-between items-start gap-4 w-full">
+                              <div className="flex gap-2">
+                                <span className="font-bold shrink-0">১.</span>
                                 <RichTextRender content={qm.mcqQuestionText || "প্রশ্ন বিবরণ"} />
-                                {qm.mcqType === "MultipleCompletion" && (
-                                  <div className="space-y-1 mt-2 font-normal text-sm font-sans">
-                                    {qm.mcqStatements.map((st, idx) => st && (
-                                      <div key={idx} className="flex gap-1 items-start">
-                                        <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
-                                        <span className="font-normal">{st}</span>
-                                      </div>
-                                    ))}
-                                    <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
-                                  </div>
-                                )}
                               </div>
+                              <span className="text-slate-400 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
+                                [১]
+                              </span>
                             </div>
+                            {qm.mcqType === "MultipleCompletion" && (
+                              <div className="space-y-1 pl-8 mt-2 font-normal text-sm font-sans">
+                                {qm.mcqStatements.map((st, idx) => st && (
+                                  <div key={idx} className="flex gap-1 items-start">
+                                    <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
+                                    <RichTextRender content={st} className="inline-block font-sans font-normal" />
+                                  </div>
+                                ))}
+                                <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
+                              </div>
+                            )}
 
                             {/* Options Grid */}
                             <div className="grid grid-cols-2 gap-x-8 gap-y-2 pl-6 text-sm font-sans text-slate-700">
@@ -1393,7 +1403,10 @@ export default function AddQuestion() {
                                   <span className="font-semibold text-slate-500 shrink-0">
                                     {idx === 0 ? "ক)" : idx === 1 ? "খ)" : idx === 2 ? "গ)" : "ঘ)"}
                                   </span>
-                                  <span className="font-normal text-slate-600">{opt || "অপশন..."}</span>
+                                  <RichTextRender 
+                                    content={opt || "অপশন..."} 
+                                    className="inline-block font-sans [&_p]:inline [&_p]:m-0 font-normal text-slate-600" 
+                                  />
                                 </div>
                               ))}
                             </div>
@@ -1457,12 +1470,14 @@ export default function AddQuestion() {
                             </div>
                           )}
 
-                          <div className="text-[15px] flex justify-between items-start gap-4">
+                          <div className="text-[15px] flex justify-between items-start gap-4 w-full">
                             <div className="flex gap-2">
                               <span className="font-bold shrink-0">১.</span>
-                              <RichTextRender content={qm.generalQuestionText || "প্রশ্ন বিবরণ"} className="font-serif" />
+                              <RichTextRender content={qm.generalQuestionText || "প্রশ্ন বিবরণ"} className="font-serif inline-block" />
                             </div>
-                            <span className="text-slate-400 text-xs font-serif font-bold pt-1">নম্বর: {qm.generalMarks}</span>
+                            <span className="text-slate-400 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
+                              {qm.generalMarks}
+                            </span>
                           </div>
 
                           {qm.generalSuggestedAnswer && (

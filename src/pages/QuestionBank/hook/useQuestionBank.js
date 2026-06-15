@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 
 export function useQuestionBank() {
   const navigate = useNavigate();
-  const qm = useQuestionManagement({ isPersonalOnly: false });
+  const [pageSize, setPageSizeState] = useState(10);
+  const qm = useQuestionManagement({ isPersonalOnly: false, pageSize });
   const { userProfile, role } = useUserContext();
 
   // Dialog / Modal States
@@ -14,8 +15,20 @@ export function useQuestionBank() {
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Fetch global questions (personal = false)
-  const { data: questions = [], isLoading, isError, refetch } = qm.questionsQuery;
+  // Fetch global questions from pages
+  const { 
+    data: questionsData, 
+    isLoading, 
+    isError, 
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = qm.questionsQuery;
+
+  const questions = questionsData?.pages
+    ? questionsData.pages.flatMap((p) => p.questions)
+    : [];
 
   const filterActiveTypes = Array.from(new Set(qm.allowedClasses.map(c => c.type)));
   const filterActiveLevels = qm.filterType
@@ -182,31 +195,17 @@ export function useQuestionBank() {
   };
 
   // Count Statistics
-  const totalCount = questions.length;
+  const totalCount = questionsData?.pages?.[0]?.pagination?.total || questions.length;
   const mcqCount = questions.filter((q) => q.category === "MCQ").length;
   const creativeCount = questions.filter((q) => q.category === "Creative").length;
-  const otherCount = totalCount - mcqCount - creativeCount;
-
-  // Pagination & Infinite Scroll states
-  const [pageSize, setPageSizeState] = useState(10);
-  const [page, setPage] = useState(1);
+  const otherCount = questions.length - mcqCount - creativeCount;
 
   const setPageSize = (size) => {
     setPageSizeState(size);
-    setPage(1);
   };
 
-  const visibleQuestions = questions.slice(0, page * pageSize);
-  const hasMore = page * pageSize < questions.length;
-
-  // Adjust page to 1 during render when filters change
-  const filterKey = `${qm.filterType}-${qm.filterLevel}-${qm.filterClass}-${qm.filterSubjectId}-${qm.filterChapter}-${qm.filterCategory}-${qm.filterDifficulty}-${qm.filterSearch}-${qm.filterVersion}`;
-  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
-
-  if (filterKey !== prevFilterKey) {
-    setPrevFilterKey(filterKey);
-    setPage(1);
-  }
+  const visibleQuestions = questions;
+  const hasMore = hasNextPage;
 
   return {
     navigate,
@@ -245,6 +244,7 @@ export function useQuestionBank() {
     setPageSize,
     visibleQuestions,
     hasMore,
-    setPage,
+    fetchNextPage,
+    isFetchingNextPage,
   };
 }

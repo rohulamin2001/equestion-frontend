@@ -199,7 +199,7 @@ export default function SubjectSetup() {
                 return (
                   <button
                     key={cls.value}
-                    onClick={() => setSelectedClass(cls.value)}
+                    onClick={() => setSelectedClass(cls.value, selectedType, selectedLevel)}
                     className={`p-2.5 py-3 rounded-lg text-center text-xs font-bold transition-all duration-200 cursor-pointer ${
                       isActive
                         ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm'

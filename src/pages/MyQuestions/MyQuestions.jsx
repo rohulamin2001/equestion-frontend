@@ -95,20 +95,21 @@ export default function MyQuestions() {
     setPageSize,
     visibleQuestions,
     hasMore,
-    setPage,
+    fetchNextPage,
+    isFetchingNextPage,
   } = useMyQuestions();
 
   const observerRef = React.useRef(null);
   React.useEffect(() => {
     if (!observerRef.current) return;
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage(prev => prev + 1);
+      if (entries[0].isIntersecting && hasMore && !isFetchingNextPage) {
+        fetchNextPage();
       }
     }, { threshold: 0.1 });
     observer.observe(observerRef.current);
     return () => observer.disconnect();
-  }, [hasMore, setPage]);
+  }, [hasMore, fetchNextPage, isFetchingNextPage]);
 
   const hasActiveFilters = 
     qm.filterType ||
@@ -827,7 +828,7 @@ export default function MyQuestions() {
                           <RichTextRender content={q.generalData.questionText} className="font-serif" />
                         </div>
                         <span className="text-slate-600 text-xs font-sans font-bold shrink-0 bg-black/[0.04] px-2 py-0.5 rounded border border-black/[0.05]">
-                          নম্বর: {q.generalData.marks}
+                          {q.generalData.marks}
                         </span>
                       </div>
 

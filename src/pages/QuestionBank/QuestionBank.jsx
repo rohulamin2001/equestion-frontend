@@ -101,20 +101,21 @@ export default function QuestionBank() {
     setPageSize,
     visibleQuestions,
     hasMore,
-    setPage,
+    fetchNextPage,
+    isFetchingNextPage,
   } = useQuestionBank();
 
   const observerRef = React.useRef(null);
   React.useEffect(() => {
     if (!observerRef.current) return;
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage(prev => prev + 1);
+      if (entries[0].isIntersecting && hasMore && !isFetchingNextPage) {
+        fetchNextPage();
       }
     }, { threshold: 0.1 });
     observer.observe(observerRef.current);
     return () => observer.disconnect();
-  }, [hasMore, setPage]);
+  }, [hasMore, fetchNextPage, isFetchingNextPage]);
 
   const hasActiveFilters = 
     qm.filterType ||
@@ -830,7 +831,7 @@ export default function QuestionBank() {
                           <RichTextRender content={q.generalData.questionText} className="font-serif" />
                         </div>
                         <span className="text-slate-600 text-xs font-sans font-bold shrink-0 bg-black/[0.04] px-2 py-0.5 rounded border border-black/[0.05]">
-                          নম্বর: {q.generalData.marks}
+                          {q.generalData.marks}
                         </span>
                       </div>
 
@@ -939,11 +940,9 @@ export default function QuestionBank() {
               {/* Exam Paper Sheet */}
               <div className="p-8 flex-1 bg-transparent text-slate-800 space-y-6 font-serif leading-relaxed max-h-[70vh] overflow-y-auto custom-scrollbar">
                 <div className="text-center space-y-1.5 border-b pb-4">
-                  <h5 className="font-bold text-lg font-sans">সাময়িক/চূড়ান্ত মূল্যায়ন পরীক্ষা</h5>
                   <div className="text-xs text-slate-500 flex justify-center gap-4 font-sans font-semibold">
                     <span>বিষয়: {selectedPreviewQuestion.subjectId?.subjectName}</span>
                     <span>অধ্যায়: {selectedPreviewQuestion.chapterNumber}</span>
-                    <span>পূর্ণমান: {selectedPreviewQuestion.category === "MCQ" ? "১" : selectedPreviewQuestion.category === "Creative" ? "১০" : selectedPreviewQuestion.generalData?.marks || "১"}</span>
                   </div>
                   {/* Metadata Tags */}
                   {(selectedPreviewQuestion.year || selectedPreviewQuestion.board || selectedPreviewQuestion.school || selectedPreviewQuestion.level || (selectedPreviewQuestion.specialSearch && selectedPreviewQuestion.specialSearch.length > 0)) && (
@@ -978,23 +977,26 @@ export default function QuestionBank() {
                     )}
 
                     <div className="space-y-3">
-                      <div className="text-[15px] flex gap-2">
-                        <span className="font-bold shrink-0">১.</span>
-                        <div className="flex-1">
-                          <RichTextRender content={selectedPreviewQuestion.mcqData.questionText} className="font-serif" />
-                          {selectedPreviewQuestion.mcqData.mcqType === "MultipleCompletion" && selectedPreviewQuestion.mcqData.statements && (
-                            <div className="space-y-1 pl-4 mt-2 font-normal text-sm font-sans">
-                              {selectedPreviewQuestion.mcqData.statements.map((st, idx) => (
-                                <div key={idx} className="flex gap-1 items-start">
-                                  <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
-                                  <RichTextRender content={st} className="inline-block font-sans font-normal" />
-                                </div>
-                              ))}
-                              <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
-                            </div>
-                          )}
+                      <div className="text-[15px] flex justify-between items-start gap-4 w-full">
+                        <div className="flex gap-2">
+                          <span className="font-bold shrink-0">১.</span>
+                          <RichTextRender content={selectedPreviewQuestion.mcqData.questionText} className="font-serif inline-block" />
                         </div>
+                        <span className="text-slate-400 text-xs font-sans font-bold whitespace-nowrap pt-1 ">
+                          [১]
+                        </span>
                       </div>
+                      {selectedPreviewQuestion.mcqData.mcqType === "MultipleCompletion" && selectedPreviewQuestion.mcqData.statements && (
+                        <div className="space-y-1 pl-8 mt-2 font-normal text-sm font-sans">
+                          {selectedPreviewQuestion.mcqData.statements.map((st, idx) => (
+                            <div key={idx} className="flex gap-1 items-start">
+                              <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
+                              <RichTextRender content={st} className="inline-block font-sans font-normal" />
+                            </div>
+                          ))}
+                          <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
+                        </div>
+                      )}
 
                       {/* Options Grid */}
                       <div className="grid grid-cols-2 gap-x-8 gap-y-2.5 pl-6 text-sm font-sans text-slate-700">
@@ -1002,12 +1004,22 @@ export default function QuestionBank() {
                           selectedPreviewQuestion.mcqData.options.map((opt, idx) => {
                             const isCorrect = selectedPreviewQuestion.mcqData.correctAnswer === idx;
                             return (
-                              <div key={idx} className={`flex items-start gap-2 ${isCorrect ? "text-emerald-600" : ""}`}>
+                              <div 
+                                key={idx} 
+                                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all ${
+                                  isCorrect 
+                                    ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-600 font-semibold" 
+                                    : "border-transparent text-slate-700"
+                                }`}
+                              >
                                 <span className={`shrink-0 font-bold ${isCorrect ? "text-emerald-500" : "text-slate-400"}`}>
                                   {idx === 0 ? "ক)" : idx === 1 ? "খ)" : idx === 2 ? "গ)" : "ঘ)"}
                                 </span>
-                                <RichTextRender content={opt} className={`inline-block font-sans ${isCorrect ? "font-semibold" : "font-normal"}`} />
-                                {isCorrect && <Check className="size-3.5 inline text-emerald-500 ml-1 shrink-0 mt-0.5" />}
+                                <RichTextRender 
+                                  content={opt} 
+                                  className={`inline-block font-sans [&_p]:inline [&_p]:m-0 ${isCorrect ? "font-semibold" : "font-normal"}`} 
+                                />
+                                {isCorrect && <Check className="size-3.5 inline text-emerald-500 ml-auto shrink-0" />}
                               </div>
                             );
                           })}
@@ -1066,13 +1078,13 @@ export default function QuestionBank() {
                       </div>
                     )}
 
-                    <div className="text-[15px] flex justify-between items-start gap-4">
+                    <div className="text-[15px] flex justify-between items-start gap-4 w-full">
                       <div className="flex gap-2">
                         <span className="font-bold shrink-0">১.</span>
-                        <RichTextRender content={selectedPreviewQuestion.generalData.questionText} className="font-serif" />
+                        <RichTextRender content={selectedPreviewQuestion.generalData.questionText} className="font-serif inline-block" />
                       </div>
-                      <span className="text-slate-600 text-xs font-sans font-bold shrink-0 bg-black/[0.04] px-2 py-0.5 rounded border border-black/[0.05]">
-                        নম্বর: {selectedPreviewQuestion.generalData.marks}
+                      <span className="text-slate-400 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
+                        {selectedPreviewQuestion.generalData.marks}
                       </span>
                     </div>
 

@@ -56,8 +56,16 @@ export function useSubjectSetup() {
   const selectedClass = isSelectionValid ? userSelectedClass : (firstAllowed ? firstAllowed.value : 'Class 6');
 
   // Custom setter for class selection
-  const setSelectedClass = (clsVal) => {
-    const clsObj = allowedClasses.find((c) => c.value === clsVal);
+  const setSelectedClass = (clsVal, targetTypeOverride, targetLevelOverride) => {
+    const type = targetTypeOverride !== undefined ? targetTypeOverride : userSelectedType;
+    const level = targetLevelOverride !== undefined ? targetLevelOverride : userSelectedLevel;
+    
+    const clsObj = allowedClasses.find((c) => 
+      c.value === clsVal && 
+      (type === null || c.type === type) && 
+      (level === null || c.level === level)
+    ) || allowedClasses.find((c) => c.value === clsVal);
+
     if (clsObj) {
       setUserSelectedType(clsObj.type);
       setUserSelectedLevel(clsObj.level);
@@ -277,14 +285,14 @@ export function useSubjectSetup() {
     if (lvls.length > 0) {
       setUserSelectedLevel(lvls[0]);
       const cls = allowedClasses.filter((c) => c.type === type && c.level === lvls[0]);
-      if (cls.length > 0) setSelectedClass(cls[0].value);
+      if (cls.length > 0) setSelectedClass(cls[0].value, type, lvls[0]);
     }
   };
 
   const handleLevelChange = (level) => {
     setUserSelectedLevel(level);
     const cls = allowedClasses.filter((c) => c.type === selectedType && c.level === level);
-    if (cls.length > 0) setSelectedClass(cls[0].value);
+    if (cls.length > 0) setSelectedClass(cls[0].value, selectedType, level);
   };
 
   const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(selectedClass);

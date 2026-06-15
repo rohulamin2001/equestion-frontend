@@ -5,14 +5,27 @@ import { useNavigate } from "react-router-dom";
 
 export function useMyQuestions() {
   const navigate = useNavigate();
-  const qm = useQuestionManagement({ isPersonalOnly: true });
+  const [pageSize, setPageSizeState] = useState(10);
+  const qm = useQuestionManagement({ isPersonalOnly: true, pageSize });
 
   // Dialog State
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Fetch personal questions
-  const { data: questions = [], isLoading, isError, refetch } = qm.questionsQuery;
+  // Fetch personal questions from pages
+  const { 
+    data: questionsData, 
+    isLoading, 
+    isError, 
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = qm.questionsQuery;
+
+  const questions = questionsData?.pages
+    ? questionsData.pages.flatMap((p) => p.questions)
+    : [];
 
   // Cascading helpers
   const filterActiveTypes = Array.from(new Set(qm.allowedClasses.map(c => c.type)));
@@ -172,31 +185,17 @@ export function useMyQuestions() {
   };
 
   // Count Statistics
-  const totalCount = questions.length;
+  const totalCount = questionsData?.pages?.[0]?.pagination?.total || questions.length;
   const mcqCount = questions.filter((q) => q.category === "MCQ").length;
   const creativeCount = questions.filter((q) => q.category === "Creative").length;
-  const otherCount = totalCount - mcqCount - creativeCount;
-
-  // Pagination & Infinite Scroll states
-  const [pageSize, setPageSizeState] = useState(10);
-  const [page, setPage] = useState(1);
+  const otherCount = questions.length - mcqCount - creativeCount;
 
   const setPageSize = (size) => {
     setPageSizeState(size);
-    setPage(1);
   };
 
-  const visibleQuestions = questions.slice(0, page * pageSize);
-  const hasMore = page * pageSize < questions.length;
-
-  // Adjust page to 1 during render when filters change
-  const filterKey = `${qm.filterType}-${qm.filterLevel}-${qm.filterClass}-${qm.filterSubjectId}-${qm.filterChapter}-${qm.filterCategory}-${qm.filterDifficulty}-${qm.filterSearch}-${qm.filterVersion}`;
-  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
-
-  if (filterKey !== prevFilterKey) {
-    setPrevFilterKey(filterKey);
-    setPage(1);
-  }
+  const visibleQuestions = questions;
+  const hasMore = hasNextPage;
 
   return {
     navigate,
@@ -231,6 +230,7 @@ export function useMyQuestions() {
     setPageSize,
     visibleQuestions,
     hasMore,
-    setPage,
+    fetchNextPage,
+    isFetchingNextPage,
   };
 }
