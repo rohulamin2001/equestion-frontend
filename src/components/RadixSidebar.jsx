@@ -87,6 +87,12 @@ const DATA = {
           roles: ['Subscriber', 'Super Admin', 'Admin', 'Content Manager'],
         },
         {
+          title: 'প্রশ্ন অনুমোদন',
+          url: '/dashboard/question-approval',
+          icon: BadgeCheck,
+          roles: ['Super Admin', 'Admin', 'Content Manager'],
+        },
+        {
           title: 'আমার তৈরি প্রশ্ন',
           url: '/dashboard/my-questions',
           icon: FolderOpen,

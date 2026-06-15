@@ -315,6 +315,7 @@ export function useQuestionManagement(options = {}) {
       if (filterDifficulty) params.difficulty = filterDifficulty;
       if (filterSearch) params.search = filterSearch;
       if (filterVersion) params.version = filterVersion;
+      if (!isPersonalOnly) params.status = "Approved";
 
       const response = await apiClient.get('/questions', {
         params,

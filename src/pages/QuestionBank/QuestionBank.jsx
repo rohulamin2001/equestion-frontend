@@ -169,7 +169,7 @@ export default function QuestionBank() {
               <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
 
               <div className="relative z-10 space-y-1.5">
-                <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider font-sans">
+                <span className="text-sm font-bold text-slate-400 block uppercase tracking-wider font-sans">
                   {stat.label}
                 </span>
                 <span className="text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
@@ -855,7 +855,7 @@ export default function QuestionBank() {
                   className="flex justify-between items-center border-t border-black/[0.05] pt-3 text-[11px] font-sans text-slate-500"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="flex items-center gap-4 font-medium">
+                  <div className="flex flex-wrap items-center gap-4 font-medium">
                     <div className="flex items-center gap-1">
                       <User className="size-3.5 text-slate-400" />
                       <span>তৈরি করেছেন: {q.creatorId?.fullName || "Content Creator"}</span>
@@ -864,6 +864,12 @@ export default function QuestionBank() {
                       <Calendar className="size-3.5 text-slate-400" />
                       <span>তারিখ: {formatBengaliDate(q.createdAt)}</span>
                     </div>
+                    {q.approvedBy?.fullName && (
+                      <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
+                        <Check className="size-3 text-emerald-600" />
+                        <span>অনুমোদনকারী: {q.approvedBy.fullName}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -1103,11 +1109,18 @@ export default function QuestionBank() {
                 )}
               </div>
 
-              {/* Footer Actions */}
               <div className="bg-black/[0.02] border-t border-black/[0.05] px-6 py-4 flex flex-col sm:flex-row gap-3 items-center justify-between">
-                <div className="text-[11px] font-sans text-slate-500 flex items-center gap-1.5 font-medium">
-                  <User className="size-3.5 text-slate-400" />
-                  <span>তৈরি করেছেন: {selectedPreviewQuestion.creatorId?.fullName} ({selectedPreviewQuestion.creatorId?.role})</span>
+                <div className="flex flex-wrap items-center gap-4 text-[11px] font-sans text-slate-500 font-medium">
+                  <div className="flex items-center gap-1">
+                    <User className="size-3.5 text-slate-400" />
+                    <span>তৈরি করেছেন: {selectedPreviewQuestion.creatorId?.fullName} ({selectedPreviewQuestion.creatorId?.role})</span>
+                  </div>
+                  {selectedPreviewQuestion.approvedBy?.fullName && (
+                    <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
+                      <Check className="size-3 text-emerald-600" />
+                      <span>অনুমোদনকারী: {selectedPreviewQuestion.approvedBy.fullName}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto justify-end">
                   {canManageQuestion(selectedPreviewQuestion) && (

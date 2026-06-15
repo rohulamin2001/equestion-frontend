@@ -159,7 +159,7 @@ export default function MyQuestions() {
               <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
 
               <div className="relative z-10 space-y-1.5">
-                <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider font-sans">
+                <span className="text-sm font-bold block uppercase tracking-wider font-sans">
                   {stat.label}
                 </span>
                 <span className="text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
@@ -701,6 +701,16 @@ export default function MyQuestions() {
                   </div>
 
                   <div className="flex gap-2 items-center">
+                    {/* Status Badge */}
+                    <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg border ${
+                      q.status === "Approved"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                        : q.status === "Pending"
+                        ? "bg-amber-50 text-amber-700 border-amber-100"
+                        : "bg-rose-50 text-rose-700 border-rose-100"
+                    }`}>
+                      {q.status === "Approved" ? "অনুমোদিত" : q.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}
+                    </span>
                     <span className="text-[11px] font-extrabold px-2.5 py-1 bg-[#8B5CF6]/10 text-[#8B5CF6] rounded-lg border border-[#8B5CF6]/15">
                       {catLabel}
                     </span>
@@ -847,11 +857,25 @@ export default function MyQuestions() {
                   )}
                 </div>
 
-                {/* Footer Metadata & Action Buttons */}
+                 {/* Footer Metadata & Action Buttons */}
                 <div className="flex justify-between items-center border-t border-black/[0.05] pt-3 text-[11px] font-sans text-slate-500">
-                  <div className="flex items-center gap-1.5 font-medium">
-                    <Calendar className="size-3.5 text-slate-400" />
-                    <span>সংরক্ষণকাল: {formatBengaliDate(q.createdAt)}</span>
+                  <div className="flex flex-wrap items-center gap-4 font-medium">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="size-3.5 text-slate-400" />
+                      <span>সংরক্ষণকাল: {formatBengaliDate(q.createdAt)}</span>
+                    </div>
+                    {q.status === "Approved" && q.approvedBy?.fullName && (
+                      <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
+                        <Check className="size-3 text-emerald-600" />
+                        <span>অনুমোদনকারী: {q.approvedBy.fullName}</span>
+                      </div>
+                    )}
+                    {q.status === "Rejected" && q.rejectedBy?.fullName && (
+                      <div className="flex items-center gap-1 text-rose-600 bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/10">
+                        <X className="size-3 text-rose-600" />
+                        <span>বাতিলকারী: {q.rejectedBy.fullName}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2">

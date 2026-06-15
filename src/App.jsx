@@ -1,25 +1,26 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import Home from './pages/Home/Home';
-import Login from './pages/Login/Login';
-import Signup from './pages/Signup/Signup';
-import DashboardLayout from './pages/DashboardLayout/DashboardLayout';
-import Overview from './pages/Overview/Overview';
-import Generator from './pages/Generator/Generator';
-import QuestionBank from './pages/QuestionBank/QuestionBank';
-import MyQuestions from './pages/MyQuestions/MyQuestions';
+import RoleRouteGuard from './components/RoleRouteGuard';
+import AcademicSetup from './pages/AcademicSetup/AcademicSetup';
 import AddQuestion from './pages/AddQuestion/AddQuestion';
+import DashboardLayout from './pages/DashboardLayout/DashboardLayout';
 import Exams from './pages/Exams/Exams';
-import OMREvaluation from './pages/OMREvaluation/OMREvaluation';
+import Generator from './pages/Generator/Generator';
+import Home from './pages/Home/Home';
 import Institution from './pages/Institution/Institution';
+import Login from './pages/Login/Login';
+import MetadataSetup from './pages/MetadataSetup/MetadataSetup';
+import MyQuestions from './pages/MyQuestions/MyQuestions';
+import OMREvaluation from './pages/OMREvaluation/OMREvaluation';
+import Overview from './pages/Overview/Overview';
+import QuestionApproval from './pages/QuestionApproval/QuestionApproval';
+import QuestionBank from './pages/QuestionBank/QuestionBank';
+import Signup from './pages/Signup/Signup';
+import StaffManagement from './pages/Staff/StaffManagement';
+import SubjectSetup from './pages/SubjectSetup/SubjectSetup';
 import Subscription from './pages/Subscription/Subscription';
 import Support from './pages/Support/Support';
-import StaffManagement from './pages/Staff/StaffManagement';
 import SyllabusManagement from './pages/Syllabus/SyllabusManagement';
-import AcademicSetup from './pages/AcademicSetup/AcademicSetup';
-import SubjectSetup from './pages/SubjectSetup/SubjectSetup';
-import MetadataSetup from './pages/MetadataSetup/MetadataSetup';
-import RoleRouteGuard from './components/RoleRouteGuard';
 
 export default function App() {
   return (
@@ -72,6 +73,12 @@ export default function App() {
           <Route path="bank" element={
             <RoleRouteGuard allowedRoles={['Subscriber', 'Super Admin', 'Admin', 'Content Manager']}>
               <QuestionBank />
+            </RoleRouteGuard>
+          } />
+          
+          <Route path="question-approval" element={
+            <RoleRouteGuard allowedRoles={['Super Admin', 'Admin', 'Content Manager']}>
+              <QuestionApproval />
             </RoleRouteGuard>
           } />
           
