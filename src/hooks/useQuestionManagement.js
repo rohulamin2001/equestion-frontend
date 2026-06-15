@@ -58,6 +58,9 @@ export function useQuestionManagement(options = {}) {
   const [filterDifficulty, setFilterDifficulty] = useState('');
   const [filterSearch, setFilterSearch] = useState('');
 
+  const [filterStatus, setFilterStatus] = useState('');
+  const [filterPersonal, setFilterPersonal] = useState(isPersonalOnly);
+
   // Form Field States - Derived State Pattern
   const [userFormType, setUserFormType] = useState(null);
   const [userFormLevel, setUserFormLevel] = useState(null);
@@ -285,7 +288,7 @@ export function useQuestionManagement(options = {}) {
   // Fetch Questions list (for QuestionBank and MyQuestions)
   const questionsQuery = useInfiniteQuery({
     queryKey: [
-      isPersonalOnly ? 'myQuestionsList' : 'globalQuestionsList',
+      filterPersonal ? 'myQuestionsList' : 'globalQuestionsList',
       filterType,
       filterLevel,
       filterClass,
@@ -295,6 +298,8 @@ export function useQuestionManagement(options = {}) {
       filterDifficulty,
       filterSearch,
       filterVersion,
+      filterStatus,
+      filterPersonal,
       pageSize,
     ],
     enabled: !skipFetch,
@@ -303,7 +308,7 @@ export function useQuestionManagement(options = {}) {
       const token = await getToken();
       const params = {
         className: filterClass,
-        personal: isPersonalOnly ? 'true' : 'false',
+        personal: filterPersonal ? 'true' : 'false',
         institutionType: filterType,
         academicLevel: filterLevel,
         page: pageParam,
@@ -315,7 +320,12 @@ export function useQuestionManagement(options = {}) {
       if (filterDifficulty) params.difficulty = filterDifficulty;
       if (filterSearch) params.search = filterSearch;
       if (filterVersion) params.version = filterVersion;
-      if (!isPersonalOnly) params.status = "Approved";
+      
+      if (filterStatus) {
+        params.status = filterStatus;
+      } else if (!filterPersonal) {
+        params.status = "Approved";
+      }
 
       const response = await apiClient.get('/questions', {
         params,
@@ -341,6 +351,7 @@ export function useQuestionManagement(options = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myQuestionsList'] });
       queryClient.invalidateQueries({ queryKey: ['globalQuestionsList'] });
+      queryClient.invalidateQueries({ queryKey: ['personalQuestionStats'] });
       toast.success('প্রশ্নটি সফলভাবে ডাটাবেজে যুক্ত হয়েছে!');
       resetForm();
     },
@@ -361,6 +372,7 @@ export function useQuestionManagement(options = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myQuestionsList'] });
       queryClient.invalidateQueries({ queryKey: ['globalQuestionsList'] });
+      queryClient.invalidateQueries({ queryKey: ['personalQuestionStats'] });
       toast.success('প্রশ্নটি সফলভাবে আপডেট করা হয়েছে!');
       resetForm();
     },
@@ -380,6 +392,7 @@ export function useQuestionManagement(options = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myQuestionsList'] });
       queryClient.invalidateQueries({ queryKey: ['globalQuestionsList'] });
+      queryClient.invalidateQueries({ queryKey: ['personalQuestionStats'] });
       toast.success('প্রশ্নটি সফলভাবে মুছে ফেলা হয়েছে!');
     },
     onError: (err) => {
@@ -597,6 +610,10 @@ export function useQuestionManagement(options = {}) {
     setFilterSearch,
     filterVersion,
     setFilterVersion,
+    filterStatus,
+    setFilterStatus,
+    filterPersonal,
+    setFilterPersonal,
 
     // Form fields & setters
     formType,

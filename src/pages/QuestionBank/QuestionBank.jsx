@@ -62,6 +62,29 @@ const DIFFICULTY_MAP = {
   Hard: { label: "কঠিন", color: "bg-rose-500/10 text-rose-700 border-rose-500/20" },
 };
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+};
+
 
 
 export default function QuestionBank() {
@@ -152,7 +175,12 @@ export default function QuestionBank() {
       </div>
 
       {/* Statistics Banner */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+      >
         {[
           { label: "মোট প্রশ্ন", count: totalCount, color: "text-[#4F46E5]", bg: "from-[#4F46E5]/10 to-[#8B5CF6]/10", border: "hover:border-[#4F46E5]/35", icon: Database },
           { label: "MCQ প্রশ্ন", count: mcqCount, color: "text-[#10B981]", bg: "from-[#10B981]/10 to-[#059669]/10", border: "hover:border-[#10B981]/35", icon: CheckSquare },
@@ -161,9 +189,11 @@ export default function QuestionBank() {
         ].map((stat, i) => {
           const IconComponent = stat.icon;
           return (
-            <div
+            <motion.div
               key={i}
-              className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-5 rounded-2xl border border-black/[0.04] ${stat.border} backdrop-blur-md shadow-sm hover:shadow-md hover:-translate-y-1.5 transition-all duration-500 ease-out flex items-center justify-between overflow-hidden cursor-default`}
+              variants={cardVariants}
+              whileHover={{ y: -6 }}
+              className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-5 rounded-2xl border border-black/[0.04] ${stat.border} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-default`}
             >
               {/* Ultra premium subtle glow background effect */}
               <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
@@ -180,10 +210,10 @@ export default function QuestionBank() {
               <div className={`relative z-10 size-12 rounded-xl bg-gradient-to-br ${stat.bg} ${stat.color} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}>
                 <IconComponent className="size-5.5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6" />
               </div>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Filters Panel */}
       <div className="bg-glass p-5 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4">
@@ -672,16 +702,25 @@ export default function QuestionBank() {
               </DropdownMenu>
             </div>
           </div>
-          {visibleQuestions.map((q) => {
+          <motion.div
+            key="question-bank-list-container"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-4"
+          >
+            {visibleQuestions.map((q) => {
             const classLabel = CLASSES_MAP.find((c) => c.value === q.className)?.label || q.className;
             const diffConfig = DIFFICULTY_MAP[q.difficulty] || { label: q.difficulty, color: "bg-slate-50 border-slate-100 text-slate-600" };
             const catLabel = CATEGORIES_MAP.find((c) => c.value === q.category)?.label || q.category;
             const userCanManage = canManageQuestion(q);
 
             return (
-              <div
+              <motion.div
                 key={q._id}
-                className="bg-white/[0.45] hover:bg-white/[0.60] p-6 rounded-2xl border border-black/[0.04] backdrop-blur-md hover:-translate-y-1 hover:shadow-md transition-all duration-300 flex flex-col space-y-4 relative cursor-pointer"
+                variants={cardVariants}
+                whileHover={{ y: -4 }}
+                className="bg-white/[0.45] hover:bg-white/[0.60] p-6 rounded-2xl border border-black/[0.04] backdrop-blur-md hover:shadow-md transition-colors duration-200 flex flex-col space-y-4 relative cursor-pointer"
                 onClick={() => setSelectedPreviewQuestion(q)}
               >
                 {/* Badge Header Row */}
@@ -907,9 +946,10 @@ export default function QuestionBank() {
                     )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
+          </motion.div>
           {hasMore && (
             <div 
               ref={observerRef} 

@@ -1,5 +1,8 @@
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
+import apiClient from "@/lib/apiClient";
+import { useAuth } from "@clerk/react";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -7,6 +10,21 @@ export function useMyQuestions() {
   const navigate = useNavigate();
   const [pageSize, setPageSizeState] = useState(10);
   const qm = useQuestionManagement({ isPersonalOnly: true, pageSize });
+  const { getToken } = useAuth();
+
+  // Personal stats query for currently logged-in user
+  const { data: personalStatsData } = useQuery({
+    queryKey: ["personalQuestionStats"],
+    queryFn: async () => {
+      const token = await getToken();
+      const response = await apiClient.get("/questions/personal-stats", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    },
+  });
+
+  const personalStats = personalStatsData?.stats || { total: 0, pending: 0, approved: 0, rejected: 0 };
 
   // Dialog State
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
@@ -86,7 +104,6 @@ export function useMyQuestions() {
   const selectedSyllabusObj = qm.syllabusList.find((s) => s._id === qm.filterSubjectId);
   const filterChapters = selectedSyllabusObj?.chapters || [];
 
-  // Reset filters
   const handleResetFilters = () => {
     qm.setFilterType("");
     qm.setFilterLevel("");
@@ -97,6 +114,7 @@ export function useMyQuestions() {
     qm.setFilterDifficulty("");
     qm.setFilterSearch("");
     qm.setFilterVersion("");
+    qm.setFilterStatus("");
   };
 
   // Trigger edit question
@@ -225,6 +243,7 @@ export function useMyQuestions() {
     mcqCount,
     creativeCount,
     otherCount,
+    personalStats,
     // Pagination & Infinite Scroll exports
     pageSize,
     setPageSize,

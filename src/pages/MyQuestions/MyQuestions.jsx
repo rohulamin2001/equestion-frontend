@@ -34,7 +34,9 @@ import {
   Search,
   Sparkles,
   Trash2,
-  X
+  X,
+  Clock,
+  XCircle,
 } from "lucide-react";
 import React from "react";
 import { useMyQuestions } from "./hook/useMyQuestions";
@@ -59,6 +61,30 @@ const DIFFICULTY_MAP = {
   Medium: { label: "মধ্যম", color: "bg-[#F97316]/10 text-[#F97316] border-[#F97316]/20" },
   Hard: { label: "কঠিন", color: "bg-rose-500/10 text-rose-700 border-rose-500/20" },
 };
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+};
+
 
 
 
@@ -90,6 +116,7 @@ export default function MyQuestions() {
     mcqCount,
     creativeCount,
     otherCount,
+    personalStats,
     // Pagination & Infinite Scroll exports
     pageSize,
     setPageSize,
@@ -142,7 +169,12 @@ export default function MyQuestions() {
       </div>
 
       {/* Statistics Banner */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+      >
         {[
           { label: "মোট প্রশ্ন", count: totalCount, color: "text-[#4F46E5]", bg: "from-[#4F46E5]/10 to-[#8B5CF6]/10", border: "hover:border-[#4F46E5]/35", icon: Database },
           { label: "বহুনির্বাচনি (MCQ)", count: mcqCount, color: "text-[#10B981]", bg: "from-[#10B981]/10 to-[#059669]/10", border: "hover:border-[#10B981]/35", icon: CheckSquare },
@@ -151,9 +183,11 @@ export default function MyQuestions() {
         ].map((stat, i) => {
           const IconComponent = stat.icon;
           return (
-            <div
+            <motion.div
               key={i}
-              className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-5 rounded-2xl border border-black/[0.04] ${stat.border} backdrop-blur-md shadow-sm hover:shadow-md hover:-translate-y-1.5 transition-all duration-500 ease-out flex items-center justify-between overflow-hidden cursor-default`}
+              variants={cardVariants}
+              whileHover={{ y: -6 }}
+              className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-5 rounded-2xl border border-black/[0.04] ${stat.border} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-default`}
             >
               {/* Ultra premium subtle glow background effect */}
               <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
@@ -170,9 +204,94 @@ export default function MyQuestions() {
               <div className={`relative z-10 size-12 rounded-xl bg-gradient-to-br ${stat.bg} ${stat.color} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}>
                 <IconComponent className="size-5.5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6" />
               </div>
-            </div>
+            </motion.div>
           );
         })}
+      </motion.div>
+
+      {/* Personal Status Statistics Banner */}
+      <div className="space-y-2.5">
+        <div className="text-xs font-bold text-slate-400 uppercase tracking-wider font-sans pl-1">
+          আমার তৈরি প্রশ্নের অবস্থা
+        </div>
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        >
+          {[
+            {
+              label: "অনুমোদিত প্রশ্ন",
+              count: personalStats.approved,
+              icon: CheckSquare,
+              statusType: "Approved",
+              borderClass: "hover:border-emerald-500/35",
+              activeBorderClass: "border-emerald-500/50 ring-2 ring-emerald-500/10 shadow-md",
+              iconBgClass: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20",
+              bg: "from-emerald-500/10 to-teal-500/10",
+              color: "text-emerald-600",
+            },
+            {
+              label: "অপেক্ষমাণ প্রশ্ন",
+              count: personalStats.pending,
+              icon: Clock,
+              statusType: "Pending",
+              borderClass: "hover:border-amber-500/35",
+              activeBorderClass: "border-amber-500/50 ring-2 ring-amber-500/10 shadow-md",
+              iconBgClass: "bg-amber-500/10 text-amber-600 border border-amber-500/20",
+              bg: "from-amber-500/10 to-orange-500/10",
+              color: "text-amber-600",
+            },
+            {
+              label: "বাতিলকৃত প্রশ্ন",
+              count: personalStats.rejected,
+              icon: XCircle,
+              statusType: "Rejected",
+              borderClass: "hover:border-rose-500/35",
+              activeBorderClass: "border-rose-500/50 ring-2 ring-rose-500/10 shadow-md",
+              iconBgClass: "bg-rose-500/10 text-rose-650 border border-rose-500/20",
+              bg: "from-rose-500/10 to-red-500/10",
+              color: "text-rose-650",
+            },
+          ].map((stat, i) => {
+            const IconComponent = stat.icon;
+            const isCurrent = qm.filterStatus === stat.statusType;
+            return (
+              <motion.div
+                key={i}
+                variants={cardVariants}
+                whileHover={{ y: -4 }}
+                onClick={() => {
+                  if (isCurrent) {
+                    qm.setFilterStatus("");
+                  } else {
+                    qm.setFilterStatus(stat.statusType);
+                  }
+                }}
+                className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-5 rounded-2xl border ${
+                  isCurrent ? stat.activeBorderClass : "border-black/[0.04]"
+                } ${stat.borderClass} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-pointer`}
+              >
+                {/* Subtle glow effect */}
+                <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
+
+                <div className="relative z-10 space-y-1.5">
+                  <span className="text-sm md:text-base font-bold text-slate-655 block font-sans">
+                    {stat.label}
+                  </span>
+                  <span className="text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
+                    {stat.count.toLocaleString("bn-BD")}
+                  </span>
+                </div>
+
+                <div className={`relative z-10 size-12 rounded-xl ${stat.iconBgClass} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}>
+                  <IconComponent className="size-5.5" />
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </div>
 
       {/* Filters Panel */}
@@ -643,8 +762,8 @@ export default function MyQuestions() {
           </Button>
         </div>
       ) : (
-        <div className="space-y-4">
-          <div className="flex justify-between items-center bg-white/[0.45] backdrop-blur-md px-4 py-2 rounded-2xl border border-black/[0.04] text-xs font-semibold text-slate-500">
+        <>
+          <div className="flex justify-between items-center bg-white/[0.45] backdrop-blur-md px-4 py-2 rounded-2xl border border-black/[0.04] text-xs font-semibold text-slate-500 mb-4">
             <span>মোট {questions.length.toLocaleString("bn-BD")} টি প্রশ্ন পাওয়া গেছে</span>
             <div className="flex items-center gap-2">
               <span>প্রদর্শন:</span>
@@ -671,15 +790,24 @@ export default function MyQuestions() {
               </DropdownMenu>
             </div>
           </div>
-          {visibleQuestions.map((q) => {
+          <motion.div
+            key="my-questions-list-container"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-4"
+          >
+            {visibleQuestions.map((q) => {
             const classLabel = CLASSES_MAP.find((c) => c.value === q.className)?.label || q.className;
             const diffConfig = DIFFICULTY_MAP[q.difficulty] || { label: q.difficulty, color: "bg-slate-50 border-slate-100 text-slate-600" };
             const catLabel = CATEGORIES_MAP.find((c) => c.value === q.category)?.label || q.category;
 
             return (
-              <div
+              <motion.div
                 key={q._id}
-                className="bg-white/[0.45] hover:bg-white/[0.60] p-6 rounded-2xl border border-black/[0.04] backdrop-blur-md hover:-translate-y-1 hover:shadow-md transition-all duration-300 flex flex-col space-y-4 relative"
+                variants={cardVariants}
+                whileHover={{ y: -4 }}
+                className="bg-white/[0.45] hover:bg-white/[0.60] p-6 rounded-2xl border border-black/[0.04] backdrop-blur-md hover:shadow-md transition-colors duration-200 flex flex-col space-y-4 relative"
               >
                 {/* Badge Header Row */}
                 <div className="flex flex-wrap justify-between items-center gap-2">
@@ -899,9 +1027,11 @@ export default function MyQuestions() {
                     </Button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
+          </motion.div>
+
           {hasMore && (
             <div 
               ref={observerRef} 
@@ -911,7 +1041,7 @@ export default function MyQuestions() {
               <span>আরও প্রশ্ন লোড হচ্ছে...</span>
             </div>
           )}
-        </div>
+        </>
       )}
 
       {/* Delete Confirmation Dialog */}

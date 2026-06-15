@@ -67,6 +67,29 @@ const formatBengaliDate = (dateString) => {
   return `${day} ${month}, ${year}`;
 };
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+};
+
 export default function QuestionApproval() {
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
@@ -388,13 +411,20 @@ export default function QuestionApproval() {
       </div>
 
       {/* Stats Cards Banner */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+      >
         {statCards.map((stat, i) => {
           const IconComponent = stat.icon;
           const isCurrentStatus = filterStatus === stat.statusType || (stat.statusType === "" && !filterStatus);
           return (
-            <div
+            <motion.div
               key={i}
+              variants={cardVariants}
+              whileHover={{ y: -4 }}
               onClick={() => {
                 if (stat.statusType !== "") {
                   setFilterStatus(stat.statusType);
@@ -404,7 +434,7 @@ export default function QuestionApproval() {
               }}
               className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-5 rounded-2xl border ${
                 isCurrentStatus ? stat.activeBorderClass : "border-black/[0.04]"
-              } ${stat.borderClass} backdrop-blur-md shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out flex items-center justify-between overflow-hidden cursor-pointer`}
+              } ${stat.borderClass} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-pointer`}
             >
               <div className="relative z-10 space-y-1.5">
                 <span className="text-sm md:text-base font-bold text-slate-600 block font-sans">
@@ -417,10 +447,10 @@ export default function QuestionApproval() {
               <div className={`relative z-10 size-12 rounded-xl ${stat.iconBgClass} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}>
                 <IconComponent className="size-6 shrink-0" />
               </div>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Filters & Control bar */}
       <div className="bg-glass p-5 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4">
@@ -884,14 +914,22 @@ export default function QuestionApproval() {
           <span className="text-xs text-slate-400">এই বিভাগে কোনো পেন্ডিং প্রশ্ন জমা পড়েনি।</span>
         </div>
       ) : (
-        <div className="space-y-4">
+        <motion.div
+          key="question-approval-list-container"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-4"
+        >
           {questions.map((q) => {
             const classObj = CLASSES_MAP.find((c) => c.value === q.className);
             const categoryObj = CATEGORIES_MAP.find((c) => c.value === q.category);
             return (
-              <div
+              <motion.div
                 key={q._id}
-                className="group bg-white/[0.45] hover:bg-white/[0.75] rounded-2xl border border-black/[0.04] hover:border-black/[0.08] p-5 shadow-sm hover:shadow-md transition-all duration-300 backdrop-blur-md flex flex-col gap-4 overflow-hidden"
+                variants={cardVariants}
+                whileHover={{ y: -4 }}
+                className="group bg-white/[0.45] hover:bg-white/[0.75] rounded-2xl border border-black/[0.04] hover:border-black/[0.08] p-5 shadow-sm hover:shadow-md transition-colors duration-200 backdrop-blur-md flex flex-col gap-4 overflow-hidden"
               >
                 {/* Header Metadata Chips */}
                 <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
@@ -1141,7 +1179,7 @@ export default function QuestionApproval() {
                     )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
           
@@ -1154,7 +1192,7 @@ export default function QuestionApproval() {
               <span>আরও প্রশ্ন লোড হচ্ছে...</span>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
 
       {/* Details Preview Dialog */}
