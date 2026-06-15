@@ -722,22 +722,27 @@ export default function MyQuestions() {
                         </div>
                       )}
 
-                      <div className="text-[15px] flex gap-2">
-                        <span className="font-bold shrink-0">১.</span>
-                        <div className="flex-1">
-                          <RichTextRender content={q.mcqData.questionText} className="font-serif" />
-                          {q.mcqData.mcqType === "MultipleCompletion" && q.mcqData.statements && (
-                            <div className="space-y-1 pl-4 mt-2 font-normal text-sm font-sans">
-                              {q.mcqData.statements.map((st, idx) => (
-                                <div key={idx} className="flex gap-1 items-start">
-                                  <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
-                                  <RichTextRender content={st} className="inline-block font-sans font-normal" />
-                                </div>
-                              ))}
-                              <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
-                            </div>
-                          )}
+                      <div className="text-[15px] flex justify-between items-start gap-4">
+                        <div className="flex gap-2">
+                          <span className="font-bold shrink-0">১.</span>
+                          <div className="flex-1">
+                            <RichTextRender content={q.mcqData.questionText} className="font-serif" />
+                            {q.mcqData.mcqType === "MultipleCompletion" && q.mcqData.statements && (
+                              <div className="space-y-1 pl-4 mt-2 font-normal text-sm font-sans">
+                                {q.mcqData.statements.map((st, idx) => (
+                                  <div key={idx} className="flex gap-1 items-start">
+                                    <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
+                                    <RichTextRender content={st} className="inline-block font-sans font-normal" />
+                                  </div>
+                                ))}
+                                <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
+                              </div>
+                            )}
+                          </div>
                         </div>
+                        <span className="text-slate-600 text-xs font-sans font-bold shrink-0 bg-black/[0.04] px-2 py-0.5 rounded border border-black/[0.05]">
+                          {q.mcqData.marks || 1}
+                        </span>
                       </div>
 
                       {/* Options Grid */}

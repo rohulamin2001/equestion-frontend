@@ -1257,7 +1257,7 @@ export default function AddQuestion() {
                                     <RichTextRender content={q.mcqData.questionText || "প্রশ্ন বিবরণ..."} />
                                   </div>
                                   <span className="text-slate-400 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
-                                    [১]
+                                    {q.mcqData?.marks || 1}
                                   </span>
                                 </div>
                                 {q.mcqData.mcqType === "MultipleCompletion" && q.mcqData.statements && (
@@ -1381,7 +1381,7 @@ export default function AddQuestion() {
                                 <RichTextRender content={qm.mcqQuestionText || "প্রশ্ন বিবরণ"} />
                               </div>
                               <span className="text-slate-400 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
-                                [১]
+                                1
                               </span>
                             </div>
                             {qm.mcqType === "MultipleCompletion" && (
