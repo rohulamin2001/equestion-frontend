@@ -193,7 +193,7 @@ export default function MyQuestions() {
               <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
 
               <div className="relative z-10 space-y-1.5">
-                <span className="text-sm font-bold block uppercase tracking-wider font-sans">
+                <span className="text-sm font-bold text-slate-600 block uppercase tracking-wider font-sans">
                   {stat.label}
                 </span>
                 <span className="text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
@@ -277,7 +277,7 @@ export default function MyQuestions() {
                 <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
 
                 <div className="relative z-10 space-y-1.5">
-                  <span className="text-sm md:text-base font-bold text-slate-655 block font-sans">
+                  <span className="text-sm md:text-base font-bold text-slate-600 block font-sans">
                     {stat.label}
                   </span>
                   <span className="text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
@@ -932,7 +932,7 @@ export default function MyQuestions() {
                                 className={`flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border transition-all duration-300 ${
                                   isCorrect
                                     ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm"
-                                    : "bg-white/[0.3] hover:bg-white/[0.6] border-black/[0.03] hover:border-black/[0.08] text-slate-655"
+                                    : "bg-white/[0.3] hover:bg-white/[0.6] border-black/[0.03] hover:border-black/[0.08] text-slate-600"
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5">

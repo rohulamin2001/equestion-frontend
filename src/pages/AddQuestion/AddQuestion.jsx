@@ -1689,7 +1689,7 @@ export default function AddQuestion() {
               <AlertCircle className="size-5 animate-pulse text-red-500" strokeWidth={2.5} />
               প্রশ্নটি কি মুছে ফেলতে চান?
             </DialogTitle>
-            <DialogDescription className="pt-2 text-slate-655 leading-relaxed font-semibold">
+            <DialogDescription className="pt-2 text-slate-600 leading-relaxed font-semibold">
               প্রশ্নটি মুছে ফেললে তা তালিকা থেকে সম্পূর্ণভাবে চলে যাবে। আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?
             </DialogDescription>
           </DialogHeader>

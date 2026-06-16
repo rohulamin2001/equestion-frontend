@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
-import { AnimatePresence, motion } from "motion/react";
 import {
   AlertCircle,
   Calendar,
@@ -37,6 +36,7 @@ import {
   User,
   X,
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import React from "react";
 import RichTextRender from "../../components/RichTextRender.jsx";
 import { useQuestionBank } from "./hook/useQuestionBank";
@@ -198,7 +198,7 @@ export default function QuestionBank() {
               <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
 
               <div className="relative z-10 space-y-1.5">
-                <span className="text-sm font-bold text-slate-400 block uppercase tracking-wider font-sans">
+                <span className="text-sm font-bold text-slate-600 block uppercase tracking-wider font-sans">
                   {stat.label}
                 </span>
                 <span className="text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
