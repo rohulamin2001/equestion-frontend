@@ -21,7 +21,7 @@ import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button
 import apiClient from "@/lib/apiClient";
 import { useAuth } from "@clerk/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import {
   Award,
   Calendar,

@@ -119,12 +119,18 @@ export function useMyQuestions() {
 
   // Trigger edit question
   const handleEdit = (question) => {
+    if (question.status === "Approved") return;
     navigate("/dashboard/add-question", { state: { editQuestion: question } });
   };
 
   // Trigger delete question
   const handleDeleteConfirm = async () => {
     if (!deleteConfirmId) return;
+    const targetQuestion = questions.find((q) => q._id === deleteConfirmId);
+    if (targetQuestion?.status === "Approved") {
+      setDeleteConfirmId(null);
+      return;
+    }
     try {
       await qm.deleteQuestionMutation.mutateAsync(deleteConfirmId);
       setDeleteConfirmId(null);
@@ -133,14 +139,22 @@ export function useMyQuestions() {
     }
   };
 
-  // Bengali Date helper
-  const formatBengaliDate = (dateString) => {
+  // Bengali Date & Time helper
+  const formatBengaliDateTime = (dateString) => {
     if (!dateString) return "";
-    return new Date(dateString).toLocaleDateString("bn-BD", {
+    const date = new Date(dateString);
+    const datePart = date.toLocaleDateString("bn-BD", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
+    const timePart = date.toLocaleTimeString("bn-BD", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
+    return `${datePart} (সময়: ${timePart})`;
   };
 
   // Get active categories dynamically based on selected class/level/subject configuration
@@ -237,7 +251,7 @@ export function useMyQuestions() {
     handleResetFilters,
     handleEdit,
     handleDeleteConfirm,
-    formatBengaliDate,
+    formatBengaliDateTime,
     getActiveCategories,
     totalCount,
     mcqCount,

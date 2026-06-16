@@ -39,6 +39,7 @@ export function useAddQuestion() {
   const navigate = useNavigate();
   const [activeDropdown, setActiveDropdown] = useState(null); // 'class' | 'subject' | 'chapter' | 'school' | 'board' | 'year' | 'levelTag' | null
   const [showStep2Error, setShowStep2Error] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
   // Fetch all active metadata options
   const { data: metadataList = [], isLoading: loadingMetadata } = useQuery({
@@ -59,13 +60,15 @@ export function useAddQuestion() {
   const activeLevels = metadataList.filter((m) => m.type === "Level");
   const activeSpecialSearches = metadataList.filter((m) => m.type === "SpecialSearch");
 
+  const editQuestion = location.state?.editQuestion;
+
   useEffect(() => {
-    if (location.state?.editQuestion) {
-      qm.handleOpenEditMode(location.state.editQuestion);
+    if (editQuestion) {
+      qm.handleOpenEditMode(editQuestion);
       // Clear navigation state so that refresh doesn't trigger edit mode again
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location.state, qm, navigate, location.pathname]);
+  }, [editQuestion, qm.handleOpenEditMode, navigate, location.pathname]);
 
   const formActiveTypes = Array.from(new Set(qm.allowedClasses.map((c) => c.type)));
   const formActiveLevels = Array.from(
@@ -195,5 +198,7 @@ export function useAddQuestion() {
     activeLevels,
     activeSpecialSearches,
     loadingMetadata,
+    deleteConfirmId,
+    setDeleteConfirmId,
   };
 }

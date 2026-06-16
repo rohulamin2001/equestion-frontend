@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { RippleButton, RippleButtonRipples } from '@/components/ui/ripple-button';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   AlertCircle,
   Book,

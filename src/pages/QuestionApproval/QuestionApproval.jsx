@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import {
   Calendar,
   Check,
@@ -691,54 +691,89 @@ export default function QuestionApproval() {
                 whileHover={{ y: -4 }}
                 className="group bg-white/[0.45] hover:bg-white/[0.75] rounded-2xl border border-black/[0.04] hover:border-black/[0.08] p-5 shadow-sm hover:shadow-md transition-colors duration-200 backdrop-blur-md flex flex-col gap-4 overflow-hidden"
               >
-                {/* Header Metadata Chips */}
-                <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
-                  {new Date() - new Date(q.createdAt) < 24 * 60 * 60 * 1000 && (
-                    <span className="bg-rose-100 text-rose-650 border border-rose-200 px-2 py-0.5 rounded  flex items-center gap-1.5">
-                      <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
-                      নতুন
+                {/* Badge Header Row */}
+                <div className="flex flex-wrap justify-between items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
+                    {new Date() - new Date(q.createdAt) < 24 * 60 * 60 * 1000 && (
+                      <span className="bg-rose-100 text-rose-650 border border-rose-200 px-2 py-0.5 rounded flex items-center gap-1.5">
+                        <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
+                        নতুন
+                      </span>
+                    )}
+                    {classObj && (
+                      <span className="bg-indigo-50 text-[#4F46E5] border border-indigo-100 px-2 py-0.5 rounded">
+                        {classObj.label}
+                      </span>
+                    )}
+                    {q.subjectId?.subjectName && (
+                      <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
+                        {q.subjectId.subjectName}
+                      </span>
+                    )}
+                    {q.chapterNumber && (
+                      <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded">
+                        অধ্যায় {q.chapterNumber.toLocaleString("bn-BD")}
+                      </span>
+                    )}
+                    {q.topics && q.topics.length > 0 && (
+                      <span className="bg-slate-50 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">
+                        #{q.topics.join(", #")}
+                      </span>
+                    )}
+                    {q.year && (Array.isArray(q.year) ? q.year.length > 0 : String(q.year).trim()) && (
+                      <span className="bg-amber-55 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
+                        সাল: {Array.isArray(q.year) ? q.year.join(", ") : q.year}
+                      </span>
+                    )}
+                    {q.board && (Array.isArray(q.board) ? q.board.length > 0 : String(q.board).trim()) && (
+                      <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
+                        বোর্ড: {Array.isArray(q.board) ? q.board.join(", ") : q.board}
+                      </span>
+                    )}
+                    {q.school && (Array.isArray(q.school) ? q.school.length > 0 : String(q.school).trim()) && (
+                      <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[150px]" title={Array.isArray(q.school) ? q.school.join(", ") : q.school}>
+                        প্রতিষ্ঠান: {Array.isArray(q.school) ? q.school.join(", ") : q.school}
+                      </span>
+                    )}
+                    {q.level && String(q.level).trim() && (
+                      <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
+                        লেভেল: {LEVEL_LABELS[q.level] || q.level}
+                      </span>
+                    )}
+                    {q.specialSearch && (Array.isArray(q.specialSearch) ? q.specialSearch.length > 0 : String(q.specialSearch).trim()) && (
+                      <span className="bg-slate-50 text-slate-700 border border-slate-200 px-2 py-0.5 rounded">
+                        কীওয়ার্ড: {Array.isArray(q.specialSearch) ? q.specialSearch.join(", ") : q.specialSearch}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
+                    {/* Status Badge */}
+                    <span className={`px-2 py-0.5 rounded border flex items-center gap-1 ${
+                      q.status === "Approved"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                        : q.status === "Pending"
+                        ? "bg-amber-50 text-amber-700 border-amber-100"
+                        : "bg-rose-50 text-rose-700 border-rose-100"
+                    }`}>
+                      {q.status === "Pending" && <Loader2 className="size-3 animate-spin text-amber-600" />}
+                      {q.status === "Approved" ? "অনুমোদিত" : q.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}
                     </span>
-                  )}
-                  {classObj && (
-                    <span className="bg-indigo-50 text-[#4F46E5] border border-indigo-100 px-2 py-0.5 rounded">
-                      {classObj.label}
+                    {categoryObj && (
+                      <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-2 py-0.5 rounded">
+                        {categoryObj.label}
+                      </span>
+                    )}
+                    <span className={`px-2 py-0.5 rounded border ${
+                      q.difficulty === "Easy"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                        : q.difficulty === "Medium"
+                        ? "bg-amber-50 text-amber-700 border-amber-100"
+                        : "bg-rose-50 text-rose-700 border-rose-100"
+                    }`}>
+                      {q.difficulty === "Easy" ? "সহজ" : q.difficulty === "Medium" ? "মধ্যম" : "কঠিন"}
                     </span>
-                  )}
-                  {q.subjectId?.subjectName && (
-                    <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
-                      {q.subjectId.subjectName}
-                    </span>
-                  )}
-                  {q.chapterNumber && (
-                    <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded">
-                      অধ্যায় {q.chapterNumber.toLocaleString("bn-BD")}
-                    </span>
-                  )}
-                  {categoryObj && (
-                    <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-2 py-0.5 rounded">
-                      {categoryObj.label}
-                    </span>
-                  )}
-                  <span className={`px-2 py-0.5 rounded border ${
-                    q.difficulty === "Easy"
-                      ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                      : q.difficulty === "Medium"
-                      ? "bg-amber-50 text-amber-700 border-amber-100"
-                      : "bg-rose-50 text-rose-700 border-rose-100"
-                  }`}>
-                    {q.difficulty === "Easy" ? "সহজ" : q.difficulty === "Medium" ? "মধ্যম" : "কঠিন"}
-                  </span>
-                  
-                  {/* Status Badge */}
-                  <span className={`px-2 py-0.5 rounded border ${
-                    q.status === "Approved"
-                      ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                      : q.status === "Pending"
-                      ? "bg-amber-50 text-amber-700 border-amber-100"
-                      : "bg-rose-50 text-rose-700 border-rose-100"
-                  }`}>
-                    {q.status === "Approved" ? "অনুমোদিত" : q.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}
-                  </span>
+                  </div>
                 </div>
 
                 {/* Question Content Area */}
@@ -782,20 +817,36 @@ export default function QuestionApproval() {
                           q.mcqData.options.slice(0, 4).map((opt, idx) => {
                             const isCorrect = q.mcqData.correctAnswer === idx;
                             return (
-                              <div key={idx} className="flex gap-1.5 items-start">
-                                <span className={`font-semibold shrink-0 ${isCorrect ? "text-emerald-600 font-bold" : "text-slate-400"}`}>
-                                  {idx === 0 ? "ক)" : idx === 1 ? "খ)" : idx === 2 ? "গ)" : "ঘ)"}
-                                </span>
-                                <RichTextRender
-                                  content={opt}
-                                  className={`inline-block font-sans [&_p]:inline [&_p]:m-0 ${
-                                    isCorrect ? "text-emerald-700 font-bold" : "text-slate-600"
-                                  }`}
-                                />
+                              <div
+                                key={idx}
+                                className={`flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border transition-all duration-300 ${
+                                  isCorrect
+                                    ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm"
+                                    : "bg-white/[0.3] hover:bg-white/[0.6] border-black/[0.03] hover:border-black/[0.08] text-slate-605"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                                    isCorrect 
+                                      ? "bg-emerald-500 text-white" 
+                                      : "bg-black/[0.04] text-slate-500"
+                                  }`}>
+                                    {idx === 0 ? "ক" : idx === 1 ? "খ" : idx === 2 ? "গ" : "ঘ"}
+                                  </span>
+                                  <RichTextRender content={opt} className={`inline-block font-sans ${isCorrect ? "font-semibold" : "font-normal"}`} />
+                                </div>
+                                {isCorrect && <Check className="size-4 text-emerald-600 shrink-0" />}
                               </div>
                             );
                           })}
                       </div>
+
+                      {q.mcqData.explanation && (
+                        <div className="mt-3 p-3 bg-black/[0.02] border border-black/[0.05] rounded-xl text-xs font-sans text-slate-500 backdrop-blur-sm">
+                          <strong>উত্তর বিশ্লেষণ: </strong>
+                          <RichTextRender content={q.mcqData.explanation} inline />
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -852,6 +903,13 @@ export default function QuestionApproval() {
                           {q.generalData.marks}
                         </span>
                       </div>
+
+                      {q.generalData.suggestedAnswer && (
+                        <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-slate-700">
+                          <span className="text-sm font-semibold">উত্তর: </span>
+                          <RichTextRender content={q.generalData.suggestedAnswer} inline />
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1039,15 +1097,48 @@ export default function QuestionApproval() {
                         ? "bg-orange-50 text-orange-700 border-orange-100/50"
                         : "bg-rose-50 text-rose-700 border-rose-100/50"
                     }`}>
-                      <span className={`size-1.5 rounded-full ${
-                        selectedPreviewQuestion.status === "Approved"
-                          ? "bg-emerald-500"
-                          : selectedPreviewQuestion.status === "Pending"
-                          ? "bg-orange-500"
-                          : "bg-rose-500"
-                      }`} />
+                      {selectedPreviewQuestion.status === "Pending" ? (
+                        <Loader2 className="size-3.5 animate-spin text-orange-600 shrink-0" />
+                      ) : (
+                        <span className={`size-1.5 rounded-full ${
+                          selectedPreviewQuestion.status === "Approved"
+                            ? "bg-emerald-500"
+                            : "bg-rose-500"
+                        }`} />
+                      )}
                       <span>অবস্থা: {selectedPreviewQuestion.status === "Approved" ? "অনুমোদিত" : selectedPreviewQuestion.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}</span>
                     </div>
+
+                    {selectedPreviewQuestion.year && (Array.isArray(selectedPreviewQuestion.year) ? selectedPreviewQuestion.year.length > 0 : String(selectedPreviewQuestion.year).trim()) && (
+                      <div className="bg-amber-50 text-amber-700 border border-amber-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-amber-500" />
+                        <span>সাল: {Array.isArray(selectedPreviewQuestion.year) ? selectedPreviewQuestion.year.join(", ") : selectedPreviewQuestion.year}</span>
+                      </div>
+                    )}
+                    {selectedPreviewQuestion.board && (Array.isArray(selectedPreviewQuestion.board) ? selectedPreviewQuestion.board.length > 0 : String(selectedPreviewQuestion.board).trim()) && (
+                      <div className="bg-blue-50 text-blue-700 border border-blue-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-blue-500" />
+                        <span>বোর্ড: {Array.isArray(selectedPreviewQuestion.board) ? selectedPreviewQuestion.board.join(", ") : selectedPreviewQuestion.board}</span>
+                      </div>
+                    )}
+                    {selectedPreviewQuestion.school && (Array.isArray(selectedPreviewQuestion.school) ? selectedPreviewQuestion.school.length > 0 : String(selectedPreviewQuestion.school).trim()) && (
+                      <div className="bg-purple-50 text-purple-700 border border-purple-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-purple-500" />
+                        <span>শিক্ষা প্রতিষ্ঠান: {Array.isArray(selectedPreviewQuestion.school) ? selectedPreviewQuestion.school.join(", ") : selectedPreviewQuestion.school}</span>
+                      </div>
+                    )}
+                    {selectedPreviewQuestion.level && String(selectedPreviewQuestion.level).trim() && (
+                      <div className="bg-rose-50 text-rose-700 border border-rose-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-rose-500" />
+                        <span>লেভেল: {LEVEL_LABELS[selectedPreviewQuestion.level] || selectedPreviewQuestion.level}</span>
+                      </div>
+                    )}
+                    {selectedPreviewQuestion.specialSearch && (Array.isArray(selectedPreviewQuestion.specialSearch) ? selectedPreviewQuestion.specialSearch.length > 0 : String(selectedPreviewQuestion.specialSearch).trim()) && (
+                      <div className="bg-slate-50 text-slate-700 border border-slate-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-slate-500" />
+                        <span>কীওয়ার্ড: {Array.isArray(selectedPreviewQuestion.specialSearch) ? selectedPreviewQuestion.specialSearch.join(", ") : selectedPreviewQuestion.specialSearch}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 

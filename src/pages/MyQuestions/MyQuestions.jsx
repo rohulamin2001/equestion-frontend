@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import {
   AlertCircle,
   Calendar,
@@ -110,7 +110,7 @@ export default function MyQuestions() {
     handleResetFilters,
     handleEdit,
     handleDeleteConfirm,
-    formatBengaliDate,
+    formatBengaliDateTime,
     getActiveCategories,
     totalCount,
     mcqCount,
@@ -811,44 +811,76 @@ export default function MyQuestions() {
               >
                 {/* Badge Header Row */}
                 <div className="flex flex-wrap justify-between items-center gap-2">
-                  <div className="flex flex-wrap gap-2 items-center">
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
                     {new Date() - new Date(q.createdAt) < 24 * 60 * 60 * 1000 && (
-                      <span className="text-[11px] font-extrabold px-2.5 py-1 bg-rose-100 text-rose-650 rounded-lg border border-rose-200 flex items-center gap-1.5">
+                      <span className="bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded flex items-center gap-1.5">
                         <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
                         নতুন
                       </span>
                     )}
-                    <span className="text-[11px] font-extrabold px-2.5 py-1 bg-black/[0.04] text-slate-600 rounded-lg border border-black/[0.05]">
+                    <span className="bg-indigo-50 text-[#4F46E5] border border-indigo-100 px-2 py-0.5 rounded">
                       {classLabel}
                     </span>
-                    <span className="text-[11px] font-extrabold px-2.5 py-1 bg-[#4F46E5]/10 text-[#4F46E5] rounded-lg border border-[#4F46E5]/15">
+                    <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
                       {q.subjectId?.subjectName || "বিষয়"}
                     </span>
-                    <span className="text-[11px] font-semibold text-slate-500">
+                    <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded">
                       অধ্যায় {q.chapterNumber}
                     </span>
                     {q.topics && q.topics.length > 0 && (
-                      <span className="text-[10px] font-bold text-slate-500 bg-black/[0.03] px-2 py-0.5 rounded border border-black/[0.05]">
+                      <span className="bg-slate-50 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">
                         #{q.topics.join(", #")}
+                      </span>
+                    )}
+                    {q.year && (Array.isArray(q.year) ? q.year.length > 0 : String(q.year).trim()) && (
+                      <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
+                        সাল: {Array.isArray(q.year) ? q.year.join(", ") : q.year}
+                      </span>
+                    )}
+                    {q.board && (Array.isArray(q.board) ? q.board.length > 0 : String(q.board).trim()) && (
+                      <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
+                        বোর্ড: {Array.isArray(q.board) ? q.board.join(", ") : q.board}
+                      </span>
+                    )}
+                    {q.school && (Array.isArray(q.school) ? q.school.length > 0 : String(q.school).trim()) && (
+                      <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[150px]" title={Array.isArray(q.school) ? q.school.join(", ") : q.school}>
+                        প্রতিষ্ঠান: {Array.isArray(q.school) ? q.school.join(", ") : q.school}
+                      </span>
+                    )}
+                    {q.level && String(q.level).trim() && (
+                      <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
+                        লেভেল: {LEVEL_LABELS[q.level] || q.level}
+                      </span>
+                    )}
+                    {q.specialSearch && (Array.isArray(q.specialSearch) ? q.specialSearch.length > 0 : String(q.specialSearch).trim()) && (
+                      <span className="bg-slate-50 text-slate-700 border border-slate-200 px-2 py-0.5 rounded">
+                        কীওয়ার্ড: {Array.isArray(q.specialSearch) ? q.specialSearch.join(", ") : q.specialSearch}
                       </span>
                     )}
                   </div>
 
-                  <div className="flex gap-2 items-center">
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
                     {/* Status Badge */}
-                    <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg border ${
+                    <span className={`px-2 py-0.5 rounded border flex items-center gap-1 ${
                       q.status === "Approved"
                         ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                         : q.status === "Pending"
                         ? "bg-amber-50 text-amber-700 border-amber-100"
                         : "bg-rose-50 text-rose-700 border-rose-100"
                     }`}>
+                      {q.status === "Pending" && <Loader2 className="size-3 animate-spin text-amber-600" />}
                       {q.status === "Approved" ? "অনুমোদিত" : q.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}
                     </span>
-                    <span className="text-[11px] font-extrabold px-2.5 py-1 bg-[#8B5CF6]/10 text-[#8B5CF6] rounded-lg border border-[#8B5CF6]/15">
+                    <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-2 py-0.5 rounded">
                       {catLabel}
                     </span>
-                    <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg border ${diffConfig.color}`}>
+                    <span className={`px-2 py-0.5 rounded border ${
+                      q.difficulty === "Easy"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                        : q.difficulty === "Medium"
+                        ? "bg-amber-50 text-amber-700 border-amber-100"
+                        : "bg-rose-50 text-rose-700 border-rose-100"
+                    }`}>
                       {diffConfig.label}
                     </span>
                   </div>
@@ -996,14 +1028,8 @@ export default function MyQuestions() {
                   <div className="flex flex-wrap items-center gap-4 font-medium">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="size-3.5 text-slate-400" />
-                      <span>সংরক্ষণকাল: {formatBengaliDate(q.createdAt)}</span>
+                      <span>সংরক্ষণকাল: {formatBengaliDateTime(q.createdAt)}</span>
                     </div>
-                    {q.status === "Approved" && q.approvedBy?.fullName && (
-                      <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
-                        <Check className="size-3 text-emerald-600" />
-                        <span>অনুমোদনকারী: {q.approvedBy.fullName}</span>
-                      </div>
-                    )}
                     {q.status === "Rejected" && q.rejectedBy?.fullName && (
                       <div className="flex items-center gap-1 text-rose-600 bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/10">
                         <X className="size-3 text-rose-600" />
@@ -1013,24 +1039,34 @@ export default function MyQuestions() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleEdit(q)}
-                      className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
-                    >
-                      <Edit3 className="size-3" />
-                      সম্পাদন
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setDeleteConfirmId(q._id)}
-                      className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
-                    >
-                      <Trash2 className="size-3" />
-                      মুছে ফেলুন
-                    </Button>
+                    {q.status !== "Approved" && (
+                      <>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => handleEdit(q)}
+                          className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                        >
+                          <Edit3 className="size-3" />
+                          সম্পাদন
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setDeleteConfirmId(q._id)}
+                          className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                        >
+                          <Trash2 className="size-3" />
+                          মুছে ফেলুন
+                        </Button>
+                      </>
+                    )}
+                    {q.status === "Approved" && q.approvedBy?.fullName && (
+                      <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10 font-bold">
+                        <Check className="size-3.5 text-emerald-600" />
+                        <span>অনুমোদনকারী: {q.approvedBy.fullName}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>

@@ -76,7 +76,7 @@ export function useQuestionManagement(options = {}) {
 
   const setFormType = setUserFormType;
   const setFormLevel = setUserFormLevel;
-  const setFormClass = (clsVal, targetTypeOverride = null, targetLevelOverride = null) => {
+  const setFormClass = useCallback((clsVal, targetTypeOverride = null, targetLevelOverride = null) => {
     const targetType = targetTypeOverride !== null ? targetTypeOverride : (userFormType || formType);
     const targetLevel = targetLevelOverride !== null ? targetLevelOverride : (userFormLevel || formLevel);
     const clsObj = allowedClasses.find(
@@ -96,7 +96,7 @@ export function useQuestionManagement(options = {}) {
         setUserFormClass(clsVal);
       }
     }
-  };
+  }, [allowedClasses, userFormType, formType, userFormLevel, formLevel, setUserFormType, setUserFormLevel, setUserFormClass]);
 
   const [userFormVersion, setUserFormVersion] = useState(null);
   const defaultVersion = config?.versions && config.versions.length > 0 ? config.versions[0] : 'Bangla';
@@ -159,14 +159,15 @@ export function useQuestionManagement(options = {}) {
   const [formDifficulty, setFormDifficulty] = useState('Medium');
 
   // New metadata fields
-  const [formYear, setFormYear] = useState('');
-  const [formBoard, setFormBoard] = useState('');
-  const [formSchool, setFormSchool] = useState('');
+  const [formYear, setFormYear] = useState([]);
+  const [formBoard, setFormBoard] = useState([]);
+  const [formSchool, setFormSchool] = useState([]);
   const [formLevelTag, setFormLevelTag] = useState('');
   const [formSpecialSearch, setFormSpecialSearch] = useState([]);
 
   // Draft list for batch question creation
   const [questionsList, setQuestionsList] = useState([]);
+  const [editingDraftId, setEditingDraftId] = useState(null);
 
   // MCQ Specific Form Fields
   const [mcqType, setMcqType] = useState('Simple');
@@ -207,11 +208,12 @@ export function useQuestionManagement(options = {}) {
     setFormCategory('MCQ');
     setFormDifficulty('Medium');
     setQuestionsList([]);
+    setEditingDraftId(null);
 
     // Reset new metadata
-    setFormYear('');
-    setFormBoard('');
-    setFormSchool('');
+    setFormYear([]);
+    setFormBoard([]);
+    setFormSchool([]);
     setFormLevelTag('');
     setFormSpecialSearch([]);
 
@@ -254,11 +256,11 @@ export function useQuestionManagement(options = {}) {
     setFormDifficulty(question.difficulty);
 
     // Load new metadata
-    setFormYear(question.year || '');
-    setFormBoard(question.board || '');
-    setFormSchool(question.school || '');
+    setFormYear(Array.isArray(question.year) ? [...question.year] : (typeof question.year === 'string' && question.year ? question.year.split(',').map(s => s.trim()) : []));
+    setFormBoard(Array.isArray(question.board) ? [...question.board] : (typeof question.board === 'string' && question.board ? question.board.split(',').map(s => s.trim()) : []));
+    setFormSchool(Array.isArray(question.school) ? [...question.school] : (typeof question.school === 'string' && question.school ? question.school.split(',').map(s => s.trim()) : []));
     setFormLevelTag(question.level || '');
-    setFormSpecialSearch(question.specialSearch || []);
+    setFormSpecialSearch(Array.isArray(question.specialSearch) ? [...question.specialSearch] : (typeof question.specialSearch === 'string' && question.specialSearch ? question.specialSearch.split(',').map(s => s.trim()) : []));
 
     if (question.category === 'MCQ') {
       setMcqType(question.mcqData?.mcqType || 'Simple');
@@ -484,6 +486,13 @@ export function useQuestionManagement(options = {}) {
     formTopics,
     formCategory,
     formDifficulty,
+    formType,
+    formLevel,
+    formYear,
+    formBoard,
+    formSchool,
+    formLevelTag,
+    formSpecialSearch,
     mcqType,
     mcqStem,
     mcqQuestionText,
@@ -523,12 +532,7 @@ export function useQuestionManagement(options = {}) {
 
     setCreativeStem('');
 
-    // Clear new metadata
-    setFormYear('');
-    setFormBoard('');
-    setFormSchool('');
-    setFormLevelTag('');
-    setFormSpecialSearch([]);
+    // Clear new metadata (keep metadata, only clear cognitive subquestions for creative and general fields)
     setCreativeCognitiveA('');
     setCreativeCognitiveB('');
     setCreativeCognitiveC('');
@@ -548,6 +552,222 @@ export function useQuestionManagement(options = {}) {
   const removeQuestionFromList = useCallback((tempId) => {
     setQuestionsList(prev => prev.filter(q => q.id !== tempId));
   }, []);
+
+  // Edit draft question from list
+  const editDraftQuestion = useCallback((draftId) => {
+    const question = questionsList.find(q => q.id === draftId);
+    if (!question) return;
+
+    setEditingDraftId(draftId);
+
+    setFormType(question.institutionType || 'School');
+    setFormLevel(question.academicLevel || 'Secondary');
+    setFormClass(question.className);
+
+    // Find subject version from syllabusList
+    const syllabusObj = syllabusList.find(s => s._id === question.subjectId);
+    setUserFormVersion(syllabusObj?.version || 'Bangla');
+
+    setFormSubjectId(question.subjectId);
+    setFormGroup(syllabusObj?.group || 'General');
+    setFormChapterNumber(question.chapterNumber.toString());
+    setFormTopics(question.topics || []);
+    setFormCategory(question.category);
+    setFormDifficulty(question.difficulty);
+
+    // Load metadata
+    setFormYear(Array.isArray(question.year) ? [...question.year] : (typeof question.year === 'string' && question.year ? question.year.split(',').map(s => s.trim()) : []));
+    setFormBoard(Array.isArray(question.board) ? [...question.board] : (typeof question.board === 'string' && question.board ? question.board.split(',').map(s => s.trim()) : []));
+    setFormSchool(Array.isArray(question.school) ? [...question.school] : (typeof question.school === 'string' && question.school ? question.school.split(',').map(s => s.trim()) : []));
+    setFormLevelTag(question.level || '');
+    setFormSpecialSearch(Array.isArray(question.specialSearch) ? [...question.specialSearch] : (typeof question.specialSearch === 'string' && question.specialSearch ? question.specialSearch.split(',').map(s => s.trim()) : []));
+
+    if (question.category === 'MCQ') {
+      setMcqType(question.mcqData?.mcqType || 'Simple');
+      setMcqStem(question.mcqData?.stem || '');
+      setMcqQuestionText(question.mcqData?.questionText || '');
+      setMcqStatements(question.mcqData?.statements || ['', '', '']);
+      setMcqOptions(question.mcqData?.options || ['', '', '', '']);
+      setMcqCorrectAnswer(question.mcqData?.correctAnswer || 0);
+      setMcqExplanation(question.mcqData?.explanation || '');
+    } else if (question.category === 'Creative') {
+      setCreativeStem(question.creativeData?.stem || '');
+      setCreativeCognitiveA(question.creativeData?.subQuestions?.cognitiveA?.text || '');
+      setCreativeCognitiveB(question.creativeData?.subQuestions?.cognitiveB?.text || '');
+      setCreativeCognitiveC(question.creativeData?.subQuestions?.cognitiveC?.text || '');
+      setCreativeCognitiveD(question.creativeData?.subQuestions?.cognitiveD?.text || '');
+    } else {
+      setGeneralQuestionText(question.generalData?.questionText || '');
+      setGeneralStem(question.generalData?.stem || '');
+      setGeneralSubQuestions(question.generalData?.subQuestions || []);
+      setGeneralSuggestedAnswer(question.generalData?.suggestedAnswer || '');
+      setGeneralMarks(question.generalData?.marks || 1);
+    }
+  }, [
+    questionsList,
+    syllabusList,
+    setFormType,
+    setFormLevel,
+    setFormClass,
+    setUserFormVersion,
+    setFormSubjectId,
+    setFormGroup,
+    setFormChapterNumber,
+    setFormTopics,
+    setFormCategory,
+    setFormDifficulty,
+    setFormYear,
+    setFormBoard,
+    setFormSchool,
+    setFormLevelTag,
+    setFormSpecialSearch,
+    setMcqType,
+    setMcqStem,
+    setMcqQuestionText,
+    setMcqStatements,
+    setMcqOptions,
+    setMcqCorrectAnswer,
+    setMcqExplanation,
+    setCreativeStem,
+    setCreativeCognitiveA,
+    setCreativeCognitiveB,
+    setCreativeCognitiveC,
+    setCreativeCognitiveD,
+    setGeneralQuestionText,
+    setGeneralStem,
+    setGeneralSubQuestions,
+    setGeneralSuggestedAnswer,
+    setGeneralMarks
+  ]);
+
+  // Update draft question in the list
+  const updateDraftQuestion = useCallback(() => {
+    if (!editingDraftId) return false;
+    const qPayload = buildPayloadFromForm();
+    if (!qPayload) return false;
+
+    // Retain the same temporary ID
+    qPayload.id = editingDraftId;
+
+    // Update in questionsList
+    setQuestionsList(prev => prev.map(q => q.id === editingDraftId ? qPayload : q));
+
+    // Clear question editors only, keep metadata
+    setMcqType('Simple');
+    setMcqStem('');
+    setMcqQuestionText('');
+    setMcqStatements(['', '', '']);
+    setMcqOptions(['', '', '', '']);
+    setMcqCorrectAnswer(0);
+    setMcqExplanation('');
+
+    setCreativeStem('');
+    setCreativeCognitiveA('');
+    setCreativeCognitiveB('');
+    setCreativeCognitiveC('');
+    setCreativeCognitiveD('');
+
+    setGeneralQuestionText('');
+    setGeneralStem('');
+    setGeneralSubQuestions([]);
+    setGeneralSuggestedAnswer('');
+    setGeneralMarks(1);
+
+    // Clear new metadata
+    setFormYear([]);
+    setFormBoard([]);
+    setFormSchool([]);
+    setFormLevelTag('');
+    setFormSpecialSearch([]);
+
+    setEditingDraftId(null);
+    toast.success('প্রশ্নটি সফলভাবে তালিকায় আপডেট করা হয়েছে!');
+    return true;
+  }, [
+    editingDraftId,
+    buildPayloadFromForm,
+    setQuestionsList,
+    setMcqType,
+    setMcqStem,
+    setMcqQuestionText,
+    setMcqStatements,
+    setMcqOptions,
+    setMcqCorrectAnswer,
+    setMcqExplanation,
+    setCreativeStem,
+    setCreativeCognitiveA,
+    setCreativeCognitiveB,
+    setCreativeCognitiveC,
+    setCreativeCognitiveD,
+    setGeneralQuestionText,
+    setGeneralStem,
+    setGeneralSubQuestions,
+    setGeneralSuggestedAnswer,
+    setGeneralMarks,
+    setFormYear,
+    setFormBoard,
+    setFormSchool,
+    setFormLevelTag,
+    setFormSpecialSearch,
+    setEditingDraftId
+  ]);
+
+  // Cancel editing draft question
+  const cancelEditDraft = useCallback(() => {
+    setEditingDraftId(null);
+
+    // Clear editors
+    setMcqType('Simple');
+    setMcqStem('');
+    setMcqQuestionText('');
+    setMcqStatements(['', '', '']);
+    setMcqOptions(['', '', '', '']);
+    setMcqCorrectAnswer(0);
+    setMcqExplanation('');
+
+    setCreativeStem('');
+    setCreativeCognitiveA('');
+    setCreativeCognitiveB('');
+    setCreativeCognitiveC('');
+    setCreativeCognitiveD('');
+
+    setGeneralQuestionText('');
+    setGeneralStem('');
+    setGeneralSubQuestions([]);
+    setGeneralSuggestedAnswer('');
+    setGeneralMarks(1);
+
+    // Clear new metadata
+    setFormYear([]);
+    setFormBoard([]);
+    setFormSchool([]);
+    setFormLevelTag('');
+    setFormSpecialSearch([]);
+  }, [
+    setMcqType,
+    setMcqStem,
+    setMcqQuestionText,
+    setMcqStatements,
+    setMcqOptions,
+    setMcqCorrectAnswer,
+    setMcqExplanation,
+    setCreativeStem,
+    setCreativeCognitiveA,
+    setCreativeCognitiveB,
+    setCreativeCognitiveC,
+    setCreativeCognitiveD,
+    setGeneralQuestionText,
+    setGeneralStem,
+    setGeneralSubQuestions,
+    setGeneralSuggestedAnswer,
+    setGeneralMarks,
+    setFormYear,
+    setFormBoard,
+    setFormSchool,
+    setFormLevelTag,
+    setFormSpecialSearch,
+    setEditingDraftId
+  ]);
 
   // Submit Handler
   const handleSaveQuestion = async () => {
@@ -701,6 +921,10 @@ export function useQuestionManagement(options = {}) {
     setQuestionsList,
     addQuestionToList,
     removeQuestionFromList,
+    editingDraftId,
+    editDraftQuestion,
+    updateDraftQuestion,
+    cancelEditDraft,
 
     // API statuses
     formLoading,

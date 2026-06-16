@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import {
   AlertCircle,
   Calendar,
@@ -92,7 +92,6 @@ export default function QuestionBank() {
     navigate,
     qm,
     role,
-    questions,
     isLoading,
     isError,
     refetch,
@@ -663,7 +662,7 @@ export default function QuestionBank() {
             পুনরায় চেষ্টা করুন
           </Button>
         </div>
-      ) : questions.length === 0 ? (
+      ) : visibleQuestions.length === 0 ? (
         <div className="bg-glass border border-black/[0.06] rounded-2xl shadow-sm p-16 flex flex-col items-center text-center space-y-4">
           <div className="p-4 bg-[#4F46E5]/10 text-[#4F46E5] rounded-full">
             <Database className="size-10" />
@@ -676,7 +675,7 @@ export default function QuestionBank() {
       ) : (
         <div className="space-y-4">
           <div className="flex justify-between items-center bg-white/[0.45] backdrop-blur-md px-4 py-2 rounded-2xl border border-black/[0.04] text-xs font-semibold text-slate-500">
-            <span>মোট {questions.length.toLocaleString("bn-BD")} টি প্রশ্ন পাওয়া গেছে</span>
+            <span>মোট {visibleQuestions.length.toLocaleString("bn-BD")} টি প্রশ্ন পাওয়া গেছে</span>
             <div className="flex items-center gap-2">
               <span>প্রদর্শন:</span>
               <DropdownMenu>
@@ -692,7 +691,7 @@ export default function QuestionBank() {
                       key={size}
                       onSelect={() => setPageSize(size)}
                       className={`text-center px-2 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
-                        pageSize === size ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                        pageSize === size ? "text-indigo-600 bg-indigo-50/50" : "text-slate-650"
                       }`}
                     >
                       {size} টি
@@ -702,61 +701,87 @@ export default function QuestionBank() {
               </DropdownMenu>
             </div>
           </div>
+
           <motion.div
-            key="question-bank-list-container"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
+            layout
             className="space-y-4"
           >
             {visibleQuestions.map((q) => {
-            const classLabel = CLASSES_MAP.find((c) => c.value === q.className)?.label || q.className;
-            const diffConfig = DIFFICULTY_MAP[q.difficulty] || { label: q.difficulty, color: "bg-slate-50 border-slate-100 text-slate-600" };
-            const catLabel = CATEGORIES_MAP.find((c) => c.value === q.category)?.label || q.category;
-            const userCanManage = canManageQuestion(q);
+              const classLabel = CLASSES_MAP.find((c) => c.value === q.className)?.label || q.className;
+              const catLabel = CATEGORIES_MAP.find((c) => c.value === q.category)?.label || q.category;
+              const diffConfig = DIFFICULTY_MAP[q.difficulty] || { label: q.difficulty, color: "text-slate-600 border-slate-200 bg-slate-50" };
 
-            return (
-              <motion.div
-                key={q._id}
-                variants={cardVariants}
-                whileHover={{ y: -4 }}
-                className="bg-white/[0.45] hover:bg-white/[0.60] p-6 rounded-2xl border border-black/[0.04] backdrop-blur-md hover:shadow-md transition-colors duration-200 flex flex-col space-y-4 relative cursor-pointer"
-                onClick={() => setSelectedPreviewQuestion(q)}
-              >
-                {/* Badge Header Row */}
-                <div className="flex flex-wrap justify-between items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex flex-wrap gap-2 items-center">
-                    {new Date() - new Date(q.createdAt) < 24 * 60 * 60 * 1000 && (
-                      <span className="text-[11px] font-extrabold px-2.5 py-1 bg-rose-100 text-rose-650 rounded-lg border border-rose-200  flex items-center gap-1.5">
-                        <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
-                        নতুন
+              return (
+                <motion.div
+                  key={q._id}
+                  layout
+                  className="bg-glass border border-black/[0.06] hover:border-black/[0.12] rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-6 flex flex-col gap-4 relative overflow-hidden backdrop-blur-md group"
+                >
+                  {/* Badge Header Row */}
+                  <div className="flex flex-wrap justify-between items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
+                      {new Date() - new Date(q.createdAt) < 24 * 60 * 60 * 1000 && (
+                        <span className="bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded flex items-center gap-1.5">
+                          <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
+                          নতুন
+                        </span>
+                      )}
+                      <span className="bg-indigo-50 text-[#4F46E5] border border-indigo-100 px-2 py-0.5 rounded">
+                        {classLabel}
                       </span>
-                    )}
-                    <span className="text-[11px] font-extrabold px-2.5 py-1 bg-black/[0.04] text-slate-600 rounded-lg border border-black/[0.05]">
-                      {classLabel}
-                    </span>
-                    <span className="text-[11px] font-extrabold px-2.5 py-1 bg-[#4F46E5]/10 text-[#4F46E5] rounded-lg border border-[#4F46E5]/15">
-                      {q.subjectId?.subjectName || "বিষয়"}
-                    </span>
-                    <span className="text-[11px] font-semibold text-slate-500">
-                      অধ্যায় {q.chapterNumber}
-                    </span>
-                    {q.topics && q.topics.length > 0 && (
-                      <span className="text-[10px] font-bold text-slate-500 bg-black/[0.03] px-2 py-0.5 rounded border border-black/[0.05]">
-                        #{q.topics.join(", #")}
+                      <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
+                        {q.subjectId?.subjectName || "বিষয়"}
                       </span>
-                    )}
-                  </div>
+                      <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded">
+                        অধ্যায় {q.chapterNumber}
+                      </span>
+                      {q.topics && q.topics.length > 0 && (
+                        <span className="bg-slate-50 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">
+                          #{q.topics.join(", #")}
+                        </span>
+                      )}
+                      {q.year && (Array.isArray(q.year) ? q.year.length > 0 : String(q.year).trim()) && (
+                        <span className="bg-amber-50 text-amber-700 border border-amber-202 px-2 py-0.5 rounded">
+                          সাল: {Array.isArray(q.year) ? q.year.join(", ") : q.year}
+                        </span>
+                      )}
+                      {q.board && (Array.isArray(q.board) ? q.board.length > 0 : String(q.board).trim()) && (
+                        <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
+                          বোর্ড: {Array.isArray(q.board) ? q.board.join(", ") : q.board}
+                        </span>
+                      )}
+                      {q.school && (Array.isArray(q.school) ? q.school.length > 0 : String(q.school).trim()) && (
+                        <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[150px]" title={Array.isArray(q.school) ? q.school.join(", ") : q.school}>
+                          প্রতিষ্ঠান: {Array.isArray(q.school) ? q.school.join(", ") : q.school}
+                        </span>
+                      )}
+                      {q.level && String(q.level).trim() && (
+                        <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
+                          লেভেল: {LEVEL_LABELS[q.level] || q.level}
+                        </span>
+                      )}
+                      {q.specialSearch && (Array.isArray(q.specialSearch) ? q.specialSearch.length > 0 : String(q.specialSearch).trim()) && (
+                        <span className="bg-slate-50 text-slate-700 border border-slate-200 px-2 py-0.5 rounded">
+                          কীওয়ার্ড: {Array.isArray(q.specialSearch) ? q.specialSearch.join(", ") : q.specialSearch}
+                        </span>
+                      )}
+                    </div>
 
-                  <div className="flex gap-2 items-center">
-                    <span className="text-[11px] font-extrabold px-2.5 py-1 bg-[#8B5CF6]/10 text-[#8B5CF6] rounded-lg border border-[#8B5CF6]/15">
-                      {catLabel}
-                    </span>
-                    <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg border ${diffConfig.color}`}>
-                      {diffConfig.label}
-                    </span>
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
+                      <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-2 py-0.5 rounded">
+                        {catLabel}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded border ${
+                        q.difficulty === "Easy"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                          : q.difficulty === "Medium"
+                          ? "bg-amber-50 text-amber-700 border-amber-100"
+                          : "bg-rose-50 text-rose-700 border-rose-100"
+                      }`}>
+                        {diffConfig.label}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
                 {/* Main Content Body */}
                 <div className="text-slate-800 font-serif leading-relaxed flex-1 pt-1 pointer-events-none">
@@ -928,7 +953,7 @@ export default function QuestionBank() {
                       বিস্তারিত
                     </Button>
 
-                    {userCanManage && (
+                    {canManageQuestion(q) && (
                       <>
                         <Button
                           type="button"
@@ -1004,20 +1029,30 @@ export default function QuestionBank() {
                   {/* Metadata Tags */}
                   {(selectedPreviewQuestion.year || selectedPreviewQuestion.board || selectedPreviewQuestion.school || selectedPreviewQuestion.level || (selectedPreviewQuestion.specialSearch && selectedPreviewQuestion.specialSearch.length > 0)) && (
                     <div className="flex flex-wrap gap-2 justify-center items-center text-[10px] font-sans font-bold text-slate-400 mt-2">
-                      {selectedPreviewQuestion.year && (
-                        <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">{selectedPreviewQuestion.year}</span>
+                      {selectedPreviewQuestion.year && (Array.isArray(selectedPreviewQuestion.year) ? selectedPreviewQuestion.year.length > 0 : selectedPreviewQuestion.year) && (
+                        <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
+                          সাল: {Array.isArray(selectedPreviewQuestion.year) ? selectedPreviewQuestion.year.join(", ") : selectedPreviewQuestion.year}
+                        </span>
                       )}
-                      {selectedPreviewQuestion.board && (
-                        <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">{selectedPreviewQuestion.board}</span>
+                      {selectedPreviewQuestion.board && (Array.isArray(selectedPreviewQuestion.board) ? selectedPreviewQuestion.board.length > 0 : selectedPreviewQuestion.board) && (
+                        <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
+                          বোর্ড: {Array.isArray(selectedPreviewQuestion.board) ? selectedPreviewQuestion.board.join(", ") : selectedPreviewQuestion.board}
+                        </span>
                       )}
-                      {selectedPreviewQuestion.school && (
-                        <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[200px]">{selectedPreviewQuestion.school}</span>
+                      {selectedPreviewQuestion.school && (Array.isArray(selectedPreviewQuestion.school) ? selectedPreviewQuestion.school.length > 0 : selectedPreviewQuestion.school) && (
+                        <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[200px]" title={Array.isArray(selectedPreviewQuestion.school) ? selectedPreviewQuestion.school.join(", ") : selectedPreviewQuestion.school}>
+                          প্রতিষ্ঠান: {Array.isArray(selectedPreviewQuestion.school) ? selectedPreviewQuestion.school.join(", ") : selectedPreviewQuestion.school}
+                        </span>
                       )}
                       {selectedPreviewQuestion.level && (
-                        <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">{selectedPreviewQuestion.level}</span>
+                        <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
+                          লেভেল: {LEVEL_LABELS[selectedPreviewQuestion.level] || selectedPreviewQuestion.level}
+                        </span>
                       )}
                       {selectedPreviewQuestion.specialSearch && selectedPreviewQuestion.specialSearch.length > 0 && (
-                        <span className="bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">{selectedPreviewQuestion.specialSearch.join(", ")}</span>
+                        <span className="bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">
+                          কীওয়ার্ড: {selectedPreviewQuestion.specialSearch.join(", ")}
+                        </span>
                       )}
                     </div>
                   )}
