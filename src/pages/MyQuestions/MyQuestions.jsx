@@ -813,8 +813,8 @@ export default function MyQuestions() {
                 <div className="flex flex-wrap justify-between items-center gap-2">
                   <div className="flex flex-wrap gap-2 items-center">
                     {new Date() - new Date(q.createdAt) < 24 * 60 * 60 * 1000 && (
-                      <span className="text-[11px] font-extrabold px-2.5 py-1 bg-rose-500 text-white rounded-lg border border-rose-600  flex items-center gap-1">
-                        <span className="size-2 rounded-full bg-white animate-ping" />
+                      <span className="text-[11px] font-extrabold px-2.5 py-1 bg-rose-100 text-rose-650 rounded-lg border border-rose-200 flex items-center gap-1.5">
+                        <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
                         নতুন
                       </span>
                     )}

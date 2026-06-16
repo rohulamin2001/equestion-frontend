@@ -694,8 +694,8 @@ export default function QuestionApproval() {
                 {/* Header Metadata Chips */}
                 <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
                   {new Date() - new Date(q.createdAt) < 24 * 60 * 60 * 1000 && (
-                    <span className="bg-rose-500 text-white border border-rose-600 px-2 py-0.5 rounded animate-pulse flex items-center gap-1">
-                      <span className="size-1 rounded-full bg-white animate-ping" />
+                    <span className="bg-rose-100 text-rose-650 border border-rose-200 px-2 py-0.5 rounded  flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
                       নতুন
                     </span>
                   )}
