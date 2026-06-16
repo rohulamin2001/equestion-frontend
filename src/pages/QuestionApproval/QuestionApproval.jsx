@@ -14,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
-import { AnimatePresence, motion } from "motion/react";
 import {
   Calendar,
   Check,
@@ -23,6 +22,7 @@ import {
   Clock,
   Database,
   Eye,
+  EyeOff,
   Filter,
   Loader2,
   Search,
@@ -30,6 +30,8 @@ import {
   X,
   XCircle
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import * as React from "react";
 import { useQuestionApproval } from "./hook/useQuestionApproval";
 
 const TYPE_LABELS = {
@@ -116,6 +118,15 @@ export default function QuestionApproval() {
     getActiveCategories,
     hasActiveFilters,
   } = useQuestionApproval();
+
+  const [prevQuestionId, setPrevQuestionId] = React.useState(null);
+  const [showModalExplanation, setShowModalExplanation] = React.useState(true);
+
+  const currentQuestionId = selectedPreviewQuestion?._id || null;
+  if (currentQuestionId !== prevQuestionId) {
+    setPrevQuestionId(currentQuestionId);
+    setShowModalExplanation(true);
+  }
 
   const statCards = [
     {
@@ -843,7 +854,7 @@ export default function QuestionApproval() {
 
                       {q.mcqData.explanation && (
                         <div className="mt-3 p-3 bg-black/[0.02] border border-black/[0.05] rounded-xl text-xs font-sans text-slate-500 backdrop-blur-sm">
-                          <strong>উত্তর বিশ্লেষণ: </strong>
+                          <strong>বিশ্লেষণ: </strong>
                           <RichTextRender content={q.mcqData.explanation} inline />
                         </div>
                       )}
@@ -1024,11 +1035,11 @@ export default function QuestionApproval() {
         open={!!selectedPreviewQuestion}
         onOpenChange={(open) => !open && setSelectedPreviewQuestion(null)}
       >
-        <DialogContent className="max-w-3xl border border-black/[0.08] bg-white/[0.92] backdrop-blur-xl rounded-3xl shadow-2xl max-h-[85vh] overflow-y-auto p-0 gap-0 overflow-hidden font-sans">
+        <DialogContent className="max-w-3xl border border-black/[0.08] bg-white/[0.92] backdrop-blur-xl rounded-3xl shadow-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden font-sans">
           {selectedPreviewQuestion && (
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full min-h-0">
               {/* Modal Header */}
-              <div className="px-6 py-5 border-b border-black/[0.05] flex items-center justify-between bg-slate-50/50">
+              <div className="px-6 py-5 border-b border-black/[0.05] flex items-center justify-between bg-slate-50/50 shrink-0">
                 <div>
                   <DialogTitle className="text-slate-800 font-extrabold text-lg tracking-tight font-sans">
                     প্রশ্নপত্র বিস্তারিত বিবরণ ও যাচাইকরণ
@@ -1037,8 +1048,8 @@ export default function QuestionApproval() {
                 </div>
               </div>
 
-              {/* Modal Body */}
-              <div className="p-6 space-y-6">
+              {/* Scrollable Modal Body */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-6 min-h-0">
                 {/* Meta details Grid */}
                 <div className="bg-slate-50/60 border border-black/[0.03] rounded-2xl p-4 space-y-3">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">মেটাডাটা বিবরণসমূহ</span>
@@ -1090,24 +1101,7 @@ export default function QuestionApproval() {
                       <span>কঠিনতা: {selectedPreviewQuestion.difficulty === "Easy" ? "সহজ" : selectedPreviewQuestion.difficulty === "Medium" ? "মধ্যম" : "কঠিন"}</span>
                     </div>
 
-                    <div className={`border px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm ${
-                      selectedPreviewQuestion.status === "Approved"
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-100/50"
-                        : selectedPreviewQuestion.status === "Pending"
-                        ? "bg-orange-50 text-orange-700 border-orange-100/50"
-                        : "bg-rose-50 text-rose-700 border-rose-100/50"
-                    }`}>
-                      {selectedPreviewQuestion.status === "Pending" ? (
-                        <Loader2 className="size-3.5 animate-spin text-orange-600 shrink-0" />
-                      ) : (
-                        <span className={`size-1.5 rounded-full ${
-                          selectedPreviewQuestion.status === "Approved"
-                            ? "bg-emerald-500"
-                            : "bg-rose-500"
-                        }`} />
-                      )}
-                      <span>অবস্থা: {selectedPreviewQuestion.status === "Approved" ? "অনুমোদিত" : selectedPreviewQuestion.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}</span>
-                    </div>
+
 
                     {selectedPreviewQuestion.year && (Array.isArray(selectedPreviewQuestion.year) ? selectedPreviewQuestion.year.length > 0 : String(selectedPreviewQuestion.year).trim()) && (
                       <div className="bg-amber-50 text-amber-700 border border-amber-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
@@ -1144,7 +1138,27 @@ export default function QuestionApproval() {
 
                 {/* Content Preview Container */}
                 <div className="bg-white border border-black/[0.04] p-6 rounded-2xl shadow-inner space-y-4">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block border-b border-black/[0.03] pb-1.5 font-sans">প্রশ্নের কন্টেন্ট প্রিভিউ</span>
+                  <div className="flex items-center justify-between border-b border-black/[0.03] pb-1.5">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-sans">প্রশ্নের কন্টেন্ট প্রিভিউ</span>
+                    <div className={`border px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 shadow-sm ${
+                      selectedPreviewQuestion.status === "Approved"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : selectedPreviewQuestion.status === "Pending"
+                        ? "bg-orange-50 text-orange-700 border-orange-200"
+                        : "bg-rose-50 text-rose-700 border-rose-200"
+                    }`}>
+                      {selectedPreviewQuestion.status === "Pending" ? (
+                        <Loader2 className="size-3 animate-spin text-orange-600 shrink-0" />
+                      ) : (
+                        <span className={`size-1.5 rounded-full ${
+                          selectedPreviewQuestion.status === "Approved"
+                            ? "bg-emerald-500"
+                            : "bg-rose-500"
+                        }`} />
+                      )}
+                      <span>{selectedPreviewQuestion.status === "Approved" ? "অনুমোদিত" : selectedPreviewQuestion.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}</span>
+                    </div>
+                  </div>
 
                   {/* MCQ Mode Preview */}
                   {selectedPreviewQuestion.category === "MCQ" && selectedPreviewQuestion.mcqData && (
@@ -1206,9 +1220,40 @@ export default function QuestionApproval() {
                         </div>
 
                         {selectedPreviewQuestion.mcqData.explanation && (
-                          <div className="mt-5 p-4 bg-indigo-50/40 border border-indigo-100/50 rounded-xl text-xs font-sans text-indigo-900 leading-relaxed">
-                            <strong className="text-indigo-950 block mb-1 font-sans">উত্তর বিশ্লেষণ/ব্যাখ্যা: </strong>
-                            <RichTextRender content={selectedPreviewQuestion.mcqData.explanation} inline />
+                          <div className="mt-5 p-4 bg-indigo-50/40 border border-indigo-100/50 rounded-xl text-xs font-sans text-indigo-900 leading-relaxed transition-all duration-300">
+                            <div className="flex items-center justify-between border-b border-indigo-100/40 pb-2 mb-2">
+                              <strong className="text-indigo-950 font-sans text-xs">উত্তর বিশ্লেষণ/ব্যাখ্যা: </strong>
+                              <button
+                                type="button"
+                                onClick={() => setShowModalExplanation(!showModalExplanation)}
+                                className="flex items-center gap-1.5 text-[11px] font-bold text-indigo-650 hover:text-indigo-850 cursor-pointer transition select-none bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/15"
+                              >
+                                {showModalExplanation ? (
+                                  <>
+                                    <EyeOff className="size-3.5" />
+                                    <span>লুকিয়ে রাখুন</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Eye className="size-3.5" />
+                                    <span>বিশ্লেষণ দেখান</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                            <AnimatePresence initial={false}>
+                              {showModalExplanation && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  className="overflow-hidden"
+                                >
+                                  <RichTextRender content={selectedPreviewQuestion.mcqData.explanation} inline />
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </div>
                         )}
                       </div>
@@ -1269,9 +1314,40 @@ export default function QuestionApproval() {
                       </div>
 
                       {selectedPreviewQuestion.generalData.suggestedAnswer && (
-                        <div className="p-4 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-slate-700">
-                          <span className="text-sm font-semibold">উত্তর: </span>
-                          <RichTextRender content={selectedPreviewQuestion.generalData.suggestedAnswer} inline />
+                        <div className="p-4 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-slate-700 transition-all duration-300">
+                          <div className="flex items-center justify-between border-b border-[#4F46E5]/10 pb-2 mb-2">
+                            <span className="text-xs font-bold text-[#4F46E5]">উত্তর / সমাধান: </span>
+                            <button
+                              type="button"
+                              onClick={() => setShowModalExplanation(!showModalExplanation)}
+                              className="flex items-center gap-1.5 text-[11px] font-bold text-[#4F46E5] hover:text-[#4F46E5]/80 cursor-pointer transition select-none bg-[#4F46E5]/5 px-2.5 py-1 rounded-lg border border-[#4F46E5]/10"
+                            >
+                              {showModalExplanation ? (
+                                <>
+                                  <EyeOff className="size-3.5" />
+                                  <span>লুকিয়ে রাখুন</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Eye className="size-3.5" />
+                                  <span>উত্তর দেখান</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                          <AnimatePresence initial={false}>
+                            {showModalExplanation && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="overflow-hidden"
+                              >
+                                <RichTextRender content={selectedPreviewQuestion.generalData.suggestedAnswer} inline />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
                       )}
                     </div>
@@ -1343,7 +1419,7 @@ export default function QuestionApproval() {
               </div>
 
               {/* Modal Footer with Actions Only */}
-              <div className="bg-slate-50/80 border-t border-black/[0.05] px-6 py-4 flex items-center justify-end">
+              <div className="bg-slate-50/80 border-t border-black/[0.05] px-6 py-4 flex items-center justify-end shrink-0">
                 {/* Footer Action Buttons */}
                 <div className="flex flex-row flex-nowrap items-center gap-2.5 shrink-0 animate-in fade-in duration-200">
                   {selectedPreviewQuestion.status === "Pending" && (
