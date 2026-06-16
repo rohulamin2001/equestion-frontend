@@ -24,6 +24,7 @@ import {
   Check,
   CheckSquare,
   ChevronDown,
+  Clock,
   Database,
   Edit3,
   Filter,
@@ -35,7 +36,6 @@ import {
   Sparkles,
   Trash2,
   X,
-  Clock,
   XCircle,
 } from "lucide-react";
 import React from "react";
@@ -812,6 +812,12 @@ export default function MyQuestions() {
                 {/* Badge Header Row */}
                 <div className="flex flex-wrap justify-between items-center gap-2">
                   <div className="flex flex-wrap gap-2 items-center">
+                    {new Date() - new Date(q.createdAt) < 24 * 60 * 60 * 1000 && (
+                      <span className="text-[11px] font-extrabold px-2.5 py-1 bg-rose-500 text-white rounded-lg border border-rose-600  flex items-center gap-1">
+                        <span className="size-2 rounded-full bg-white animate-ping" />
+                        নতুন
+                      </span>
+                    )}
                     <span className="text-[11px] font-extrabold px-2.5 py-1 bg-black/[0.04] text-slate-600 rounded-lg border border-black/[0.05]">
                       {classLabel}
                     </span>

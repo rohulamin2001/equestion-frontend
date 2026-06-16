@@ -726,6 +726,12 @@ export default function QuestionBank() {
                 {/* Badge Header Row */}
                 <div className="flex flex-wrap justify-between items-center gap-2" onClick={(e) => e.stopPropagation()}>
                   <div className="flex flex-wrap gap-2 items-center">
+                    {new Date() - new Date(q.createdAt) < 24 * 60 * 60 * 1000 && (
+                      <span className="text-[11px] font-extrabold px-2.5 py-1 bg-rose-500 text-white rounded-lg border border-rose-600 animate-pulse flex items-center gap-1">
+                        <span className="size-1.5 rounded-full bg-white animate-ping" />
+                        নতুন
+                      </span>
+                    )}
                     <span className="text-[11px] font-extrabold px-2.5 py-1 bg-black/[0.04] text-slate-600 rounded-lg border border-black/[0.05]">
                       {classLabel}
                     </span>
