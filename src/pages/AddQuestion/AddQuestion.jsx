@@ -5,25 +5,36 @@ import { Input } from "@/components/ui/input";
 import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-    BookOpen,
-    CheckCircle2,
-    ChevronLeft,
-    ChevronRight,
-    Database,
-    FileText,
-    HelpCircle,
-    Plus,
-    Save,
-    Trash2
+  BookOpen,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Database,
+  FileText,
+  HelpCircle,
+  Plus,
+  Save,
+  Trash2
 } from "lucide-react";
 import {
-    CATEGORIES_MAP,
-    CLASSES_MAP,
-    DIFFICULTY_MAP,
-    LEVEL_LABELS,
-    TYPE_LABELS,
-    useAddQuestion,
+  CATEGORIES_MAP,
+  CLASSES_MAP,
+  DIFFICULTY_MAP,
+  LEVEL_LABELS,
+  TYPE_LABELS,
+  useAddQuestion,
 } from "./hook/useAddQuestion";
+
+const stripHtml = (html) => {
+  if (!html) return "";
+  try {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const text = doc.body.textContent || doc.body.innerText || "";
+    return text.replace(/\u00a0/g, " ").trim();
+  } catch {
+    return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
+  }
+};
 
 export default function AddQuestion() {
   const {
@@ -1109,9 +1120,9 @@ export default function AddQuestion() {
                                 {catLabel}
                               </span>
                               <span className="truncate block mt-1 font-serif">
-                                {q.category === "MCQ" && q.mcqData?.questionText}
-                                {q.category === "Creative" && q.creativeData?.stem}
-                                {!["MCQ", "Creative"].includes(q.category) && q.generalData?.questionText}
+                                {q.category === "MCQ" && stripHtml(q.mcqData?.questionText)}
+                                {q.category === "Creative" && stripHtml(q.creativeData?.stem)}
+                                {!["MCQ", "Creative"].includes(q.category) && stripHtml(q.generalData?.questionText)}
                               </span>
                             </div>
                           </div>
