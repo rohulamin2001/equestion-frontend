@@ -35,6 +35,7 @@ import {
   Trash2,
   User,
   X,
+  XCircle,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import React from "react";
@@ -994,216 +995,336 @@ export default function QuestionBank() {
       )}
 
       <Dialog open={!!selectedPreviewQuestion} onOpenChange={(open) => !open && setSelectedPreviewQuestion(null)}>
-        <DialogContent showCloseButton={false} className="max-w-2xl overflow-hidden p-0 rounded-2xl border border-black/[0.08] shadow-2xl bg-white/[0.90] backdrop-blur-xl flex flex-col animate-in fade-in duration-200">
+        <DialogContent showCloseButton={false} className="max-w-3xl border border-black/[0.08] bg-white/[0.92] backdrop-blur-xl rounded-3xl shadow-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden font-sans">
           {selectedPreviewQuestion && (
-            <>
-              {/* Header */}
-              <div className="border-b border-black/[0.05] bg-white/[0.5] backdrop-blur-md px-6 py-4 flex justify-between items-center gap-4">
-                <h4 className="font-bold text-sm text-slate-800 tracking-wide uppercase font-sans">NCTB Exam Question Sheet</h4>
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-2">
-                    <span className="bg-[#4F46E5]/10 text-[#4F46E5] text-[11px] font-bold px-3 py-1 rounded-full border border-[#4F46E5]/20 whitespace-nowrap">
-                      {CLASSES_MAP.find((c) => c.value === selectedPreviewQuestion.className)?.label || selectedPreviewQuestion.className}
-                    </span>
-                    <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${DIFFICULTY_MAP[selectedPreviewQuestion.difficulty]?.color} whitespace-nowrap`}>
-                      {DIFFICULTY_MAP[selectedPreviewQuestion.difficulty]?.label}
-                    </span>
-                  </div>
-                  
-                  <DialogClose asChild>
-                    <button className="rounded-lg p-1.5 text-slate-400 hover:bg-black/[0.04] hover:text-slate-700 transition-colors focus:outline-none cursor-pointer flex items-center justify-center">
-                      <X className="size-4" />
-                      <span className="sr-only">Close</span>
-                    </button>
-                  </DialogClose>
+            <div className="flex flex-col h-full min-h-0">
+              {/* Modal Header */}
+              <div className="px-6 py-5 border-b border-black/[0.05] flex items-center justify-between bg-slate-50/50 shrink-0">
+                <div>
+                  <DialogTitle className="text-slate-800 font-extrabold text-lg tracking-tight font-sans">
+                    প্রশ্নপত্র বিস্তারিত বিবরণ
+                  </DialogTitle>
+                  <DialogDescription className="text-slate-400 text-xs mt-0.5">প্রশ্নের মান এবং সকল মেটাডাটা সুচারুভাবে দেখে নিন</DialogDescription>
                 </div>
+                <DialogClose asChild>
+                  <button className="rounded-lg p-1.5 text-slate-400 hover:bg-black/[0.04] hover:text-slate-700 transition-colors focus:outline-none cursor-pointer flex items-center justify-center">
+                    <X className="size-4" />
+                    <span className="sr-only">Close</span>
+                  </button>
+                </DialogClose>
               </div>
 
-              {/* Exam Paper Sheet */}
-              <div className="p-8 flex-1 bg-transparent text-slate-800 space-y-6 font-serif leading-relaxed max-h-[70vh] overflow-y-auto custom-scrollbar">
-                <div className="text-center space-y-1.5 border-b pb-4">
-                  <div className="text-xs text-slate-500 flex justify-center gap-4 font-sans font-semibold">
-                    <span>বিষয়: {selectedPreviewQuestion.subjectId?.subjectName}</span>
-                    <span>অধ্যায়: {selectedPreviewQuestion.chapterNumber}</span>
-                  </div>
-                  {/* Metadata Tags */}
-                  {(selectedPreviewQuestion.year || selectedPreviewQuestion.board || selectedPreviewQuestion.school || selectedPreviewQuestion.level || (selectedPreviewQuestion.specialSearch && selectedPreviewQuestion.specialSearch.length > 0)) && (
-                    <div className="flex flex-wrap gap-2 justify-center items-center text-[10px] font-sans font-bold text-slate-400 mt-2">
-                      {selectedPreviewQuestion.year && (Array.isArray(selectedPreviewQuestion.year) ? selectedPreviewQuestion.year.length > 0 : selectedPreviewQuestion.year) && (
-                        <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
-                          সাল: {Array.isArray(selectedPreviewQuestion.year) ? selectedPreviewQuestion.year.join(", ") : selectedPreviewQuestion.year}
-                        </span>
-                      )}
-                      {selectedPreviewQuestion.board && (Array.isArray(selectedPreviewQuestion.board) ? selectedPreviewQuestion.board.length > 0 : selectedPreviewQuestion.board) && (
-                        <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
-                          বোর্ড: {Array.isArray(selectedPreviewQuestion.board) ? selectedPreviewQuestion.board.join(", ") : selectedPreviewQuestion.board}
-                        </span>
-                      )}
-                      {selectedPreviewQuestion.school && (Array.isArray(selectedPreviewQuestion.school) ? selectedPreviewQuestion.school.length > 0 : selectedPreviewQuestion.school) && (
-                        <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[200px]" title={Array.isArray(selectedPreviewQuestion.school) ? selectedPreviewQuestion.school.join(", ") : selectedPreviewQuestion.school}>
-                          প্রতিষ্ঠান: {Array.isArray(selectedPreviewQuestion.school) ? selectedPreviewQuestion.school.join(", ") : selectedPreviewQuestion.school}
-                        </span>
-                      )}
-                      {selectedPreviewQuestion.level && (
-                        <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
-                          লেভেল: {LEVEL_LABELS[selectedPreviewQuestion.level] || selectedPreviewQuestion.level}
-                        </span>
-                      )}
-                      {selectedPreviewQuestion.specialSearch && selectedPreviewQuestion.specialSearch.length > 0 && (
-                        <span className="bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">
-                          কীওয়ার্ড: {selectedPreviewQuestion.specialSearch.join(", ")}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* MCQ Mode */}
-                {selectedPreviewQuestion.category === "MCQ" && selectedPreviewQuestion.mcqData && (
-                  <div className="space-y-4">
-                    {selectedPreviewQuestion.mcqData.mcqType === "Contextual" && selectedPreviewQuestion.mcqData.stem && (
-                      <div className="p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-sm italic font-serif leading-relaxed backdrop-blur-sm">
-                        <strong>উদ্দীপক:</strong>
-                        <RichTextRender content={selectedPreviewQuestion.mcqData.stem} className="mt-1 font-serif" />
+              {/* Scrollable Modal Body */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-6 min-h-0">
+                {/* Meta details Grid */}
+                <div className="bg-slate-50/60 border border-black/[0.03] rounded-2xl p-4 space-y-3">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">মেটাডাটা বিবরণসমূহ</span>
+                  <div className="flex flex-wrap gap-2">
+                    {CLASSES_MAP.find((c) => c.value === selectedPreviewQuestion.className) && (
+                      <div className="bg-indigo-50 text-indigo-700 border border-indigo-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-indigo-500" />
+                        <span>শ্রেণী: {CLASSES_MAP.find((c) => c.value === selectedPreviewQuestion.className).label}</span>
                       </div>
                     )}
+                    {selectedPreviewQuestion.subjectId?.subjectName && (
+                      <div className="bg-violet-50 text-violet-700 border border-violet-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-violet-500" />
+                        <span>বিষয়: {selectedPreviewQuestion.subjectId.subjectName}</span>
+                      </div>
+                    )}
+                    {selectedPreviewQuestion.chapterNumber && (
+                      <div className="bg-amber-50 text-amber-700 border border-amber-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-amber-500" />
+                        <span>অধ্যায়: {selectedPreviewQuestion.chapterNumber.toLocaleString("bn-BD")}</span>
+                      </div>
+                    )}
+                    {CATEGORIES_MAP.find((c) => c.value === selectedPreviewQuestion.category) && (
+                      <div className="bg-emerald-50 text-emerald-700 border border-emerald-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-emerald-500" />
+                        <span>ধরণ: {CATEGORIES_MAP.find((c) => c.value === selectedPreviewQuestion.category).label}</span>
+                      </div>
+                    )}
+                    {selectedPreviewQuestion.subjectId?.version && (
+                      <div className="bg-cyan-50 text-cyan-700 border border-cyan-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-cyan-500" />
+                        <span>সংস্করণ: {selectedPreviewQuestion.subjectId.version === "Bangla" ? "বাংলা সংস্করণ" : "ইংরেজি সংস্করণ"}</span>
+                      </div>
+                    )}
+                    <div className={`border px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm ${
+                      selectedPreviewQuestion.difficulty === "Easy"
+                        ? "bg-teal-50 text-teal-700 border-teal-100/50"
+                        : selectedPreviewQuestion.difficulty === "Medium"
+                        ? "bg-amber-50 text-amber-700 border-amber-100/50"
+                        : "bg-rose-50 text-rose-700 border-rose-100/50"
+                    }`}>
+                      <span className={`size-1.5 rounded-full ${
+                        selectedPreviewQuestion.difficulty === "Easy"
+                          ? "bg-teal-500"
+                          : selectedPreviewQuestion.difficulty === "Medium"
+                          ? "bg-amber-500"
+                          : "bg-rose-500"
+                      }`} />
+                      <span>কঠিনতা: {selectedPreviewQuestion.difficulty === "Easy" ? "সহজ" : selectedPreviewQuestion.difficulty === "Medium" ? "মধ্যম" : "কঠিন"}</span>
+                    </div>
 
-                    <div className="space-y-3">
+                    {selectedPreviewQuestion.year && (Array.isArray(selectedPreviewQuestion.year) ? selectedPreviewQuestion.year.length > 0 : String(selectedPreviewQuestion.year).trim()) && (
+                      <div className="bg-amber-50 text-amber-700 border border-amber-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-amber-500" />
+                        <span>সাল: {Array.isArray(selectedPreviewQuestion.year) ? selectedPreviewQuestion.year.join(", ") : selectedPreviewQuestion.year}</span>
+                      </div>
+                    )}
+                    {selectedPreviewQuestion.board && (Array.isArray(selectedPreviewQuestion.board) ? selectedPreviewQuestion.board.length > 0 : String(selectedPreviewQuestion.board).trim()) && (
+                      <div className="bg-blue-50 text-blue-700 border border-blue-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-blue-500" />
+                        <span>বোর্ড: {Array.isArray(selectedPreviewQuestion.board) ? selectedPreviewQuestion.board.join(", ") : selectedPreviewQuestion.board}</span>
+                      </div>
+                    )}
+                    {selectedPreviewQuestion.school && (Array.isArray(selectedPreviewQuestion.school) ? selectedPreviewQuestion.school.length > 0 : String(selectedPreviewQuestion.school).trim()) && (
+                      <div className="bg-purple-50 text-purple-700 border border-purple-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-purple-500" />
+                        <span>শিক্ষা প্রতিষ্ঠান: {Array.isArray(selectedPreviewQuestion.school) ? selectedPreviewQuestion.school.join(", ") : selectedPreviewQuestion.school}</span>
+                      </div>
+                    )}
+                    {selectedPreviewQuestion.level && String(selectedPreviewQuestion.level).trim() && (
+                      <div className="bg-rose-50 text-rose-700 border border-rose-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-rose-500" />
+                        <span>লেভেল: {LEVEL_LABELS[selectedPreviewQuestion.level] || selectedPreviewQuestion.level}</span>
+                      </div>
+                    )}
+                    {selectedPreviewQuestion.specialSearch && (Array.isArray(selectedPreviewQuestion.specialSearch) ? selectedPreviewQuestion.specialSearch.length > 0 : String(selectedPreviewQuestion.specialSearch).trim()) && (
+                      <div className="bg-slate-50 text-slate-700 border border-slate-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-slate-500" />
+                        <span>কীওয়ার্ড: {Array.isArray(selectedPreviewQuestion.specialSearch) ? selectedPreviewQuestion.specialSearch.join(", ") : selectedPreviewQuestion.specialSearch}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Content Preview Container */}
+                <div className="bg-white border border-black/[0.04] p-6 rounded-2xl shadow-inner space-y-4">
+                  <div className="flex items-center justify-between border-b border-black/[0.03] pb-1.5">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-sans">প্রশ্নের কন্টেন্ট প্রিভিউ</span>
+                    <div className="flex items-center gap-1.5">
+                      <div className={`border px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 shadow-sm ${
+                        selectedPreviewQuestion.status === "Approved"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          : selectedPreviewQuestion.status === "Pending"
+                          ? "bg-orange-50 text-orange-700 border-orange-200"
+                          : "bg-rose-50 text-rose-700 border-rose-200"
+                      }`}>
+                        {selectedPreviewQuestion.status === "Pending" ? (
+                          <Loader2 className="size-3 animate-spin text-orange-600 shrink-0" />
+                        ) : (
+                          <span className={`size-1.5 rounded-full ${
+                            selectedPreviewQuestion.status === "Approved"
+                              ? "bg-emerald-500"
+                              : "bg-rose-500"
+                          }`} />
+                        )}
+                        <span>{selectedPreviewQuestion.status === "Approved" ? "অনুমোদিত" : selectedPreviewQuestion.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* MCQ Mode */}
+                  {selectedPreviewQuestion.category === "MCQ" && selectedPreviewQuestion.mcqData && (
+                    <div className="space-y-4">
+                      {selectedPreviewQuestion.mcqData.mcqType === "Contextual" && selectedPreviewQuestion.mcqData.stem && (
+                        <div className="p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-sm italic font-serif leading-relaxed backdrop-blur-sm">
+                          <strong>উদ্দীপক:</strong>
+                          <RichTextRender content={selectedPreviewQuestion.mcqData.stem} className="mt-1 font-serif" />
+                        </div>
+                      )}
+
+                      <div className="space-y-3">
+                        <div className="text-[15px] flex justify-between items-start gap-4 w-full">
+                          <div className="flex gap-2">
+                            <span className="font-bold shrink-0">১.</span>
+                            <RichTextRender content={selectedPreviewQuestion.mcqData.questionText} className="font-serif inline-block" />
+                          </div>
+                          <span className="text-slate-450 text-xs font-sans font-bold whitespace-nowrap pt-1">
+                            মান: {selectedPreviewQuestion.mcqData?.marks || 1}
+                          </span>
+                        </div>
+                        {selectedPreviewQuestion.mcqData.mcqType === "MultipleCompletion" && selectedPreviewQuestion.mcqData.statements && (
+                          <div className="space-y-1 pl-8 mt-2 font-normal text-sm font-sans">
+                            {selectedPreviewQuestion.mcqData.statements.map((st, idx) => (
+                              <div key={idx} className="flex gap-1 items-start">
+                                <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
+                                <RichTextRender content={st} className="inline-block font-sans font-normal" />
+                              </div>
+                            ))}
+                            <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
+                          </div>
+                        )}
+
+                        {/* Options Grid */}
+                        <div className="grid grid-cols-2 gap-x-8 gap-y-2.5 pl-6 text-sm font-sans text-slate-700">
+                          {selectedPreviewQuestion.mcqData.options &&
+                            selectedPreviewQuestion.mcqData.options.map((opt, idx) => {
+                              const isCorrect = selectedPreviewQuestion.mcqData.correctAnswer === idx;
+                              return (
+                                <div 
+                                  key={idx} 
+                                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all ${
+                                    isCorrect 
+                                      ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-600 font-semibold" 
+                                      : "border-transparent text-slate-700"
+                                  }`}
+                                >
+                                  <span className={`shrink-0 font-bold ${isCorrect ? "text-emerald-500" : "text-slate-400"}`}>
+                                    {idx === 0 ? "ক)" : idx === 1 ? "খ)" : idx === 2 ? "গ)" : "ঘ)"}
+                                  </span>
+                                  <RichTextRender 
+                                    content={opt} 
+                                    className={`inline-block font-sans [&_p]:inline [&_p]:m-0 ${isCorrect ? "font-semibold" : "font-normal"}`} 
+                                  />
+                                  {isCorrect && <Check className="size-3.5 inline text-emerald-500 ml-auto shrink-0" />}
+                                </div>
+                              );
+                            })}
+                        </div>
+
+                        {selectedPreviewQuestion.mcqData.explanation && (
+                          <div className="mt-6 p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-xs font-sans text-slate-500 backdrop-blur-sm">
+                            <strong>উত্তর বিশ্লেষণ/ব্যাখ্যা: </strong>
+                            <RichTextRender content={selectedPreviewQuestion.mcqData.explanation} inline />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Creative Mode */}
+                  {selectedPreviewQuestion.category === "Creative" && selectedPreviewQuestion.creativeData && (
+                    <div className="space-y-5">
+                      {selectedPreviewQuestion.creativeData.stem && (
+                        <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5] border border-black/[0.05] rounded-r-xl text-[14px] leading-relaxed text-slate-700 backdrop-blur-sm font-serif">
+                          <RichTextRender content={selectedPreviewQuestion.creativeData.stem} />
+                        </div>
+                      )}
+
+                      <div className="pl-4 space-y-3.5 text-sm font-sans font-semibold text-slate-700">
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="w-6">ক)</span>
+                          <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveA?.text} className="flex-1 font-serif inline-block" />
+                          <span className="text-slate-500 text-xs font-serif font-bold">১</span>
+                        </div>
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="w-6">খ)</span>
+                          <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveB?.text} className="flex-1 font-serif inline-block" />
+                          <span className="text-slate-500 text-xs font-serif font-bold">২</span>
+                        </div>
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="w-6">গ)</span>
+                          <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveC?.text} className="flex-1 font-serif inline-block" />
+                          <span className="text-slate-500 text-xs font-serif font-bold">৩</span>
+                        </div>
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="w-6">ঘ)</span>
+                          <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveD?.text} className="flex-1 font-serif inline-block" />
+                          <span className="text-slate-500 text-xs font-serif font-bold">৪</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* General Mode */}
+                  {!["MCQ", "Creative"].includes(selectedPreviewQuestion.category) && selectedPreviewQuestion.generalData && (
+                    <div className="space-y-4">
+                      {selectedPreviewQuestion.generalData.stem && (
+                        <div className="p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-sm italic font-serif leading-relaxed backdrop-blur-sm">
+                          <RichTextRender content={selectedPreviewQuestion.generalData.stem} />
+                        </div>
+                      )}
+
                       <div className="text-[15px] flex justify-between items-start gap-4 w-full">
                         <div className="flex gap-2">
                           <span className="font-bold shrink-0">১.</span>
-                          <RichTextRender content={selectedPreviewQuestion.mcqData.questionText} className="font-serif inline-block" />
+                          <RichTextRender content={selectedPreviewQuestion.generalData.questionText} className="font-serif inline-block" />
                         </div>
-                        <span className="text-slate-400 text-xs font-sans font-bold whitespace-nowrap pt-1 ">
-                          {selectedPreviewQuestion.mcqData?.marks || 1}
+                        <span className="text-slate-450 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
+                          मान: {selectedPreviewQuestion.generalData.marks}
                         </span>
                       </div>
-                      {selectedPreviewQuestion.mcqData.mcqType === "MultipleCompletion" && selectedPreviewQuestion.mcqData.statements && (
-                        <div className="space-y-1 pl-8 mt-2 font-normal text-sm font-sans">
-                          {selectedPreviewQuestion.mcqData.statements.map((st, idx) => (
-                            <div key={idx} className="flex gap-1 items-start">
-                              <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
-                              <RichTextRender content={st} className="inline-block font-sans font-normal" />
-                            </div>
-                          ))}
-                          <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
+
+                      {selectedPreviewQuestion.generalData.suggestedAnswer && (
+                        <div className="p-4 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-slate-700">
+                          <span className="text-sm font-semibold">উত্তর: </span>
+                          <RichTextRender content={selectedPreviewQuestion.generalData.suggestedAnswer} inline />
                         </div>
                       )}
-
-                      {/* Options Grid */}
-                      <div className="grid grid-cols-2 gap-x-8 gap-y-2.5 pl-6 text-sm font-sans text-slate-700">
-                        {selectedPreviewQuestion.mcqData.options &&
-                          selectedPreviewQuestion.mcqData.options.map((opt, idx) => {
-                            const isCorrect = selectedPreviewQuestion.mcqData.correctAnswer === idx;
-                            return (
-                              <div 
-                                key={idx} 
-                                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all ${
-                                  isCorrect 
-                                    ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-600 font-semibold" 
-                                    : "border-transparent text-slate-700"
-                                }`}
-                              >
-                                <span className={`shrink-0 font-bold ${isCorrect ? "text-emerald-500" : "text-slate-400"}`}>
-                                  {idx === 0 ? "ক)" : idx === 1 ? "খ)" : idx === 2 ? "গ)" : "ঘ)"}
-                                </span>
-                                <RichTextRender 
-                                  content={opt} 
-                                  className={`inline-block font-sans [&_p]:inline [&_p]:m-0 ${isCorrect ? "font-semibold" : "font-normal"}`} 
-                                />
-                                {isCorrect && <Check className="size-3.5 inline text-emerald-500 ml-auto shrink-0" />}
-                              </div>
-                            );
-                          })}
-                      </div>
-
-                      {selectedPreviewQuestion.mcqData.explanation && (
-                        <div className="mt-6 p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-xs font-sans text-slate-500 backdrop-blur-sm">
-                          <strong>উত্তর বিশ্লেষণ/ব্যাখ্যা: </strong>
-                          <RichTextRender content={selectedPreviewQuestion.mcqData.explanation} inline />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Creative Mode */}
-                {selectedPreviewQuestion.category === "Creative" && selectedPreviewQuestion.creativeData && (
-                  <div className="space-y-5">
-                    {selectedPreviewQuestion.creativeData.stem && (
-                      <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5] border border-black/[0.05] rounded-r-xl text-[14px] leading-relaxed text-slate-700 backdrop-blur-sm font-serif">
-                        <RichTextRender content={selectedPreviewQuestion.creativeData.stem} />
-                      </div>
-                    )}
-
-                    <div className="pl-4 space-y-3.5 text-sm font-sans font-semibold text-slate-700">
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="w-6">ক)</span>
-                        <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveA?.text} className="flex-1 font-serif inline-block" />
-                        <span className="text-slate-500 text-xs font-serif font-bold">১</span>
-                      </div>
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="w-6">খ)</span>
-                        <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveB?.text} className="flex-1 font-serif inline-block" />
-                        <span className="text-slate-500 text-xs font-serif font-bold">২</span>
-                      </div>
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="w-6">গ)</span>
-                        <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveC?.text} className="flex-1 font-serif inline-block" />
-                        <span className="text-slate-500 text-xs font-serif font-bold">৩</span>
-                      </div>
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="w-6">ঘ)</span>
-                        <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveD?.text} className="flex-1 font-serif inline-block" />
-                        <span className="text-slate-500 text-xs font-serif font-bold">৪</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* General Mode */}
-                {!["MCQ", "Creative"].includes(selectedPreviewQuestion.category) && selectedPreviewQuestion.generalData && (
-                  <div className="space-y-4">
-                    {selectedPreviewQuestion.generalData.stem && (
-                      <div className="p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-sm italic font-serif leading-relaxed backdrop-blur-sm">
-                        <RichTextRender content={selectedPreviewQuestion.generalData.stem} />
-                      </div>
-                    )}
-
-                    <div className="text-[15px] flex justify-between items-start gap-4 w-full">
-                      <div className="flex gap-2">
-                        <span className="font-bold shrink-0">১.</span>
-                        <RichTextRender content={selectedPreviewQuestion.generalData.questionText} className="font-serif inline-block" />
-                      </div>
-                      <span className="text-slate-400 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
-                        {selectedPreviewQuestion.generalData.marks}
-                      </span>
-                    </div>
-
-                    {selectedPreviewQuestion.generalData.suggestedAnswer && (
-                      <div className="p-4 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-slate-700">
-                        <span className="text-sm font-semibold">উত্তর: </span>
-                        <RichTextRender content={selectedPreviewQuestion.generalData.suggestedAnswer} inline />
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-black/[0.02] border-t border-black/[0.05] px-6 py-4 flex flex-col sm:flex-row gap-3 items-center justify-between">
-                <div className="flex flex-wrap items-center gap-4 text-[11px] font-sans text-slate-500 font-medium">
-                  <div className="flex items-center gap-1">
-                    <User className="size-3.5 text-slate-400" />
-                    <span>তৈরি করেছেন: {selectedPreviewQuestion.creatorId?.fullName} ({selectedPreviewQuestion.creatorId?.role})</span>
-                  </div>
-                  {selectedPreviewQuestion.approvedBy?.fullName && (
-                    <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
-                      <Check className="size-3 text-emerald-600" />
-                      <span>অনুমোদনকারী: {selectedPreviewQuestion.approvedBy.fullName}</span>
                     </div>
                   )}
                 </div>
-                <div className="flex gap-2 w-full sm:w-auto justify-end">
+
+                {/* Creator & Status Information Panel */}
+                <div className="border border-black/[0.06] bg-slate-50/50 p-4 rounded-2xl backdrop-blur-sm space-y-3">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block border-b border-black/[0.03] pb-1.5 font-sans">
+                    তথ্য ও স্ট্যাটাস বিবরণী
+                  </span>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+                    {/* Creator Information Panel */}
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-xl bg-indigo-500/10 text-indigo-650 flex items-center justify-center border border-indigo-500/20 shadow-sm shrink-0">
+                        <User className="size-5" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-bold text-slate-800">{selectedPreviewQuestion.creatorId?.fullName || "Content Creator"}</span>
+                          <span className="text-[9px] font-extrabold text-indigo-600 bg-indigo-500/10 px-1.5 py-0.5 rounded-md border border-indigo-500/20 uppercase font-sans">
+                            {selectedPreviewQuestion.creatorId?.role || "Creator"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 text-[10px] text-slate-500 font-sans">
+                          <Calendar className="size-3 text-slate-400" />
+                          <span>তৈরির তারিখ: {formatBengaliDate(selectedPreviewQuestion.createdAt)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Approver Panel */}
+                    {selectedPreviewQuestion.status === "Approved" && selectedPreviewQuestion.approvedBy?.fullName && (
+                      <div className="flex items-center gap-3 sm:border-l sm:border-slate-200 sm:pl-8">
+                        <div className="size-10 rounded-xl bg-emerald-500/10 text-emerald-650 flex items-center justify-center border border-emerald-500/20 shadow-sm shrink-0">
+                          <Check className="size-5" />
+                        </div>
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-slate-700 font-medium">অনুমোদনকারী: {selectedPreviewQuestion.approvedBy.fullName}</span>
+                            <span className="text-[9px] font-extrabold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded-md border border-emerald-500/20 uppercase font-sans">
+                              {selectedPreviewQuestion.approvedBy.role || "Approver"}
+                            </span>
+                          </div>
+                          <div className="text-[10px] text-slate-400">প্রশ্নের স্ট্যাটাস: অনুমোদিত</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Rejecter Panel */}
+                    {selectedPreviewQuestion.status === "Rejected" && selectedPreviewQuestion.rejectedBy?.fullName && (
+                      <div className="flex items-center gap-3 sm:border-l sm:border-slate-200 sm:pl-8">
+                        <div className="size-10 rounded-xl bg-rose-500/10 text-rose-650 flex items-center justify-center border border-rose-500/20 shadow-sm shrink-0">
+                          <XCircle className="size-5" />
+                        </div>
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs text-slate-700 font-medium">বাতিলকারী: {selectedPreviewQuestion.rejectedBy.fullName}</span>
+                            <span className="text-[9px] font-extrabold text-rose-600 bg-rose-500/10 px-1.5 py-0.5 rounded-md border border-rose-500/20 uppercase font-sans">
+                              {selectedPreviewQuestion.rejectedBy.role || "Rejecter"}
+                            </span>
+                          </div>
+                          <div className="text-[10px] text-slate-400">প্রশ্নের স্ট্যাটাস: বাতিলকৃত</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="bg-slate-50/80 border-t border-black/[0.05] px-6 py-4 flex items-center justify-end shrink-0">
+                <div className="flex flex-row flex-nowrap items-center gap-2.5 shrink-0">
                   {canManageQuestion(selectedPreviewQuestion) && (
                     <Button
                       variant="outline"
@@ -1211,21 +1332,21 @@ export default function QuestionBank() {
                         handleEdit(selectedPreviewQuestion);
                         setSelectedPreviewQuestion(null);
                       }}
-                      className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl font-semibold text-xs h-9 px-4 cursor-pointer"
+                      className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl font-bold text-xs h-10 px-4 cursor-pointer flex items-center gap-1.5 shadow-sm transition hover:scale-102 shrink-0"
                     >
-                      <Edit3 className="size-3 inline mr-1" />
+                      <Edit3 className="size-3.5" />
                       সম্পাদন করুন
                     </Button>
                   )}
                   <Button
                     onClick={() => setSelectedPreviewQuestion(null)}
-                    className="bg-[#4F46E5] hover:bg-[#4F46E5]/95 text-white rounded-xl font-semibold text-xs h-9 px-4 cursor-pointer shadow-sm shadow-[#4F46E5]/10"
+                    className="bg-[#4F46E5] hover:bg-[#4F46E5]/95 text-white rounded-xl font-bold text-xs h-10 px-4 cursor-pointer shadow-md transition hover:scale-102 shrink-0 animate-in fade-in duration-200"
                   >
                     বন্ধ করুন
                   </Button>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>
