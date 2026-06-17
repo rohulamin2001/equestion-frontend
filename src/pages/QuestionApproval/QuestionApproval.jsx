@@ -30,6 +30,7 @@ import {
   Filter,
   Loader2,
   MessageSquare,
+  RefreshCw,
   Search,
   User,
   X,
@@ -1198,6 +1199,46 @@ export default function QuestionApproval() {
                       )}
                     </div>
                   </div>
+
+                  {/* Review Request Banner — chat style */}
+                  {selectedPreviewQuestion.reviewComment && (
+                    <div className="rounded-xl border border-slate-200 bg-slate-50/80 overflow-hidden mb-2">
+                      {/* Header */}
+                      <div className="flex items-center gap-2 px-4 py-2 bg-white border-b border-slate-200">
+                        <RefreshCw className="size-3.5 text-[#4F46E5] shrink-0" />
+                        <span className="text-xs font-bold text-[#4F46E5] uppercase tracking-wider font-sans">পুনরায় যাচাইয়ের আবেদন</span>
+                      </div>
+                      {/* Chat body */}
+                      <div className="px-4 py-4 space-y-3 bg-[url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3C/svg%3E')]">
+                        {/* Admin rejection reason — left bubble (received) */}
+                        {selectedPreviewQuestion.previousRejectionReason && (
+                          <div className="flex items-start gap-2">
+                            <div className="size-7 rounded-full bg-rose-100 border border-rose-200 flex items-center justify-center shrink-0 mt-0.5">
+                              <X className="size-3.5 text-rose-600" />
+                            </div>
+                            <div className="max-w-[85%]">
+                              <p className="text-[11px] font-bold text-rose-500 mb-1 font-sans">পর্যবেক্ষক · বাতিলের কারণ</p>
+                              <div className="bg-white border border-rose-100 rounded-2xl rounded-tl-sm px-3.5 py-2.5 shadow-sm">
+                                <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap font-medium">{selectedPreviewQuestion.previousRejectionReason}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        {/* Creator review comment — right bubble (sent) */}
+                        <div className="flex items-start gap-2 justify-end">
+                          <div className="max-w-[85%]">
+                            <p className="text-[11px] font-bold text-[#4F46E5] mb-1 font-sans text-right">প্রশ্ন প্রণেতা · সংশোধনের বিবরণ</p>
+                            <div className="bg-[#4F46E5] rounded-2xl rounded-tr-sm px-3.5 py-2.5 shadow-sm">
+                              <p className="text-[13px] text-white leading-relaxed whitespace-pre-wrap font-medium">{selectedPreviewQuestion.reviewComment}</p>
+                            </div>
+                          </div>
+                          <div className="size-7 rounded-full bg-[#4F46E5]/10 border border-[#4F46E5]/20 flex items-center justify-center shrink-0 mt-0.5">
+                            <User className="size-3.5 text-[#4F46E5]" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* MCQ Mode Preview */}
                   {selectedPreviewQuestion.category === "MCQ" && selectedPreviewQuestion.mcqData && (

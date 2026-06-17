@@ -2,7 +2,7 @@ import { CATEGORIES_MAP } from "@/constants/categories";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
 import apiClient from "@/lib/apiClient";
 import { useAuth } from "@clerk/react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -25,6 +25,28 @@ export function useMyQuestions() {
   });
 
   const personalStats = personalStatsData?.stats || { total: 0, pending: 0, approved: 0, rejected: 0 };
+
+  const queryClient = useQueryClient();
+
+  const requestReviewMutation = useMutation({
+    mutationFn: async ({ id, comment }) => {
+      const token = await getToken();
+      const response = await apiClient.post(
+        `/questions/${id}/request-review`,
+        { comment },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["personalQuestionStats"] });
+      qm.questionsQuery.refetch();
+    },
+  });
+
+  const handleRequestReview = async (id, comment) => {
+    await requestReviewMutation.mutateAsync({ id, comment });
+  };
 
   // Dialog State
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
@@ -265,5 +287,7 @@ export function useMyQuestions() {
     hasMore,
     fetchNextPage,
     isFetchingNextPage,
+    requestReviewMutation,
+    handleRequestReview,
   };
 }

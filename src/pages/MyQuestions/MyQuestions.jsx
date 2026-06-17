@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
-import { AnimatePresence, motion } from "motion/react";
 import {
   AlertCircle,
   Calendar,
@@ -33,12 +32,14 @@ import {
   Loader2,
   MessageSquare,
   Plus,
+  RefreshCw,
   Search,
   Sparkles,
   Trash2,
   X,
   XCircle,
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import React from "react";
 import { useMyQuestions } from "./hook/useMyQuestions";
 
@@ -125,9 +126,13 @@ export default function MyQuestions() {
     hasMore,
     fetchNextPage,
     isFetchingNextPage,
+    requestReviewMutation,
+    handleRequestReview,
   } = useMyQuestions();
 
   const [selectedRejectionReason, setSelectedRejectionReason] = React.useState(null);
+  const [reviewRequestId, setReviewRequestId] = React.useState(null);
+  const [reviewComment, setReviewComment] = React.useState("");
 
   const observerRef = React.useRef(null);
   React.useEffect(() => {
@@ -1056,6 +1061,17 @@ export default function MyQuestions() {
                   <div className="flex items-center gap-2">
                     {q.status !== "Approved" && (
                       <>
+                        {q.status === "Rejected" && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => { setReviewRequestId(q._id); setReviewComment(""); }}
+                            className="border-indigo-200 text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/30 rounded-xl h-8 px-3 text-xs flex items-center gap-1.5 font-bold cursor-pointer bg-[#4F46E5]/5"
+                          >
+                            <RefreshCw className="size-3" />
+                            রিভিউ রিকোয়েস্ট
+                          </Button>
+                        )}
                         <Button
                           type="button"
                           variant="outline"
@@ -1142,6 +1158,66 @@ export default function MyQuestions() {
         </DialogContent>
       </Dialog>
 
+
+      {/* Review Request Dialog */}
+      <Dialog open={!!reviewRequestId} onOpenChange={(open) => { if (!open) { setReviewRequestId(null); setReviewComment(""); } }}>
+        <DialogContent className="max-w-lg border border-black/[0.08] bg-white/[0.95] backdrop-blur-xl rounded-2xl shadow-xl font-sans">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-[#4F46E5] font-bold">
+              <RefreshCw className="size-5" />
+              পুনরায় যাচাইয়ের আবেদন
+            </DialogTitle>
+            <DialogDescription className="pt-2 text-slate-600 leading-relaxed font-semibold text-xs">
+              প্রশ্নটি বাতিল হওয়ার পর যে সংশোধন বা পরিবর্তন করেছেন তার সংক্ষিপ্ত বিবরণ লিখুন। এই মন্তব্যটি অনুমোদনকারী প্রশাসক দেখতে পাবেন।
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-2">
+            <textarea
+              placeholder="যেমন: ভুল উত্তর ঠিক করা হয়েছে, বানান সংশোধন করা হয়েছে..."
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+              rows={4}
+              className="w-full resize-none bg-white/[0.60] border border-black/[0.10] focus:ring-2 focus:ring-[#4F46E5]/15 focus:border-[#4F46E5] outline-none rounded-xl font-semibold text-slate-700 text-sm leading-relaxed px-3 py-2.5"
+            />
+            <p className="text-[11px] text-slate-400 mt-1.5 font-semibold">{reviewComment.length} / ৫০০ অক্ষর</p>
+          </div>
+          <DialogFooter className="flex gap-2 justify-end">
+            <Button
+              variant="outline"
+              onClick={() => { setReviewRequestId(null); setReviewComment(""); }}
+              className="border-black/[0.08] text-slate-600 hover:bg-black/[0.02] rounded-xl font-semibold cursor-pointer"
+            >
+              বাতিল করুন
+            </Button>
+            <Button
+              disabled={!reviewComment.trim() || requestReviewMutation.isPending}
+              onClick={async () => {
+                if (!reviewRequestId || !reviewComment.trim()) return;
+                try {
+                  await handleRequestReview(reviewRequestId, reviewComment.trim());
+                  setReviewRequestId(null);
+                  setReviewComment("");
+                } catch (err) {
+                  console.error(err);
+                }
+              }}
+              className="bg-[#4F46E5] hover:bg-[#4E3FB4] text-white rounded-xl font-bold cursor-pointer flex items-center gap-1.5 shadow-md shadow-[#4F46E5]/10 disabled:opacity-60"
+            >
+              {requestReviewMutation.isPending ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  পাঠানো হচ্ছে...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="size-4" />
+                  রিভিউ রিকোয়েস্ট পাঠান
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
 
       {/* Rejection Reason Modal */}
