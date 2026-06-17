@@ -880,10 +880,10 @@ export default function MyQuestions() {
                         {q.status === "Pending" && <Loader2 className="size-3 animate-spin text-amber-600" />}
                         {q.status === "Approved" ? "অনুমোদিত" : q.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}
                       </span>
-                      {q.status === "Rejected" && q.rejectionReason && (
+                      {q.status === "Rejected" && (q.rejectionReason || (q.rejectionHistory && q.rejectionHistory.length > 0)) && (
                         <button
                           type="button"
-                          onClick={() => setSelectedRejectionReason(q.rejectionReason)}
+                          onClick={() => setSelectedRejectionReason(q.rejectionReason || q.rejectionHistory[q.rejectionHistory.length - 1]?.reason)}
                           className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer flex items-center justify-center shrink-0"
                           title="বাতিলকরণের কারণ দেখুন"
                         >

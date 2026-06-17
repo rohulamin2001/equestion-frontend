@@ -30,7 +30,6 @@ import {
   Filter,
   Loader2,
   MessageSquare,
-  RefreshCw,
   Search,
   User,
   X,
@@ -69,6 +68,20 @@ const formatBengaliDate = (dateString) => {
   const month = date.toLocaleString("bn-BD", { month: "long" });
   const year = date.getFullYear().toLocaleString("bn-BD").replace(/,/g, "");
   return `${day} ${month}, ${year}`;
+};
+
+const formatBengaliDateTime = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const day = date.getDate().toLocaleString("bn-BD");
+  const month = date.toLocaleString("bn-BD", { month: "long" });
+  const year = date.getFullYear().toLocaleString("bn-BD").replace(/,/g, "");
+  const time = date.toLocaleTimeString("bn-BD", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+  return `${day} ${month}, ${year} (সময়: ${time})`;
 };
 
 const containerVariants = {
@@ -128,6 +141,7 @@ export default function QuestionApproval() {
 
   const [prevQuestionId, setPrevQuestionId] = React.useState(null);
   const [showModalExplanation, setShowModalExplanation] = React.useState(true);
+  const [showChatHistory, setShowChatHistory] = React.useState(true);
   const [rejectConfirmId, setRejectConfirmId] = React.useState(null);
   const [rejectionReasonInput, setRejectionReasonInput] = React.useState("");
   const [selectedRejectionReason, setSelectedRejectionReason] = React.useState(null);
@@ -136,6 +150,7 @@ export default function QuestionApproval() {
   if (currentQuestionId !== prevQuestionId) {
     setPrevQuestionId(currentQuestionId);
     setShowModalExplanation(true);
+    setShowChatHistory(true);
   }
 
   const statCards = [
@@ -781,10 +796,10 @@ export default function QuestionApproval() {
                         {q.status === "Pending" && <Loader2 className="size-3 animate-spin text-amber-600" />}
                         {q.status === "Approved" ? "অনুমোদিত" : q.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}
                       </span>
-                      {q.status === "Rejected" && q.rejectionReason && (
+                      {q.status === "Rejected" && (q.rejectionReason || (q.rejectionHistory && q.rejectionHistory.length > 0)) && (
                         <button
                           type="button"
-                          onClick={() => setSelectedRejectionReason(q.rejectionReason)}
+                          onClick={() => setSelectedRejectionReason(q.rejectionReason || q.rejectionHistory[q.rejectionHistory.length - 1]?.reason)}
                           className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer flex items-center justify-center shrink-0"
                           title="বাতিলকরণের কারণ দেখুন"
                         >
@@ -1072,7 +1087,7 @@ export default function QuestionApproval() {
                   <DialogTitle className="text-slate-800 font-extrabold text-lg tracking-tight font-sans">
                     প্রশ্নপত্র বিস্তারিত বিবরণ ও যাচাইকরণ
                   </DialogTitle>
-                  <p className="text-slate-400 text-xs mt-0.5">প্রশ্নের মান এবং সকল মেটাডাটা সুচারুভাবে যাচাই করুন</p>
+                  <DialogDescription className="text-slate-400 text-xs mt-0.5">প্রশ্নের মান এবং সকল মেটাডাটা সুচারুভাবে যাচাই করুন</DialogDescription>
                 </div>
               </div>
 
@@ -1187,10 +1202,10 @@ export default function QuestionApproval() {
                         )}
                         <span>{selectedPreviewQuestion.status === "Approved" ? "অনুমোদিত" : selectedPreviewQuestion.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}</span>
                       </div>
-                      {selectedPreviewQuestion.status === "Rejected" && selectedPreviewQuestion.rejectionReason && (
+                      {selectedPreviewQuestion.status === "Rejected" && (selectedPreviewQuestion.rejectionReason || (selectedPreviewQuestion.rejectionHistory && selectedPreviewQuestion.rejectionHistory.length > 0)) && (
                         <button
                           type="button"
-                          onClick={() => setSelectedRejectionReason(selectedPreviewQuestion.rejectionReason)}
+                          onClick={() => setSelectedRejectionReason(selectedPreviewQuestion.rejectionReason || selectedPreviewQuestion.rejectionHistory[selectedPreviewQuestion.rejectionHistory.length - 1]?.reason)}
                           className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer flex items-center justify-center shrink-0"
                           title="বাতিলকরণের কারণ দেখুন"
                         >
@@ -1200,45 +1215,167 @@ export default function QuestionApproval() {
                     </div>
                   </div>
 
-                  {/* Review Request Banner — chat style */}
-                  {selectedPreviewQuestion.reviewComment && (
-                    <div className="rounded-xl border border-slate-200 bg-slate-50/80 overflow-hidden mb-2">
-                      {/* Header */}
-                      <div className="flex items-center gap-2 px-4 py-2 bg-white border-b border-slate-200">
-                        <RefreshCw className="size-3.5 text-[#4F46E5] shrink-0" />
-                        <span className="text-xs font-bold text-[#4F46E5] uppercase tracking-wider font-sans">পুনরায় যাচাইয়ের আবেদন</span>
-                      </div>
-                      {/* Chat body */}
-                      <div className="px-4 py-4 space-y-3 bg-[url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3C/svg%3E')]">
-                        {/* Admin rejection reason — left bubble (received) */}
-                        {selectedPreviewQuestion.previousRejectionReason && (
-                          <div className="flex items-start gap-2">
-                            <div className="size-7 rounded-full bg-rose-100 border border-rose-200 flex items-center justify-center shrink-0 mt-0.5">
-                              <X className="size-3.5 text-rose-600" />
-                            </div>
-                            <div className="max-w-[85%]">
-                              <p className="text-[11px] font-bold text-rose-500 mb-1 font-sans">পর্যবেক্ষক · বাতিলের কারণ</p>
-                              <div className="bg-white border border-rose-100 rounded-2xl rounded-tl-sm px-3.5 py-2.5 shadow-sm">
-                                <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap font-medium">{selectedPreviewQuestion.previousRejectionReason}</p>
-                              </div>
-                            </div>
+                  {/* Chat history / Rejection & Review logs */}
+                  {(() => {
+                    const messages = [];
+
+                    if (selectedPreviewQuestion.rejectionHistory && Array.isArray(selectedPreviewQuestion.rejectionHistory)) {
+                      selectedPreviewQuestion.rejectionHistory.forEach((r) => {
+                        if (r.reason) {
+                          messages.push({
+                            type: "rejection",
+                            text: r.reason,
+                            by: r.rejectedBy,
+                            date: r.rejectedAt ? new Date(r.rejectedAt) : null,
+                          });
+                        }
+                      });
+                    }
+
+                    if (selectedPreviewQuestion.reviewHistory && Array.isArray(selectedPreviewQuestion.reviewHistory)) {
+                      selectedPreviewQuestion.reviewHistory.forEach((r) => {
+                        if (r.comment) {
+                          messages.push({
+                            type: "review",
+                            text: r.comment,
+                            date: r.requestedAt ? new Date(r.requestedAt) : null,
+                          });
+                        }
+                      });
+                    }
+
+                    // Fallback to legacy fields if arrays are empty
+                    if (messages.length === 0) {
+                      if (selectedPreviewQuestion.previousRejectionReason) {
+                        messages.push({
+                          type: "rejection",
+                          text: selectedPreviewQuestion.previousRejectionReason,
+                          date: selectedPreviewQuestion.createdAt ? new Date(selectedPreviewQuestion.createdAt) : null,
+                        });
+                      }
+                      if (selectedPreviewQuestion.reviewComment) {
+                        messages.push({
+                          type: "review",
+                          text: selectedPreviewQuestion.reviewComment,
+                          date: selectedPreviewQuestion.updatedAt ? new Date(selectedPreviewQuestion.updatedAt) : null,
+                        });
+                      }
+                      if (selectedPreviewQuestion.status === "Rejected" && selectedPreviewQuestion.rejectionReason && selectedPreviewQuestion.rejectionReason !== selectedPreviewQuestion.previousRejectionReason) {
+                        messages.push({
+                          type: "rejection",
+                          text: selectedPreviewQuestion.rejectionReason,
+                          by: selectedPreviewQuestion.rejectedBy,
+                          date: selectedPreviewQuestion.updatedAt ? new Date(selectedPreviewQuestion.updatedAt) : null,
+                        });
+                      }
+                    }
+
+                    // Sort chronologically (oldest first)
+                    messages.sort((a, b) => {
+                      if (!a.date) return -1;
+                      if (!b.date) return 1;
+                      return a.date - b.date;
+                    });
+
+                    if (messages.length === 0) return null;
+
+                    return (
+                      <div className="rounded-xl border border-slate-200 bg-slate-50/80 overflow-hidden mb-4">
+                        {/* Header */}
+                        <div className="flex items-center justify-between gap-2 px-4 py-2 bg-white border-b border-slate-200">
+                          <div className="flex items-center gap-2">
+                            <MessageSquare className="size-3.5 text-[#4F46E5] shrink-0" />
+                            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider font-sans">
+                              প্রশ্ন যাচাইকরণ ইতিহাস ও মন্তব্যসমূহ
+                            </span>
                           </div>
-                        )}
-                        {/* Creator review comment — right bubble (sent) */}
-                        <div className="flex items-start gap-2 justify-end">
-                          <div className="max-w-[85%]">
-                            <p className="text-[11px] font-bold text-[#4F46E5] mb-1 font-sans text-right">প্রশ্ন প্রণেতা · সংশোধনের বিবরণ</p>
-                            <div className="bg-[#4F46E5] rounded-2xl rounded-tr-sm px-3.5 py-2.5 shadow-sm">
-                              <p className="text-[13px] text-white leading-relaxed whitespace-pre-wrap font-medium">{selectedPreviewQuestion.reviewComment}</p>
-                            </div>
-                          </div>
-                          <div className="size-7 rounded-full bg-[#4F46E5]/10 border border-[#4F46E5]/20 flex items-center justify-center shrink-0 mt-0.5">
-                            <User className="size-3.5 text-[#4F46E5]" />
-                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setShowChatHistory(!showChatHistory)}
+                            className="flex items-center gap-1.5 text-[11px] font-bold text-indigo-650 hover:text-indigo-850 cursor-pointer transition select-none bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/15"
+                          >
+                            {showChatHistory ? (
+                              <>
+                                <EyeOff className="size-3.5" />
+                                <span>লুকিয়ে রাখুন</span>
+                              </>
+                            ) : (
+                              <>
+                                <Eye className="size-3.5" />
+                                <span>ইতিহাস দেখান</span>
+                              </>
+                            )}
+                          </button>
                         </div>
+                        {/* Chat body */}
+                        <AnimatePresence initial={false}>
+                          {showChatHistory && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="px-4 py-4 space-y-4 max-h-[300px] overflow-y-auto bg-slate-50/50">
+                                {messages.map((msg, index) => {
+                                  if (msg.type === "rejection") {
+                                    const observerName = msg.by?.fullName || "";
+                                    const observerLabel = observerName ? `পর্যবেক্ষক (${observerName})` : "পর্যবেক্ষক";
+                                    return (
+                                      <div key={index} className="flex items-start gap-2">
+                                        <div className="size-7 rounded-full bg-rose-100 border border-rose-200 flex items-center justify-center shrink-0 mt-0.5">
+                                          <X className="size-3.5 text-rose-600" />
+                                        </div>
+                                        <div className="max-w-[85%]">
+                                          <p className="text-[11px] font-bold text-rose-500 mb-0.5 font-sans">
+                                            {observerLabel} · বাতিলের কারণ
+                                          </p>
+                                          <div className="bg-white border border-rose-100 rounded-2xl rounded-tl-sm px-3.5 py-2.5 shadow-sm">
+                                            <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap font-medium">
+                                              {msg.text}
+                                            </p>
+                                          </div>
+                                          {msg.date && (
+                                            <p className="text-[9px] text-slate-400 mt-1 pl-1 font-sans">
+                                              {formatBengaliDateTime(msg.date)}
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  } else {
+                                    return (
+                                      <div key={index} className="flex items-start gap-2 justify-end">
+                                        <div className="max-w-[85%]">
+                                          <p className="text-[11px] font-bold text-[#4F46E5] mb-0.5 font-sans text-right">
+                                            প্রশ্ন প্রণেতা · সংশোধনের বিবরণ
+                                          </p>
+                                          <div className="bg-[#4F46E5] rounded-2xl rounded-tr-sm px-3.5 py-2.5 shadow-sm">
+                                            <p className="text-[13px] text-white leading-relaxed whitespace-pre-wrap font-medium">
+                                              {msg.text}
+                                            </p>
+                                          </div>
+                                          {msg.date && (
+                                            <p className="text-[9px] text-slate-400 mt-1 pr-1 font-sans text-right">
+                                              {formatBengaliDateTime(msg.date)}
+                                            </p>
+                                          )}
+                                        </div>
+                                        <div className="size-7 rounded-full bg-[#4F46E5]/10 border border-[#4F46E5]/20 flex items-center justify-center shrink-0 mt-0.5">
+                                          <User className="size-3.5 text-[#4F46E5]" />
+                                        </div>
+                                      </div>
+                                    );
+                                  }
+                                })}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
 
                   {/* MCQ Mode Preview */}
                   {selectedPreviewQuestion.category === "MCQ" && selectedPreviewQuestion.mcqData && (
@@ -1485,7 +1622,7 @@ export default function QuestionApproval() {
                         </div>
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-bold text-slate-700 font-medium">বাতিলকারী: {selectedPreviewQuestion.rejectedBy.fullName}</span>
+                            <span className="text-xs  text-slate-700 font-medium">বাতিলকারী: {selectedPreviewQuestion.rejectedBy.fullName}</span>
                             <span className="text-[9px] font-extrabold text-rose-600 bg-rose-500/10 px-1.5 py-0.5 rounded-md border border-rose-500/20 uppercase font-sans">
                               {selectedPreviewQuestion.rejectedBy.role || "Rejecter"}
                             </span>
