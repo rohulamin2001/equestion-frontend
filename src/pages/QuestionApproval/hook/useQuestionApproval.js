@@ -147,11 +147,11 @@ export function useQuestionApproval() {
 
   // Status update mutation (Approve/Reject)
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }) => {
+    mutationFn: async ({ id, status, rejectionReason }) => {
       const token = await getToken();
       const response = await apiClient.patch(
         `/questions/${id}/status`,
-        { status },
+        { status, rejectionReason },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       return response.data;
@@ -171,8 +171,8 @@ export function useQuestionApproval() {
     },
   });
 
-  const handleUpdateStatus = (id, newStatus) => {
-    updateStatusMutation.mutate({ id, status: newStatus });
+  const handleUpdateStatus = (id, newStatus, rejectionReason) => {
+    updateStatusMutation.mutate({ id, status: newStatus, rejectionReason });
   };
 
   // Intersection Observer for Infinite Scroll

@@ -31,6 +31,7 @@ import {
   FolderOpen,
   HelpCircle,
   Loader2,
+  MessageSquare,
   Plus,
   Search,
   Sparkles,
@@ -125,6 +126,8 @@ export default function MyQuestions() {
     fetchNextPage,
     isFetchingNextPage,
   } = useMyQuestions();
+
+  const [selectedRejectionReason, setSelectedRejectionReason] = React.useState(null);
 
   const observerRef = React.useRef(null);
   React.useEffect(() => {
@@ -861,16 +864,28 @@ export default function MyQuestions() {
 
                   <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
                     {/* Status Badge */}
-                    <span className={`px-2 py-0.5 rounded border flex items-center gap-1 ${
-                      q.status === "Approved"
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                        : q.status === "Pending"
-                        ? "bg-amber-50 text-amber-700 border-amber-100"
-                        : "bg-rose-50 text-rose-700 border-rose-100"
-                    }`}>
-                      {q.status === "Pending" && <Loader2 className="size-3 animate-spin text-amber-600" />}
-                      {q.status === "Approved" ? "অনুমোদিত" : q.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}
-                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className={`px-2 py-0.5 rounded border flex items-center gap-1 ${
+                        q.status === "Approved"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                          : q.status === "Pending"
+                          ? "bg-amber-50 text-amber-700 border-amber-100"
+                          : "bg-rose-50 text-rose-700 border-rose-100"
+                      }`}>
+                        {q.status === "Pending" && <Loader2 className="size-3 animate-spin text-amber-600" />}
+                        {q.status === "Approved" ? "অনুমোদিত" : q.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}
+                      </span>
+                      {q.status === "Rejected" && q.rejectionReason && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedRejectionReason(q.rejectionReason)}
+                          className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer flex items-center justify-center shrink-0"
+                          title="বাতিলকরণের কারণ দেখুন"
+                        >
+                          <MessageSquare className="size-3.5" />
+                        </button>
+                      )}
+                    </div>
                     <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-2 py-0.5 rounded">
                       {catLabel}
                     </span>
@@ -1122,6 +1137,31 @@ export default function MyQuestions() {
                   হ্যাঁ, মুছে ফেলুন
                 </>
               )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
+
+      {/* Rejection Reason Modal */}
+      <Dialog open={!!selectedRejectionReason} onOpenChange={(open) => !open && setSelectedRejectionReason(null)}>
+        <DialogContent className="max-w-md border border-black/[0.08] bg-white/[0.90] backdrop-blur-xl rounded-2xl shadow-xl font-sans">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-rose-600 font-bold">
+              <AlertCircle className="size-5" />
+              প্রশ্নটি বাতিলকরণের কারণ
+            </DialogTitle>
+            <DialogDescription className="pt-2 text-slate-700 leading-relaxed font-semibold text-xs whitespace-pre-wrap">
+              {selectedRejectionReason}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4">
+            <Button
+              onClick={() => setSelectedRejectionReason(null)}
+              className="bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold cursor-pointer text-xs h-9 px-4"
+            >
+              বন্ধ করুন
             </Button>
           </DialogFooter>
         </DialogContent>

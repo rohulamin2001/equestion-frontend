@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
 import {
@@ -15,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
 import {
+  AlertCircle,
   Calendar,
   Check,
   CheckCircle,
@@ -25,6 +29,7 @@ import {
   EyeOff,
   Filter,
   Loader2,
+  MessageSquare,
   Search,
   User,
   X,
@@ -32,6 +37,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
+import { toast } from "sonner";
 import { useQuestionApproval } from "./hook/useQuestionApproval";
 
 const TYPE_LABELS = {
@@ -121,6 +127,9 @@ export default function QuestionApproval() {
 
   const [prevQuestionId, setPrevQuestionId] = React.useState(null);
   const [showModalExplanation, setShowModalExplanation] = React.useState(true);
+  const [rejectConfirmId, setRejectConfirmId] = React.useState(null);
+  const [rejectionReasonInput, setRejectionReasonInput] = React.useState("");
+  const [selectedRejectionReason, setSelectedRejectionReason] = React.useState(null);
 
   const currentQuestionId = selectedPreviewQuestion?._id || null;
   if (currentQuestionId !== prevQuestionId) {
@@ -760,16 +769,28 @@ export default function QuestionApproval() {
 
                   <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
                     {/* Status Badge */}
-                    <span className={`px-2 py-0.5 rounded border flex items-center gap-1 ${
-                      q.status === "Approved"
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                        : q.status === "Pending"
-                        ? "bg-amber-50 text-amber-700 border-amber-100"
-                        : "bg-rose-50 text-rose-700 border-rose-100"
-                    }`}>
-                      {q.status === "Pending" && <Loader2 className="size-3 animate-spin text-amber-600" />}
-                      {q.status === "Approved" ? "অনুমোদিত" : q.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}
-                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className={`px-2 py-0.5 rounded border flex items-center gap-1 ${
+                        q.status === "Approved"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                          : q.status === "Pending"
+                          ? "bg-amber-50 text-amber-700 border-amber-100"
+                          : "bg-rose-50 text-rose-700 border-rose-100"
+                      }`}>
+                        {q.status === "Pending" && <Loader2 className="size-3 animate-spin text-amber-600" />}
+                        {q.status === "Approved" ? "অনুমোদিত" : q.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}
+                      </span>
+                      {q.status === "Rejected" && q.rejectionReason && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedRejectionReason(q.rejectionReason)}
+                          className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer flex items-center justify-center shrink-0"
+                          title="বাতিলকরণের কারণ দেখুন"
+                        >
+                          <MessageSquare className="size-3.5" />
+                        </button>
+                      )}
+                    </div>
                     {categoryObj && (
                       <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-2 py-0.5 rounded">
                         {categoryObj.label}
@@ -978,7 +999,10 @@ export default function QuestionApproval() {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => handleUpdateStatus(q._id, "Rejected")}
+                          onClick={() => {
+                            setRejectConfirmId(q._id);
+                            setRejectionReasonInput("");
+                          }}
                           disabled={updateStatusMutation.isPending}
                           className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
                         >
@@ -992,7 +1016,10 @@ export default function QuestionApproval() {
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => handleUpdateStatus(q._id, "Rejected")}
+                        onClick={() => {
+                          setRejectConfirmId(q._id);
+                          setRejectionReasonInput("");
+                        }}
                         disabled={updateStatusMutation.isPending}
                         className="border-red-200 text-red-650 hover:bg-red-50 hover:border-red-300 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
                       >
@@ -1140,23 +1167,35 @@ export default function QuestionApproval() {
                 <div className="bg-white border border-black/[0.04] p-6 rounded-2xl shadow-inner space-y-4">
                   <div className="flex items-center justify-between border-b border-black/[0.03] pb-1.5">
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-sans">প্রশ্নের কন্টেন্ট প্রিভিউ</span>
-                    <div className={`border px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 shadow-sm ${
-                      selectedPreviewQuestion.status === "Approved"
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                        : selectedPreviewQuestion.status === "Pending"
-                        ? "bg-orange-50 text-orange-700 border-orange-200"
-                        : "bg-rose-50 text-rose-700 border-rose-200"
-                    }`}>
-                      {selectedPreviewQuestion.status === "Pending" ? (
-                        <Loader2 className="size-3 animate-spin text-orange-600 shrink-0" />
-                      ) : (
-                        <span className={`size-1.5 rounded-full ${
-                          selectedPreviewQuestion.status === "Approved"
-                            ? "bg-emerald-500"
-                            : "bg-rose-500"
-                        }`} />
+                    <div className="flex items-center gap-1.5">
+                      <div className={`border px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 shadow-sm ${
+                        selectedPreviewQuestion.status === "Approved"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          : selectedPreviewQuestion.status === "Pending"
+                          ? "bg-orange-50 text-orange-700 border-orange-200"
+                          : "bg-rose-50 text-rose-700 border-rose-200"
+                      }`}>
+                        {selectedPreviewQuestion.status === "Pending" ? (
+                          <Loader2 className="size-3 animate-spin text-orange-600 shrink-0" />
+                        ) : (
+                          <span className={`size-1.5 rounded-full ${
+                            selectedPreviewQuestion.status === "Approved"
+                              ? "bg-emerald-500"
+                              : "bg-rose-500"
+                          }`} />
+                        )}
+                        <span>{selectedPreviewQuestion.status === "Approved" ? "অনুমোদিত" : selectedPreviewQuestion.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}</span>
+                      </div>
+                      {selectedPreviewQuestion.status === "Rejected" && selectedPreviewQuestion.rejectionReason && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedRejectionReason(selectedPreviewQuestion.rejectionReason)}
+                          className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer flex items-center justify-center shrink-0"
+                          title="বাতিলকরণের কারণ দেখুন"
+                        >
+                          <MessageSquare className="size-3.5" />
+                        </button>
                       )}
-                      <span>{selectedPreviewQuestion.status === "Approved" ? "অনুমোদিত" : selectedPreviewQuestion.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}</span>
                     </div>
                   </div>
 
@@ -1434,7 +1473,10 @@ export default function QuestionApproval() {
                       </Button>
                       <Button
                         variant="outline"
-                        onClick={() => handleUpdateStatus(selectedPreviewQuestion._id, "Rejected")}
+                        onClick={() => {
+                          setRejectConfirmId(selectedPreviewQuestion._id);
+                          setRejectionReasonInput("");
+                        }}
                         disabled={updateStatusMutation.isPending}
                         className="border-red-200 text-red-650 hover:bg-red-50 hover:border-red-350 rounded-xl font-bold text-xs h-10 px-4 cursor-pointer flex items-center gap-1.5 shadow-sm transition hover:scale-102 shrink-0"
                       >
@@ -1447,7 +1489,10 @@ export default function QuestionApproval() {
                   {selectedPreviewQuestion.status === "Approved" && (
                     <Button
                       variant="outline"
-                      onClick={() => handleUpdateStatus(selectedPreviewQuestion._id, "Rejected")}
+                      onClick={() => {
+                        setRejectConfirmId(selectedPreviewQuestion._id);
+                        setRejectionReasonInput("");
+                      }}
                       disabled={updateStatusMutation.isPending}
                       className="border-red-200 text-red-650 hover:bg-red-50 hover:border-red-350 rounded-xl font-bold text-xs h-10 px-4 cursor-pointer flex items-center gap-1.5 shadow-sm transition hover:scale-102 shrink-0"
                     >
@@ -1477,6 +1522,87 @@ export default function QuestionApproval() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Rejection Reason Modal */}
+      <Dialog open={!!rejectConfirmId} onOpenChange={(open) => !open && setRejectConfirmId(null)}>
+        <DialogContent className="max-w-md border border-black/[0.08] bg-white/[0.90] backdrop-blur-xl rounded-2xl shadow-xl font-sans">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-650 font-bold">
+              <XCircle className="size-5" />
+              প্রশ্নটি বাতিলকরণের কারণ
+            </DialogTitle>
+            <DialogDescription className="pt-1.5 text-slate-500 font-semibold text-xs">
+              প্রশ্নটি বাতিল করার পূর্বে অনুগ্রহ করে সুনির্দিষ্ট কারণটি নিচে সংক্ষেপে লিখুন। এই কারণটি প্রশ্ন প্রণেতা তার ড্যাশবোর্ডে দেখতে পাবেন।
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-3">
+            <label htmlFor="rejection-reason" className="text-xs font-bold text-slate-700 block">বাতিলকরণের কারণ (আবশ্যক)</label>
+            <textarea
+              id="rejection-reason"
+              placeholder="যেমন: প্রশ্নে বানান ভুল রয়েছে / উদ্দীপকটি অস্পষ্ট / সঠিক উত্তর নেই..."
+              value={rejectionReasonInput}
+              onChange={(e) => setRejectionReasonInput(e.target.value)}
+              className="w-full h-24 px-3 py-2 border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 bg-white/70 resize-none font-sans font-medium"
+            />
+          </div>
+          <DialogFooter className="flex gap-2 justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setRejectConfirmId(null)}
+              className="border-black/[0.08] text-slate-600 hover:bg-black/[0.02] rounded-xl font-bold cursor-pointer text-xs h-9 px-4"
+            >
+              বন্ধ করুন
+            </Button>
+            <Button
+              onClick={() => {
+                if (!rejectionReasonInput.trim()) {
+                  toast.error("অনুগ্রহ করে বাতিলকরণের কারণটি লিখুন");
+                  return;
+                }
+                handleUpdateStatus(rejectConfirmId, "Rejected", rejectionReasonInput.trim());
+                setRejectConfirmId(null);
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold cursor-pointer flex items-center gap-1.5 shadow-sm text-xs h-9 px-4"
+              disabled={updateStatusMutation.isPending}
+            >
+              {updateStatusMutation.isPending ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  বাতিল করা হচ্ছে...
+                </>
+              ) : (
+                <>
+                  <XCircle className="size-4" />
+                  নিশ্চিত বাতিল করুন
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Rejection Reason Viewer Modal */}
+      <Dialog open={!!selectedRejectionReason} onOpenChange={(open) => !open && setSelectedRejectionReason(null)}>
+        <DialogContent className="max-w-md border border-black/[0.08] bg-white/[0.90] backdrop-blur-xl rounded-2xl shadow-xl font-sans">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-rose-600 font-bold">
+              <AlertCircle className="size-5" />
+              প্রশ্নটি বাতিলকরণের কারণ
+            </DialogTitle>
+            <DialogDescription className="pt-2 text-slate-700 leading-relaxed font-semibold text-xs whitespace-pre-wrap">
+              {selectedRejectionReason}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4">
+            <Button
+              onClick={() => setSelectedRejectionReason(null)}
+              className="bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold cursor-pointer text-xs h-9 px-4"
+            >
+              বন্ধ করুন
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
