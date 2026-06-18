@@ -611,189 +611,209 @@ export default function SubjectSetup() {
           setEditingSubject(null);
         }
       }}>
-        <DialogContent className="max-w-md p-6 bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-2xl relative shadow-2xl">
-          <DialogHeader className="text-left">
+        <DialogContent className="max-w-md p-0 bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-2xl relative shadow-2xl flex flex-col max-h-[90vh]">
+          <DialogHeader className="text-left px-6 pt-5 pb-3 border-b border-slate-100 shrink-0">
             <DialogTitle className="font-bold text-slate-800 text-[16px] tracking-tight">বিষয় তথ্য সংশোধন</DialogTitle>
-            <DialogDescription className="text-slate-500 text-xs">
-              বিষয়ের বিবরণ, বিষয় কোড এবং সক্রিয় শিক্ষাবর্ষের শিক্ষাবর্ষ সংশোধন করুন।
+            <DialogDescription className="text-slate-500 text-xs mt-0.5">
+              বিষয়ের বিবরণ, বিষয় কোড এবং সক্রিয় শিক্ষাবর্ষ সংশোধন করুন।
             </DialogDescription>
           </DialogHeader>
 
           {editingSubject && (
-            <form onSubmit={handleEditSubjectSubmit} className="space-y-4 pt-2">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-600 mb-1 block">বিষয়ের নাম</label>
-                <Input
-                  required
-                  value={editingSubject.subjectName}
-                  onChange={(e) => setEditingSubject({ ...editingSubject, subjectName: e.target.value })}
-                  disabled={updateSubjectMutation.isPending}
-                  className="h-10.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-150"
-                />
-              </div>
+            <form onSubmit={handleEditSubjectSubmit} className="flex flex-col flex-1 min-h-0">
+              {/* Scrollable body */}
+              <div className="overflow-y-auto flex-1 px-6 py-4 space-y-3.5">
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-600 mb-1 block">বিষয় কোড</label>
-                <Input
-                  required
-                  value={editingSubject.subjectCode}
-                  onChange={(e) => setEditingSubject({ ...editingSubject, subjectCode: e.target.value })}
-                  disabled={updateSubjectMutation.isPending}
-                  className="h-10.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-150"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-600 mb-1 block">পূর্ণমান <span className="text-indigo-400">*</span></label>
-                <Input
-                  required
-                  type="text"
-                  placeholder="যেমন: ১০০"
-                  value={editingSubject.totalMarks ?? ''}
-                  onChange={(e) => setEditingSubject({ ...editingSubject, totalMarks: e.target.value })}
-                  disabled={updateSubjectMutation.isPending}
-                  className="h-10.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-150"
-                />
-              </div>
-
-              {/* Group Selection in Edit (if applicable) */}
-              {['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(editingSubject.className) && (
-                <div className="space-y-2 p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                  <label className="text-xs font-semibold text-slate-600 mb-1 block">বিভাগ / গ্রুপ</label>
-                  <div className="flex flex-wrap gap-3">
-                    {[
-                      { value: 'General', label: 'সাধারণ' },
-                      { value: 'Science', label: 'বিজ্ঞান' },
-                      { value: 'Humanities', label: 'মানবিক' },
-                      { value: 'Commerce', label: 'ব্যবসায়' },
-                    ].map((grp) => (
-                      <label key={grp.value} className="flex items-center gap-1.5 text-xs font-semibold cursor-pointer select-none">
-                        <input
-                          type="radio"
-                          name="editSubjectGroup"
-                          checked={editingSubject.group === grp.value}
-                          onChange={() => setEditingSubject({ ...editingSubject, group: grp.value })}
-                          disabled={updateSubjectMutation.isPending}
-                          className="accent-indigo-600 size-3.5"
-                        />
-                        <span>{grp.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Version Selection in Edit (Only shown if both Bangla and English versions are active in config) */}
-              {(!config?.versions || config.versions.length > 1) && (
-                <div className="space-y-2 p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                  <label className="text-xs font-semibold text-slate-600 mb-1 block">ভাষা সংস্করণ</label>
-                  <div className="flex flex-wrap gap-3">
-                    {[
-                      { value: 'Bangla', label: 'বাংলা সংস্করণ' },
-                      { value: 'English', label: 'ইংরেজি সংস্করণ' },
-                    ].map((ver) => (
-                      <label key={ver.value} className="flex items-center gap-1.5 text-xs font-semibold cursor-pointer select-none">
-                        <input
-                          type="radio"
-                          name="editSubjectVersion"
-                          checked={editingSubject.version === ver.value}
-                          onChange={() => setEditingSubject({ ...editingSubject, version: ver.value })}
-                          disabled={updateSubjectMutation.isPending}
-                          className="accent-indigo-600 size-3.5"
-                        />
-                        <span>{ver.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Edit Years setup */}
-              <div className="space-y-2 p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                <label className="text-xs font-semibold text-slate-600 mb-1 block">সক্রিয় শিক্ষাবর্ষ</label>
-                <div className="flex gap-2">
+                {/* বিষয়ের নাম */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600 block">বিষয়ের নাম</label>
                   <Input
-                    type="number"
-                    id="edit-year-input"
-                    placeholder="বছর (যেমন: ২০২৬)"
+                    required
+                    value={editingSubject.subjectName}
+                    onChange={(e) => setEditingSubject({ ...editingSubject, subjectName: e.target.value })}
                     disabled={updateSubjectMutation.isPending}
-                    className="h-10 rounded-xl border border-slate-200 px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-150"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        const val = e.target.value.trim();
-                        if (val) {
-                          handleAddYear(val, true);
-                          e.target.value = '';
-                        }
-                      }
-                    }}
+                    className="h-10 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={updateSubjectMutation.isPending}
-                    onClick={() => {
-                      const input = document.getElementById('edit-year-input');
-                      if (input && input.value.trim()) {
-                        handleAddYear(input.value.trim(), true);
-                        input.value = '';
-                      }
-                    }}
-                    className="h-10 px-4 rounded-xl text-xs font-bold border border-slate-200 text-slate-600 hover:bg-slate-50"
-                  >
-                    যোগ
-                  </Button>
                 </div>
-                <div className="flex flex-wrap gap-1.5 pt-1.5">
-                  {editingSubject.years.map((yr) => (
-                    <span
-                      key={yr}
-                      className="inline-flex items-center gap-1 bg-amber-500/10 text-amber-800 font-semibold text-xs px-2.5 py-0.5 rounded-md border border-amber-100"
+
+                {/* বিষয় কোড + পূর্ণমান — একই লাইনে */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-600 block">বিষয় কোড</label>
+                    <Input
+                      required
+                      value={editingSubject.subjectCode}
+                      onChange={(e) => setEditingSubject({ ...editingSubject, subjectCode: e.target.value })}
+                      disabled={updateSubjectMutation.isPending}
+                      className="h-10 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-600 block">পূর্ণমান <span className="text-indigo-400">*</span></label>
+                    <Input
+                      required
+                      type="text"
+                      placeholder="যেমন: ১০০"
+                      value={editingSubject.totalMarks ?? ''}
+                      onChange={(e) => setEditingSubject({ ...editingSubject, totalMarks: e.target.value })}
+                      disabled={updateSubjectMutation.isPending}
+                      className="h-10 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Group Selection in Edit (if applicable) */}
+                {['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(editingSubject.className) && (
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-slate-600 block">বিভাগ / গ্রুপ</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { value: 'General', label: 'সাধারণ' },
+                        { value: 'Science', label: 'বিজ্ঞান' },
+                        { value: 'Humanities', label: 'মানবিক' },
+                        { value: 'Commerce', label: 'ব্যবসায়' },
+                      ].map((grp) => (
+                        <label
+                          key={grp.value}
+                          className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all duration-200 ${
+                            editingSubject.group === grp.value
+                              ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200'
+                              : 'bg-white/60 border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="editSubjectGroup"
+                            checked={editingSubject.group === grp.value}
+                            onChange={() => setEditingSubject({ ...editingSubject, group: grp.value })}
+                            disabled={updateSubjectMutation.isPending}
+                            className="sr-only"
+                          />
+                          {grp.label}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Version Selection in Edit */}
+                {(!config?.versions || config.versions.length > 1) && (
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-slate-600 block">ভাষা সংস্করণ</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { value: 'Bangla', label: 'বাংলা সংস্করণ' },
+                        { value: 'English', label: 'ইংরেজি সংস্করণ' },
+                      ].map((ver) => (
+                        <label
+                          key={ver.value}
+                          className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all duration-200 ${
+                            editingSubject.version === ver.value
+                              ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200'
+                              : 'bg-white/60 border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="editSubjectVersion"
+                            checked={editingSubject.version === ver.value}
+                            onChange={() => setEditingSubject({ ...editingSubject, version: ver.value })}
+                            disabled={updateSubjectMutation.isPending}
+                            className="sr-only"
+                          />
+                          {ver.label}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Edit Years setup */}
+                <div className="space-y-2 p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                  <label className="text-xs font-semibold text-slate-600 block">সক্রিয় শিক্ষাবর্ষ</label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      id="edit-year-input"
+                      placeholder="বছর (যেমন: ২০২৬)"
+                      disabled={updateSubjectMutation.isPending}
+                      className="h-9 rounded-xl border border-slate-200 px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const val = e.target.value.trim();
+                          if (val) { handleAddYear(val, true); e.target.value = ''; }
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={updateSubjectMutation.isPending}
+                      onClick={() => {
+                        const input = document.getElementById('edit-year-input');
+                        if (input && input.value.trim()) { handleAddYear(input.value.trim(), true); input.value = ''; }
+                      }}
+                      className="h-9 px-4 rounded-xl text-xs font-bold border border-slate-200 text-slate-600 hover:bg-slate-100"
                     >
-                      {yr}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveYear(yr, true)}
-                        className="text-amber-500 font-bold hover:text-amber-700"
+                      যোগ
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {editingSubject.years.map((yr) => (
+                      <span
+                        key={yr}
+                        className="inline-flex items-center gap-1 bg-amber-500/10 text-amber-800 font-semibold text-xs px-2.5 py-0.5 rounded-md border border-amber-100"
                       >
-                        ×
-                      </button>
-                    </span>
-                  ))}
+                        {yr}
+                        <button type="button" onClick={() => handleRemoveYear(yr, true)} className="text-amber-500 font-bold hover:text-amber-700">×</button>
+                      </span>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Edit Categories — custom pill style */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-slate-600 block">প্রশ্নের ক্যাটাগরি</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {PREDEFINED_CATEGORIES.map((cat) => {
+                      const isChecked = (editingSubject.categories || []).includes(cat.value);
+                      return (
+                        <label
+                          key={cat.value}
+                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all duration-150 ${
+                            isChecked
+                              ? 'bg-indigo-50 border-indigo-300 text-indigo-700 shadow-sm'
+                              : 'bg-white/60 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-white/80'
+                          }`}
+                        >
+                          <span className={`size-4 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
+                            isChecked ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-slate-300'
+                          }`}>
+                            {isChecked && (
+                              <svg className="size-2.5 text-white" viewBox="0 0 10 10" fill="none">
+                                <path d="M1.5 5L4 7.5L8.5 2.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            )}
+                          </span>
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => handleToggleCategory(cat.value, true)}
+                            disabled={updateSubjectMutation.isPending}
+                            className="sr-only"
+                          />
+                          <span className="leading-tight">{cat.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
               </div>
 
-              {/* Edit Categories setup */}
-              <div className="space-y-2 p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                <label className="text-xs font-semibold text-slate-600 mb-1 block">প্রশ্নের ক্যাটাগরি সমূহ</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {PREDEFINED_CATEGORIES.map((cat) => {
-                    const isChecked = (editingSubject.categories || []).includes(cat.value);
-                    return (
-                      <label
-                        key={cat.value}
-                        className={`flex items-center gap-2.5 p-2 px-3 rounded-xl border text-xs font-semibold select-none cursor-pointer transition-all duration-150 ${
-                          isChecked
-                            ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-bold shadow-sm'
-                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => handleToggleCategory(cat.value, true)}
-                          disabled={updateSubjectMutation.isPending}
-                          className="accent-indigo-600 size-4 rounded cursor-pointer"
-                        />
-                        <span>{cat.label}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <DialogFooter className="pt-4 flex gap-2 justify-end border-t border-slate-100">
+              {/* Sticky footer — always visible */}
+              <DialogFooter className="px-6 py-4 border-t border-slate-100 flex gap-2 justify-end shrink-0 bg-white/60 backdrop-blur-sm rounded-b-2xl">
                 <DialogClose asChild>
                   <ModalCancelButton disabled={updateSubjectMutation.isPending}>বাতিল</ModalCancelButton>
                 </DialogClose>
