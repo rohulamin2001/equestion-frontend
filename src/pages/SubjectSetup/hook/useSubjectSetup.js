@@ -78,6 +78,7 @@ export function useSubjectSetup() {
   // Form Fields
   const [subjectName, setSubjectName] = useState('');
   const [subjectCode, setSubjectCode] = useState('');
+  const [subjectTotalMarks, setSubjectTotalMarks] = useState('');
   const [subjectGroup, setSubjectGroup] = useState('General');
   const [subjectYears, setSubjectYears] = useState([new Date().getFullYear()]);
   const [subjectCategories, setSubjectCategories] = useState(['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']);
@@ -222,6 +223,7 @@ export function useSubjectSetup() {
   const resetForm = () => {
     setSubjectName('');
     setSubjectCode('');
+    setSubjectTotalMarks('');
     setSubjectGroup('General');
     setSubjectYears([new Date().getFullYear()]);
     setSubjectCategories(['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']);
@@ -237,6 +239,7 @@ export function useSubjectSetup() {
       className: selectedClass,
       subjectName: subjectName.trim(),
       subjectCode: subjectCode.trim(),
+      totalMarks: subjectTotalMarks.trim() !== '' ? subjectTotalMarks.trim() : null,
       group: isClass9to12 ? subjectGroup : 'General',
       years: subjectYears,
       categories: subjectCategories,
@@ -257,6 +260,9 @@ export function useSubjectSetup() {
         className: editingSubject.className,
         subjectName: editingSubject.subjectName.trim(),
         subjectCode: editingSubject.subjectCode.trim(),
+        totalMarks: (editingSubject.totalMarks !== '' && editingSubject.totalMarks != null)
+          ? String(editingSubject.totalMarks).trim()
+          : null,
         group: isClass9to12 ? editingSubject.group : 'General',
         years: editingSubject.years,
         categories: editingSubject.categories || ['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion'],
@@ -320,6 +326,8 @@ export function useSubjectSetup() {
     setSubjectName,
     subjectCode,
     setSubjectCode,
+    subjectTotalMarks,
+    setSubjectTotalMarks,
     subjectGroup,
     setSubjectGroup,
     subjectYears,

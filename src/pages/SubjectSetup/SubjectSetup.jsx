@@ -80,6 +80,8 @@ export default function SubjectSetup() {
     setSubjectName,
     subjectCode,
     setSubjectCode,
+    subjectTotalMarks,
+    setSubjectTotalMarks,
     subjectGroup,
     setSubjectGroup,
     subjectYears,
@@ -241,19 +243,35 @@ export default function SubjectSetup() {
               />
             </div>
 
-            {/* Subject Code */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
-                বিষয় কোড <span className="text-indigo-400">*</span>
-              </label>
-              <Input
-                required
-                placeholder="যেমন: ১০১, ১০২, BAN101"
-                value={subjectCode}
-                onChange={(e) => setSubjectCode(e.target.value)}
-                disabled={addSubjectMutation.isPending}
-                className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
-              />
+            {/* Subject Code + পূর্ণমান — side by side */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
+                  বিষয় কোড <span className="text-indigo-400">*</span>
+                </label>
+                <Input
+                  required
+                  placeholder="যেমন: ১০১"
+                  value={subjectCode}
+                  onChange={(e) => setSubjectCode(e.target.value)}
+                  disabled={addSubjectMutation.isPending}
+                  className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
+                  পূর্ণমান <span className="text-indigo-400">*</span>
+                </label>
+                <Input
+                  required
+                  type="text"
+                  placeholder="যেমন: ১০০"
+                  value={subjectTotalMarks}
+                  onChange={(e) => setSubjectTotalMarks(e.target.value)}
+                  disabled={addSubjectMutation.isPending}
+                  className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
+                />
+              </div>
             </div>
 
             {/* Group Selection (Only for Class 9-12) */}
@@ -539,23 +557,24 @@ export default function SubjectSetup() {
                     </div>
 
                     {/* Subject Details */}
-                    <div>
-                      <h4 className="font-extrabold text-slate-800 text-[15px] leading-snug">{sub.subjectName}</h4>
-                      <p className="text-[10px] text-slate-400 mt-1 uppercase font-semibold">
+                  <div>
+                      <h4 className="font-extrabold text-slate-800 text-[16px] leading-snug">{sub.subjectName}</h4>
+                      <p className="text-[11px] text-slate-400 mt-1 uppercase font-semibold">
                         শ্রেণী: {currentClassLabel}
                         {sub.group && sub.group !== 'General' && ` • গ্রুপ: ${getGroupLabel(sub.group)}`}
+                        {sub.totalMarks != null && ` • পূর্ণমান: ${sub.totalMarks}`}
                       </p>
                     </div>
                   </div>
 
                   {/* Active Years badges */}
-                  <div className="pt-3 border-t border-slate-50 flex flex-wrap gap-1 items-center">
-                    <span className="text-[10px] font-bold text-slate-400 mr-1 uppercase">শিক্ষাবর্ষ:</span>
+                  <div className=" border-t border-slate-50 flex flex-wrap gap-1 items-center">
+                    <span className="text-[11px] font-bold text-slate-400 mr-1 uppercase">শিক্ষাবর্ষ:</span>
                     {sub.years &&
                       sub.years.map((yr) => (
                         <span
                           key={yr}
-                          className="bg-amber-50 border border-amber-100 text-amber-700 font-extrabold text-[10px] px-2 py-0.5 rounded-md"
+                          className="bg-amber-50 border border-amber-100 text-amber-700 font-extrabold text-[11px] px-2 py-0.5 rounded-md"
                         >
                           {yr}
                         </span>
@@ -563,13 +582,13 @@ export default function SubjectSetup() {
                   </div>
 
                   {/* Configured Categories badges */}
-                  <div className="pt-2 flex flex-wrap gap-1 items-center">
-                    <span className="text-[10px] font-bold text-slate-400 mr-1 uppercase">ক্যাটাগরি:</span>
+                  <div className="flex flex-wrap gap-1 items-center">
+                    <span className="text-[11px] font-bold text-slate-400 mr-1 uppercase">ক্যাটাগরি:</span>
                     {sub.categories && sub.categories.length > 0 ? (
                       sub.categories.map((cat) => (
                         <span
                           key={cat}
-                          className="bg-indigo-50 border border-indigo-100 text-indigo-700 font-extrabold text-[10px] px-2 py-0.5 rounded-md"
+                          className="bg-indigo-50 border border-indigo-100 text-indigo-700 font-extrabold text-[11px] px-2 py-0.5 rounded-md"
                         >
                           {PREDEFINED_CATEGORIES.find((c) => c.value === cat)?.label ?? cat}
                         </span>
@@ -619,6 +638,19 @@ export default function SubjectSetup() {
                   required
                   value={editingSubject.subjectCode}
                   onChange={(e) => setEditingSubject({ ...editingSubject, subjectCode: e.target.value })}
+                  disabled={updateSubjectMutation.isPending}
+                  className="h-10.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-150"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-600 mb-1 block">পূর্ণমান <span className="text-indigo-400">*</span></label>
+                <Input
+                  required
+                  type="text"
+                  placeholder="যেমন: ১০০"
+                  value={editingSubject.totalMarks ?? ''}
+                  onChange={(e) => setEditingSubject({ ...editingSubject, totalMarks: e.target.value })}
                   disabled={updateSubjectMutation.isPending}
                   className="h-10.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-150"
                 />
