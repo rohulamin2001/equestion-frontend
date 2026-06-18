@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button";
-import { AnimatePresence, motion } from "motion/react";
 import {
   AlertCircle,
   BookOpen,
@@ -27,6 +26,7 @@ import {
   Save,
   Trash2
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import {
   CATEGORIES_MAP,
   CLASSES_MAP,
@@ -209,10 +209,30 @@ export default function AddQuestion() {
             >
               {/* Left Column: Syllabus Fields */}
               <div className="md:col-span-2 bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-5">
-                <h3 className="font-bold text-slate-800 text-[16px] border-b border-black/[0.05] pb-2 flex items-center gap-2">
-                  <BookOpen className="size-4 text-[#4F46E5]" />
-                  সিলেবাস ও অধ্যায় লিঙ্ক করুন
-                </h3>
+                <div className="border-b border-black/[0.05] pb-2 flex items-center justify-between gap-3">
+                  <h3 className="font-bold text-slate-800 text-[16px] flex items-center gap-2 shrink-0">
+                    <BookOpen className="size-4 text-[#4F46E5]" />
+                    সিলেবাস ও অধ্যায় লিঙ্ক করুন
+                  </h3>
+                  {(() => {
+                    const selectedSub = qm.formSubjects.find((s) => s._id === qm.formSubjectId);
+                    if (!selectedSub) return null;
+                    return (
+                      <div className="flex items-center gap-2 flex-wrap justify-end">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold">
+                          <span className="text-indigo-400">পূর্ণমান:</span>
+                          {selectedSub?.subjectId?.totalMarks || "—"}
+                        </span>
+                         
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold">
+                            <span className="text-amber-500">সাল:</span>
+                            {new Date().getFullYear()}
+                          </span>
+                        
+                      </div>
+                    );
+                  })()}
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {/* Type Selection */}
