@@ -1,25 +1,35 @@
-import apiClient from '@/lib/apiClient';
-import { useAuth } from '@clerk/react';
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useState } from 'react';
-import { toast } from 'sonner';
-import { useAcademicConfig } from './useAcademicConfig';
+import apiClient from "@/lib/apiClient";
+import { useAuth } from "@clerk/react";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useCallback, useState } from "react";
+import { toast } from "sonner";
+import { useAcademicConfig } from "./useAcademicConfig";
 
 export function useQuestionManagement(options = {}) {
   const { isPersonalOnly = false, skipFetch = false, pageSize = 10 } = options;
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
-  const { allowedClasses, config, isLoading: configLoading } = useAcademicConfig();
+  const {
+    allowedClasses,
+    config,
+    isLoading: configLoading,
+  } = useAcademicConfig();
 
   // Wizard Step State
   const [activeStep, setActiveStep] = useState(1);
 
   // Active list filters (for QuestionBank and MyQuestions pages) - Derived State Pattern
-  const [userFilterType, setUserFilterType] = useState('');
-  const [userFilterLevel, setUserFilterLevel] = useState('');
-  const [userFilterClass, setUserFilterClass] = useState('');
+  const [userFilterType, setUserFilterType] = useState("");
+  const [userFilterLevel, setUserFilterLevel] = useState("");
+  const [userFilterClass, setUserFilterClass] = useState("");
 
-  const firstAllowed = allowedClasses && allowedClasses.length > 0 ? allowedClasses[0] : null;
+  const firstAllowed =
+    allowedClasses && allowedClasses.length > 0 ? allowedClasses[0] : null;
 
   const filterType = userFilterType;
   const filterLevel = userFilterLevel;
@@ -27,11 +37,22 @@ export function useQuestionManagement(options = {}) {
 
   const setFilterType = setUserFilterType;
   const setFilterLevel = setUserFilterLevel;
-  const setFilterClass = (clsVal, targetTypeOverride = null, targetLevelOverride = null) => {
-    const targetType = targetTypeOverride !== null ? targetTypeOverride : (userFilterType || filterType);
-    const targetLevel = targetLevelOverride !== null ? targetLevelOverride : (userFilterLevel || filterLevel);
+  const setFilterClass = (
+    clsVal,
+    targetTypeOverride = null,
+    targetLevelOverride = null,
+  ) => {
+    const targetType =
+      targetTypeOverride !== null
+        ? targetTypeOverride
+        : userFilterType || filterType;
+    const targetLevel =
+      targetLevelOverride !== null
+        ? targetLevelOverride
+        : userFilterLevel || filterLevel;
     const clsObj = allowedClasses.find(
-      (c) => c.value === clsVal && c.type === targetType && c.level === targetLevel
+      (c) =>
+        c.value === clsVal && c.type === targetType && c.level === targetLevel,
     );
     if (clsObj) {
       setUserFilterType(clsObj.type);
@@ -49,16 +70,16 @@ export function useQuestionManagement(options = {}) {
     }
   };
 
-  const [filterSubjectId, setFilterSubjectId] = useState('');
-  const [filterChapter, setFilterChapter] = useState('');
-  const [filterVersion, setFilterVersion] = useState('');
+  const [filterSubjectId, setFilterSubjectId] = useState("");
+  const [filterChapter, setFilterChapter] = useState("");
+  const [filterVersion, setFilterVersion] = useState("");
 
-  const [filterCategory, setFilterCategory] = useState('');
+  const [filterCategory, setFilterCategory] = useState("");
 
-  const [filterDifficulty, setFilterDifficulty] = useState('');
-  const [filterSearch, setFilterSearch] = useState('');
+  const [filterDifficulty, setFilterDifficulty] = useState("");
+  const [filterSearch, setFilterSearch] = useState("");
 
-  const [filterStatus, setFilterStatus] = useState('');
+  const [filterStatus, setFilterStatus] = useState("");
   const [filterPersonal, setFilterPersonal] = useState(isPersonalOnly);
 
   // Form Field States - Derived State Pattern
@@ -67,59 +88,98 @@ export function useQuestionManagement(options = {}) {
   const [userFormClass, setUserFormClass] = useState(null);
 
   const isFormSelectionValid = allowedClasses.some(
-    c => c.value === userFormClass && c.type === userFormType && c.level === userFormLevel
+    (c) =>
+      c.value === userFormClass &&
+      c.type === userFormType &&
+      c.level === userFormLevel,
   );
 
-  const formType = isFormSelectionValid ? userFormType : (firstAllowed ? firstAllowed.type : 'School');
-  const formLevel = isFormSelectionValid ? userFormLevel : (firstAllowed ? firstAllowed.level : 'Secondary');
-  const formClass = isFormSelectionValid ? userFormClass : (firstAllowed ? firstAllowed.value : 'Class 6');
+  const formType = isFormSelectionValid
+    ? userFormType
+    : firstAllowed
+      ? firstAllowed.type
+      : "School";
+  const formLevel = isFormSelectionValid
+    ? userFormLevel
+    : firstAllowed
+      ? firstAllowed.level
+      : "Secondary";
+  const formClass = isFormSelectionValid
+    ? userFormClass
+    : firstAllowed
+      ? firstAllowed.value
+      : "Class 6";
 
   const setFormType = setUserFormType;
   const setFormLevel = setUserFormLevel;
-  const setFormClass = useCallback((clsVal, targetTypeOverride = null, targetLevelOverride = null) => {
-    const targetType = targetTypeOverride !== null ? targetTypeOverride : (userFormType || formType);
-    const targetLevel = targetLevelOverride !== null ? targetLevelOverride : (userFormLevel || formLevel);
-    const clsObj = allowedClasses.find(
-      (c) => c.value === clsVal && c.type === targetType && c.level === targetLevel
-    );
-    if (clsObj) {
-      setUserFormType(clsObj.type);
-      setUserFormLevel(clsObj.level);
-      setUserFormClass(clsVal);
-    } else {
-      const fallbackObj = allowedClasses.find((c) => c.value === clsVal);
-      if (fallbackObj) {
-        setUserFormType(fallbackObj.type);
-        setUserFormLevel(fallbackObj.level);
+  const setFormClass = useCallback(
+    (clsVal, targetTypeOverride = null, targetLevelOverride = null) => {
+      const targetType =
+        targetTypeOverride !== null
+          ? targetTypeOverride
+          : userFormType || formType;
+      const targetLevel =
+        targetLevelOverride !== null
+          ? targetLevelOverride
+          : userFormLevel || formLevel;
+      const clsObj = allowedClasses.find(
+        (c) =>
+          c.value === clsVal &&
+          c.type === targetType &&
+          c.level === targetLevel,
+      );
+      if (clsObj) {
+        setUserFormType(clsObj.type);
+        setUserFormLevel(clsObj.level);
         setUserFormClass(clsVal);
       } else {
-        setUserFormClass(clsVal);
+        const fallbackObj = allowedClasses.find((c) => c.value === clsVal);
+        if (fallbackObj) {
+          setUserFormType(fallbackObj.type);
+          setUserFormLevel(fallbackObj.level);
+          setUserFormClass(clsVal);
+        } else {
+          setUserFormClass(clsVal);
+        }
       }
-    }
-  }, [allowedClasses, userFormType, formType, userFormLevel, formLevel, setUserFormType, setUserFormLevel, setUserFormClass]);
+    },
+    [
+      allowedClasses,
+      userFormType,
+      formType,
+      userFormLevel,
+      formLevel,
+      setUserFormType,
+      setUserFormLevel,
+      setUserFormClass,
+    ],
+  );
 
   const [userFormVersion, setUserFormVersion] = useState(null);
-  const defaultVersion = config?.versions && config.versions.length > 0 ? config.versions[0] : 'Bangla';
+  const defaultVersion =
+    config?.versions && config.versions.length > 0
+      ? config.versions[0]
+      : "Bangla";
   const formVersion = userFormVersion ?? defaultVersion;
 
   const changeFormVersion = (val) => {
     setUserFormVersion(val);
-    setFormSubjectId('');
-    setFormChapterNumber('');
+    setFormSubjectId("");
+    setFormChapterNumber("");
     setFormTopics([]);
   };
 
-  const [formSubjectId, setFormSubjectId] = useState('');
-  const [formGroup, setFormGroup] = useState('General');
-  const [formChapterNumber, setFormChapterNumber] = useState('');
+  const [formSubjectId, setFormSubjectId] = useState("");
+  const [formGroup, setFormGroup] = useState("General");
+  const [formChapterNumber, setFormChapterNumber] = useState("");
   const [formTopics, setFormTopics] = useState([]);
 
   // Fetch Syllabus list (for populating Class & Subject dropdowns)
   const { data: syllabusList = [], isLoading: loadingSyllabus } = useQuery({
-    queryKey: ['globalSyllabusList'],
+    queryKey: ["globalSyllabusList"],
     queryFn: async () => {
       const token = await getToken();
-      const response = await apiClient.get('/syllabus', {
+      const response = await apiClient.get("/syllabus", {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.syllabus;
@@ -127,42 +187,51 @@ export function useQuestionManagement(options = {}) {
   });
 
   // Get active subjects for selected class inside the form, filtering by group if class 9-12
-  const formSubjects = syllabusList.filter(s => {
+  const formSubjects = syllabusList.filter((s) => {
     if (s.className !== formClass) return false;
     if (s.institutionType !== formType) return false;
     if (s.academicLevel !== formLevel) return false;
-    
-    const syllabusVersion = s.version || 'Bangla';
+
+    const syllabusVersion = s.version || "Bangla";
     if (syllabusVersion !== formVersion) return false;
-    const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(formClass);
+    const isClass9to12 = [
+      "Class 9",
+      "Class 10",
+      "Class 11",
+      "Class 12",
+    ].includes(formClass);
     if (isClass9to12) {
       // Show subjects matching selected group OR general group
-      return s.group === formGroup || s.group === 'General' || !s.group;
+      return s.group === formGroup || s.group === "General" || !s.group;
     }
     return true;
   });
   // Get active chapters for selected subject inside the form
-  const selectedSyllabusObj = syllabusList.find(s => s._id === formSubjectId);
+  const selectedSyllabusObj = syllabusList.find((s) => s._id === formSubjectId);
   const formChapters = selectedSyllabusObj?.chapters || [];
 
   // Derived formCategory based on subject allowed categories
-  const [userFormCategory, setUserFormCategory] = useState('MCQ');
-  const allowedCategoriesForSubject = (formSubjectId && selectedSyllabusObj)
-    ? (selectedSyllabusObj?.subjectId?.categories || [])
-    : [];
+  const [userFormCategory, setUserFormCategory] = useState("MCQ");
+  const allowedCategoriesForSubject =
+    formSubjectId && selectedSyllabusObj
+      ? selectedSyllabusObj?.subjectId?.categories || []
+      : [];
 
-  const formCategory = allowedCategoriesForSubject.length > 0
-    ? (allowedCategoriesForSubject.includes(userFormCategory) ? userFormCategory : allowedCategoriesForSubject[0])
-    : '';
+  const formCategory =
+    allowedCategoriesForSubject.length > 0
+      ? allowedCategoriesForSubject.includes(userFormCategory)
+        ? userFormCategory
+        : allowedCategoriesForSubject[0]
+      : "";
   const setFormCategory = setUserFormCategory;
 
-  const [formDifficulty, setFormDifficulty] = useState('Medium');
+  const [formDifficulty, setFormDifficulty] = useState("Medium");
 
   // New metadata fields
   const [formYear, setFormYear] = useState([]);
   const [formBoard, setFormBoard] = useState([]);
   const [formSchool, setFormSchool] = useState([]);
-  const [formLevelTag, setFormLevelTag] = useState('');
+  const [formLevelTag, setFormLevelTag] = useState("");
   const [formSpecialSearch, setFormSpecialSearch] = useState([]);
 
   // Draft list for batch question creation
@@ -170,26 +239,26 @@ export function useQuestionManagement(options = {}) {
   const [editingDraftId, setEditingDraftId] = useState(null);
 
   // MCQ Specific Form Fields
-  const [mcqType, setMcqType] = useState('Simple');
-  const [mcqStem, setMcqStem] = useState('');
-  const [mcqQuestionText, setMcqQuestionText] = useState('');
-  const [mcqStatements, setMcqStatements] = useState(['', '', '']); // for MultipleCompletion
-  const [mcqOptions, setMcqOptions] = useState(['', '', '', '']);
+  const [mcqType, setMcqType] = useState("Simple");
+  const [mcqStem, setMcqStem] = useState("");
+  const [mcqQuestionText, setMcqQuestionText] = useState("");
+  const [mcqStatements, setMcqStatements] = useState(["", "", ""]); // for MultipleCompletion
+  const [mcqOptions, setMcqOptions] = useState(["", "", "", ""]);
   const [mcqCorrectAnswer, setMcqCorrectAnswer] = useState(0);
-  const [mcqExplanation, setMcqExplanation] = useState('');
+  const [mcqExplanation, setMcqExplanation] = useState("");
 
   // Creative (সৃজনশীল) Specific Form Fields
-  const [creativeStem, setCreativeStem] = useState('');
-  const [creativeCognitiveA, setCreativeCognitiveA] = useState('');
-  const [creativeCognitiveB, setCreativeCognitiveB] = useState('');
-  const [creativeCognitiveC, setCreativeCognitiveC] = useState('');
-  const [creativeCognitiveD, setCreativeCognitiveD] = useState('');
+  const [creativeStem, setCreativeStem] = useState("");
+  const [creativeCognitiveA, setCreativeCognitiveA] = useState("");
+  const [creativeCognitiveB, setCreativeCognitiveB] = useState("");
+  const [creativeCognitiveC, setCreativeCognitiveC] = useState("");
+  const [creativeCognitiveD, setCreativeCognitiveD] = useState("");
 
   // General Questions (Short/Broad/Matching/FillInBlanks)
-  const [generalQuestionText, setGeneralQuestionText] = useState('');
-  const [generalStem, setGeneralStem] = useState(''); // structured stem (optional)
+  const [generalQuestionText, setGeneralQuestionText] = useState("");
+  const [generalStem, setGeneralStem] = useState(""); // structured stem (optional)
   const [generalSubQuestions, setGeneralSubQuestions] = useState([]); // array of { text: '', marks: '' }
-  const [generalSuggestedAnswer, setGeneralSuggestedAnswer] = useState('');
+  const [generalSuggestedAnswer, setGeneralSuggestedAnswer] = useState("");
   const [generalMarks, setGeneralMarks] = useState(1);
 
   const [editingQuestion, setEditingQuestion] = useState(null); // null if creating
@@ -201,12 +270,12 @@ export function useQuestionManagement(options = {}) {
     setFormLevel(filterLevel);
     setFormClass(filterClass);
     setUserFormVersion(null);
-    setFormSubjectId('');
-    setFormGroup('General');
-    setFormChapterNumber('');
+    setFormSubjectId("");
+    setFormGroup("General");
+    setFormChapterNumber("");
     setFormTopics([]);
-    setFormCategory('MCQ');
-    setFormDifficulty('Medium');
+    setFormCategory("MCQ");
+    setFormDifficulty("Medium");
     setQuestionsList([]);
     setEditingDraftId(null);
 
@@ -214,27 +283,27 @@ export function useQuestionManagement(options = {}) {
     setFormYear([]);
     setFormBoard([]);
     setFormSchool([]);
-    setFormLevelTag('');
+    setFormLevelTag("");
     setFormSpecialSearch([]);
 
-    setMcqType('Simple');
-    setMcqStem('');
-    setMcqQuestionText('');
-    setMcqStatements(['', '', '']);
-    setMcqOptions(['', '', '', '']);
+    setMcqType("Simple");
+    setMcqStem("");
+    setMcqQuestionText("");
+    setMcqStatements(["", "", ""]);
+    setMcqOptions(["", "", "", ""]);
     setMcqCorrectAnswer(0);
-    setMcqExplanation('');
+    setMcqExplanation("");
 
-    setCreativeStem('');
-    setCreativeCognitiveA('');
-    setCreativeCognitiveB('');
-    setCreativeCognitiveC('');
-    setCreativeCognitiveD('');
+    setCreativeStem("");
+    setCreativeCognitiveA("");
+    setCreativeCognitiveB("");
+    setCreativeCognitiveC("");
+    setCreativeCognitiveD("");
 
-    setGeneralQuestionText('');
-    setGeneralStem('');
+    setGeneralQuestionText("");
+    setGeneralStem("");
     setGeneralSubQuestions([]);
-    setGeneralSuggestedAnswer('');
+    setGeneralSuggestedAnswer("");
     setGeneralMarks(1);
 
     setEditingQuestion(null);
@@ -244,53 +313,85 @@ export function useQuestionManagement(options = {}) {
   const handleOpenEditMode = useCallback((question) => {
     setEditingQuestion(question);
 
-    setFormType(question.institutionType || 'School');
-    setFormLevel(question.academicLevel || 'Secondary');
+    setFormType(question.institutionType || "School");
+    setFormLevel(question.academicLevel || "Secondary");
     setFormClass(question.className);
-    setUserFormVersion(question.subjectId?.version || 'Bangla');
-    setFormSubjectId(question.subjectId._id || question.subjectId);
-    setFormGroup(question.subjectId?.group || 'General');
+    setUserFormVersion(question.subjectId?.version || "Bangla");
+    setFormSubjectId(question.subjectId?._id || question.subjectId || "");
+    setFormGroup(question.subjectId?.group || "General");
     setFormChapterNumber(question.chapterNumber.toString());
     setFormTopics(question.topics || []);
     setFormCategory(question.category);
     setFormDifficulty(question.difficulty);
 
     // Load new metadata
-    setFormYear(Array.isArray(question.year) ? [...question.year] : (typeof question.year === 'string' && question.year ? question.year.split(',').map(s => s.trim()) : []));
-    setFormBoard(Array.isArray(question.board) ? [...question.board] : (typeof question.board === 'string' && question.board ? question.board.split(',').map(s => s.trim()) : []));
-    setFormSchool(Array.isArray(question.school) ? [...question.school] : (typeof question.school === 'string' && question.school ? question.school.split(',').map(s => s.trim()) : []));
-    setFormLevelTag(question.level || '');
-    setFormSpecialSearch(Array.isArray(question.specialSearch) ? [...question.specialSearch] : (typeof question.specialSearch === 'string' && question.specialSearch ? question.specialSearch.split(',').map(s => s.trim()) : []));
+    setFormYear(
+      Array.isArray(question.year)
+        ? [...question.year]
+        : typeof question.year === "string" && question.year
+          ? question.year.split(",").map((s) => s.trim())
+          : [],
+    );
+    setFormBoard(
+      Array.isArray(question.board)
+        ? [...question.board]
+        : typeof question.board === "string" && question.board
+          ? question.board.split(",").map((s) => s.trim())
+          : [],
+    );
+    setFormSchool(
+      Array.isArray(question.school)
+        ? [...question.school]
+        : typeof question.school === "string" && question.school
+          ? question.school.split(",").map((s) => s.trim())
+          : [],
+    );
+    setFormLevelTag(question.level || "");
+    setFormSpecialSearch(
+      Array.isArray(question.specialSearch)
+        ? [...question.specialSearch]
+        : typeof question.specialSearch === "string" && question.specialSearch
+          ? question.specialSearch.split(",").map((s) => s.trim())
+          : [],
+    );
 
-    if (question.category === 'MCQ') {
-      setMcqType(question.mcqData?.mcqType || 'Simple');
-      setMcqStem(question.mcqData?.stem || '');
-      setMcqQuestionText(question.mcqData?.questionText || '');
-      setMcqStatements(question.mcqData?.statements || ['', '', '']);
-      setMcqOptions(question.mcqData?.options || ['', '', '', '']);
+    if (question.category === "MCQ") {
+      setMcqType(question.mcqData?.mcqType || "Simple");
+      setMcqStem(question.mcqData?.stem || "");
+      setMcqQuestionText(question.mcqData?.questionText || "");
+      setMcqStatements(question.mcqData?.statements || ["", "", ""]);
+      setMcqOptions(question.mcqData?.options || ["", "", "", ""]);
       setMcqCorrectAnswer(question.mcqData?.correctAnswer || 0);
-      setMcqExplanation(question.mcqData?.explanation || '');
-    } else if (question.category === 'Creative') {
-      setCreativeStem(question.creativeData?.stem || '');
-      setCreativeCognitiveA(question.creativeData?.subQuestions?.cognitiveA?.text || '');
-      setCreativeCognitiveB(question.creativeData?.subQuestions?.cognitiveB?.text || '');
-      setCreativeCognitiveC(question.creativeData?.subQuestions?.cognitiveC?.text || '');
-      setCreativeCognitiveD(question.creativeData?.subQuestions?.cognitiveD?.text || '');
+      setMcqExplanation(question.mcqData?.explanation || "");
+    } else if (question.category === "Creative") {
+      setCreativeStem(question.creativeData?.stem || "");
+      setCreativeCognitiveA(
+        question.creativeData?.subQuestions?.cognitiveA?.text || "",
+      );
+      setCreativeCognitiveB(
+        question.creativeData?.subQuestions?.cognitiveB?.text || "",
+      );
+      setCreativeCognitiveC(
+        question.creativeData?.subQuestions?.cognitiveC?.text || "",
+      );
+      setCreativeCognitiveD(
+        question.creativeData?.subQuestions?.cognitiveD?.text || "",
+      );
     } else {
-      setGeneralQuestionText(question.generalData?.questionText || '');
-      setGeneralStem(question.generalData?.stem || '');
+      setGeneralQuestionText(question.generalData?.questionText || "");
+      setGeneralStem(question.generalData?.stem || "");
       setGeneralSubQuestions(question.generalData?.subQuestions || []);
-      setGeneralSuggestedAnswer(question.generalData?.suggestedAnswer || '');
+      setGeneralSuggestedAnswer(question.generalData?.suggestedAnswer || "");
       setGeneralMarks(question.generalData?.marks || 1);
     }
-    
+
     setActiveStep(2); // Jump straight to editor when editing
   }, []);
 
   // Fetch Questions list (for QuestionBank and MyQuestions)
   const questionsQuery = useInfiniteQuery({
     queryKey: [
-      filterPersonal ? 'myQuestionsList' : 'globalQuestionsList',
+      filterPersonal ? "myQuestionsList" : "globalQuestionsList",
       filterType,
       filterLevel,
       filterClass,
@@ -310,7 +411,7 @@ export function useQuestionManagement(options = {}) {
       const token = await getToken();
       const params = {
         className: filterClass,
-        personal: filterPersonal ? 'true' : 'false',
+        personal: filterPersonal ? "true" : "false",
         institutionType: filterType,
         academicLevel: filterLevel,
         page: pageParam,
@@ -322,14 +423,14 @@ export function useQuestionManagement(options = {}) {
       if (filterDifficulty) params.difficulty = filterDifficulty;
       if (filterSearch) params.search = filterSearch;
       if (filterVersion) params.version = filterVersion;
-      
+
       if (filterStatus) {
         params.status = filterStatus;
       } else if (!filterPersonal) {
         params.status = "Approved";
       }
 
-      const response = await apiClient.get('/questions', {
+      const response = await apiClient.get("/questions", {
         params,
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -345,20 +446,24 @@ export function useQuestionManagement(options = {}) {
   const addQuestionMutation = useMutation({
     mutationFn: async (payload) => {
       const token = await getToken();
-      const response = await apiClient.post('/questions', payload, {
+      const response = await apiClient.post("/questions", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myQuestionsList'] });
-      queryClient.invalidateQueries({ queryKey: ['globalQuestionsList'] });
-      queryClient.invalidateQueries({ queryKey: ['personalQuestionStats'] });
-      toast.success('প্রশ্নটি সফলভাবে ডাটাবেজে যুক্ত হয়েছে!');
+      queryClient.invalidateQueries({ queryKey: ["myQuestionsList"] });
+      queryClient.invalidateQueries({ queryKey: ["globalQuestionsList"] });
+      queryClient.invalidateQueries({ queryKey: ["personalQuestionStats"] });
+      toast.success("প্রশ্নটি সফলভাবে ডাটাবেজে যুক্ত হয়েছে!");
       resetForm();
     },
     onError: (err) => {
-      toast.error(err.response?.data?.error || err.message || 'প্রশ্ন সংরক্ষণ করতে ব্যর্থ হয়েছে');
+      toast.error(
+        err.response?.data?.error ||
+          err.message ||
+          "প্রশ্ন সংরক্ষণ করতে ব্যর্থ হয়েছে",
+      );
     },
   });
 
@@ -372,14 +477,18 @@ export function useQuestionManagement(options = {}) {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myQuestionsList'] });
-      queryClient.invalidateQueries({ queryKey: ['globalQuestionsList'] });
-      queryClient.invalidateQueries({ queryKey: ['personalQuestionStats'] });
-      toast.success('প্রশ্নটি সফলভাবে আপডেট করা হয়েছে!');
+      queryClient.invalidateQueries({ queryKey: ["myQuestionsList"] });
+      queryClient.invalidateQueries({ queryKey: ["globalQuestionsList"] });
+      queryClient.invalidateQueries({ queryKey: ["personalQuestionStats"] });
+      toast.success("প্রশ্নটি সফলভাবে আপডেট করা হয়েছে!");
       resetForm();
     },
     onError: (err) => {
-      toast.error(err.response?.data?.error || err.message || 'প্রশ্ন আপডেট করতে ব্যর্থ হয়েছে');
+      toast.error(
+        err.response?.data?.error ||
+          err.message ||
+          "প্রশ্ন আপডেট করতে ব্যর্থ হয়েছে",
+      );
     },
   });
 
@@ -392,20 +501,29 @@ export function useQuestionManagement(options = {}) {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myQuestionsList'] });
-      queryClient.invalidateQueries({ queryKey: ['globalQuestionsList'] });
-      queryClient.invalidateQueries({ queryKey: ['personalQuestionStats'] });
-      toast.success('প্রশ্নটি সফলভাবে মুছে ফেলা হয়েছে!');
+      queryClient.invalidateQueries({ queryKey: ["myQuestionsList"] });
+      queryClient.invalidateQueries({ queryKey: ["globalQuestionsList"] });
+      queryClient.invalidateQueries({ queryKey: ["personalQuestionStats"] });
+      toast.success("প্রশ্নটি সফলভাবে মুছে ফেলা হয়েছে!");
     },
     onError: (err) => {
-      toast.error(err.response?.data?.error || err.message || 'প্রশ্ন মুছতে ব্যর্থ হয়েছে');
+      toast.error(
+        err.response?.data?.error || err.message || "প্রশ্ন মুছতে ব্যর্থ হয়েছে",
+      );
     },
   });
 
   // Validate and build payload from current editor values
   const buildPayloadFromForm = useCallback(() => {
-    if (!formClass || !formSubjectId || !formChapterNumber || !formCategory || !formType || !formLevel) {
-      toast.error('দয়া করে আবশ্যকীয় মেটাডাটা ক্ষেত্রসমূহ পূরণ করুন');
+    if (
+      !formClass ||
+      !formSubjectId ||
+      !formChapterNumber ||
+      !formCategory ||
+      !formType ||
+      !formLevel
+    ) {
+      toast.error("দয়া করে আবশ্যকীয় মেটাডাটা ক্ষেত্রসমূহ পূরণ করুন");
       return null;
     }
 
@@ -425,26 +543,29 @@ export function useQuestionManagement(options = {}) {
       specialSearch: formSpecialSearch,
     };
 
-    if (formCategory === 'MCQ') {
+    if (formCategory === "MCQ") {
       payload.mcqData = {
         mcqType,
         stem: mcqStem.trim(),
         questionText: mcqQuestionText.trim(),
-        statements: mcqType === 'MultipleCompletion' ? mcqStatements.filter(s => s.trim()) : [],
-        options: mcqOptions.map(o => o.trim()),
+        statements:
+          mcqType === "MultipleCompletion"
+            ? mcqStatements.filter((s) => s.trim())
+            : [],
+        options: mcqOptions.map((o) => o.trim()),
         correctAnswer: Number(mcqCorrectAnswer),
         explanation: mcqExplanation.trim(),
       };
 
-      if (!payload.mcqData.questionText && mcqType !== 'Contextual') {
-        toast.error('দয়া করে প্রশ্নের মূল টেক্সট লিখুন');
+      if (!payload.mcqData.questionText && mcqType !== "Contextual") {
+        toast.error("দয়া করে প্রশ্নের মূল টেক্সট লিখুন");
         return null;
       }
-      if (payload.mcqData.options.some(o => !o)) {
-        toast.error('বহুনির্বাচনি প্রশ্নের ৪টি অপশনই আবশ্যক');
+      if (payload.mcqData.options.some((o) => !o)) {
+        toast.error("বহুনির্বাচনি প্রশ্নের ৪টি অপশনই আবশ্যক");
         return null;
       }
-    } else if (formCategory === 'Creative') {
+    } else if (formCategory === "Creative") {
       payload.creativeData = {
         stem: creativeStem.trim(),
         subQuestions: {
@@ -456,24 +577,29 @@ export function useQuestionManagement(options = {}) {
       };
 
       if (!payload.creativeData.stem) {
-        toast.error('সৃজনশীল প্রশ্নের জন্য উদ্দীপক আবশ্যক');
+        toast.error("সৃজনশীল প্রশ্নের জন্য উদ্দীপক আবশ্যক");
         return null;
       }
-      if (!creativeCognitiveA || !creativeCognitiveB || !creativeCognitiveC || !creativeCognitiveD) {
-        toast.error('সৃজনশীল প্রশ্নের ক, খ, গ, ঘ চারটি উপ-প্রশ্নই পূরণ করুন');
+      if (
+        !creativeCognitiveA ||
+        !creativeCognitiveB ||
+        !creativeCognitiveC ||
+        !creativeCognitiveD
+      ) {
+        toast.error("সৃজনশীল প্রশ্নের ক, খ, গ, ঘ চারটি উপ-প্রশ্নই পূরণ করুন");
         return null;
       }
     } else {
       payload.generalData = {
         questionText: generalQuestionText.trim(),
         stem: "",
-        subQuestions: generalSubQuestions.filter(q => q.text.trim()),
+        subQuestions: generalSubQuestions.filter((q) => q.text.trim()),
         suggestedAnswer: generalSuggestedAnswer.trim(),
         marks: Number(generalMarks),
       };
 
       if (!payload.generalData.questionText) {
-        toast.error('দয়া করে প্রশ্নের বিবরণ লিখুন');
+        toast.error("দয়া করে প্রশ্নের বিবরণ লিখুন");
         return null;
       }
     }
@@ -509,7 +635,7 @@ export function useQuestionManagement(options = {}) {
     generalStem,
     generalSubQuestions,
     generalSuggestedAnswer,
-    generalMarks
+    generalMarks,
   ]);
 
   // Add current form data as a draft question to list
@@ -518,127 +644,165 @@ export function useQuestionManagement(options = {}) {
     if (!qPayload) return false;
 
     // Attach temporary frontend ID
-    qPayload.id = Date.now().toString() + Math.random().toString(36).substring(2, 9);
-    setQuestionsList(prev => [...prev, qPayload]);
+    qPayload.id =
+      Date.now().toString() + Math.random().toString(36).substring(2, 9);
+    setQuestionsList((prev) => [...prev, qPayload]);
 
     // Clear question editors only, keep metadata
-    setMcqType('Simple');
-    setMcqStem('');
-    setMcqQuestionText('');
-    setMcqStatements(['', '', '']);
-    setMcqOptions(['', '', '', '']);
+    setMcqType("Simple");
+    setMcqStem("");
+    setMcqQuestionText("");
+    setMcqStatements(["", "", ""]);
+    setMcqOptions(["", "", "", ""]);
     setMcqCorrectAnswer(0);
-    setMcqExplanation('');
+    setMcqExplanation("");
 
-    setCreativeStem('');
+    setCreativeStem("");
 
     // Clear new metadata (keep metadata, only clear cognitive subquestions for creative and general fields)
-    setCreativeCognitiveA('');
-    setCreativeCognitiveB('');
-    setCreativeCognitiveC('');
-    setCreativeCognitiveD('');
+    setCreativeCognitiveA("");
+    setCreativeCognitiveB("");
+    setCreativeCognitiveC("");
+    setCreativeCognitiveD("");
 
-    setGeneralQuestionText('');
-    setGeneralStem('');
+    setGeneralQuestionText("");
+    setGeneralStem("");
     setGeneralSubQuestions([]);
-    setGeneralSuggestedAnswer('');
+    setGeneralSuggestedAnswer("");
     setGeneralMarks(1);
 
-    toast.success('প্রশ্নটি সফলভাবে তালিকায় যুক্ত হয়েছে!');
+    toast.success("প্রশ্নটি সফলভাবে তালিকায় যুক্ত হয়েছে!");
     return true;
   }, [buildPayloadFromForm]);
 
   // Remove draft question from list
   const removeQuestionFromList = useCallback((tempId) => {
-    setQuestionsList(prev => prev.filter(q => q.id !== tempId));
+    setQuestionsList((prev) => prev.filter((q) => q.id !== tempId));
   }, []);
 
   // Edit draft question from list
-  const editDraftQuestion = useCallback((draftId) => {
-    const question = questionsList.find(q => q.id === draftId);
-    if (!question) return;
+  const editDraftQuestion = useCallback(
+    (draftId) => {
+      const question = questionsList.find((q) => q.id === draftId);
+      if (!question) return;
 
-    setEditingDraftId(draftId);
+      setEditingDraftId(draftId);
 
-    setFormType(question.institutionType || 'School');
-    setFormLevel(question.academicLevel || 'Secondary');
-    setFormClass(question.className);
+      setFormType(question.institutionType || "School");
+      setFormLevel(question.academicLevel || "Secondary");
+      setFormClass(question.className);
 
-    // Find subject version from syllabusList
-    const syllabusObj = syllabusList.find(s => s._id === question.subjectId);
-    setUserFormVersion(syllabusObj?.version || 'Bangla');
+      // Find subject version from syllabusList
+      const syllabusObj = syllabusList.find(
+        (s) => s._id === question.subjectId,
+      );
+      setUserFormVersion(syllabusObj?.version || "Bangla");
 
-    setFormSubjectId(question.subjectId);
-    setFormGroup(syllabusObj?.group || 'General');
-    setFormChapterNumber(question.chapterNumber.toString());
-    setFormTopics(question.topics || []);
-    setFormCategory(question.category);
-    setFormDifficulty(question.difficulty);
+      setFormSubjectId(question.subjectId);
+      setFormGroup(syllabusObj?.group || "General");
+      setFormChapterNumber(question.chapterNumber.toString());
+      setFormTopics(question.topics || []);
+      setFormCategory(question.category);
+      setFormDifficulty(question.difficulty);
 
-    // Load metadata
-    setFormYear(Array.isArray(question.year) ? [...question.year] : (typeof question.year === 'string' && question.year ? question.year.split(',').map(s => s.trim()) : []));
-    setFormBoard(Array.isArray(question.board) ? [...question.board] : (typeof question.board === 'string' && question.board ? question.board.split(',').map(s => s.trim()) : []));
-    setFormSchool(Array.isArray(question.school) ? [...question.school] : (typeof question.school === 'string' && question.school ? question.school.split(',').map(s => s.trim()) : []));
-    setFormLevelTag(question.level || '');
-    setFormSpecialSearch(Array.isArray(question.specialSearch) ? [...question.specialSearch] : (typeof question.specialSearch === 'string' && question.specialSearch ? question.specialSearch.split(',').map(s => s.trim()) : []));
+      // Load metadata
+      setFormYear(
+        Array.isArray(question.year)
+          ? [...question.year]
+          : typeof question.year === "string" && question.year
+            ? question.year.split(",").map((s) => s.trim())
+            : [],
+      );
+      setFormBoard(
+        Array.isArray(question.board)
+          ? [...question.board]
+          : typeof question.board === "string" && question.board
+            ? question.board.split(",").map((s) => s.trim())
+            : [],
+      );
+      setFormSchool(
+        Array.isArray(question.school)
+          ? [...question.school]
+          : typeof question.school === "string" && question.school
+            ? question.school.split(",").map((s) => s.trim())
+            : [],
+      );
+      setFormLevelTag(question.level || "");
+      setFormSpecialSearch(
+        Array.isArray(question.specialSearch)
+          ? [...question.specialSearch]
+          : typeof question.specialSearch === "string" && question.specialSearch
+            ? question.specialSearch.split(",").map((s) => s.trim())
+            : [],
+      );
 
-    if (question.category === 'MCQ') {
-      setMcqType(question.mcqData?.mcqType || 'Simple');
-      setMcqStem(question.mcqData?.stem || '');
-      setMcqQuestionText(question.mcqData?.questionText || '');
-      setMcqStatements(question.mcqData?.statements || ['', '', '']);
-      setMcqOptions(question.mcqData?.options || ['', '', '', '']);
-      setMcqCorrectAnswer(question.mcqData?.correctAnswer || 0);
-      setMcqExplanation(question.mcqData?.explanation || '');
-    } else if (question.category === 'Creative') {
-      setCreativeStem(question.creativeData?.stem || '');
-      setCreativeCognitiveA(question.creativeData?.subQuestions?.cognitiveA?.text || '');
-      setCreativeCognitiveB(question.creativeData?.subQuestions?.cognitiveB?.text || '');
-      setCreativeCognitiveC(question.creativeData?.subQuestions?.cognitiveC?.text || '');
-      setCreativeCognitiveD(question.creativeData?.subQuestions?.cognitiveD?.text || '');
-    } else {
-      setGeneralQuestionText(question.generalData?.questionText || '');
-      setGeneralStem(question.generalData?.stem || '');
-      setGeneralSubQuestions(question.generalData?.subQuestions || []);
-      setGeneralSuggestedAnswer(question.generalData?.suggestedAnswer || '');
-      setGeneralMarks(question.generalData?.marks || 1);
-    }
-  }, [
-    questionsList,
-    syllabusList,
-    setFormType,
-    setFormLevel,
-    setFormClass,
-    setUserFormVersion,
-    setFormSubjectId,
-    setFormGroup,
-    setFormChapterNumber,
-    setFormTopics,
-    setFormCategory,
-    setFormDifficulty,
-    setFormYear,
-    setFormBoard,
-    setFormSchool,
-    setFormLevelTag,
-    setFormSpecialSearch,
-    setMcqType,
-    setMcqStem,
-    setMcqQuestionText,
-    setMcqStatements,
-    setMcqOptions,
-    setMcqCorrectAnswer,
-    setMcqExplanation,
-    setCreativeStem,
-    setCreativeCognitiveA,
-    setCreativeCognitiveB,
-    setCreativeCognitiveC,
-    setCreativeCognitiveD,
-    setGeneralQuestionText,
-    setGeneralStem,
-    setGeneralSubQuestions,
-    setGeneralSuggestedAnswer,
-    setGeneralMarks
-  ]);
+      if (question.category === "MCQ") {
+        setMcqType(question.mcqData?.mcqType || "Simple");
+        setMcqStem(question.mcqData?.stem || "");
+        setMcqQuestionText(question.mcqData?.questionText || "");
+        setMcqStatements(question.mcqData?.statements || ["", "", ""]);
+        setMcqOptions(question.mcqData?.options || ["", "", "", ""]);
+        setMcqCorrectAnswer(question.mcqData?.correctAnswer || 0);
+        setMcqExplanation(question.mcqData?.explanation || "");
+      } else if (question.category === "Creative") {
+        setCreativeStem(question.creativeData?.stem || "");
+        setCreativeCognitiveA(
+          question.creativeData?.subQuestions?.cognitiveA?.text || "",
+        );
+        setCreativeCognitiveB(
+          question.creativeData?.subQuestions?.cognitiveB?.text || "",
+        );
+        setCreativeCognitiveC(
+          question.creativeData?.subQuestions?.cognitiveC?.text || "",
+        );
+        setCreativeCognitiveD(
+          question.creativeData?.subQuestions?.cognitiveD?.text || "",
+        );
+      } else {
+        setGeneralQuestionText(question.generalData?.questionText || "");
+        setGeneralStem(question.generalData?.stem || "");
+        setGeneralSubQuestions(question.generalData?.subQuestions || []);
+        setGeneralSuggestedAnswer(question.generalData?.suggestedAnswer || "");
+        setGeneralMarks(question.generalData?.marks || 1);
+      }
+    },
+    [
+      questionsList,
+      syllabusList,
+      setFormType,
+      setFormLevel,
+      setFormClass,
+      setUserFormVersion,
+      setFormSubjectId,
+      setFormGroup,
+      setFormChapterNumber,
+      setFormTopics,
+      setFormCategory,
+      setFormDifficulty,
+      setFormYear,
+      setFormBoard,
+      setFormSchool,
+      setFormLevelTag,
+      setFormSpecialSearch,
+      setMcqType,
+      setMcqStem,
+      setMcqQuestionText,
+      setMcqStatements,
+      setMcqOptions,
+      setMcqCorrectAnswer,
+      setMcqExplanation,
+      setCreativeStem,
+      setCreativeCognitiveA,
+      setCreativeCognitiveB,
+      setCreativeCognitiveC,
+      setCreativeCognitiveD,
+      setGeneralQuestionText,
+      setGeneralStem,
+      setGeneralSubQuestions,
+      setGeneralSuggestedAnswer,
+      setGeneralMarks,
+    ],
+  );
 
   // Update draft question in the list
   const updateDraftQuestion = useCallback(() => {
@@ -650,38 +814,40 @@ export function useQuestionManagement(options = {}) {
     qPayload.id = editingDraftId;
 
     // Update in questionsList
-    setQuestionsList(prev => prev.map(q => q.id === editingDraftId ? qPayload : q));
+    setQuestionsList((prev) =>
+      prev.map((q) => (q.id === editingDraftId ? qPayload : q)),
+    );
 
     // Clear question editors only, keep metadata
-    setMcqType('Simple');
-    setMcqStem('');
-    setMcqQuestionText('');
-    setMcqStatements(['', '', '']);
-    setMcqOptions(['', '', '', '']);
+    setMcqType("Simple");
+    setMcqStem("");
+    setMcqQuestionText("");
+    setMcqStatements(["", "", ""]);
+    setMcqOptions(["", "", "", ""]);
     setMcqCorrectAnswer(0);
-    setMcqExplanation('');
+    setMcqExplanation("");
 
-    setCreativeStem('');
-    setCreativeCognitiveA('');
-    setCreativeCognitiveB('');
-    setCreativeCognitiveC('');
-    setCreativeCognitiveD('');
+    setCreativeStem("");
+    setCreativeCognitiveA("");
+    setCreativeCognitiveB("");
+    setCreativeCognitiveC("");
+    setCreativeCognitiveD("");
 
-    setGeneralQuestionText('');
-    setGeneralStem('');
+    setGeneralQuestionText("");
+    setGeneralStem("");
     setGeneralSubQuestions([]);
-    setGeneralSuggestedAnswer('');
+    setGeneralSuggestedAnswer("");
     setGeneralMarks(1);
 
     // Clear new metadata
     setFormYear([]);
     setFormBoard([]);
     setFormSchool([]);
-    setFormLevelTag('');
+    setFormLevelTag("");
     setFormSpecialSearch([]);
 
     setEditingDraftId(null);
-    toast.success('প্রশ্নটি সফলভাবে তালিকায় আপডেট করা হয়েছে!');
+    toast.success("প্রশ্নটি সফলভাবে তালিকায় আপডেট করা হয়েছে!");
     return true;
   }, [
     editingDraftId,
@@ -709,7 +875,7 @@ export function useQuestionManagement(options = {}) {
     setFormSchool,
     setFormLevelTag,
     setFormSpecialSearch,
-    setEditingDraftId
+    setEditingDraftId,
   ]);
 
   // Cancel editing draft question
@@ -717,31 +883,31 @@ export function useQuestionManagement(options = {}) {
     setEditingDraftId(null);
 
     // Clear editors
-    setMcqType('Simple');
-    setMcqStem('');
-    setMcqQuestionText('');
-    setMcqStatements(['', '', '']);
-    setMcqOptions(['', '', '', '']);
+    setMcqType("Simple");
+    setMcqStem("");
+    setMcqQuestionText("");
+    setMcqStatements(["", "", ""]);
+    setMcqOptions(["", "", "", ""]);
     setMcqCorrectAnswer(0);
-    setMcqExplanation('');
+    setMcqExplanation("");
 
-    setCreativeStem('');
-    setCreativeCognitiveA('');
-    setCreativeCognitiveB('');
-    setCreativeCognitiveC('');
-    setCreativeCognitiveD('');
+    setCreativeStem("");
+    setCreativeCognitiveA("");
+    setCreativeCognitiveB("");
+    setCreativeCognitiveC("");
+    setCreativeCognitiveD("");
 
-    setGeneralQuestionText('');
-    setGeneralStem('');
+    setGeneralQuestionText("");
+    setGeneralStem("");
     setGeneralSubQuestions([]);
-    setGeneralSuggestedAnswer('');
+    setGeneralSuggestedAnswer("");
     setGeneralMarks(1);
 
     // Clear new metadata
     setFormYear([]);
     setFormBoard([]);
     setFormSchool([]);
-    setFormLevelTag('');
+    setFormLevelTag("");
     setFormSpecialSearch([]);
   }, [
     setMcqType,
@@ -766,12 +932,11 @@ export function useQuestionManagement(options = {}) {
     setFormSchool,
     setFormLevelTag,
     setFormSpecialSearch,
-    setEditingDraftId
+    setEditingDraftId,
   ]);
 
   // Submit Handler
   const handleSaveQuestion = async () => {
-
     if (editingQuestion) {
       const payload = buildPayloadFromForm();
       if (!payload) return;
@@ -795,13 +960,14 @@ export function useQuestionManagement(options = {}) {
     addQuestionMutation.mutate(payloads);
   };
 
-  const formLoading = addQuestionMutation.isPending || updateQuestionMutation.isPending;
+  const formLoading =
+    addQuestionMutation.isPending || updateQuestionMutation.isPending;
 
   return {
     // Wizard Steps
     activeStep,
     setActiveStep,
-    
+
     // Syllabus helpers
     syllabusList,
     loadingSyllabus,
