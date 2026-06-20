@@ -1057,6 +1057,9 @@ export default function AddQuestion() {
                         value: qm.creativeCognitiveA,
                         setter: qm.setCreativeCognitiveA,
                         placeholder: "যেমন: শব্দ কাকে বলে?",
+                        answerValue: qm.creativeCognitiveA_Answer,
+                        answerSetter: qm.setCreativeCognitiveA_Answer,
+                        answerPlaceholder: "ক নং প্রশ্নের উত্তর...",
                       },
                       {
                         id: "B",
@@ -1064,6 +1067,9 @@ export default function AddQuestion() {
                         value: qm.creativeCognitiveB,
                         setter: qm.setCreativeCognitiveB,
                         placeholder: "যেমন: উদাহরণসহ ব্যাখ্যা করো...",
+                        answerValue: qm.creativeCognitiveB_Answer,
+                        answerSetter: qm.setCreativeCognitiveB_Answer,
+                        answerPlaceholder: "খ নং প্রশ্নের উত্তর...",
                       },
                       {
                         id: "C",
@@ -1072,6 +1078,9 @@ export default function AddQuestion() {
                         setter: qm.setCreativeCognitiveC,
                         placeholder:
                           "যেমন: উদ্দীপকের ঘটনার আলোকে প্রমাণ করো...",
+                        answerValue: qm.creativeCognitiveC_Answer,
+                        answerSetter: qm.setCreativeCognitiveC_Answer,
+                        answerPlaceholder: "গ নং প্রশ্নের উত্তর...",
                       },
                       {
                         id: "D",
@@ -1080,22 +1089,45 @@ export default function AddQuestion() {
                         setter: qm.setCreativeCognitiveD,
                         placeholder:
                           "যেমন: উদ্দীপকের ঘটনাটির যৌক্তিক মূল্যায়ন করো...",
+                        answerValue: qm.creativeCognitiveD_Answer,
+                        answerSetter: qm.setCreativeCognitiveD_Answer,
+                        answerPlaceholder: "ঘ নং প্রশ্নের উত্তর...",
                       },
                     ].map((item) => (
                       <div
                         key={item.id}
-                        className="space-y-1.5 p-4 border border-black/[0.04] bg-white/[0.30] rounded-2xl"
+                        className="space-y-4 p-4 border border-black/[0.04] bg-white/[0.30] rounded-2xl"
                       >
-                        <label className="text-[12px] font-bold text-slate-600 block">
-                          {item.label}
-                        </label>
-                        <Input
-                          required
-                          placeholder={item.placeholder}
-                          value={item.value}
-                          onChange={(e) => item.setter(e.target.value)}
-                          className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11"
-                        />
+                        <div className="space-y-1.5">
+                          <label className="text-[12px] font-bold text-slate-600 block">
+                            {item.label}
+                          </label>
+                          <Input
+                            required
+                            placeholder={item.placeholder}
+                            value={item.value}
+                            onChange={(e) => item.setter(e.target.value)}
+                            className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[12px] font-bold text-slate-600 block">
+                            {item.id === "A"
+                              ? "ক"
+                              : item.id === "B"
+                                ? "খ"
+                                : item.id === "C"
+                                  ? "গ"
+                                  : "ঘ"}{" "}
+                            নং প্রশ্নের উত্তর
+                          </label>
+                          <Editor
+                            value={item.answerValue}
+                            onChange={item.answerSetter}
+                            placeholder={item.answerPlaceholder}
+                            height={150}
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1856,58 +1888,126 @@ export default function AddQuestion() {
                                 )}
 
                                 <div className="pl-4 space-y-3.5 text-sm font-sans font-normal text-slate-700">
-                                  <div className="flex justify-between items-start gap-2">
-                                    <span className="w-6">ক.</span>
-                                    <span className="flex-1 font-serif font-normal text-slate-800">
-                                      {q.creativeData.subQuestions?.cognitiveA
-                                        ?.text || "জ্ঞানমূলক প্রশ্ন..."}
-                                    </span>
-                                    <span className="text-slate-700 text-xs font-bold">
-                                      {(
-                                        q.creativeData.subQuestions?.cognitiveA
-                                          ?.marks || 1
-                                      ).toLocaleString("bn-BD")}
-                                    </span>
+                                  <div className="flex flex-col gap-2">
+                                    <div className="flex justify-between items-start gap-2">
+                                      <span className="w-6">ক.</span>
+                                      <span className="flex-1 font-serif font-normal text-slate-800">
+                                        {q.creativeData.subQuestions?.cognitiveA
+                                          ?.text || "জ্ঞানমূলক প্রশ্ন..."}
+                                      </span>
+                                      <span className="text-slate-700 text-xs font-bold">
+                                        {(
+                                          q.creativeData.subQuestions
+                                            ?.cognitiveA?.marks || 1
+                                        ).toLocaleString("bn-BD")}
+                                      </span>
+                                    </div>
+                                    {q.creativeData.subQuestions?.cognitiveA
+                                      ?.answer && (
+                                      <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[15px] text-green-800 font-serif">
+                                        <span className="font-bold text-green-700 mr-1.5">
+                                          উত্তর:
+                                        </span>
+                                        <RichTextRender
+                                          content={
+                                            q.creativeData.subQuestions
+                                              .cognitiveA.answer
+                                          }
+                                          inline={true}
+                                        />
+                                      </div>
+                                    )}
                                   </div>
-                                  <div className="flex justify-between items-start gap-2">
-                                    <span className="w-6">খ.</span>
-                                    <span className="flex-1 font-serif font-normal text-slate-800">
-                                      {q.creativeData.subQuestions?.cognitiveB
-                                        ?.text || "অনুধাবনমূলক প্রশ্ন..."}
-                                    </span>
-                                    <span className="text-slate-700 text-xs font-bold">
-                                      {(
-                                        q.creativeData.subQuestions?.cognitiveB
-                                          ?.marks || 2
-                                      ).toLocaleString("bn-BD")}
-                                    </span>
+                                  <div className="flex flex-col gap-2">
+                                    <div className="flex justify-between items-start gap-2">
+                                      <span className="w-6">খ.</span>
+                                      <span className="flex-1 font-serif font-normal text-slate-800">
+                                        {q.creativeData.subQuestions?.cognitiveB
+                                          ?.text || "অনুধাবনমূলক প্রশ্ন..."}
+                                      </span>
+                                      <span className="text-slate-700 text-xs font-bold">
+                                        {(
+                                          q.creativeData.subQuestions
+                                            ?.cognitiveB?.marks || 2
+                                        ).toLocaleString("bn-BD")}
+                                      </span>
+                                    </div>
+                                    {q.creativeData.subQuestions?.cognitiveB
+                                      ?.answer && (
+                                      <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[15px] text-green-800 font-serif">
+                                        <span className="font-bold text-green-700 mr-1.5">
+                                          উত্তর:
+                                        </span>
+                                        <RichTextRender
+                                          content={
+                                            q.creativeData.subQuestions
+                                              .cognitiveB.answer
+                                          }
+                                          inline={true}
+                                        />
+                                      </div>
+                                    )}
                                   </div>
-                                  <div className="flex justify-between items-start gap-2">
-                                    <span className="w-6">গ.</span>
-                                    <span className="flex-1 font-serif font-normal text-slate-800">
-                                      {q.creativeData.subQuestions?.cognitiveC
-                                        ?.text || "প্রয়োগমূলক প্রশ্ন..."}
-                                    </span>
-                                    <span className="text-slate-700 text-xs font-bold">
-                                      {(
-                                        q.creativeData.subQuestions?.cognitiveC
-                                          ?.marks || 3
-                                      ).toLocaleString("bn-BD")}
-                                    </span>
+                                  <div className="flex flex-col gap-2">
+                                    <div className="flex justify-between items-start gap-2">
+                                      <span className="w-6">গ.</span>
+                                      <span className="flex-1 font-serif font-normal text-slate-800">
+                                        {q.creativeData.subQuestions?.cognitiveC
+                                          ?.text || "প্রয়োগমূলক প্রশ্ন..."}
+                                      </span>
+                                      <span className="text-slate-700 text-xs font-bold">
+                                        {(
+                                          q.creativeData.subQuestions
+                                            ?.cognitiveC?.marks || 3
+                                        ).toLocaleString("bn-BD")}
+                                      </span>
+                                    </div>
+                                    {q.creativeData.subQuestions?.cognitiveC
+                                      ?.answer && (
+                                      <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[15px] text-green-800 font-serif">
+                                        <span className="font-bold text-green-700 mr-1.5">
+                                          উত্তর:
+                                        </span>
+                                        <RichTextRender
+                                          content={
+                                            q.creativeData.subQuestions
+                                              .cognitiveC.answer
+                                          }
+                                          inline={true}
+                                        />
+                                      </div>
+                                    )}
                                   </div>
-                                  <div className="flex justify-between items-start gap-2">
-                                    <span className="w-6">ঘ.</span>
-                                    <span className="flex-1 font-serif font-normal text-slate-800">
-                                      {q.creativeData.subQuestions?.cognitiveD
-                                        ?.text ||
-                                        "উচ্চতর চিন্তাদক্ষতা প্রশ্ন..."}
-                                    </span>
-                                    <span className="text-slate-700 text-xs font-bold">
-                                      {(
-                                        q.creativeData.subQuestions?.cognitiveD
-                                          ?.marks || 4
-                                      ).toLocaleString("bn-BD")}
-                                    </span>
+                                  <div className="flex flex-col gap-2">
+                                    <div className="flex justify-between items-start gap-2">
+                                      <span className="w-6">ঘ.</span>
+                                      <span className="flex-1 font-serif font-normal text-slate-800">
+                                        {q.creativeData.subQuestions?.cognitiveD
+                                          ?.text ||
+                                          "উচ্চতর চিন্তাদক্ষতা প্রশ্ন..."}
+                                      </span>
+                                      <span className="text-slate-700 text-xs font-bold">
+                                        {(
+                                          q.creativeData.subQuestions
+                                            ?.cognitiveD?.marks || 4
+                                        ).toLocaleString("bn-BD")}
+                                      </span>
+                                    </div>
+                                    {q.creativeData.subQuestions?.cognitiveD
+                                      ?.answer && (
+                                      <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[15px] text-green-800 font-serif">
+                                        <span className="font-bold text-green-700 mr-1.5">
+                                          উত্তর:
+                                        </span>
+                                        <RichTextRender
+                                          content={
+                                            q.creativeData.subQuestions
+                                              .cognitiveD.answer
+                                          }
+                                          inline={true}
+                                        />
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -2139,44 +2239,97 @@ export default function AddQuestion() {
                           )}
 
                           <div className="pl-4 space-y-3.5 text-sm font-sans font-normal text-slate-700">
-                            <div className="flex justify-between items-start gap-2">
-                              <span className="w-6">ক.</span>
-                              <span className="flex-1 font-serif font-normal text-slate-800">
-                                {qm.creativeCognitiveA || "জ্ঞানমূলক প্রশ্ন..."}
-                              </span>
-                              <span className="text-slate-700 text-xs font-serif font-bold">
-                                ১
-                              </span>
+                            <div className="flex flex-col gap-2">
+                              <div className="flex justify-between items-start ">
+                                <span className="w-6">ক.</span>
+                                <span className="flex-1 font-serif font-normal text-slate-800">
+                                  {qm.creativeCognitiveA ||
+                                    "জ্ঞানমূলক প্রশ্ন..."}
+                                </span>
+                                <span className="text-slate-700 text-xs font-serif font-bold">
+                                  ১
+                                </span>
+                              </div>
+                              {qm.creativeCognitiveA_Answer && (
+                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                  <span className="font-bold text-green-700 mr-1.5">
+                                    উত্তর:
+                                  </span>
+                                  <RichTextRender
+                                    content={qm.creativeCognitiveA_Answer}
+                                    inline={true}
+                                  />
+                                </div>
+                              )}
                             </div>
-                            <div className="flex justify-between items-start gap-2">
-                              <span className="w-6">খ.</span>
-                              <span className="flex-1 font-serif font-normal text-slate-800">
-                                {qm.creativeCognitiveB ||
-                                  "অনুধাবনমূলক প্রশ্ন..."}
-                              </span>
-                              <span className="text-slate-700 text-xs font-serif font-bold">
-                                ২
-                              </span>
+                            <div className="flex flex-col gap-2">
+                              <div className="flex justify-between items-start">
+                                <span className="w-6">খ.</span>
+                                <span className="flex-1 font-serif font-normal text-slate-800">
+                                  {qm.creativeCognitiveB ||
+                                    "অনুধাবনমূলক প্রশ্ন..."}
+                                </span>
+                                <span className="text-slate-700 text-xs font-serif font-bold">
+                                  ২
+                                </span>
+                              </div>
+                              {qm.creativeCognitiveB_Answer && (
+                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                  <span className="font-bold text-green-700 mr-1.5">
+                                    উত্তর:
+                                  </span>
+                                  <RichTextRender
+                                    content={qm.creativeCognitiveB_Answer}
+                                    inline={true}
+                                  />
+                                </div>
+                              )}
                             </div>
-                            <div className="flex justify-between items-start gap-2">
-                              <span className="w-6">গ.</span>
-                              <span className="flex-1 font-serif font-normal text-slate-800">
-                                {qm.creativeCognitiveC ||
-                                  "প্রয়োগমূলক প্রশ্ন..."}
-                              </span>
-                              <span className="text-slate-700 text-xs font-serif font-bold">
-                                ৩
-                              </span>
+                            <div className="flex flex-col gap-2">
+                              <div className="flex justify-between items-start">
+                                <span className="w-6">গ.</span>
+                                <span className="flex-1 font-serif font-normal text-slate-800">
+                                  {qm.creativeCognitiveC ||
+                                    "প্রয়োগমূলক প্রশ্ন..."}
+                                </span>
+                                <span className="text-slate-700 text-xs font-serif font-bold">
+                                  ৩
+                                </span>
+                              </div>
+                              {qm.creativeCognitiveC_Answer && (
+                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                  <span className="font-bold text-green-700 mr-1.5">
+                                    উত্তর:
+                                  </span>
+                                  <RichTextRender
+                                    content={qm.creativeCognitiveC_Answer}
+                                    inline={true}
+                                  />
+                                </div>
+                              )}
                             </div>
-                            <div className="flex justify-between items-start gap-2">
-                              <span className="w-6">ঘ.</span>
-                              <span className="flex-1 font-serif font-normal text-slate-800">
-                                {qm.creativeCognitiveD ||
-                                  "উচ্চতর চিন্তাদক্ষতা প্রশ্ন..."}
-                              </span>
-                              <span className="text-slate-700 text-xs font-serif font-bold">
-                                ৪
-                              </span>
+                            <div className="flex flex-col gap-2">
+                              <div className="flex justify-between items-start">
+                                <span className="w-6">ঘ.</span>
+                                <span className="flex-1 font-serif font-normal text-slate-800">
+                                  {qm.creativeCognitiveD ||
+                                    "উচ্চতর চিন্তাদক্ষতা প্রশ্ন..."}
+                                </span>
+                                <span className="text-slate-700 text-xs font-serif font-bold">
+                                  ৪
+                                </span>
+                              </div>
+                              {qm.creativeCognitiveD_Answer && (
+                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                  <span className="font-bold text-green-700 mr-1.5">
+                                    উত্তর:
+                                  </span>
+                                  <RichTextRender
+                                    content={qm.creativeCognitiveD_Answer}
+                                    inline={true}
+                                  />
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>

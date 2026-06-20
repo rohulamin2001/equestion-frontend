@@ -250,9 +250,13 @@ export function useQuestionManagement(options = {}) {
   // Creative (সৃজনশীল) Specific Form Fields
   const [creativeStem, setCreativeStem] = useState("");
   const [creativeCognitiveA, setCreativeCognitiveA] = useState("");
+  const [creativeCognitiveA_Answer, setCreativeCognitiveA_Answer] = useState("");
   const [creativeCognitiveB, setCreativeCognitiveB] = useState("");
+  const [creativeCognitiveB_Answer, setCreativeCognitiveB_Answer] = useState("");
   const [creativeCognitiveC, setCreativeCognitiveC] = useState("");
+  const [creativeCognitiveC_Answer, setCreativeCognitiveC_Answer] = useState("");
   const [creativeCognitiveD, setCreativeCognitiveD] = useState("");
+  const [creativeCognitiveD_Answer, setCreativeCognitiveD_Answer] = useState("");
 
   // General Questions (Short/Broad/Matching/FillInBlanks)
   const [generalQuestionText, setGeneralQuestionText] = useState("");
@@ -296,9 +300,13 @@ export function useQuestionManagement(options = {}) {
 
     setCreativeStem("");
     setCreativeCognitiveA("");
+    setCreativeCognitiveA_Answer("");
     setCreativeCognitiveB("");
+    setCreativeCognitiveB_Answer("");
     setCreativeCognitiveC("");
+    setCreativeCognitiveC_Answer("");
     setCreativeCognitiveD("");
+    setCreativeCognitiveD_Answer("");
 
     setGeneralQuestionText("");
     setGeneralStem("");
@@ -368,14 +376,26 @@ export function useQuestionManagement(options = {}) {
       setCreativeCognitiveA(
         question.creativeData?.subQuestions?.cognitiveA?.text || "",
       );
+      setCreativeCognitiveA_Answer(
+        question.creativeData?.subQuestions?.cognitiveA?.answer || "",
+      );
       setCreativeCognitiveB(
         question.creativeData?.subQuestions?.cognitiveB?.text || "",
+      );
+      setCreativeCognitiveB_Answer(
+        question.creativeData?.subQuestions?.cognitiveB?.answer || "",
       );
       setCreativeCognitiveC(
         question.creativeData?.subQuestions?.cognitiveC?.text || "",
       );
+      setCreativeCognitiveC_Answer(
+        question.creativeData?.subQuestions?.cognitiveC?.answer || "",
+      );
       setCreativeCognitiveD(
         question.creativeData?.subQuestions?.cognitiveD?.text || "",
+      );
+      setCreativeCognitiveD_Answer(
+        question.creativeData?.subQuestions?.cognitiveD?.answer || "",
       );
     } else {
       setGeneralQuestionText(question.generalData?.questionText || "");
@@ -569,10 +589,10 @@ export function useQuestionManagement(options = {}) {
       payload.creativeData = {
         stem: creativeStem.trim(),
         subQuestions: {
-          cognitiveA: { text: creativeCognitiveA.trim(), marks: 1 },
-          cognitiveB: { text: creativeCognitiveB.trim(), marks: 2 },
-          cognitiveC: { text: creativeCognitiveC.trim(), marks: 3 },
-          cognitiveD: { text: creativeCognitiveD.trim(), marks: 4 },
+          cognitiveA: { text: creativeCognitiveA.trim(), answer: creativeCognitiveA_Answer.trim(), marks: 1 },
+          cognitiveB: { text: creativeCognitiveB.trim(), answer: creativeCognitiveB_Answer.trim(), marks: 2 },
+          cognitiveC: { text: creativeCognitiveC.trim(), answer: creativeCognitiveC_Answer.trim(), marks: 3 },
+          cognitiveD: { text: creativeCognitiveD.trim(), answer: creativeCognitiveD_Answer.trim(), marks: 4 },
         },
       };
 
@@ -661,9 +681,13 @@ export function useQuestionManagement(options = {}) {
 
     // Clear new metadata (keep metadata, only clear cognitive subquestions for creative and general fields)
     setCreativeCognitiveA("");
+    setCreativeCognitiveA_Answer("");
     setCreativeCognitiveB("");
+    setCreativeCognitiveB_Answer("");
     setCreativeCognitiveC("");
+    setCreativeCognitiveC_Answer("");
     setCreativeCognitiveD("");
+    setCreativeCognitiveD_Answer("");
 
     setGeneralQuestionText("");
     setGeneralStem("");
@@ -749,14 +773,26 @@ export function useQuestionManagement(options = {}) {
         setCreativeCognitiveA(
           question.creativeData?.subQuestions?.cognitiveA?.text || "",
         );
+        setCreativeCognitiveA_Answer(
+          question.creativeData?.subQuestions?.cognitiveA?.answer || "",
+        );
         setCreativeCognitiveB(
           question.creativeData?.subQuestions?.cognitiveB?.text || "",
+        );
+        setCreativeCognitiveB_Answer(
+          question.creativeData?.subQuestions?.cognitiveB?.answer || "",
         );
         setCreativeCognitiveC(
           question.creativeData?.subQuestions?.cognitiveC?.text || "",
         );
+        setCreativeCognitiveC_Answer(
+          question.creativeData?.subQuestions?.cognitiveC?.answer || "",
+        );
         setCreativeCognitiveD(
           question.creativeData?.subQuestions?.cognitiveD?.text || "",
+        );
+        setCreativeCognitiveD_Answer(
+          question.creativeData?.subQuestions?.cognitiveD?.answer || "",
         );
       } else {
         setGeneralQuestionText(question.generalData?.questionText || "");
@@ -793,9 +829,13 @@ export function useQuestionManagement(options = {}) {
       setMcqExplanation,
       setCreativeStem,
       setCreativeCognitiveA,
+      setCreativeCognitiveA_Answer,
       setCreativeCognitiveB,
+      setCreativeCognitiveB_Answer,
       setCreativeCognitiveC,
+      setCreativeCognitiveC_Answer,
       setCreativeCognitiveD,
+      setCreativeCognitiveD_Answer,
       setGeneralQuestionText,
       setGeneralStem,
       setGeneralSubQuestions,
@@ -1056,12 +1096,20 @@ export function useQuestionManagement(options = {}) {
     setCreativeStem,
     creativeCognitiveA,
     setCreativeCognitiveA,
+    creativeCognitiveA_Answer,
+    setCreativeCognitiveA_Answer,
     creativeCognitiveB,
     setCreativeCognitiveB,
+    creativeCognitiveB_Answer,
+    setCreativeCognitiveB_Answer,
     creativeCognitiveC,
     setCreativeCognitiveC,
+    creativeCognitiveC_Answer,
+    setCreativeCognitiveC_Answer,
     creativeCognitiveD,
     setCreativeCognitiveD,
+    creativeCognitiveD_Answer,
+    setCreativeCognitiveD_Answer,
 
     // General fields & setters
     generalQuestionText,
