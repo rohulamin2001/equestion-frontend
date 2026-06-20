@@ -1279,58 +1279,70 @@ export default function MyQuestions() {
                     {q.category === "Creative" && q.creativeData && (
                       <div className="space-y-4">
                         {q.creativeData.stem && (
-                          <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[14px] leading-relaxed text-slate-700 backdrop-blur-sm">
+                          <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none  leading-relaxed text-slate-700 backdrop-blur-sm">
                             <RichTextRender content={q.creativeData.stem} />
                           </div>
                         )}
 
                         <div className="pl-4 space-y-2.5 text-[15px] text-slate-700">
-                          <div className="flex justify-between items-start gap-2">
+                          <div className="flex justify-between items-start ">
                             <span className="w-6">ক)</span>
                             <RichTextRender
                               content={
                                 q.creativeData.subQuestions?.cognitiveA?.text
                               }
-                              className="flex-1 inline-block"
+                              className="flex-1 inline-block text-sm"
                             />
                             <span className="text-slate-555 text-[15px] font-bold">
-                              {(q.creativeData.subQuestions?.cognitiveA?.marks || 1).toLocaleString("bn-BD")}
+                              {(
+                                q.creativeData.subQuestions?.cognitiveA
+                                  ?.marks || 1
+                              ).toLocaleString("bn-BD")}
                             </span>
                           </div>
-                          <div className="flex justify-between items-start gap-2">
+                          <div className="flex justify-between items-start ">
                             <span className="w-6">খ)</span>
                             <RichTextRender
                               content={
                                 q.creativeData.subQuestions?.cognitiveB?.text
                               }
-                              className="flex-1 inline-block"
+                              className="flex-1 inline-block text-sm"
                             />
                             <span className="text-slate-555 text-[15px] font-bold">
-                              {(q.creativeData.subQuestions?.cognitiveB?.marks || 2).toLocaleString("bn-BD")}
+                              {(
+                                q.creativeData.subQuestions?.cognitiveB
+                                  ?.marks || 2
+                              ).toLocaleString("bn-BD")}
                             </span>
                           </div>
-                          <div className="flex justify-between items-start gap-2">
+                          <div className="flex justify-between items-start ">
                             <span className="w-6">গ)</span>
                             <RichTextRender
                               content={
                                 q.creativeData.subQuestions?.cognitiveC?.text
                               }
-                              className="flex-1 inline-block"
+                              className="flex-1 inline-block text-sm"
                             />
                             <span className="text-slate-555 text-[15px] font-bold">
-                              {(q.creativeData.subQuestions?.cognitiveC?.marks || 3).toLocaleString("bn-BD")}
+                              {(
+                                q.creativeData.subQuestions?.cognitiveC
+                                  ?.marks || 3
+                              ).toLocaleString("bn-BD")}
                             </span>
                           </div>
-                          <div className="flex justify-between items-start gap-2">
+                          <div className="flex justify-between items-start ">
                             <span className="w-6">ঘ)</span>
                             <RichTextRender
                               content={
                                 q.creativeData.subQuestions?.cognitiveD?.text
                               }
-                              className="flex-1 inline-block"
+                              className="flex-1 inline-block text-sm"
                             />
                             <span className="text-slate-555 text-[15px] font-bold">
-                              {(q.creativeData.subQuestions?.cognitiveD?.marks || 4).toLocaleString("bn-BD")}
+                              {(
+                                q.creativeData.subQuestions?.cognitiveD
+                                  ?.marks || 4
+                              ).toLocaleString("bn-BD")}
                             </span>
                           </div>
                         </div>
