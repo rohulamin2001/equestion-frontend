@@ -1767,8 +1767,8 @@ export default function AddQuestion() {
                                       className="font-normal"
                                     />
                                   </div>
-                                  <span className="text-slate-700 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
-                                    {q.mcqData?.marks || 1}
+                                  <span className="text-slate-700 text-xs font-sans font-bold whitespace-nowrap pt-1">
+                                    {(q.mcqData?.marks || 1).toLocaleString("bn-BD")}
                                   </span>
                                 </div>
                                 {q.mcqData.mcqType === "MultipleCompletion" &&
@@ -1860,8 +1860,8 @@ export default function AddQuestion() {
                                       {q.creativeData.subQuestions?.cognitiveA
                                         ?.text || "জ্ঞানমূলক প্রশ্ন..."}
                                     </span>
-                                    <span className="text-slate-700 text-xs font-serif font-bold">
-                                      ১
+                                    <span className="text-slate-700 text-xs font-bold">
+                                      {(q.creativeData.subQuestions?.cognitiveA?.marks || 1).toLocaleString("bn-BD")}
                                     </span>
                                   </div>
                                   <div className="flex justify-between items-start gap-2">
@@ -1870,8 +1870,8 @@ export default function AddQuestion() {
                                       {q.creativeData.subQuestions?.cognitiveB
                                         ?.text || "অনুধাবনমূলক প্রশ্ন..."}
                                     </span>
-                                    <span className="text-slate-700 text-xs font-serif font-bold">
-                                      ২
+                                    <span className="text-slate-700 text-xs font-bold">
+                                      {(q.creativeData.subQuestions?.cognitiveB?.marks || 2).toLocaleString("bn-BD")}
                                     </span>
                                   </div>
                                   <div className="flex justify-between items-start gap-2">
@@ -1880,8 +1880,8 @@ export default function AddQuestion() {
                                       {q.creativeData.subQuestions?.cognitiveC
                                         ?.text || "প্রয়োগমূলক প্রশ্ন..."}
                                     </span>
-                                    <span className="text-slate-700 text-xs font-serif font-bold">
-                                      ৩
+                                    <span className="text-slate-700 text-xs font-bold">
+                                      {(q.creativeData.subQuestions?.cognitiveC?.marks || 3).toLocaleString("bn-BD")}
                                     </span>
                                   </div>
                                   <div className="flex justify-between items-start gap-2">
@@ -1891,8 +1891,8 @@ export default function AddQuestion() {
                                         ?.text ||
                                         "উচ্চতর চিন্তাদক্ষতা প্রশ্ন..."}
                                     </span>
-                                    <span className="text-slate-700 text-xs font-serif font-bold">
-                                      ৪
+                                    <span className="text-slate-700 text-xs font-bold">
+                                      {(q.creativeData.subQuestions?.cognitiveD?.marks || 4).toLocaleString("bn-BD")}
                                     </span>
                                   </div>
                                 </div>
@@ -1924,8 +1924,8 @@ export default function AddQuestion() {
                                         className="font-serif font-normal inline-block"
                                       />
                                     </div>
-                                    <span className="text-slate-700 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
-                                      {q.generalData.marks}
+                                    <span className="text-slate-700 text-xs font-sans font-bold whitespace-nowrap pt-1">
+                                      {(q.generalData.marks || 0).toLocaleString("bn-BD")}
                                     </span>
                                   </div>
 

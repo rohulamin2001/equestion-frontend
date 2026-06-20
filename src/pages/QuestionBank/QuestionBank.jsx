@@ -814,8 +814,8 @@ export default function QuestionBank() {
                             )}
                           </div>
                         </div>
-                        <span className="text-slate-550 text-xs font-serif font-bold">
-                          ১
+                        <span className="text-slate-505 text-xs font-bold">
+                          {(q.mcqData?.marks || 1).toLocaleString("bn-BD")}
                         </span>
                       </div>
 
@@ -871,22 +871,30 @@ export default function QuestionBank() {
                         <div className="flex justify-between items-start gap-2">
                           <span className="w-6">ক)</span>
                           <RichTextRender content={q.creativeData.subQuestions?.cognitiveA?.text} className="flex-1 font-serif inline-block" />
-                          <span className="text-slate-500 text-[15px] font-serif font-bold">১</span>
+                          <span className="text-slate-505 text-[15px] font-bold">
+                            {(q.creativeData.subQuestions?.cognitiveA?.marks || 1).toLocaleString("bn-BD")}
+                          </span>
                         </div>
                         <div className="flex justify-between items-start gap-2">
                           <span className="w-6">খ)</span>
                           <RichTextRender content={q.creativeData.subQuestions?.cognitiveB?.text} className="flex-1 font-serif inline-block" />
-                          <span className="text-slate-500 text-[15px] font-serif font-bold">২</span>
+                          <span className="text-slate-505 text-[15px] font-bold">
+                            {(q.creativeData.subQuestions?.cognitiveB?.marks || 2).toLocaleString("bn-BD")}
+                          </span>
                         </div>
                         <div className="flex justify-between items-start gap-2">
                           <span className="w-6">গ)</span>
                           <RichTextRender content={q.creativeData.subQuestions?.cognitiveC?.text} className="flex-1 font-serif inline-block" />
-                          <span className="text-slate-500 text-[15px] font-serif font-bold">৩</span>
+                          <span className="text-slate-505 text-[15px] font-bold">
+                            {(q.creativeData.subQuestions?.cognitiveC?.marks || 3).toLocaleString("bn-BD")}
+                          </span>
                         </div>
                         <div className="flex justify-between items-start gap-2">
                           <span className="w-6">ঘ)</span>
                           <RichTextRender content={q.creativeData.subQuestions?.cognitiveD?.text} className="flex-1 font-serif inline-block" />
-                          <span className="text-slate-500 text-[15px] font-serif font-bold">৪</span>
+                          <span className="text-slate-505 text-[15px] font-bold">
+                            {(q.creativeData.subQuestions?.cognitiveD?.marks || 4).toLocaleString("bn-BD")}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -906,7 +914,7 @@ export default function QuestionBank() {
                           <span className="font-bold shrink-0">১.</span>
                           <RichTextRender content={q.generalData.questionText} className="font-serif" />
                         </div>
-                        <span className="text-slate-505 text-xs font-serif font-bold">
+                        <span className="text-slate-505 text-xs font-bold">
                           {(q.generalData.marks || 0).toLocaleString("bn-BD")}
                         </span>
                       </div>
@@ -1142,8 +1150,8 @@ export default function QuestionBank() {
                             <span className="font-bold shrink-0">১.</span>
                             <RichTextRender content={selectedPreviewQuestion.mcqData.questionText} className="font-serif inline-block text-slate-800" />
                           </div>
-                          <span className="text-slate-550 text-xs font-serif font-bold whitespace-nowrap pt-1">
-                            মান: ১
+                          <span className="text-slate-505 text-xs font-bold whitespace-nowrap pt-1">
+                            মান: {(selectedPreviewQuestion.mcqData?.marks || 1).toLocaleString("bn-BD")}
                           </span>
                         </div>
                         {selectedPreviewQuestion.mcqData.mcqType === "MultipleCompletion" && selectedPreviewQuestion.mcqData.statements && (
@@ -1204,26 +1212,34 @@ export default function QuestionBank() {
                         </div>
                       )}
 
-                      <div className="pl-4 space-y-3.5 text-[15px] font-serif text-slate-700">
+                      <div className="pl-4 space-y-3.5 text-[15px] text-slate-700">
                         <div className="flex justify-between items-start gap-2">
                           <span className="w-6 text-slate-400">ক)</span>
                           <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveA?.text} className="flex-1 font-serif inline-block text-slate-800" />
-                          <span className="text-slate-500 text-[15px] font-serif font-bold">১</span>
+                          <span className="text-slate-505 text-[15px] font-bold">
+                            {(selectedPreviewQuestion.creativeData.subQuestions?.cognitiveA?.marks || 1).toLocaleString("bn-BD")}
+                          </span>
                         </div>
                         <div className="flex justify-between items-start gap-2">
                           <span className="w-6 text-slate-400">খ)</span>
                           <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveB?.text} className="flex-1 font-serif inline-block text-slate-800" />
-                          <span className="text-slate-500 text-[15px] font-serif font-bold">২</span>
+                          <span className="text-slate-505 text-[15px] font-bold">
+                            {(selectedPreviewQuestion.creativeData.subQuestions?.cognitiveB?.marks || 2).toLocaleString("bn-BD")}
+                          </span>
                         </div>
                         <div className="flex justify-between items-start gap-2">
                           <span className="w-6 text-slate-400">গ)</span>
                           <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveC?.text} className="flex-1 font-serif inline-block text-slate-800" />
-                          <span className="text-slate-500 text-[15px] font-serif font-bold">৩</span>
+                          <span className="text-slate-505 text-[15px] font-bold">
+                            {(selectedPreviewQuestion.creativeData.subQuestions?.cognitiveC?.marks || 3).toLocaleString("bn-BD")}
+                          </span>
                         </div>
                         <div className="flex justify-between items-start gap-2">
                           <span className="w-6 text-slate-400">ঘ)</span>
                           <RichTextRender content={selectedPreviewQuestion.creativeData.subQuestions?.cognitiveD?.text} className="flex-1 font-serif inline-block text-slate-800" />
-                          <span className="text-slate-500 text-[15px] font-serif font-bold">৪</span>
+                          <span className="text-slate-505 text-[15px] font-bold">
+                            {(selectedPreviewQuestion.creativeData.subQuestions?.cognitiveD?.marks || 4).toLocaleString("bn-BD")}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -1243,7 +1259,7 @@ export default function QuestionBank() {
                           <span className="font-bold shrink-0">১.</span>
                           <RichTextRender content={selectedPreviewQuestion.generalData.questionText} className="font-serif inline-block text-slate-800" />
                         </div>
-                        <span className="text-slate-505 text-xs font-serif font-bold whitespace-nowrap pt-1">
+                        <span className="text-slate-505 text-xs font-bold whitespace-nowrap pt-1">
                           মান: {(selectedPreviewQuestion.generalData.marks || 0).toLocaleString("bn-BD")}
                         </span>
                       </div>

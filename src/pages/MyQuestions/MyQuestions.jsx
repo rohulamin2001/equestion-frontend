@@ -1161,17 +1161,17 @@ export default function MyQuestions() {
                   </div>
 
                   {/* Main Content Body */}
-                  <div className="text-slate-800 font-serif leading-relaxed flex-1 pt-1">
+                  <div className="text-slate-800 leading-relaxed flex-1 pt-1">
                     {/* MCQ */}
                     {q.category === "MCQ" && q.mcqData && (
                       <div className="space-y-4">
                         {q.mcqData.mcqType === "Contextual" &&
                           q.mcqData.stem && (
-                            <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-sm italic font-serif leading-relaxed text-slate-700 backdrop-blur-sm">
+                            <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-sm italic leading-relaxed text-slate-700 backdrop-blur-sm">
                               <strong>উদ্দীপক:</strong>
                               <RichTextRender
                                 content={q.mcqData.stem}
-                                className="mt-1 font-serif"
+                                className="mt-1"
                               />
                             </div>
                           )}
@@ -1182,17 +1182,17 @@ export default function MyQuestions() {
                             <div className="flex-1">
                               <RichTextRender
                                 content={q.mcqData.questionText}
-                                className="font-serif"
+                                className=""
                               />
                               {q.mcqData.mcqType === "MultipleCompletion" &&
                                 q.mcqData.statements && (
-                                  <div className="space-y-1 pl-4 mt-2 font-normal text-[15px] font-serif text-slate-700">
+                                  <div className="space-y-1 pl-4 mt-2 font-normal text-[15px] text-slate-700">
                                     {q.mcqData.statements.map((st, idx) => (
                                       <div
                                         key={idx}
                                         className="flex gap-1 items-start"
                                       >
-                                        <span className="shrink-0 text-slate-500 font-bold">
+                                        <span className="shrink-0 text-slate-505 font-bold">
                                           {idx === 0
                                             ? "i. "
                                             : idx === 1
@@ -1201,24 +1201,24 @@ export default function MyQuestions() {
                                         </span>
                                         <RichTextRender
                                           content={st}
-                                          className="inline-block font-serif"
+                                          className="inline-block"
                                         />
                                       </div>
                                     ))}
-                                    <div className="mt-2 font-semibold font-serif">
+                                    <div className="mt-2 font-semibold">
                                       নিচের কোনটি সঠিক?
                                     </div>
                                   </div>
                                 )}
                             </div>
                           </div>
-                          <span className="text-slate-505 text-xs font-serif font-bold">
-                            ১
+                          <span className="text-slate-505 text-xs font-bold">
+                            {(q.mcqData?.marks || 1).toLocaleString("bn-BD")}
                           </span>
                         </div>
 
                         {/* Options Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 text-[15px] font-serif">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 text-[15px]">
                           {q.mcqData.options &&
                             q.mcqData.options.map((opt, idx) => {
                               const isCorrect = q.mcqData.correctAnswer === idx;
@@ -1249,7 +1249,7 @@ export default function MyQuestions() {
                                     </span>
                                     <RichTextRender
                                       content={opt}
-                                      className={`inline-block font-serif ${isCorrect ? " text-emerald-800" : "font-normal"}`}
+                                      className={`inline-block ${isCorrect ? " text-emerald-800" : "font-normal"}`}
                                     />
                                   </div>
                                   {isCorrect && (
@@ -1279,22 +1279,22 @@ export default function MyQuestions() {
                     {q.category === "Creative" && q.creativeData && (
                       <div className="space-y-4">
                         {q.creativeData.stem && (
-                          <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[14px] leading-relaxed text-slate-700 font-serif backdrop-blur-sm">
+                          <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[14px] leading-relaxed text-slate-700 backdrop-blur-sm">
                             <RichTextRender content={q.creativeData.stem} />
                           </div>
                         )}
 
-                        <div className="pl-4 space-y-2.5 text-[15px] font-serif text-slate-700">
+                        <div className="pl-4 space-y-2.5 text-[15px] text-slate-700">
                           <div className="flex justify-between items-start gap-2">
                             <span className="w-6">ক)</span>
                             <RichTextRender
                               content={
                                 q.creativeData.subQuestions?.cognitiveA?.text
                               }
-                              className="flex-1 font-serif inline-block"
+                              className="flex-1 inline-block"
                             />
-                            <span className="text-slate-500 text-[15px] font-serif font-bold">
-                              ১
+                            <span className="text-slate-555 text-[15px] font-bold">
+                              {(q.creativeData.subQuestions?.cognitiveA?.marks || 1).toLocaleString("bn-BD")}
                             </span>
                           </div>
                           <div className="flex justify-between items-start gap-2">
@@ -1303,10 +1303,10 @@ export default function MyQuestions() {
                               content={
                                 q.creativeData.subQuestions?.cognitiveB?.text
                               }
-                              className="flex-1 font-serif inline-block"
+                              className="flex-1 inline-block"
                             />
-                            <span className="text-slate-500 text-[15px] font-serif font-bold">
-                              ২
+                            <span className="text-slate-555 text-[15px] font-bold">
+                              {(q.creativeData.subQuestions?.cognitiveB?.marks || 2).toLocaleString("bn-BD")}
                             </span>
                           </div>
                           <div className="flex justify-between items-start gap-2">
@@ -1315,10 +1315,10 @@ export default function MyQuestions() {
                               content={
                                 q.creativeData.subQuestions?.cognitiveC?.text
                               }
-                              className="flex-1 font-serif inline-block"
+                              className="flex-1 inline-block"
                             />
-                            <span className="text-slate-500 text-[15px] font-serif font-bold">
-                              ৩
+                            <span className="text-slate-555 text-[15px] font-bold">
+                              {(q.creativeData.subQuestions?.cognitiveC?.marks || 3).toLocaleString("bn-BD")}
                             </span>
                           </div>
                           <div className="flex justify-between items-start gap-2">
@@ -1327,10 +1327,10 @@ export default function MyQuestions() {
                               content={
                                 q.creativeData.subQuestions?.cognitiveD?.text
                               }
-                              className="flex-1 font-serif inline-block"
+                              className="flex-1 inline-block"
                             />
-                            <span className="text-slate-500 text-[15px] font-serif font-bold">
-                              ৪
+                            <span className="text-slate-555 text-[15px] font-bold">
+                              {(q.creativeData.subQuestions?.cognitiveD?.marks || 4).toLocaleString("bn-BD")}
                             </span>
                           </div>
                         </div>
@@ -1342,7 +1342,7 @@ export default function MyQuestions() {
                       q.generalData && (
                         <div className="space-y-3">
                           {q.generalData.stem && (
-                            <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[15px] italic font-serif leading-relaxed text-slate-700 backdrop-blur-sm">
+                            <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[15px] italic leading-relaxed text-slate-700 backdrop-blur-sm">
                               <RichTextRender content={q.generalData.stem} />
                             </div>
                           )}
@@ -1352,10 +1352,10 @@ export default function MyQuestions() {
                               <span className="font-bold shrink-0">১.</span>
                               <RichTextRender
                                 content={q.generalData.questionText}
-                                className="font-serif"
+                                className=""
                               />
                             </div>
-                            <span className="text-slate-505 text-xs font-serif font-bold">
+                            <span className="text-slate-505 text-xs font-bold">
                               {(q.generalData.marks || 0).toLocaleString(
                                 "bn-BD",
                               )}
@@ -1364,7 +1364,7 @@ export default function MyQuestions() {
 
                           {q.generalData.suggestedAnswer && (
                             <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
-                              <span className="font-semibold text-[16px]">
+                              <span className="font-semibold text-[17px]">
                                 উত্তর:{" "}
                               </span>
                               <RichTextRender

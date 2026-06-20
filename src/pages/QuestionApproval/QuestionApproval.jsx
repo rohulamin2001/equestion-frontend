@@ -1060,7 +1060,6 @@ export default function QuestionApproval() {
                           <div className="flex-1">
                             <RichTextRender
                               content={q.mcqData.questionText}
-                              className="font-serif"
                             />
                             {q.mcqData.mcqType === "MultipleCompletion" &&
                               q.mcqData.statements && (
@@ -1090,8 +1089,8 @@ export default function QuestionApproval() {
                               )}
                           </div>
                         </div>
-                        <span className="text-slate-555 text-xs font-serif font-bold">
-                          ১
+                        <span className="text-slate-555 text-xs font-bold">
+                          {(q.mcqData?.marks || 1).toLocaleString("bn-BD")}
                         </span>
                       </div>
 
@@ -1106,7 +1105,7 @@ export default function QuestionApproval() {
                                 className={`flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border transition-all duration-300 ${
                                   isCorrect
                                     ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm"
-                                    : "bg-white/[0.3] hover:bg-white/[0.6] border-black/[0.03] hover:border-black/[0.08] text-slate-605"
+                                    : "bg-white/[0.3] hover:bg-white/[0.6] border-black/[0.03] hover:border-black/[0.08] text-slate-600"
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5">
@@ -1173,8 +1172,8 @@ export default function QuestionApproval() {
                             }
                             className="flex-1 font-serif inline-block"
                           />
-                          <span className="text-slate-500 text-[15px] font-serif font-bold">
-                            ১
+                          <span className="text-slate-555 text-[15px] font-bold">
+                            {(q.creativeData.subQuestions?.cognitiveA?.marks || 1).toLocaleString("bn-BD")}
                           </span>
                         </div>
                         <div className="flex justify-between items-start gap-2">
@@ -1185,8 +1184,8 @@ export default function QuestionApproval() {
                             }
                             className="flex-1 font-serif inline-block"
                           />
-                          <span className="text-slate-500 text-[15px] font-serif font-bold">
-                            ২
+                          <span className="text-slate-555 text-[15px] font-bold">
+                            {(q.creativeData.subQuestions?.cognitiveB?.marks || 2).toLocaleString("bn-BD")}
                           </span>
                         </div>
                         <div className="flex justify-between items-start gap-2">
@@ -1197,8 +1196,8 @@ export default function QuestionApproval() {
                             }
                             className="flex-1 font-serif inline-block"
                           />
-                          <span className="text-slate-500 text-[15px] font-serif font-bold">
-                            ৩
+                          <span className="text-slate-555 text-[15px] font-bold">
+                            {(q.creativeData.subQuestions?.cognitiveC?.marks || 3).toLocaleString("bn-BD")}
                           </span>
                         </div>
                         <div className="flex justify-between items-start gap-2">
@@ -1209,8 +1208,8 @@ export default function QuestionApproval() {
                             }
                             className="flex-1 font-serif inline-block"
                           />
-                          <span className="text-slate-500 text-[15px] font-serif font-bold">
-                            ৪
+                          <span className="text-slate-555 text-[15px] font-bold">
+                            {(q.creativeData.subQuestions?.cognitiveD?.marks || 4).toLocaleString("bn-BD")}
                           </span>
                         </div>
                       </div>
@@ -1838,8 +1837,8 @@ export default function QuestionApproval() {
                                 className="font-serif inline-block text-slate-800"
                               />
                             </div>
-                            <span className="text-slate-500 text-xs font-sans font-bold whitespace-nowrap bg-slate-100 px-2 py-0.5 rounded-md border border-black/[0.04]">
-                              মান: ১
+                            <span className="text-slate-505 text-xs font-bold whitespace-nowrap pt-1">
+                              মান: {(selectedPreviewQuestion.mcqData?.marks || 1).toLocaleString("bn-BD")}
                             </span>
                           </div>
 
@@ -1978,7 +1977,7 @@ export default function QuestionApproval() {
                           </div>
                         )}
 
-                        <div className="pl-4 space-y-3.5 text-[15px] font-serif text-slate-700">
+                        <div className="pl-4 space-y-3.5 text-[15px] text-slate-700">
                           <div className="flex justify-between items-start gap-2">
                             <span className="w-6 text-slate-400">ক)</span>
                             <RichTextRender
@@ -1988,8 +1987,8 @@ export default function QuestionApproval() {
                               }
                               className="flex-1 font-serif inline-block text-slate-800"
                             />
-                            <span className="text-slate-500 text-[15px] font-serif font-bold">
-                              ১
+                            <span className="text-slate-505 text-[15px] font-bold">
+                              {(selectedPreviewQuestion.creativeData.subQuestions?.cognitiveA?.marks || 1).toLocaleString("bn-BD")}
                             </span>
                           </div>
                           <div className="flex justify-between items-start gap-2">
@@ -2001,8 +2000,8 @@ export default function QuestionApproval() {
                               }
                               className="flex-1 font-serif inline-block text-slate-800"
                             />
-                            <span className="text-slate-500 text-[15px] font-serif font-bold">
-                              ২
+                            <span className="text-slate-505 text-[15px] font-bold">
+                              {(selectedPreviewQuestion.creativeData.subQuestions?.cognitiveB?.marks || 2).toLocaleString("bn-BD")}
                             </span>
                           </div>
                           <div className="flex justify-between items-start gap-2">
@@ -2014,8 +2013,8 @@ export default function QuestionApproval() {
                               }
                               className="flex-1 font-serif inline-block text-slate-800"
                             />
-                            <span className="text-slate-500 text-[15px] font-serif font-bold">
-                              ৩
+                            <span className="text-slate-505 text-[15px] font-bold">
+                              {(selectedPreviewQuestion.creativeData.subQuestions?.cognitiveC?.marks || 3).toLocaleString("bn-BD")}
                             </span>
                           </div>
                           <div className="flex justify-between items-start gap-2">
@@ -2027,8 +2026,8 @@ export default function QuestionApproval() {
                               }
                               className="flex-1 font-serif inline-block text-slate-800"
                             />
-                            <span className="text-slate-500 text-[15px] font-serif font-bold">
-                              ৪
+                            <span className="text-slate-505 text-[15px] font-bold">
+                              {(selectedPreviewQuestion.creativeData.subQuestions?.cognitiveD?.marks || 4).toLocaleString("bn-BD")}
                             </span>
                           </div>
                         </div>
@@ -2059,10 +2058,8 @@ export default function QuestionApproval() {
                               className="font-serif inline-block text-slate-800"
                             />
                           </div>
-                          <span className="text-slate-505 text-xs font-serif font-bold whitespace-nowrap pt-1">
-                            {(
-                              selectedPreviewQuestion.generalData.marks || 0
-                            ).toLocaleString("bn-BD")}
+                          <span className="text-slate-505 text-xs font-bold whitespace-nowrap pt-1">
+                            মান: {(selectedPreviewQuestion.generalData.marks || 0).toLocaleString("bn-BD")}
                           </span>
                         </div>
 
