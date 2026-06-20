@@ -1139,10 +1139,11 @@ export default function QuestionApproval() {
                       </div>
 
                       {q.mcqData.explanation && (
-                        <div className="mt-3 p-3 bg-black/[0.02] border border-black/[0.05] rounded-xl text-xs font-sans text-slate-500 backdrop-blur-sm">
-                          <strong>বিশ্লেষণ: </strong>
+                        <div className="mt-3 p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
+                          <span className="font-semibold text-[15px] ">বিশ্লেষণ: </span>
                           <RichTextRender
                             content={q.mcqData.explanation}
+                            className="inline-block"
                             inline
                           />
                         </div>
@@ -1911,9 +1912,9 @@ export default function QuestionApproval() {
                           </div>
 
                           {selectedPreviewQuestion.mcqData.explanation && (
-                            <div className="mt-5 p-4 bg-indigo-50/40 border border-indigo-100/50 rounded-xl text-xs font-sans text-indigo-900 leading-relaxed transition-all duration-300">
-                              <div className="flex items-center justify-between border-b border-indigo-100/40 pb-2 mb-2">
-                                <strong className="text-indigo-950 font-sans text-xs">
+                            <div className="mt-5 p-4 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700 leading-relaxed transition-all duration-300">
+                              <div className="flex items-center justify-between border-b border-[#4F46E5]/10 pb-2 mb-2">
+                                <strong className="text-slate-800 font-semibold text-[15px]">
                                   উত্তর বিশ্লেষণ/ব্যাখ্যা:{" "}
                                 </strong>
                                 <button

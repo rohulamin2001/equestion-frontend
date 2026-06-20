@@ -1930,8 +1930,8 @@ export default function AddQuestion() {
                                   </div>
 
                                   {q.generalData.suggestedAnswer && (
-                                    <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-indigo-900/80">
-                                      <strong>উত্তর: </strong>
+                                    <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
+                                      <strong className="text-[16px]">উত্তর: </strong>
                                       <RichTextRender
                                         content={q.generalData.suggestedAnswer}
                                         inline
@@ -2189,8 +2189,8 @@ export default function AddQuestion() {
                             </div>
 
                             {qm.generalSuggestedAnswer && (
-                              <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-indigo-900/80">
-                                <span className="text-sm font-semibold">
+                              <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
+                                <span className="font-semibold text-[16px]">
                                   উত্তর:{" "}
                                 </span>
                                 <RichTextRender

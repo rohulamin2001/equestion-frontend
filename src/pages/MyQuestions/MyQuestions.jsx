@@ -1261,13 +1261,13 @@ export default function MyQuestions() {
                         </div>
 
                         {q.mcqData.explanation && (
-                          <div className="mt-3 p-3 bg-black/[0.02] border border-black/[0.05] rounded-xl text-[15px] font-serif text-slate-500 backdrop-blur-sm">
+                          <div className="mt-3 p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
                             <span className="font-semibold text-[15px] ">
                               বিশ্লেষণ:{" "}
                             </span>
                             <RichTextRender
                               content={q.mcqData.explanation}
-                              className="font-serif inline-block"
+                              className="inline-block"
                               inline
                             />
                           </div>

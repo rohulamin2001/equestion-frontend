@@ -850,9 +850,9 @@ export default function QuestionBank() {
                       </div>
 
                       {q.mcqData.explanation && (
-                        <div className="mt-3 p-3 bg-black/[0.02] border border-black/[0.05] rounded-xl text-[15px] font-serif text-slate-500 backdrop-blur-sm">
-                          <span className="font-semibold text-[15px] font-serif">বিশ্লেষণ: </span>
-                          <RichTextRender content={q.mcqData.explanation} className="font-serif inline-block" inline />
+                        <div className="mt-3 p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
+                          <span className="font-semibold text-[15px] ">বিশ্লেষণ: </span>
+                          <RichTextRender content={q.mcqData.explanation} className="inline-block" inline />
                         </div>
                       )}
                     </div>
@@ -1186,9 +1186,9 @@ export default function QuestionBank() {
                         </div>
 
                         {selectedPreviewQuestion.mcqData.explanation && (
-                          <div className="mt-6 p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-[15px] font-serif text-slate-500 backdrop-blur-sm">
+                          <div className="mt-6 p-4 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700 backdrop-blur-sm">
                             <span className="font-semibold">বিশ্লেষণ: </span>
-                            <RichTextRender content={selectedPreviewQuestion.mcqData.explanation} className="font-serif inline-block" inline />
+                            <RichTextRender content={selectedPreviewQuestion.mcqData.explanation} className="inline-block" inline />
                           </div>
                         )}
                       </div>
