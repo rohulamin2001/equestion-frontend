@@ -6,13 +6,13 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
@@ -59,9 +59,18 @@ const LEVEL_LABELS = {
 };
 
 const DIFFICULTY_MAP = {
-  Easy: { label: "সহজ", color: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" },
-  Medium: { label: "মধ্যম", color: "bg-[#F97316]/10 text-[#F97316] border-[#F97316]/20" },
-  Hard: { label: "কঠিন", color: "bg-rose-500/10 text-rose-700 border-rose-500/20" },
+  Easy: {
+    label: "সহজ",
+    color: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
+  },
+  Medium: {
+    label: "মধ্যম",
+    color: "bg-[#F97316]/10 text-[#F97316] border-[#F97316]/20",
+  },
+  Hard: {
+    label: "কঠিন",
+    color: "bg-rose-500/10 text-rose-700 border-rose-500/20",
+  },
 };
 
 const containerVariants = {
@@ -86,9 +95,6 @@ const cardVariants = {
     },
   },
 };
-
-
-
 
 export default function MyQuestions() {
   const {
@@ -130,23 +136,27 @@ export default function MyQuestions() {
     handleRequestReview,
   } = useMyQuestions();
 
-  const [selectedRejectionReason, setSelectedRejectionReason] = React.useState(null);
+  const [selectedRejectionReason, setSelectedRejectionReason] =
+    React.useState(null);
   const [reviewRequestId, setReviewRequestId] = React.useState(null);
   const [reviewComment, setReviewComment] = React.useState("");
 
   const observerRef = React.useRef(null);
   React.useEffect(() => {
     if (!observerRef.current) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    }, { threshold: 0.1 });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 },
+    );
     observer.observe(observerRef.current);
     return () => observer.disconnect();
   }, [hasMore, fetchNextPage, isFetchingNextPage]);
 
-  const hasActiveFilters = 
+  const hasActiveFilters =
     qm.filterType ||
     qm.filterLevel ||
     qm.filterClass ||
@@ -162,7 +172,9 @@ export default function MyQuestions() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">আমার তৈরি প্রশ্ন</h1>
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">
+            আমার তৈরি প্রশ্ন
+          </h1>
           <p className="text-slate-500 text-sm mt-1">
             আপনার পূর্বে প্রস্তুতকৃত এবং সেভ করা সকল প্রশ্নপত্রসমূহ
           </p>
@@ -184,10 +196,38 @@ export default function MyQuestions() {
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         {[
-          { label: "মোট প্রশ্ন", count: totalCount, color: "text-[#4F46E5]", bg: "from-[#4F46E5]/10 to-[#8B5CF6]/10", border: "hover:border-[#4F46E5]/35", icon: Database },
-          { label: "বহুনির্বাচনি (MCQ)", count: mcqCount, color: "text-[#10B981]", bg: "from-[#10B981]/10 to-[#059669]/10", border: "hover:border-[#10B981]/35", icon: CheckSquare },
-          { label: "সৃজনশীল (CQ)", count: creativeCount, color: "text-[#F97316]", bg: "from-[#F97316]/10 to-[#EA580C]/10", border: "hover:border-[#F97316]/35", icon: Sparkles },
-          { label: "সংক্ষিপ্ত ও অন্যান্য", count: otherCount, color: "text-[#8B5CF6]", bg: "from-[#8B5CF6]/10 to-[#7C3AED]/10", border: "hover:border-[#8B5CF6]/35", icon: HelpCircle },
+          {
+            label: "মোট প্রশ্ন",
+            count: totalCount,
+            color: "text-[#4F46E5]",
+            bg: "from-[#4F46E5]/10 to-[#8B5CF6]/10",
+            border: "hover:border-[#4F46E5]/35",
+            icon: Database,
+          },
+          {
+            label: "বহুনির্বাচনি (MCQ)",
+            count: mcqCount,
+            color: "text-[#10B981]",
+            bg: "from-[#10B981]/10 to-[#059669]/10",
+            border: "hover:border-[#10B981]/35",
+            icon: CheckSquare,
+          },
+          {
+            label: "সৃজনশীল (CQ)",
+            count: creativeCount,
+            color: "text-[#F97316]",
+            bg: "from-[#F97316]/10 to-[#EA580C]/10",
+            border: "hover:border-[#F97316]/35",
+            icon: Sparkles,
+          },
+          {
+            label: "সংক্ষিপ্ত ও অন্যান্য",
+            count: otherCount,
+            color: "text-[#8B5CF6]",
+            bg: "from-[#8B5CF6]/10 to-[#7C3AED]/10",
+            border: "hover:border-[#8B5CF6]/35",
+            icon: HelpCircle,
+          },
         ].map((stat, i) => {
           const IconComponent = stat.icon;
           return (
@@ -198,7 +238,9 @@ export default function MyQuestions() {
               className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-5 rounded-2xl border border-black/[0.04] ${stat.border} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-default`}
             >
               {/* Ultra premium subtle glow background effect */}
-              <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
+              <div
+                className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}
+              />
 
               <div className="relative z-10 space-y-1.5">
                 <span className="text-sm font-bold text-slate-600 block uppercase tracking-wider font-sans">
@@ -209,7 +251,9 @@ export default function MyQuestions() {
                 </span>
               </div>
 
-              <div className={`relative z-10 size-12 rounded-xl bg-gradient-to-br ${stat.bg} ${stat.color} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}>
+              <div
+                className={`relative z-10 size-12 rounded-xl bg-gradient-to-br ${stat.bg} ${stat.color} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}
+              >
                 <IconComponent className="size-5.5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6" />
               </div>
             </motion.div>
@@ -235,8 +279,10 @@ export default function MyQuestions() {
               icon: CheckSquare,
               statusType: "Approved",
               borderClass: "hover:border-emerald-500/35",
-              activeBorderClass: "border-emerald-500/50 ring-2 ring-emerald-500/10 shadow-md",
-              iconBgClass: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20",
+              activeBorderClass:
+                "border-emerald-500/50 ring-2 ring-emerald-500/10 shadow-md",
+              iconBgClass:
+                "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20",
               bg: "from-emerald-500/10 to-teal-500/10",
               color: "text-emerald-600",
             },
@@ -246,8 +292,10 @@ export default function MyQuestions() {
               icon: Clock,
               statusType: "Pending",
               borderClass: "hover:border-amber-500/35",
-              activeBorderClass: "border-amber-500/50 ring-2 ring-amber-500/10 shadow-md",
-              iconBgClass: "bg-amber-500/10 text-amber-600 border border-amber-500/20",
+              activeBorderClass:
+                "border-amber-500/50 ring-2 ring-amber-500/10 shadow-md",
+              iconBgClass:
+                "bg-amber-500/10 text-amber-600 border border-amber-500/20",
               bg: "from-amber-500/10 to-orange-500/10",
               color: "text-amber-600",
             },
@@ -257,8 +305,10 @@ export default function MyQuestions() {
               icon: XCircle,
               statusType: "Rejected",
               borderClass: "hover:border-rose-500/35",
-              activeBorderClass: "border-rose-500/50 ring-2 ring-rose-500/10 shadow-md",
-              iconBgClass: "bg-rose-500/10 text-rose-650 border border-rose-500/20",
+              activeBorderClass:
+                "border-rose-500/50 ring-2 ring-rose-500/10 shadow-md",
+              iconBgClass:
+                "bg-rose-500/10 text-rose-650 border border-rose-500/20",
               bg: "from-rose-500/10 to-red-500/10",
               color: "text-rose-650",
             },
@@ -282,7 +332,9 @@ export default function MyQuestions() {
                 } ${stat.borderClass} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-pointer`}
               >
                 {/* Subtle glow effect */}
-                <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
+                <div
+                  className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}
+                />
 
                 <div className="relative z-10 space-y-1.5">
                   <span className="text-sm md:text-base font-bold text-slate-600 block font-sans">
@@ -293,7 +345,9 @@ export default function MyQuestions() {
                   </span>
                 </div>
 
-                <div className={`relative z-10 size-12 rounded-xl ${stat.iconBgClass} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}>
+                <div
+                  className={`relative z-10 size-12 rounded-xl ${stat.iconBgClass} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}
+                >
                   <IconComponent className="size-5.5" />
                 </div>
               </motion.div>
@@ -328,12 +382,16 @@ export default function MyQuestions() {
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
               className={`border-black/[0.08] text-slate-600 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-11 px-4 flex items-center gap-2 font-semibold ${
-                showFilters ? "bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5]" : ""
+                showFilters
+                  ? "bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5]"
+                  : ""
               }`}
             >
               <Filter className="size-4" />
               ফিল্টারসমূহ
-              <ChevronDown className={`size-4 transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`} />
+              <ChevronDown
+                className={`size-4 transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
+              />
             </Button>
 
             {hasActiveFilters && (
@@ -359,371 +417,493 @@ export default function MyQuestions() {
               className="overflow-hidden border-t border-black/[0.05]"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-3 pb-1">
-            {/* Institution Type */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">ধরণ</label>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
-                    <span>{TYPE_LABELS[qm.filterType] || qm.filterType || "সকল ধরণ"}</span>
-                    <ChevronDown className="size-3.5 text-slate-400" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
-                  <DropdownMenuItem
-                    onSelect={() => handleFilterTypeChange("")}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                      !qm.filterType ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
-                    }`}
-                  >
-                    <span>সকল ধরণ</span>
-                    {!qm.filterType && <span className="size-1 rounded-full bg-indigo-500" />}
-                  </DropdownMenuItem>
-                  {filterActiveTypes.map((type) => {
-                    const isSelected = qm.filterType === type;
-                    return (
+                {/* Institution Type */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">
+                    ধরণ
+                  </label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
+                        <span>
+                          {TYPE_LABELS[qm.filterType] ||
+                            qm.filterType ||
+                            "সকল ধরণ"}
+                        </span>
+                        <ChevronDown className="size-3.5 text-slate-400" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                       <DropdownMenuItem
-                        key={type}
-                        onSelect={() => handleFilterTypeChange(type)}
+                        onSelect={() => handleFilterTypeChange("")}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                          isSelected ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                          !qm.filterType
+                            ? "bg-indigo-50 text-indigo-600"
+                            : "text-slate-700"
                         }`}
                       >
-                        <span>{TYPE_LABELS[type] || type}</span>
-                        {isSelected && <span className="size-1 rounded-full bg-indigo-500" />}
+                        <span>সকল ধরণ</span>
+                        {!qm.filterType && (
+                          <span className="size-1 rounded-full bg-indigo-500" />
+                        )}
                       </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                      {filterActiveTypes.map((type) => {
+                        const isSelected = qm.filterType === type;
+                        return (
+                          <DropdownMenuItem
+                            key={type}
+                            onSelect={() => handleFilterTypeChange(type)}
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                              isSelected
+                                ? "bg-indigo-50 text-indigo-600"
+                                : "text-slate-700"
+                            }`}
+                          >
+                            <span>{TYPE_LABELS[type] || type}</span>
+                            {isSelected && (
+                              <span className="size-1 rounded-full bg-indigo-500" />
+                            )}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
 
-            {/* Academic Level */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">স্তর</label>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
-                    <span>{LEVEL_LABELS[qm.filterLevel] || qm.filterLevel || "সকল স্তর"}</span>
-                    <ChevronDown className="size-3.5 text-slate-400" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
-                  <DropdownMenuItem
-                    onSelect={() => handleFilterLevelChange("")}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                      !qm.filterLevel ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
-                    }`}
-                  >
-                    <span>সকল স্তর</span>
-                    {!qm.filterLevel && <span className="size-1 rounded-full bg-indigo-500" />}
-                  </DropdownMenuItem>
-                  {filterActiveLevels.map((lvl) => {
-                    const isSelected = qm.filterLevel === lvl;
-                    return (
+                {/* Academic Level */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">
+                    স্তর
+                  </label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
+                        <span>
+                          {LEVEL_LABELS[qm.filterLevel] ||
+                            qm.filterLevel ||
+                            "সকল স্তর"}
+                        </span>
+                        <ChevronDown className="size-3.5 text-slate-400" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                       <DropdownMenuItem
-                        key={lvl}
-                        onSelect={() => handleFilterLevelChange(lvl)}
+                        onSelect={() => handleFilterLevelChange("")}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                          isSelected ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                          !qm.filterLevel
+                            ? "bg-indigo-50 text-indigo-600"
+                            : "text-slate-700"
                         }`}
                       >
-                        <span>{LEVEL_LABELS[lvl] || lvl}</span>
-                        {isSelected && <span className="size-1 rounded-full bg-indigo-500" />}
+                        <span>সকল স্তর</span>
+                        {!qm.filterLevel && (
+                          <span className="size-1 rounded-full bg-indigo-500" />
+                        )}
                       </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                      {filterActiveLevels.map((lvl) => {
+                        const isSelected = qm.filterLevel === lvl;
+                        return (
+                          <DropdownMenuItem
+                            key={lvl}
+                            onSelect={() => handleFilterLevelChange(lvl)}
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                              isSelected
+                                ? "bg-indigo-50 text-indigo-600"
+                                : "text-slate-700"
+                            }`}
+                          >
+                            <span>{LEVEL_LABELS[lvl] || lvl}</span>
+                            {isSelected && (
+                              <span className="size-1 rounded-full bg-indigo-500" />
+                            )}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
 
-            {/* Class */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">শ্রেণী</label>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
-                    <span>{CLASSES_MAP.find((c) => c.value === qm.filterClass)?.label || qm.filterClass || "সকল শ্রেণী"}</span>
-                    <ChevronDown className="size-3.5 text-slate-400" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
-                  <DropdownMenuItem
-                    onSelect={() => {
-                      qm.setFilterClass("");
-                      qm.setFilterSubjectId("");
-                      qm.setFilterChapter("");
-                    }}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                      !qm.filterClass ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
-                    }`}
-                  >
-                    <span>সকল শ্রেণী</span>
-                    {!qm.filterClass && <span className="size-1 rounded-full bg-indigo-500" />}
-                  </DropdownMenuItem>
-                  {filterActiveClasses.map((c) => {
-                    const isSelected = qm.filterClass === c.value;
-                    return (
+                {/* Class */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">
+                    শ্রেণী
+                  </label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
+                        <span>
+                          {CLASSES_MAP.find((c) => c.value === qm.filterClass)
+                            ?.label ||
+                            qm.filterClass ||
+                            "সকল শ্রেণী"}
+                        </span>
+                        <ChevronDown className="size-3.5 text-slate-400" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                       <DropdownMenuItem
-                        key={c.value}
                         onSelect={() => {
-                          qm.setFilterClass(c.value);
+                          qm.setFilterClass("");
                           qm.setFilterSubjectId("");
                           qm.setFilterChapter("");
                         }}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                          isSelected ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                          !qm.filterClass
+                            ? "bg-indigo-50 text-indigo-600"
+                            : "text-slate-700"
                         }`}
                       >
-                        <span>{c.label}</span>
-                        {isSelected && <span className="size-1 rounded-full bg-indigo-500" />}
+                        <span>সকল শ্রেণী</span>
+                        {!qm.filterClass && (
+                          <span className="size-1 rounded-full bg-indigo-500" />
+                        )}
                       </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                      {filterActiveClasses.map((c) => {
+                        const isSelected = qm.filterClass === c.value;
+                        return (
+                          <DropdownMenuItem
+                            key={c.value}
+                            onSelect={() => {
+                              qm.setFilterClass(c.value);
+                              qm.setFilterSubjectId("");
+                              qm.setFilterChapter("");
+                            }}
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                              isSelected
+                                ? "bg-indigo-50 text-indigo-600"
+                                : "text-slate-700"
+                            }`}
+                          >
+                            <span>{c.label}</span>
+                            {isSelected && (
+                              <span className="size-1 rounded-full bg-indigo-500" />
+                            )}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
 
-            {/* Subject */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">বিষয়</label>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button 
-                    disabled={qm.filterClass && filterSubjects.length === 0}
-                    className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
-                  >
-                    <span>{filterSubjects.find((s) => s._id === qm.filterSubjectId)?.subjectName || "সকল বিষয়"}</span>
-                    <ChevronDown className="size-3.5 text-slate-400" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
-                  <DropdownMenuItem
-                    onSelect={() => {
-                      qm.setFilterSubjectId("");
-                      qm.setFilterChapter("");
-                    }}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                      !qm.filterSubjectId ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
-                    }`}
-                  >
-                    <span>সকল বিষয়</span>
-                    {!qm.filterSubjectId && <span className="size-1 rounded-full bg-indigo-500" />}
-                  </DropdownMenuItem>
-                  {filterSubjects.map((s) => {
-                    const isSelected = qm.filterSubjectId === s._id;
-                    return (
+                {/* Subject */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">
+                    বিষয়
+                  </label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        disabled={qm.filterClass && filterSubjects.length === 0}
+                        className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
+                      >
+                        <span>
+                          {filterSubjects.find(
+                            (s) => s._id === qm.filterSubjectId,
+                          )?.subjectName || "সকল বিষয়"}
+                        </span>
+                        <ChevronDown className="size-3.5 text-slate-400" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                       <DropdownMenuItem
-                        key={s._id}
                         onSelect={() => {
-                          qm.setFilterSubjectId(s._id);
+                          qm.setFilterSubjectId("");
                           qm.setFilterChapter("");
                         }}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                          isSelected ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                          !qm.filterSubjectId
+                            ? "bg-indigo-50 text-indigo-600"
+                            : "text-slate-700"
                         }`}
                       >
-                        <span>{s.subjectName}</span>
-                        {isSelected && <span className="size-1 rounded-full bg-indigo-500" />}
+                        <span>সকল বিষয়</span>
+                        {!qm.filterSubjectId && (
+                          <span className="size-1 rounded-full bg-indigo-500" />
+                        )}
                       </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                      {filterSubjects.map((s) => {
+                        const isSelected = qm.filterSubjectId === s._id;
+                        return (
+                          <DropdownMenuItem
+                            key={s._id}
+                            onSelect={() => {
+                              qm.setFilterSubjectId(s._id);
+                              qm.setFilterChapter("");
+                            }}
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                              isSelected
+                                ? "bg-indigo-50 text-indigo-600"
+                                : "text-slate-700"
+                            }`}
+                          >
+                            <span>{s.subjectName}</span>
+                            {isSelected && (
+                              <span className="size-1 rounded-full bg-indigo-500" />
+                            )}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
 
-            {/* Chapter */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">অধ্যায়</label>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button 
-                    disabled={!qm.filterSubjectId}
-                    className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
-                  >
-                    <span>
-                      {(() => {
-                        const ch = filterChapters.find((c) => String(c.chapterNumber) === String(qm.filterChapter));
-                        return ch ? `অধ্যায় ${ch.chapterNumber}: ${ch.chapterName}` : "সকল অধ্যায়";
-                      })()}
-                    </span>
-                    <ChevronDown className="size-3.5 text-slate-400" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] max-h-56 overflow-y-auto">
-                  <DropdownMenuItem
-                    onSelect={() => qm.setFilterChapter("")}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                      !qm.filterChapter ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
-                    }`}
-                  >
-                    <span>সকল অধ্যায়</span>
-                    {!qm.filterChapter && <span className="size-1 rounded-full bg-indigo-500" />}
-                  </DropdownMenuItem>
-                  {filterChapters.map((ch) => {
-                    const isSelected = String(qm.filterChapter) === String(ch.chapterNumber);
-                    return (
+                {/* Chapter */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">
+                    অধ্যায়
+                  </label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        disabled={!qm.filterSubjectId}
+                        className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
+                      >
+                        <span>
+                          {(() => {
+                            const ch = filterChapters.find(
+                              (c) =>
+                                String(c.chapterNumber) ===
+                                String(qm.filterChapter),
+                            );
+                            return ch
+                              ? `অধ্যায় ${ch.chapterNumber}: ${ch.chapterName}`
+                              : "সকল অধ্যায়";
+                          })()}
+                        </span>
+                        <ChevronDown className="size-3.5 text-slate-400" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] max-h-56 overflow-y-auto">
                       <DropdownMenuItem
-                        key={ch.chapterNumber}
-                        onSelect={() => qm.setFilterChapter(ch.chapterNumber)}
+                        onSelect={() => qm.setFilterChapter("")}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                          isSelected ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                          !qm.filterChapter
+                            ? "bg-indigo-50 text-indigo-600"
+                            : "text-slate-700"
                         }`}
                       >
-                        <span className="truncate">অধ্যায় {ch.chapterNumber}: {ch.chapterName}</span>
-                        {isSelected && <span className="size-1 rounded-full bg-indigo-500" />}
+                        <span>সকল অধ্যায়</span>
+                        {!qm.filterChapter && (
+                          <span className="size-1 rounded-full bg-indigo-500" />
+                        )}
                       </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                      {filterChapters.map((ch) => {
+                        const isSelected =
+                          String(qm.filterChapter) === String(ch.chapterNumber);
+                        return (
+                          <DropdownMenuItem
+                            key={ch.chapterNumber}
+                            onSelect={() =>
+                              qm.setFilterChapter(ch.chapterNumber)
+                            }
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                              isSelected
+                                ? "bg-indigo-50 text-indigo-600"
+                                : "text-slate-700"
+                            }`}
+                          >
+                            <span className="truncate">
+                              অধ্যায় {ch.chapterNumber}: {ch.chapterName}
+                            </span>
+                            {isSelected && (
+                              <span className="size-1 rounded-full bg-indigo-500" />
+                            )}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
 
-            {/* Category */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">প্রশ্ন ধরণ</label>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button 
-                    disabled={qm.filterClass && filterSubjects.length === 0}
-                    className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
-                  >
-                    <span>
+                {/* Category */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">
+                    প্রশ্ন ধরণ
+                  </label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        disabled={qm.filterClass && filterSubjects.length === 0}
+                        className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
+                      >
+                        <span>
+                          {(() => {
+                            const activeCats = getActiveCategories();
+                            return (
+                              activeCats.find(
+                                (cat) => cat.value === qm.filterCategory,
+                              )?.label || "সকল ধরণ"
+                            );
+                          })()}
+                        </span>
+                        <ChevronDown className="size-3.5 text-slate-400" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                      <DropdownMenuItem
+                        onSelect={() => qm.setFilterCategory("")}
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                          !qm.filterCategory
+                            ? "bg-indigo-50 text-indigo-600"
+                            : "text-slate-700"
+                        }`}
+                      >
+                        <span>সকল ধরণ</span>
+                        {!qm.filterCategory && (
+                          <span className="size-1 rounded-full bg-indigo-500" />
+                        )}
+                      </DropdownMenuItem>
                       {(() => {
                         const activeCats = getActiveCategories();
-                        return activeCats.find((cat) => cat.value === qm.filterCategory)?.label || "সকল ধরণ";
+                        return activeCats.map((cat) => {
+                          const isSelected = qm.filterCategory === cat.value;
+                          return (
+                            <DropdownMenuItem
+                              key={cat.value}
+                              onSelect={() => qm.setFilterCategory(cat.value)}
+                              className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                                isSelected
+                                  ? "bg-indigo-50 text-indigo-600"
+                                  : "text-slate-700"
+                              }`}
+                            >
+                              <span>{cat.label}</span>
+                              {isSelected && (
+                                <span className="size-1 rounded-full bg-indigo-500" />
+                              )}
+                            </DropdownMenuItem>
+                          );
+                        });
                       })()}
-                    </span>
-                    <ChevronDown className="size-3.5 text-slate-400" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
-                  <DropdownMenuItem
-                    onSelect={() => qm.setFilterCategory("")}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                      !qm.filterCategory ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
-                    }`}
-                  >
-                    <span>সকল ধরণ</span>
-                    {!qm.filterCategory && <span className="size-1 rounded-full bg-indigo-500" />}
-                  </DropdownMenuItem>
-                  {(() => {
-                    const activeCats = getActiveCategories();
-                    return activeCats.map((cat) => {
-                      const isSelected = qm.filterCategory === cat.value;
-                      return (
-                        <DropdownMenuItem
-                          key={cat.value}
-                          onSelect={() => qm.setFilterCategory(cat.value)}
-                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                            isSelected ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
-                          }`}
-                        >
-                          <span>{cat.label}</span>
-                          {isSelected && <span className="size-1 rounded-full bg-indigo-500" />}
-                        </DropdownMenuItem>
-                      );
-                    });
-                  })()}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
 
-            {/* Difficulty */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">কাঠিন্য</label>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
-                    <span>
-                      {qm.filterDifficulty ? DIFFICULTY_MAP[qm.filterDifficulty]?.label || qm.filterDifficulty : "সকল কাঠিন্য"}
-                    </span>
-                    <ChevronDown className="size-3.5 text-slate-400" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
-                  <DropdownMenuItem
-                    onSelect={() => qm.setFilterDifficulty("")}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                      !qm.filterDifficulty ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
-                    }`}
-                  >
-                    <span>সকল কাঠিন্য</span>
-                    {!qm.filterDifficulty && <span className="size-1 rounded-full bg-indigo-500" />}
-                  </DropdownMenuItem>
-                  {Object.keys(DIFFICULTY_MAP).map((k) => {
-                    const isSelected = qm.filterDifficulty === k;
-                    return (
+                {/* Difficulty */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">
+                    কাঠিন্য
+                  </label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
+                        <span>
+                          {qm.filterDifficulty
+                            ? DIFFICULTY_MAP[qm.filterDifficulty]?.label ||
+                              qm.filterDifficulty
+                            : "সকল কাঠিন্য"}
+                        </span>
+                        <ChevronDown className="size-3.5 text-slate-400" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                       <DropdownMenuItem
-                        key={k}
-                        onSelect={() => qm.setFilterDifficulty(k)}
+                        onSelect={() => qm.setFilterDifficulty("")}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                          isSelected ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                          !qm.filterDifficulty
+                            ? "bg-indigo-50 text-indigo-600"
+                            : "text-slate-700"
                         }`}
                       >
-                        <span>{DIFFICULTY_MAP[k].label}</span>
-                        {isSelected && <span className="size-1 rounded-full bg-indigo-500" />}
+                        <span>সকল কাঠিন্য</span>
+                        {!qm.filterDifficulty && (
+                          <span className="size-1 rounded-full bg-indigo-500" />
+                        )}
                       </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                      {Object.keys(DIFFICULTY_MAP).map((k) => {
+                        const isSelected = qm.filterDifficulty === k;
+                        return (
+                          <DropdownMenuItem
+                            key={k}
+                            onSelect={() => qm.setFilterDifficulty(k)}
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                              isSelected
+                                ? "bg-indigo-50 text-indigo-600"
+                                : "text-slate-700"
+                            }`}
+                          >
+                            <span>{DIFFICULTY_MAP[k].label}</span>
+                            {isSelected && (
+                              <span className="size-1 rounded-full bg-indigo-500" />
+                            )}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
 
-            {/* Version */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">সংস্করণ</label>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
-                    <span>
-                      {qm.filterVersion === "Bangla" ? "বাংলা সংস্করণ" : qm.filterVersion === "English" ? "ইংরেজি সংস্করণ" : "সকল সংস্করণ"}
-                    </span>
-                    <ChevronDown className="size-3.5 text-slate-400" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
-                  <DropdownMenuItem
-                    onSelect={() => qm.setFilterVersion("")}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                      !qm.filterVersion ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
-                    }`}
-                  >
-                    <span>সকল সংস্করণ</span>
-                    {!qm.filterVersion && <span className="size-1 rounded-full bg-indigo-500" />}
-                  </DropdownMenuItem>
-                  {[
-                    { value: "Bangla", label: "বাংলা সংস্করণ" },
-                    { value: "English", label: "ইংরেজি সংস্করণ" }
-                  ].map((v) => {
-                    const isSelected = qm.filterVersion === v.value;
-                    return (
+                {/* Version */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">
+                    সংস্করণ
+                  </label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
+                        <span>
+                          {qm.filterVersion === "Bangla"
+                            ? "বাংলা সংস্করণ"
+                            : qm.filterVersion === "English"
+                              ? "ইংরেজি সংস্করণ"
+                              : "সকল সংস্করণ"}
+                        </span>
+                        <ChevronDown className="size-3.5 text-slate-400" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                       <DropdownMenuItem
-                        key={v.value}
-                        onSelect={() => qm.setFilterVersion(v.value)}
+                        onSelect={() => qm.setFilterVersion("")}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
-                          isSelected ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                          !qm.filterVersion
+                            ? "bg-indigo-50 text-indigo-600"
+                            : "text-slate-700"
                         }`}
                       >
-                        <span>{v.label}</span>
-                        {isSelected && <span className="size-1 rounded-full bg-indigo-500" />}
+                        <span>সকল সংস্করণ</span>
+                        {!qm.filterVersion && (
+                          <span className="size-1 rounded-full bg-indigo-500" />
+                        )}
                       </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+                      {[
+                        { value: "Bangla", label: "বাংলা সংস্করণ" },
+                        { value: "English", label: "ইংরেজি সংস্করণ" },
+                      ].map((v) => {
+                        const isSelected = qm.filterVersion === v.value;
+                        return (
+                          <DropdownMenuItem
+                            key={v.value}
+                            onSelect={() => qm.setFilterVersion(v.value)}
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                              isSelected
+                                ? "bg-indigo-50 text-indigo-600"
+                                : "text-slate-700"
+                            }`}
+                          >
+                            <span>{v.label}</span>
+                            {isSelected && (
+                              <span className="size-1 rounded-full bg-indigo-500" />
+                            )}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Main List Area */}
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((n) => (
-            <div key={n} className="bg-glass p-6 rounded-2xl border border-black/[0.06] shadow-sm animate-pulse space-y-4">
+            <div
+              key={n}
+              className="bg-glass p-6 rounded-2xl border border-black/[0.06] shadow-sm animate-pulse space-y-4"
+            >
               <div className="flex justify-between items-center">
                 <div className="flex gap-2">
                   <div className="h-6 w-20 bg-black/[0.04] rounded-lg" />
@@ -747,8 +927,14 @@ export default function MyQuestions() {
         <div className="bg-red-50/50 border border-red-100 rounded-2xl p-6 text-center text-red-700 space-y-2">
           <AlertCircle className="size-8 mx-auto text-red-500 animate-bounce" />
           <h3 className="font-bold text-lg">কোয়েরি রিকোয়েস্ট ব্যর্থ হয়েছে</h3>
-          <p className="text-sm">প্রশ্নাবলী লোড করতে সমস্যা হচ্ছে। অনুগ্রহ করে একটু পরে আবার চেষ্টা করুন।</p>
-          <Button onClick={() => refetch()} className="bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs h-9 px-4 mt-2">
+          <p className="text-sm">
+            প্রশ্নাবলী লোড করতে সমস্যা হচ্ছে। অনুগ্রহ করে একটু পরে আবার চেষ্টা
+            করুন।
+          </p>
+          <Button
+            onClick={() => refetch()}
+            className="bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs h-9 px-4 mt-2"
+          >
             পুনরায় চেষ্টা করুন
           </Button>
         </div>
@@ -757,9 +943,12 @@ export default function MyQuestions() {
           <div className="p-4 bg-[#4F46E5]/10 text-[#4F46E5] rounded-full">
             <FolderOpen className="size-10" />
           </div>
-          <h3 className="text-xl font-bold text-slate-800">কোনো সংরক্ষিত প্রশ্ন পাওয়া যায়নি</h3>
+          <h3 className="text-xl font-bold text-slate-800">
+            কোনো সংরক্ষিত প্রশ্ন পাওয়া যায়নি
+          </h3>
           <p className="text-sm text-slate-500 max-w-md leading-relaxed">
-            আপনার নির্বাচিত ফিল্টার বা ক্যাটাগরির অধীনে কোনো প্রশ্ন খুঁজে পাওয়া যায়নি। নতুন প্রশ্ন তৈরি করতে নিচের বাটনে ক্লিক করুন।
+            আপনার নির্বাচিত ফিল্টার বা ক্যাটাগরির অধীনে কোনো প্রশ্ন খুঁজে পাওয়া
+            যায়নি। নতুন প্রশ্ন তৈরি করতে নিচের বাটনে ক্লিক করুন।
           </p>
           <Button
             onClick={() => navigate("/dashboard/add-question")}
@@ -772,7 +961,10 @@ export default function MyQuestions() {
       ) : (
         <>
           <div className="flex justify-between items-center bg-white/[0.45] backdrop-blur-md px-4 py-2 rounded-2xl border border-black/[0.04] text-xs font-semibold text-slate-500 mb-4">
-            <span>মোট {questions.length.toLocaleString("bn-BD")} টি প্রশ্ন পাওয়া গেছে</span>
+            <span>
+              মোট {questions.length.toLocaleString("bn-BD")} টি প্রশ্ন পাওয়া
+              গেছে
+            </span>
             <div className="flex items-center gap-2">
               <span>প্রদর্শন:</span>
               <DropdownMenu>
@@ -782,13 +974,18 @@ export default function MyQuestions() {
                     <ChevronDown className="size-3 text-slate-400" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1 z-[100] w-24">
+                <DropdownMenuContent
+                  align="end"
+                  className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1 z-[100] w-24"
+                >
                   {[10, 20, 50, 100].map((size) => (
                     <DropdownMenuItem
                       key={size}
                       onSelect={() => setPageSize(size)}
                       className={`text-center px-2 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
-                        pageSize === size ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                        pageSize === size
+                          ? "bg-indigo-50 text-indigo-600"
+                          : "text-slate-700"
                       }`}
                     >
                       {size} টি
@@ -806,308 +1003,451 @@ export default function MyQuestions() {
             className="space-y-4"
           >
             {visibleQuestions.map((q) => {
-            const classLabel = CLASSES_MAP.find((c) => c.value === q.className)?.label || q.className;
-            const diffConfig = DIFFICULTY_MAP[q.difficulty] || { label: q.difficulty, color: "bg-slate-50 border-slate-100 text-slate-600" };
-            const catLabel = CATEGORIES_MAP.find((c) => c.value === q.category)?.label || q.category;
+              const classLabel =
+                CLASSES_MAP.find((c) => c.value === q.className)?.label ||
+                q.className;
+              const diffConfig = DIFFICULTY_MAP[q.difficulty] || {
+                label: q.difficulty,
+                color: "bg-slate-50 border-slate-100 text-slate-600",
+              };
+              const catLabel =
+                CATEGORIES_MAP.find((c) => c.value === q.category)?.label ||
+                q.category;
 
-            return (
-              <motion.div
-                key={q._id}
-                variants={cardVariants}
-                whileHover={{ y: -4 }}
-                className="bg-white/[0.45] hover:bg-white/[0.60] p-6 rounded-2xl border border-black/[0.04] backdrop-blur-md hover:shadow-md transition-colors duration-200 flex flex-col space-y-4 relative"
-              >
-                {/* Badge Header Row */}
-                <div className="flex flex-wrap justify-between items-center gap-2">
-                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
-                    {new Date() - new Date(q.createdAt) < 24 * 60 * 60 * 1000 && (
-                      <span className="bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded flex items-center gap-1.5">
-                        <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
-                        নতুন
-                      </span>
-                    )}
-                    <span className="bg-indigo-50 text-[#4F46E5] border border-indigo-100 px-2 py-0.5 rounded">
-                      {classLabel}
-                    </span>
-                    <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
-                      {q.subjectId?.subjectName || "বিষয়"}
-                    </span>
-                    <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded">
-                      অধ্যায় {q.chapterNumber}
-                    </span>
-                    {q.topics && q.topics.length > 0 && (
-                      <span className="bg-slate-50 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">
-                        #{q.topics.join(", #")}
-                      </span>
-                    )}
-                    {q.year && (Array.isArray(q.year) ? q.year.length > 0 : String(q.year).trim()) && (
-                      <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
-                        সাল: {Array.isArray(q.year) ? q.year.join(", ") : q.year}
-                      </span>
-                    )}
-                    {q.board && (Array.isArray(q.board) ? q.board.length > 0 : String(q.board).trim()) && (
-                      <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
-                        বোর্ড: {Array.isArray(q.board) ? q.board.join(", ") : q.board}
-                      </span>
-                    )}
-                    {q.school && (Array.isArray(q.school) ? q.school.length > 0 : String(q.school).trim()) && (
-                      <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[150px]" title={Array.isArray(q.school) ? q.school.join(", ") : q.school}>
-                        প্রতিষ্ঠান: {Array.isArray(q.school) ? q.school.join(", ") : q.school}
-                      </span>
-                    )}
-                    {q.level && String(q.level).trim() && (
-                      <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
-                        লেভেল: {LEVEL_LABELS[q.level] || q.level}
-                      </span>
-                    )}
-                    {q.specialSearch && (Array.isArray(q.specialSearch) ? q.specialSearch.length > 0 : String(q.specialSearch).trim()) && (
-                      <span className="bg-slate-50 text-slate-700 border border-slate-200 px-2 py-0.5 rounded">
-                        কীওয়ার্ড: {Array.isArray(q.specialSearch) ? q.specialSearch.join(", ") : q.specialSearch}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
-                    {/* Status Badge */}
-                    <div className="flex items-center gap-1">
-                      <span className={`px-2 py-0.5 rounded border flex items-center gap-1 ${
-                        q.status === "Approved"
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                          : q.status === "Pending"
-                          ? "bg-amber-50 text-amber-700 border-amber-100"
-                          : "bg-rose-50 text-rose-700 border-rose-100"
-                      }`}>
-                        {q.status === "Pending" && <Loader2 className="size-3 animate-spin text-amber-600" />}
-                        {q.status === "Approved" ? "অনুমোদিত" : q.status === "Pending" ? "অপেক্ষমান" : "বাতিলকৃত"}
-                      </span>
-                      {q.status === "Rejected" && (q.rejectionReason || (q.rejectionHistory && q.rejectionHistory.length > 0)) && (
-                        <button
-                          type="button"
-                          onClick={() => setSelectedRejectionReason(q.rejectionReason || q.rejectionHistory[q.rejectionHistory.length - 1]?.reason)}
-                          className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer flex items-center justify-center shrink-0"
-                          title="বাতিলকরণের কারণ দেখুন"
-                        >
-                          <MessageSquare className="size-3.5" />
-                        </button>
+              return (
+                <motion.div
+                  key={q._id}
+                  variants={cardVariants}
+                  whileHover={{ y: -4 }}
+                  className="bg-white/[0.45] hover:bg-white/[0.60] p-6 rounded-2xl border border-black/[0.04] backdrop-blur-md hover:shadow-md transition-colors duration-200 flex flex-col space-y-4 relative"
+                >
+                  {/* Badge Header Row */}
+                  <div className="flex flex-wrap justify-between items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
+                      {new Date() - new Date(q.createdAt) <
+                        24 * 60 * 60 * 1000 && (
+                        <span className="bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded flex items-center gap-1.5">
+                          <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
+                          নতুন
+                        </span>
                       )}
+                      <span className="bg-indigo-50 text-[#4F46E5] border border-indigo-100 px-2 py-0.5 rounded">
+                        {classLabel}
+                      </span>
+                      <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
+                        {q.subjectId?.subjectName || "বিষয়"}
+                      </span>
+                      <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded">
+                        অধ্যায় {q.chapterNumber}
+                      </span>
+                      {q.topics && q.topics.length > 0 && (
+                        <span className="bg-slate-50 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">
+                          #{q.topics.join(", #")}
+                        </span>
+                      )}
+                      {q.year &&
+                        (Array.isArray(q.year)
+                          ? q.year.length > 0
+                          : String(q.year).trim()) && (
+                          <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
+                            সাল:{" "}
+                            {Array.isArray(q.year) ? q.year.join(", ") : q.year}
+                          </span>
+                        )}
+                      {q.board &&
+                        (Array.isArray(q.board)
+                          ? q.board.length > 0
+                          : String(q.board).trim()) && (
+                          <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
+                            বোর্ড:{" "}
+                            {Array.isArray(q.board)
+                              ? q.board.join(", ")
+                              : q.board}
+                          </span>
+                        )}
+                      {q.school &&
+                        (Array.isArray(q.school)
+                          ? q.school.length > 0
+                          : String(q.school).trim()) && (
+                          <span
+                            className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[150px]"
+                            title={
+                              Array.isArray(q.school)
+                                ? q.school.join(", ")
+                                : q.school
+                            }
+                          >
+                            প্রতিষ্ঠান:{" "}
+                            {Array.isArray(q.school)
+                              ? q.school.join(", ")
+                              : q.school}
+                          </span>
+                        )}
+                      {q.level && String(q.level).trim() && (
+                        <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
+                          লেভেল: {LEVEL_LABELS[q.level] || q.level}
+                        </span>
+                      )}
+                      {q.specialSearch &&
+                        (Array.isArray(q.specialSearch)
+                          ? q.specialSearch.length > 0
+                          : String(q.specialSearch).trim()) && (
+                          <span className="bg-slate-50 text-slate-700 border border-slate-200 px-2 py-0.5 rounded">
+                            কীওয়ার্ড:{" "}
+                            {Array.isArray(q.specialSearch)
+                              ? q.specialSearch.join(", ")
+                              : q.specialSearch}
+                          </span>
+                        )}
                     </div>
-                    <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-2 py-0.5 rounded">
-                      {catLabel}
-                    </span>
-                    <span className={`px-2 py-0.5 rounded border ${
-                      q.difficulty === "Easy"
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                        : q.difficulty === "Medium"
-                        ? "bg-amber-50 text-amber-700 border-amber-100"
-                        : "bg-rose-50 text-rose-700 border-rose-100"
-                    }`}>
-                      {diffConfig.label}
-                    </span>
+
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
+                      {/* Status Badge */}
+                      <div className="flex items-center gap-1">
+                        <span
+                          className={`px-2 py-0.5 rounded border flex items-center gap-1 ${
+                            q.status === "Approved"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                              : q.status === "Pending"
+                                ? "bg-amber-50 text-amber-700 border-amber-100"
+                                : "bg-rose-50 text-rose-700 border-rose-100"
+                          }`}
+                        >
+                          {q.status === "Pending" && (
+                            <Loader2 className="size-3 animate-spin text-amber-600" />
+                          )}
+                          {q.status === "Approved"
+                            ? "অনুমোদিত"
+                            : q.status === "Pending"
+                              ? "অপেক্ষমান"
+                              : "বাতিলকৃত"}
+                        </span>
+                        {q.status === "Rejected" &&
+                          (q.rejectionReason ||
+                            (q.rejectionHistory &&
+                              q.rejectionHistory.length > 0)) && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setSelectedRejectionReason(
+                                  q.rejectionReason ||
+                                    q.rejectionHistory[
+                                      q.rejectionHistory.length - 1
+                                    ]?.reason,
+                                )
+                              }
+                              className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer flex items-center justify-center shrink-0"
+                              title="বাতিলকরণের কারণ দেখুন"
+                            >
+                              <MessageSquare className="size-3.5" />
+                            </button>
+                          )}
+                      </div>
+                      <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-2 py-0.5 rounded">
+                        {catLabel}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded border ${
+                          q.difficulty === "Easy"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                            : q.difficulty === "Medium"
+                              ? "bg-amber-50 text-amber-700 border-amber-100"
+                              : "bg-rose-50 text-rose-700 border-rose-100"
+                        }`}
+                      >
+                        {diffConfig.label}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Main Content Body */}
-                <div className="text-slate-800 font-serif leading-relaxed flex-1 pt-1">
-                  {/* MCQ */}
-                  {q.category === "MCQ" && q.mcqData && (
-                    <div className="space-y-4">
-                      {q.mcqData.mcqType === "Contextual" && q.mcqData.stem && (
-                        <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-sm italic font-serif leading-relaxed text-slate-700 backdrop-blur-sm">
-                          <strong>উদ্দীপক:</strong>
-                          <RichTextRender content={q.mcqData.stem} className="mt-1 font-serif" />
-                        </div>
-                      )}
+                  {/* Main Content Body */}
+                  <div className="text-slate-800 font-serif leading-relaxed flex-1 pt-1">
+                    {/* MCQ */}
+                    {q.category === "MCQ" && q.mcqData && (
+                      <div className="space-y-4">
+                        {q.mcqData.mcqType === "Contextual" &&
+                          q.mcqData.stem && (
+                            <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-sm italic font-serif leading-relaxed text-slate-700 backdrop-blur-sm">
+                              <strong>উদ্দীপক:</strong>
+                              <RichTextRender
+                                content={q.mcqData.stem}
+                                className="mt-1 font-serif"
+                              />
+                            </div>
+                          )}
 
-                      <div className="text-[15px] flex justify-between items-start gap-4">
-                        <div className="flex gap-2">
-                          <span className="font-bold shrink-0">১.</span>
-                          <div className="flex-1">
-                            <RichTextRender content={q.mcqData.questionText} className="font-serif" />
-                            {q.mcqData.mcqType === "MultipleCompletion" && q.mcqData.statements && (
-                              <div className="space-y-1 pl-4 mt-2 font-normal text-sm font-sans">
-                                {q.mcqData.statements.map((st, idx) => (
-                                  <div key={idx} className="flex gap-1 items-start">
-                                    <span className="shrink-0">{idx === 0 ? "i. " : idx === 1 ? "ii. " : "iii. "}</span>
-                                    <RichTextRender content={st} className="inline-block font-sans font-normal" />
+                        <div className="text-[15px] flex justify-between items-start gap-4">
+                          <div className="flex gap-2">
+                            <span className="font-bold shrink-0">১.</span>
+                            <div className="flex-1">
+                              <RichTextRender
+                                content={q.mcqData.questionText}
+                                className="font-serif"
+                              />
+                              {q.mcqData.mcqType === "MultipleCompletion" &&
+                                q.mcqData.statements && (
+                                  <div className="space-y-1 pl-4 mt-2 font-normal text-[15px] font-serif text-slate-700">
+                                    {q.mcqData.statements.map((st, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="flex gap-1 items-start"
+                                      >
+                                        <span className="shrink-0 text-slate-500 font-bold">
+                                          {idx === 0
+                                            ? "i. "
+                                            : idx === 1
+                                              ? "ii. "
+                                              : "iii. "}
+                                        </span>
+                                        <RichTextRender
+                                          content={st}
+                                          className="inline-block font-serif"
+                                        />
+                                      </div>
+                                    ))}
+                                    <div className="mt-2 font-semibold font-serif">
+                                      নিচের কোনটি সঠিক?
+                                    </div>
                                   </div>
-                                ))}
-                                <div className="mt-2 font-semibold">নিচের কোনটি সঠিক?</div>
-                              </div>
-                            )}
+                                )}
+                            </div>
+                          </div>
+                          <span className="text-slate-505 text-xs font-serif font-bold">
+                            ১
+                          </span>
+                        </div>
+
+                        {/* Options Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 text-[15px] font-serif">
+                          {q.mcqData.options &&
+                            q.mcqData.options.map((opt, idx) => {
+                              const isCorrect = q.mcqData.correctAnswer === idx;
+                              return (
+                                <div
+                                  key={idx}
+                                  className={`flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border transition-all duration-300 ${
+                                    isCorrect
+                                      ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm"
+                                      : "bg-white/[0.3] hover:bg-white/[0.6] border-black/[0.03] hover:border-black/[0.08] text-slate-600"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2.5">
+                                    <span
+                                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+                                        isCorrect
+                                          ? "bg-emerald-500 text-white"
+                                          : "bg-black/[0.04] text-slate-500"
+                                      }`}
+                                    >
+                                      {idx === 0
+                                        ? "ক"
+                                        : idx === 1
+                                          ? "খ"
+                                          : idx === 2
+                                            ? "গ"
+                                            : "ঘ"}
+                                    </span>
+                                    <RichTextRender
+                                      content={opt}
+                                      className={`inline-block font-serif ${isCorrect ? " text-emerald-800" : "font-normal"}`}
+                                    />
+                                  </div>
+                                  {isCorrect && (
+                                    <Check className="size-4 text-emerald-600 shrink-0" />
+                                  )}
+                                </div>
+                              );
+                            })}
+                        </div>
+
+                        {q.mcqData.explanation && (
+                          <div className="mt-3 p-3 bg-black/[0.02] border border-black/[0.05] rounded-xl text-[15px] font-serif text-slate-500 backdrop-blur-sm">
+                            <span className="font-semibold text-[15px] ">
+                              বিশ্লেষণ:{" "}
+                            </span>
+                            <RichTextRender
+                              content={q.mcqData.explanation}
+                              className="font-serif inline-block"
+                              inline
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Creative */}
+                    {q.category === "Creative" && q.creativeData && (
+                      <div className="space-y-4">
+                        {q.creativeData.stem && (
+                          <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[14px] leading-relaxed text-slate-700 font-serif backdrop-blur-sm">
+                            <RichTextRender content={q.creativeData.stem} />
+                          </div>
+                        )}
+
+                        <div className="pl-4 space-y-2.5 text-[15px] font-serif text-slate-700">
+                          <div className="flex justify-between items-start gap-2">
+                            <span className="w-6">ক)</span>
+                            <RichTextRender
+                              content={
+                                q.creativeData.subQuestions?.cognitiveA?.text
+                              }
+                              className="flex-1 font-serif inline-block"
+                            />
+                            <span className="text-slate-500 text-[15px] font-serif font-bold">
+                              ১
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-start gap-2">
+                            <span className="w-6">খ)</span>
+                            <RichTextRender
+                              content={
+                                q.creativeData.subQuestions?.cognitiveB?.text
+                              }
+                              className="flex-1 font-serif inline-block"
+                            />
+                            <span className="text-slate-500 text-[15px] font-serif font-bold">
+                              ২
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-start gap-2">
+                            <span className="w-6">গ)</span>
+                            <RichTextRender
+                              content={
+                                q.creativeData.subQuestions?.cognitiveC?.text
+                              }
+                              className="flex-1 font-serif inline-block"
+                            />
+                            <span className="text-slate-500 text-[15px] font-serif font-bold">
+                              ৩
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-start gap-2">
+                            <span className="w-6">ঘ)</span>
+                            <RichTextRender
+                              content={
+                                q.creativeData.subQuestions?.cognitiveD?.text
+                              }
+                              className="flex-1 font-serif inline-block"
+                            />
+                            <span className="text-slate-500 text-[15px] font-serif font-bold">
+                              ৪
+                            </span>
                           </div>
                         </div>
-                        <span className="text-slate-600 text-xs font-sans font-bold shrink-0 bg-black/[0.04] px-2 py-0.5 rounded border border-black/[0.05]">
-                          {q.mcqData.marks || 1}
-                        </span>
-                      </div>
-
-                      {/* Options Grid */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 text-sm font-sans">
-                        {q.mcqData.options &&
-                          q.mcqData.options.map((opt, idx) => {
-                            const isCorrect = q.mcqData.correctAnswer === idx;
-                            return (
-                              <div
-                                key={idx}
-                                className={`flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border transition-all duration-300 ${
-                                  isCorrect
-                                    ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm"
-                                    : "bg-white/[0.3] hover:bg-white/[0.6] border-black/[0.03] hover:border-black/[0.08] text-slate-600"
-                                }`}
-                              >
-                                <div className="flex items-center gap-2.5">
-                                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                                    isCorrect 
-                                      ? "bg-emerald-500 text-white" 
-                                      : "bg-black/[0.04] text-slate-500"
-                                  }`}>
-                                    {idx === 0 ? "ক" : idx === 1 ? "খ" : idx === 2 ? "গ" : "ঘ"}
-                                  </span>
-                                  <RichTextRender content={opt} className={`inline-block font-sans ${isCorrect ? "font-semibold" : "font-normal"}`} />
-                                </div>
-                                {isCorrect && <Check className="size-4 text-emerald-600 shrink-0" />}
-                              </div>
-                            );
-                          })}
-                      </div>
-
-                      {q.mcqData.explanation && (
-                        <div className="mt-3 p-3 bg-black/[0.02] border border-black/[0.05] rounded-xl text-xs font-sans text-slate-500 backdrop-blur-sm">
-                          <span className="font-semibold text-sm ">বিশ্লেষণ: </span>
-                          <RichTextRender content={q.mcqData.explanation} inline />
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Creative */}
-                  {q.category === "Creative" && q.creativeData && (
-                    <div className="space-y-4">
-                      {q.creativeData.stem && (
-                        <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[14px] leading-relaxed text-slate-700 font-serif backdrop-blur-sm">
-                          <RichTextRender content={q.creativeData.stem} />
-                        </div>
-                      )}
-
-                      <div className="pl-4 space-y-2.5 text-[14px] font-sans font-semibold text-slate-700">
-                        <div className="flex justify-between items-start gap-2">
-                          <span className="w-6">ক)</span>
-                          <RichTextRender content={q.creativeData.subQuestions?.cognitiveA?.text} className="flex-1 font-serif inline-block" />
-                          <span className="text-slate-505 text-xs font-serif font-bold">১</span>
-                        </div>
-                        <div className="flex justify-between items-start gap-2">
-                          <span className="w-6">খ)</span>
-                          <RichTextRender content={q.creativeData.subQuestions?.cognitiveB?.text} className="flex-1 font-serif inline-block" />
-                          <span className="text-slate-550 text-xs font-serif font-bold">২</span>
-                        </div>
-                        <div className="flex justify-between items-start gap-2">
-                          <span className="w-6">গ)</span>
-                          <RichTextRender content={q.creativeData.subQuestions?.cognitiveC?.text} className="flex-1 font-serif inline-block" />
-                          <span className="text-slate-505 text-xs font-serif font-bold">৩</span>
-                        </div>
-                        <div className="flex justify-between items-start gap-2">
-                          <span className="w-6">ঘ)</span>
-                          <RichTextRender content={q.creativeData.subQuestions?.cognitiveD?.text} className="flex-1 font-serif inline-block" />
-                          <span className="text-slate-505 text-xs font-serif font-bold">৪</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* General Questions */}
-                  {!["MCQ", "Creative"].includes(q.category) && q.generalData && (
-                    <div className="space-y-3">
-                      {q.generalData.stem && (
-                        <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-sm italic font-serif leading-relaxed text-slate-700 backdrop-blur-sm">
-                          <RichTextRender content={q.generalData.stem} />
-                        </div>
-                      )}
-
-                      <div className="text-[15px] flex justify-between items-start gap-4">
-                        <div className="flex gap-2">
-                          <span className="font-bold shrink-0">১.</span>
-                          <RichTextRender content={q.generalData.questionText} className="font-serif" />
-                        </div>
-                        <span className="text-slate-600 text-xs font-sans font-bold shrink-0 bg-black/[0.04] px-2 py-0.5 rounded border border-black/[0.05]">
-                          {q.generalData.marks}
-                        </span>
-                      </div>
-
-                      {q.generalData.suggestedAnswer && (
-                        <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs font-sans text-slate-700">
-                          <span className="text-sm font-semibold">উত্তর: </span>
-                          <RichTextRender content={q.generalData.suggestedAnswer} inline />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                 {/* Footer Metadata & Action Buttons */}
-                <div className="flex justify-between items-center border-t border-black/[0.05] pt-3 text-[11px] font-sans text-slate-500">
-                  <div className="flex flex-wrap items-center gap-4 font-medium">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="size-3.5 text-slate-400" />
-                      <span>সংরক্ষণকাল: {formatBengaliDateTime(q.createdAt)}</span>
-                    </div>
-                    {q.status === "Rejected" && q.rejectedBy?.fullName && (
-                      <div className="flex items-center gap-1 text-rose-600 bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/10">
-                        <X className="size-3 text-rose-600" />
-                        <span>বাতিলকারী: {q.rejectedBy.fullName}</span>
                       </div>
                     )}
+
+                    {/* General Questions */}
+                    {!["MCQ", "Creative"].includes(q.category) &&
+                      q.generalData && (
+                        <div className="space-y-3">
+                          {q.generalData.stem && (
+                            <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[15px] italic font-serif leading-relaxed text-slate-700 backdrop-blur-sm">
+                              <RichTextRender content={q.generalData.stem} />
+                            </div>
+                          )}
+
+                          <div className="text-[15px] flex justify-between items-start gap-4">
+                            <div className="flex gap-2">
+                              <span className="font-bold shrink-0">১.</span>
+                              <RichTextRender
+                                content={q.generalData.questionText}
+                                className="font-serif"
+                              />
+                            </div>
+                            <span className="text-slate-505 text-xs font-serif font-bold">
+                              {(q.generalData.marks || 0).toLocaleString(
+                                "bn-BD",
+                              )}
+                            </span>
+                          </div>
+
+                          {q.generalData.suggestedAnswer && (
+                            <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
+                              <span className="font-semibold text-[16px]">
+                                উত্তর:{" "}
+                              </span>
+                              <RichTextRender
+                                content={q.generalData.suggestedAnswer}
+                                className="inline-block "
+                                inline
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    {q.status !== "Approved" && (
-                      <>
-                        {q.status === "Rejected" && (
+                  {/* Footer Metadata & Action Buttons */}
+                  <div className="flex justify-between items-center border-t border-black/[0.05] pt-3 text-[11px] font-sans text-slate-500">
+                    <div className="flex flex-wrap items-center gap-4 font-medium">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="size-3.5 text-slate-400" />
+                        <span>
+                          সংরক্ষণকাল: {formatBengaliDateTime(q.createdAt)}
+                        </span>
+                      </div>
+                      {q.status === "Rejected" && q.rejectedBy?.fullName && (
+                        <div className="flex items-center gap-1 text-rose-600 bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/10">
+                          <X className="size-3 text-rose-600" />
+                          <span>বাতিলকারী: {q.rejectedBy.fullName}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {q.status !== "Approved" && (
+                        <>
+                          {q.status === "Rejected" && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                setReviewRequestId(q._id);
+                                setReviewComment("");
+                              }}
+                              className="border-indigo-200 text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/30 rounded-xl h-8 px-3 text-xs flex items-center gap-1.5 font-bold cursor-pointer bg-[#4F46E5]/5"
+                            >
+                              <RefreshCw className="size-3" />
+                              রিভিউ রিকোয়েস্ট
+                            </Button>
+                          )}
                           <Button
                             type="button"
                             variant="outline"
-                            onClick={() => { setReviewRequestId(q._id); setReviewComment(""); }}
-                            className="border-indigo-200 text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/30 rounded-xl h-8 px-3 text-xs flex items-center gap-1.5 font-bold cursor-pointer bg-[#4F46E5]/5"
+                            onClick={() => handleEdit(q)}
+                            className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
                           >
-                            <RefreshCw className="size-3" />
-                            রিভিউ রিকোয়েস্ট
+                            <Edit3 className="size-3" />
+                            সম্পাদন
                           </Button>
-                        )}
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => handleEdit(q)}
-                          className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
-                        >
-                          <Edit3 className="size-3" />
-                          সম্পাদন
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setDeleteConfirmId(q._id)}
-                          className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
-                        >
-                          <Trash2 className="size-3" />
-                          মুছে ফেলুন
-                        </Button>
-                      </>
-                    )}
-                    {q.status === "Approved" && q.approvedBy?.fullName && (
-                      <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10 font-bold">
-                        <Check className="size-3.5 text-emerald-600" />
-                        <span>অনুমোদনকারী: {q.approvedBy.fullName}</span>
-                      </div>
-                    )}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setDeleteConfirmId(q._id)}
+                            className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                          >
+                            <Trash2 className="size-3" />
+                            মুছে ফেলুন
+                          </Button>
+                        </>
+                      )}
+                      {q.status === "Approved" && q.approvedBy?.fullName && (
+                        <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10 font-bold">
+                          <Check className="size-3.5 text-emerald-600" />
+                          <span>অনুমোদনকারী: {q.approvedBy.fullName}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            );
-          })}
+                </motion.div>
+              );
+            })}
           </motion.div>
 
           {hasMore && (
-            <div 
-              ref={observerRef} 
+            <div
+              ref={observerRef}
               className="py-6 flex items-center justify-center gap-2 text-slate-500 text-xs font-semibold"
             >
               <Loader2 className="size-4 animate-spin text-indigo-500" />
@@ -1118,7 +1458,10 @@ export default function MyQuestions() {
       )}
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+      <Dialog
+        open={!!deleteConfirmId}
+        onOpenChange={(open) => !open && setDeleteConfirmId(null)}
+      >
         <DialogContent className="max-w-md border border-black/[0.08] bg-white/[0.90] backdrop-blur-xl rounded-2xl shadow-xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600 font-bold">
@@ -1126,7 +1469,8 @@ export default function MyQuestions() {
               প্রশ্নটি কি মুছে ফেলতে চান?
             </DialogTitle>
             <DialogDescription className="pt-2 text-slate-600 leading-relaxed font-semibold">
-              প্রশ্নটি মুছে ফেললে তা স্থায়ীভাবে হারিয়ে যাবে এবং পরবর্তীতে আর উদ্ধার করা সম্ভব হবে না। আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?
+              প্রশ্নটি মুছে ফেললে তা স্থায়ীভাবে হারিয়ে যাবে এবং পরবর্তীতে আর
+              উদ্ধার করা সম্ভব হবে না। আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2 justify-end mt-4">
@@ -1158,9 +1502,16 @@ export default function MyQuestions() {
         </DialogContent>
       </Dialog>
 
-
       {/* Review Request Dialog */}
-      <Dialog open={!!reviewRequestId} onOpenChange={(open) => { if (!open) { setReviewRequestId(null); setReviewComment(""); } }}>
+      <Dialog
+        open={!!reviewRequestId}
+        onOpenChange={(open) => {
+          if (!open) {
+            setReviewRequestId(null);
+            setReviewComment("");
+          }
+        }}
+      >
         <DialogContent className="max-w-lg border border-black/[0.08] bg-white/[0.95] backdrop-blur-xl rounded-2xl shadow-xl font-sans">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-[#4F46E5] font-bold">
@@ -1168,7 +1519,9 @@ export default function MyQuestions() {
               পুনরায় যাচাইয়ের আবেদন
             </DialogTitle>
             <DialogDescription className="pt-2 text-slate-600 leading-relaxed font-semibold text-xs">
-              প্রশ্নটি বাতিল হওয়ার পর যে সংশোধন বা পরিবর্তন করেছেন তার সংক্ষিপ্ত বিবরণ লিখুন। এই মন্তব্যটি অনুমোদনকারী প্রশাসক দেখতে পাবেন।
+              প্রশ্নটি বাতিল হওয়ার পর যে সংশোধন বা পরিবর্তন করেছেন তার
+              সংক্ষিপ্ত বিবরণ লিখুন। এই মন্তব্যটি অনুমোদনকারী প্রশাসক দেখতে
+              পাবেন।
             </DialogDescription>
           </DialogHeader>
           <div className="py-2">
@@ -1179,22 +1532,32 @@ export default function MyQuestions() {
               rows={4}
               className="w-full resize-none bg-white/[0.60] border border-black/[0.10] focus:ring-2 focus:ring-[#4F46E5]/15 focus:border-[#4F46E5] outline-none rounded-xl font-semibold text-slate-700 text-sm leading-relaxed px-3 py-2.5"
             />
-            <p className="text-[11px] text-slate-400 mt-1.5 font-semibold">{reviewComment.length} / ৫০০ অক্ষর</p>
+            <p className="text-[11px] text-slate-400 mt-1.5 font-semibold">
+              {reviewComment.length} / ৫০০ অক্ষর
+            </p>
           </div>
           <DialogFooter className="flex gap-2 justify-end">
             <Button
               variant="outline"
-              onClick={() => { setReviewRequestId(null); setReviewComment(""); }}
+              onClick={() => {
+                setReviewRequestId(null);
+                setReviewComment("");
+              }}
               className="border-black/[0.08] text-slate-600 hover:bg-black/[0.02] rounded-xl font-semibold cursor-pointer"
             >
               বাতিল করুন
             </Button>
             <Button
-              disabled={!reviewComment.trim() || requestReviewMutation.isPending}
+              disabled={
+                !reviewComment.trim() || requestReviewMutation.isPending
+              }
               onClick={async () => {
                 if (!reviewRequestId || !reviewComment.trim()) return;
                 try {
-                  await handleRequestReview(reviewRequestId, reviewComment.trim());
+                  await handleRequestReview(
+                    reviewRequestId,
+                    reviewComment.trim(),
+                  );
                   setReviewRequestId(null);
                   setReviewComment("");
                 } catch (err) {
@@ -1219,9 +1582,11 @@ export default function MyQuestions() {
         </DialogContent>
       </Dialog>
 
-
       {/* Rejection Reason Modal */}
-      <Dialog open={!!selectedRejectionReason} onOpenChange={(open) => !open && setSelectedRejectionReason(null)}>
+      <Dialog
+        open={!!selectedRejectionReason}
+        onOpenChange={(open) => !open && setSelectedRejectionReason(null)}
+      >
         <DialogContent className="max-w-md border border-black/[0.08] bg-white/[0.90] backdrop-blur-xl rounded-2xl shadow-xl font-sans">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-rose-600 font-bold">
