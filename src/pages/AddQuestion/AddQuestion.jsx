@@ -909,7 +909,7 @@ export default function AddQuestion() {
                   {qm.mcqType === "Contextual" && (
                     <div className="space-y-2 animate-in fade-in duration-200">
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                        উদ্দীপক (Stem)
+                        উদ্দীপক (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
                       </label>
                       <Editor
                         value={qm.mcqStem}
@@ -1034,7 +1034,7 @@ export default function AddQuestion() {
                   {/* Stem input */}
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      উদ্দীপক (Stem)
+                      উদ্দীপক (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
                     </label>
                     <Editor
                       value={qm.creativeStem}
@@ -1768,7 +1768,9 @@ export default function AddQuestion() {
                                     />
                                   </div>
                                   <span className="text-slate-700 text-xs font-sans font-bold whitespace-nowrap pt-1">
-                                    {(q.mcqData?.marks || 1).toLocaleString("bn-BD")}
+                                    {(q.mcqData?.marks || 1).toLocaleString(
+                                      "bn-BD",
+                                    )}
                                   </span>
                                 </div>
                                 {q.mcqData.mcqType === "MultipleCompletion" &&
@@ -1855,44 +1857,56 @@ export default function AddQuestion() {
 
                                 <div className="pl-4 space-y-3.5 text-sm font-sans font-normal text-slate-700">
                                   <div className="flex justify-between items-start gap-2">
-                                    <span className="w-6 font-bold">ক)</span>
+                                    <span className="w-6">ক.</span>
                                     <span className="flex-1 font-serif font-normal text-slate-800">
                                       {q.creativeData.subQuestions?.cognitiveA
                                         ?.text || "জ্ঞানমূলক প্রশ্ন..."}
                                     </span>
                                     <span className="text-slate-700 text-xs font-bold">
-                                      {(q.creativeData.subQuestions?.cognitiveA?.marks || 1).toLocaleString("bn-BD")}
+                                      {(
+                                        q.creativeData.subQuestions?.cognitiveA
+                                          ?.marks || 1
+                                      ).toLocaleString("bn-BD")}
                                     </span>
                                   </div>
                                   <div className="flex justify-between items-start gap-2">
-                                    <span className="w-6 font-bold">খ)</span>
+                                    <span className="w-6">খ.</span>
                                     <span className="flex-1 font-serif font-normal text-slate-800">
                                       {q.creativeData.subQuestions?.cognitiveB
                                         ?.text || "অনুধাবনমূলক প্রশ্ন..."}
                                     </span>
                                     <span className="text-slate-700 text-xs font-bold">
-                                      {(q.creativeData.subQuestions?.cognitiveB?.marks || 2).toLocaleString("bn-BD")}
+                                      {(
+                                        q.creativeData.subQuestions?.cognitiveB
+                                          ?.marks || 2
+                                      ).toLocaleString("bn-BD")}
                                     </span>
                                   </div>
                                   <div className="flex justify-between items-start gap-2">
-                                    <span className="w-6 font-bold">গ)</span>
+                                    <span className="w-6">গ.</span>
                                     <span className="flex-1 font-serif font-normal text-slate-800">
                                       {q.creativeData.subQuestions?.cognitiveC
                                         ?.text || "প্রয়োগমূলক প্রশ্ন..."}
                                     </span>
                                     <span className="text-slate-700 text-xs font-bold">
-                                      {(q.creativeData.subQuestions?.cognitiveC?.marks || 3).toLocaleString("bn-BD")}
+                                      {(
+                                        q.creativeData.subQuestions?.cognitiveC
+                                          ?.marks || 3
+                                      ).toLocaleString("bn-BD")}
                                     </span>
                                   </div>
                                   <div className="flex justify-between items-start gap-2">
-                                    <span className="w-6 font-bold">ঘ)</span>
+                                    <span className="w-6">ঘ.</span>
                                     <span className="flex-1 font-serif font-normal text-slate-800">
                                       {q.creativeData.subQuestions?.cognitiveD
                                         ?.text ||
                                         "উচ্চতর চিন্তাদক্ষতা প্রশ্ন..."}
                                     </span>
                                     <span className="text-slate-700 text-xs font-bold">
-                                      {(q.creativeData.subQuestions?.cognitiveD?.marks || 4).toLocaleString("bn-BD")}
+                                      {(
+                                        q.creativeData.subQuestions?.cognitiveD
+                                          ?.marks || 4
+                                      ).toLocaleString("bn-BD")}
                                     </span>
                                   </div>
                                 </div>
@@ -1925,13 +1939,17 @@ export default function AddQuestion() {
                                       />
                                     </div>
                                     <span className="text-slate-700 text-xs font-sans font-bold whitespace-nowrap pt-1">
-                                      {(q.generalData.marks || 0).toLocaleString("bn-BD")}
+                                      {(
+                                        q.generalData.marks || 0
+                                      ).toLocaleString("bn-BD")}
                                     </span>
                                   </div>
 
                                   {q.generalData.suggestedAnswer && (
                                     <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
-                                      <strong className="text-[16px]">উত্তর: </strong>
+                                      <strong className="text-[16px]">
+                                        উত্তর:{" "}
+                                      </strong>
                                       <RichTextRender
                                         content={q.generalData.suggestedAnswer}
                                         inline
@@ -2122,7 +2140,7 @@ export default function AddQuestion() {
 
                           <div className="pl-4 space-y-3.5 text-sm font-sans font-normal text-slate-700">
                             <div className="flex justify-between items-start gap-2">
-                              <span className="w-6 font-bold">ক)</span>
+                              <span className="w-6">ক.</span>
                               <span className="flex-1 font-serif font-normal text-slate-800">
                                 {qm.creativeCognitiveA || "জ্ঞানমূলক প্রশ্ন..."}
                               </span>
@@ -2131,7 +2149,7 @@ export default function AddQuestion() {
                               </span>
                             </div>
                             <div className="flex justify-between items-start gap-2">
-                              <span className="w-6 font-bold">খ)</span>
+                              <span className="w-6">খ.</span>
                               <span className="flex-1 font-serif font-normal text-slate-800">
                                 {qm.creativeCognitiveB ||
                                   "অনুধাবনমূলক প্রশ্ন..."}
@@ -2141,7 +2159,7 @@ export default function AddQuestion() {
                               </span>
                             </div>
                             <div className="flex justify-between items-start gap-2">
-                              <span className="w-6 font-bold">গ)</span>
+                              <span className="w-6">গ.</span>
                               <span className="flex-1 font-serif font-normal text-slate-800">
                                 {qm.creativeCognitiveC ||
                                   "প্রয়োগমূলক প্রশ্ন..."}
@@ -2151,7 +2169,7 @@ export default function AddQuestion() {
                               </span>
                             </div>
                             <div className="flex justify-between items-start gap-2">
-                              <span className="w-6 font-bold">ঘ)</span>
+                              <span className="w-6">ঘ.</span>
                               <span className="flex-1 font-serif font-normal text-slate-800">
                                 {qm.creativeCognitiveD ||
                                   "উচ্চতর চিন্তাদক্ষতা প্রশ্ন..."}

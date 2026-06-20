@@ -1286,7 +1286,7 @@ export default function MyQuestions() {
 
                         <div className="pl-4 space-y-2.5 text-[15px] text-slate-700">
                           <div className="flex justify-between items-start ">
-                            <span className="w-6">ক)</span>
+                            <span className="w-6">ক.</span>
                             <RichTextRender
                               content={
                                 q.creativeData.subQuestions?.cognitiveA?.text
@@ -1301,7 +1301,7 @@ export default function MyQuestions() {
                             </span>
                           </div>
                           <div className="flex justify-between items-start ">
-                            <span className="w-6">খ)</span>
+                            <span className="w-6">খ.</span>
                             <RichTextRender
                               content={
                                 q.creativeData.subQuestions?.cognitiveB?.text
@@ -1316,7 +1316,7 @@ export default function MyQuestions() {
                             </span>
                           </div>
                           <div className="flex justify-between items-start ">
-                            <span className="w-6">গ)</span>
+                            <span className="w-6">গ.</span>
                             <RichTextRender
                               content={
                                 q.creativeData.subQuestions?.cognitiveC?.text
@@ -1331,7 +1331,7 @@ export default function MyQuestions() {
                             </span>
                           </div>
                           <div className="flex justify-between items-start ">
-                            <span className="w-6">ঘ)</span>
+                            <span className="w-6">ঘ.</span>
                             <RichTextRender
                               content={
                                 q.creativeData.subQuestions?.cognitiveD?.text
