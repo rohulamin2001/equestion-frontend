@@ -136,6 +136,7 @@ export default function QuestionBank() {
   } = useQuestionBank();
 
   const [showAnswers, setShowAnswers] = React.useState(false);
+  const [showModalAnswers, setShowModalAnswers] = React.useState(false);
 
   const observerRef = React.useRef(null);
   React.useEffect(() => {
@@ -1626,6 +1627,21 @@ export default function QuestionBank() {
                               : "বাতিলকৃত"}
                         </span>
                       </div>
+                      {selectedPreviewQuestion.category === "Creative" && (
+                        <div className="ml-2 border-l pl-3 border-black/[0.05]">
+                          <button
+                            type="button"
+                            onClick={() => setShowModalAnswers(!showModalAnswers)}
+                            className={`border px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 shadow-sm transition-colors ${
+                              showModalAnswers
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+                                : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                            }`}
+                          >
+                            {showModalAnswers ? "উত্তর লুকান" : "উত্তর দেখান"}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -1734,7 +1750,7 @@ export default function QuestionBank() {
                               )}
                           </div>
 
-                          {selectedPreviewQuestion.mcqData.explanation && (
+                          {showModalAnswers && selectedPreviewQuestion.mcqData.explanation && (
                             <div className="mt-6 p-4 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700 backdrop-blur-sm">
                               <span className="font-semibold">বিশ্লেষণ: </span>
                               <RichTextRender
@@ -1765,69 +1781,113 @@ export default function QuestionBank() {
                         )}
 
                         <div className="pl-4 space-y-3.5 text-[15px] text-slate-700">
-                          <div className="flex justify-between items-start">
-                            <span className="w-6 text-slate-400">ক.</span>
-                            <RichTextRender
-                              content={
-                                selectedPreviewQuestion.creativeData
-                                  .subQuestions?.cognitiveA?.text
-                              }
-                              className="flex-1 font-serif inline-block text-slate-800"
-                            />
-                            <span className="text-slate-505 text-[15px] font-bold">
-                              {(
-                                selectedPreviewQuestion.creativeData
-                                  .subQuestions?.cognitiveA?.marks || 1
-                              ).toLocaleString("bn-BD")}
-                            </span>
+                          <div className="flex flex-col gap-2">
+                            <div className="flex justify-between items-start">
+                              <span className="w-6 text-slate-400">ক.</span>
+                              <RichTextRender
+                                content={
+                                  selectedPreviewQuestion.creativeData
+                                    .subQuestions?.cognitiveA?.text
+                                }
+                                className="flex-1 font-serif inline-block text-slate-800"
+                              />
+                              <span className="text-slate-505 text-[15px] font-bold">
+                                {(
+                                  selectedPreviewQuestion.creativeData
+                                    .subQuestions?.cognitiveA?.marks || 1
+                                ).toLocaleString("bn-BD")}
+                              </span>
+                            </div>
+                            {showModalAnswers && selectedPreviewQuestion.creativeData.subQuestions?.cognitiveA?.answer && (
+                              <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                <span className="font-bold text-green-700 mr-1.5">উত্তর:</span>
+                                <RichTextRender
+                                  content={selectedPreviewQuestion.creativeData.subQuestions.cognitiveA.answer}
+                                  inline={true}
+                                />
+                              </div>
+                            )}
                           </div>
-                          <div className="flex justify-between items-start gap-2">
-                            <span className="w-6 text-slate-400">খ.</span>
-                            <RichTextRender
-                              content={
-                                selectedPreviewQuestion.creativeData
-                                  .subQuestions?.cognitiveB?.text
-                              }
-                              className="flex-1 font-serif inline-block text-slate-800"
-                            />
-                            <span className="text-slate-505 text-[15px] font-bold">
-                              {(
-                                selectedPreviewQuestion.creativeData
-                                  .subQuestions?.cognitiveB?.marks || 2
-                              ).toLocaleString("bn-BD")}
-                            </span>
+                          <div className="flex flex-col gap-2">
+                            <div className="flex justify-between items-start">
+                              <span className="w-6 text-slate-400">খ.</span>
+                              <RichTextRender
+                                content={
+                                  selectedPreviewQuestion.creativeData
+                                    .subQuestions?.cognitiveB?.text
+                                }
+                                className="flex-1 font-serif inline-block text-slate-800"
+                              />
+                              <span className="text-slate-505 text-[15px] font-bold">
+                                {(
+                                  selectedPreviewQuestion.creativeData
+                                    .subQuestions?.cognitiveB?.marks || 2
+                                ).toLocaleString("bn-BD")}
+                              </span>
+                            </div>
+                            {showModalAnswers && selectedPreviewQuestion.creativeData.subQuestions?.cognitiveB?.answer && (
+                              <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                <span className="font-bold text-green-700 mr-1.5">উত্তর:</span>
+                                <RichTextRender
+                                  content={selectedPreviewQuestion.creativeData.subQuestions.cognitiveB.answer}
+                                  inline={true}
+                                />
+                              </div>
+                            )}
                           </div>
-                          <div className="flex justify-between items-start gap-2">
-                            <span className="w-6 text-slate-400">গ.</span>
-                            <RichTextRender
-                              content={
-                                selectedPreviewQuestion.creativeData
-                                  .subQuestions?.cognitiveC?.text
-                              }
-                              className="flex-1 font-serif inline-block text-slate-800"
-                            />
-                            <span className="text-slate-505 text-[15px] font-bold">
-                              {(
-                                selectedPreviewQuestion.creativeData
-                                  .subQuestions?.cognitiveC?.marks || 3
-                              ).toLocaleString("bn-BD")}
-                            </span>
+                          <div className="flex flex-col gap-2">
+                            <div className="flex justify-between items-start">
+                              <span className="w-6 text-slate-400">গ.</span>
+                              <RichTextRender
+                                content={
+                                  selectedPreviewQuestion.creativeData
+                                    .subQuestions?.cognitiveC?.text
+                                }
+                                className="flex-1 font-serif inline-block text-slate-800"
+                              />
+                              <span className="text-slate-505 text-[15px] font-bold">
+                                {(
+                                  selectedPreviewQuestion.creativeData
+                                    .subQuestions?.cognitiveC?.marks || 3
+                                ).toLocaleString("bn-BD")}
+                              </span>
+                            </div>
+                            {showModalAnswers && selectedPreviewQuestion.creativeData.subQuestions?.cognitiveC?.answer && (
+                              <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                <span className="font-bold text-green-700 mr-1.5">উত্তর:</span>
+                                <RichTextRender
+                                  content={selectedPreviewQuestion.creativeData.subQuestions.cognitiveC.answer}
+                                  inline={true}
+                                />
+                              </div>
+                            )}
                           </div>
-                          <div className="flex justify-between items-start gap-2">
-                            <span className="w-6 text-slate-400">ঘ.</span>
-                            <RichTextRender
-                              content={
-                                selectedPreviewQuestion.creativeData
-                                  .subQuestions?.cognitiveD?.text
-                              }
-                              className="flex-1 font-serif inline-block text-slate-800"
-                            />
-                            <span className="text-slate-505 text-[15px] font-bold">
-                              {(
-                                selectedPreviewQuestion.creativeData
-                                  .subQuestions?.cognitiveD?.marks || 4
-                              ).toLocaleString("bn-BD")}
-                            </span>
+                          <div className="flex flex-col gap-2">
+                            <div className="flex justify-between items-start">
+                              <span className="w-6 text-slate-400">ঘ.</span>
+                              <RichTextRender
+                                content={
+                                  selectedPreviewQuestion.creativeData
+                                    .subQuestions?.cognitiveD?.text
+                                }
+                                className="flex-1 font-serif inline-block text-slate-800"
+                              />
+                              <span className="text-slate-505 text-[15px] font-bold">
+                                {(
+                                  selectedPreviewQuestion.creativeData
+                                    .subQuestions?.cognitiveD?.marks || 4
+                                ).toLocaleString("bn-BD")}
+                              </span>
+                            </div>
+                            {showModalAnswers && selectedPreviewQuestion.creativeData.subQuestions?.cognitiveD?.answer && (
+                              <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                <span className="font-bold text-green-700 mr-1.5">উত্তর:</span>
+                                <RichTextRender
+                                  content={selectedPreviewQuestion.creativeData.subQuestions.cognitiveD.answer}
+                                  inline={true}
+                                />
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

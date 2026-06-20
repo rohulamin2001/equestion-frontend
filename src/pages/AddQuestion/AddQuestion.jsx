@@ -923,7 +923,7 @@ export default function AddQuestion() {
                   {/* Question Text */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      প্রশ্ন (Question)
+                      প্রশ্ন (Question) <span className="normal-case tracking-normal">(নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)</span>
                     </label>
                     <Editor
                       value={qm.mcqQuestionText}
@@ -1017,7 +1017,7 @@ export default function AddQuestion() {
                   {/* Explanation Input */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      উত্তর বিশ্লেষণ / ব্যাখ্যা (ঐচ্ছিক)
+                      উত্তর বিশ্লেষণ / ব্যাখ্যা (ঐচ্ছিক) <span className="normal-case tracking-normal">(নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)</span>
                     </label>
                     <Editor
                       value={qm.mcqExplanation}
@@ -1119,7 +1119,7 @@ export default function AddQuestion() {
                                 : item.id === "C"
                                   ? "গ"
                                   : "ঘ"}{" "}
-                            নং প্রশ্নের উত্তর
+                            নং প্রশ্নের উত্তর <span className="normal-case tracking-normal">(নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)</span>
                           </label>
                           <Editor
                             value={item.answerValue}
@@ -1139,7 +1139,7 @@ export default function AddQuestion() {
                   {/* Main Question Text */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      প্রশ্ন (Question)
+                      প্রশ্ন (Question) <span className="normal-case tracking-normal">(নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)</span>
                     </label>
                     <Editor
                       value={qm.generalQuestionText}
@@ -1152,7 +1152,7 @@ export default function AddQuestion() {
                   {/* Suggested Answer */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      উত্তর (Answer) - ঐচ্ছিক
+                      উত্তর (Answer) - ঐচ্ছিক <span className="normal-case tracking-normal">(নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)</span>
                     </label>
                     <Editor
                       value={qm.generalSuggestedAnswer}
