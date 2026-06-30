@@ -1,18 +1,23 @@
-'use client';;
-import { AnimatePresence, motion } from 'motion/react';
-import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
-import * as React from 'react';
+"use client";
+import { AnimatePresence, motion } from "motion/react";
+import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
+import * as React from "react";
 
-import { Highlight, HighlightItem } from '@/components/animate-ui/primitives/effects/highlight';
-import { useControlledState } from '@/hooks/use-controlled-state';
-import { useDataState } from '@/hooks/use-data-state';
-import { getStrictContext } from '@/lib/get-strict-context';
+import {
+  Highlight,
+  HighlightItem,
+} from "@/components/animate-ui/primitives/effects/highlight";
+import { useControlledState } from "@/hooks/use-controlled-state";
+import { useDataState } from "@/hooks/use-data-state";
+import { getStrictContext } from "@/lib/get-strict-context";
 
-const [DropdownMenuProvider, useDropdownMenu] =
-  getStrictContext('DropdownMenuContext');
+const [DropdownMenuProvider, useDropdownMenu] = getStrictContext(
+  "DropdownMenuContext",
+);
 
-const [DropdownMenuSubProvider, useDropdownMenuSub] =
-  getStrictContext('DropdownMenuSubContext');
+const [DropdownMenuSubProvider, useDropdownMenuSub] = getStrictContext(
+  "DropdownMenuSubContext",
+);
 
 function DropdownMenu(props) {
   const [isOpen, setIsOpen] = useControlledState({
@@ -23,22 +28,37 @@ function DropdownMenu(props) {
   const [highlightedValue, setHighlightedValue] = React.useState(null);
 
   return (
-    <DropdownMenuProvider value={{ isOpen, setIsOpen, highlightedValue, setHighlightedValue }}>
-      <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} onOpenChange={setIsOpen} />
+    <DropdownMenuProvider
+      value={{ isOpen, setIsOpen, highlightedValue, setHighlightedValue }}
+    >
+      <DropdownMenuPrimitive.Root
+        data-slot="dropdown-menu"
+        {...props}
+        onOpenChange={setIsOpen}
+      />
     </DropdownMenuProvider>
   );
 }
 
 function DropdownMenuTrigger(props) {
-  return (<DropdownMenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />);
+  return (
+    <DropdownMenuPrimitive.Trigger
+      data-slot="dropdown-menu-trigger"
+      {...props}
+    />
+  );
 }
 
 function DropdownMenuPortal(props) {
-  return (<DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />);
+  return (
+    <DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />
+  );
 }
 
 function DropdownMenuGroup(props) {
-  return (<DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />);
+  return (
+    <DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />
+  );
 }
 
 function DropdownMenuSub(props) {
@@ -50,33 +70,51 @@ function DropdownMenuSub(props) {
 
   return (
     <DropdownMenuSubProvider value={{ isOpen, setIsOpen }}>
-      <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} onOpenChange={setIsOpen} />
+      <DropdownMenuPrimitive.Sub
+        data-slot="dropdown-menu-sub"
+        {...props}
+        onOpenChange={setIsOpen}
+      />
     </DropdownMenuSubProvider>
   );
 }
 
 function DropdownMenuRadioGroup(props) {
-  return (<DropdownMenuPrimitive.RadioGroup data-slot="dropdown-menu-radio-group" {...props} />);
+  return (
+    <DropdownMenuPrimitive.RadioGroup
+      data-slot="dropdown-menu-radio-group"
+      {...props}
+    />
+  );
 }
 
-function DropdownMenuSubTrigger({
-  disabled,
-  textValue,
-  ...props
-}) {
+function DropdownMenuSubTrigger({ disabled, textValue, ...props }) {
   const { setHighlightedValue } = useDropdownMenu();
   const elementRef = React.useRef(null);
-  const [, highlightedRef] = useDataState('highlighted', elementRef, (value) => {
-    if (value === true) {
-      const el = elementRef.current;
-      const v = el?.dataset.value || el?.id || null;
-      if (v) setHighlightedValue(v);
-    }
-  });
+  const [, highlightedRef] = useDataState(
+    "highlighted",
+    elementRef,
+    (value) => {
+      if (value === true) {
+        const el = elementRef.current;
+        const v = el?.dataset.value || el?.id || null;
+        if (v) setHighlightedValue(v);
+      }
+    },
+  );
 
   return (
-    <DropdownMenuPrimitive.SubTrigger ref={highlightedRef} disabled={disabled} textValue={textValue} asChild>
-      <motion.div data-slot="dropdown-menu-sub-trigger" data-disabled={disabled} {...props} />
+    <DropdownMenuPrimitive.SubTrigger
+      ref={highlightedRef}
+      disabled={disabled}
+      textValue={textValue}
+      asChild
+    >
+      <motion.div
+        data-slot="dropdown-menu-sub-trigger"
+        data-disabled={disabled}
+        {...props}
+      />
     </DropdownMenuPrimitive.SubTrigger>
   );
 }
@@ -121,7 +159,8 @@ function DropdownMenuSubContent({
             collisionPadding={collisionPadding}
             arrowPadding={arrowPadding}
             sticky={sticky}
-            hideWhenDetached={hideWhenDetached}>
+            hideWhenDetached={hideWhenDetached}
+          >
             <motion.div
               key="dropdown-menu-sub-content"
               data-slot="dropdown-menu-sub-content"
@@ -129,8 +168,9 @@ function DropdownMenuSubContent({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={transition}
-              style={{ willChange: 'opacity, transform', ...style }}
-              {...props} />
+              style={{ willChange: "opacity, transform", ...style }}
+              {...props}
+            />
           </DropdownMenuPrimitive.SubContent>
         </DropdownMenuPortal>
       )}
@@ -139,7 +179,7 @@ function DropdownMenuSubContent({
 }
 
 function DropdownMenuHighlight({
-  transition = { type: 'spring', stiffness: 350, damping: 35 },
+  transition = { type: "tween", duration: 0.15, ease: "easeOut" },
   ...props
 }) {
   const { highlightedValue } = useDropdownMenu();
@@ -151,7 +191,8 @@ function DropdownMenuHighlight({
       controlledItems
       transition={transition}
       value={highlightedValue}
-      {...props} />
+      {...props}
+    />
   );
 }
 
@@ -200,7 +241,8 @@ function DropdownMenuContent({
             collisionPadding={collisionPadding}
             arrowPadding={arrowPadding}
             sticky={sticky}
-            hideWhenDetached={hideWhenDetached}>
+            hideWhenDetached={hideWhenDetached}
+          >
             <motion.div
               key="dropdown-menu-content"
               data-slot="dropdown-menu-content"
@@ -208,8 +250,9 @@ function DropdownMenuContent({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={transition}
-              style={{ willChange: 'opacity, transform', ...style }}
-              {...props} />
+              style={{ willChange: "opacity, transform", ...style }}
+              {...props}
+            />
           </DropdownMenuPrimitive.Content>
         </DropdownMenuPortal>
       )}
@@ -221,21 +264,20 @@ function DropdownMenuHighlightItem(props) {
   return <HighlightItem data-slot="dropdown-menu-highlight-item" {...props} />;
 }
 
-function DropdownMenuItem({
-  disabled,
-  onSelect,
-  textValue,
-  ...props
-}) {
+function DropdownMenuItem({ disabled, onSelect, textValue, ...props }) {
   const { setHighlightedValue } = useDropdownMenu();
   const elementRef = React.useRef(null);
-  const [, highlightedRef] = useDataState('highlighted', elementRef, (value) => {
-    if (value === true) {
-      const el = elementRef.current;
-      const v = el?.dataset.value || el?.id || null;
-      if (v) setHighlightedValue(v);
-    }
-  });
+  const [, highlightedRef] = useDataState(
+    "highlighted",
+    elementRef,
+    (value) => {
+      if (value === true) {
+        const el = elementRef.current;
+        const v = el?.dataset.value || el?.id || null;
+        if (v) setHighlightedValue(v);
+      }
+    },
+  );
 
   return (
     <DropdownMenuPrimitive.Item
@@ -243,8 +285,13 @@ function DropdownMenuItem({
       disabled={disabled}
       onSelect={onSelect}
       textValue={textValue}
-      asChild>
-      <motion.div data-slot="dropdown-menu-item" data-disabled={disabled} {...props} />
+      asChild
+    >
+      <motion.div
+        data-slot="dropdown-menu-item"
+        data-disabled={disabled}
+        {...props}
+      />
     </DropdownMenuPrimitive.Item>
   );
 }
@@ -259,13 +306,17 @@ function DropdownMenuCheckboxItem({
 }) {
   const { setHighlightedValue } = useDropdownMenu();
   const elementRef = React.useRef(null);
-  const [, highlightedRef] = useDataState('highlighted', elementRef, (value) => {
-    if (value === true) {
-      const el = elementRef.current;
-      const v = el?.dataset.value || el?.id || null;
-      if (v) setHighlightedValue(v);
-    }
-  });
+  const [, highlightedRef] = useDataState(
+    "highlighted",
+    elementRef,
+    (value) => {
+      if (value === true) {
+        const el = elementRef.current;
+        const v = el?.dataset.value || el?.id || null;
+        if (v) setHighlightedValue(v);
+      }
+    },
+  );
 
   return (
     <DropdownMenuPrimitive.CheckboxItem
@@ -275,11 +326,13 @@ function DropdownMenuCheckboxItem({
       disabled={disabled}
       onSelect={onSelect}
       textValue={textValue}
-      asChild>
+      asChild
+    >
       <motion.div
         data-slot="dropdown-menu-checkbox-item"
         data-disabled={disabled}
-        {...props} />
+        {...props}
+      />
     </DropdownMenuPrimitive.CheckboxItem>
   );
 }
@@ -293,13 +346,17 @@ function DropdownMenuRadioItem({
 }) {
   const { setHighlightedValue } = useDropdownMenu();
   const elementRef = React.useRef(null);
-  const [, highlightedRef] = useDataState('highlighted', elementRef, (value) => {
-    if (value === true) {
-      const el = elementRef.current;
-      const v = el?.dataset.value || el?.id || null;
-      if (v) setHighlightedValue(v);
-    }
-  });
+  const [, highlightedRef] = useDataState(
+    "highlighted",
+    elementRef,
+    (value) => {
+      if (value === true) {
+        const el = elementRef.current;
+        const v = el?.dataset.value || el?.id || null;
+        if (v) setHighlightedValue(v);
+      }
+    },
+  );
 
   return (
     <DropdownMenuPrimitive.RadioItem
@@ -308,18 +365,30 @@ function DropdownMenuRadioItem({
       disabled={disabled}
       onSelect={onSelect}
       textValue={textValue}
-      asChild>
-      <motion.div data-slot="dropdown-menu-radio-item" data-disabled={disabled} {...props} />
+      asChild
+    >
+      <motion.div
+        data-slot="dropdown-menu-radio-item"
+        data-disabled={disabled}
+        {...props}
+      />
     </DropdownMenuPrimitive.RadioItem>
   );
 }
 
 function DropdownMenuLabel(props) {
-  return (<DropdownMenuPrimitive.Label data-slot="dropdown-menu-label" {...props} />);
+  return (
+    <DropdownMenuPrimitive.Label data-slot="dropdown-menu-label" {...props} />
+  );
 }
 
 function DropdownMenuSeparator(props) {
-  return (<DropdownMenuPrimitive.Separator data-slot="dropdown-menu-separator" {...props} />);
+  return (
+    <DropdownMenuPrimitive.Separator
+      data-slot="dropdown-menu-separator"
+      {...props}
+    />
+  );
 }
 
 function DropdownMenuShortcut(props) {
@@ -328,11 +397,32 @@ function DropdownMenuShortcut(props) {
 
 function DropdownMenuItemIndicator(props) {
   return (
-    <DropdownMenuPrimitive.ItemIndicator data-slot="dropdown-menu-item-indicator" asChild>
+    <DropdownMenuPrimitive.ItemIndicator
+      data-slot="dropdown-menu-item-indicator"
+      asChild
+    >
       <motion.div {...props} />
     </DropdownMenuPrimitive.ItemIndicator>
   );
 }
 
-export { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuHighlight, DropdownMenuHighlightItem, DropdownMenuItem, DropdownMenuItemIndicator, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger };
-
+export {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuHighlight,
+  DropdownMenuHighlightItem,
+  DropdownMenuItem,
+  DropdownMenuItemIndicator,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+};

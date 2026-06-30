@@ -18,7 +18,7 @@ export function useStaffManagement() {
   // Form fields
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('Question Creator');
   const [showPassword, setShowPassword] = useState(false);
@@ -64,7 +64,7 @@ export function useStaffManagement() {
       // Reset form
       setFirstName('');
       setLastName('');
-      setEmail('');
+      setPhoneNumber('');
       setPassword('');
       setRole('Question Creator');
       
@@ -85,7 +85,7 @@ export function useStaffManagement() {
     addStaffMutation.mutate({
       firstName,
       lastName,
-      email,
+      phoneNumber,
       password,
       role,
     });
@@ -161,8 +161,8 @@ export function useStaffManagement() {
     setFirstName,
     lastName,
     setLastName,
-    email,
-    setEmail,
+    phoneNumber,
+    setPhoneNumber,
     password,
     setPassword,
     role,
