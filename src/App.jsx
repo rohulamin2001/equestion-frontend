@@ -22,6 +22,7 @@ import SubjectSetup from "./pages/SubjectSetup/SubjectSetup";
 import Subscription from "./pages/Subscription/Subscription";
 import Support from "./pages/Support/Support";
 import SyllabusManagement from "./pages/Syllabus/SyllabusManagement";
+import Profile from "./pages/Profile/Profile";
 
 export default function App() {
   return (
@@ -180,6 +181,13 @@ export default function App() {
               <RoleRouteGuard allowedRoles={["Subscriber", "Support Team"]}>
                 <Support />
               </RoleRouteGuard>
+            }
+          />
+
+          <Route
+            path="profile"
+            element={
+              <Profile />
             }
           />
 

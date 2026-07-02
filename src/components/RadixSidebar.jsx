@@ -189,10 +189,15 @@ export const RadixSidebar = () => {
   const location = useLocation();
   const { user } = useUser();
   const { toggleSidebar, setOpenMobile } = useSidebar();
-  const { role } = useUserContext();
+  const { role, userProfile } = useUserContext();
 
-  const userInitials = user?.fullName
-    ? user.fullName.split(' ').map(n => n[0]).join('').toUpperCase()
+  const isInstitution = userProfile?.userType === 'Institution';
+  const displayName = isInstitution 
+    ? (userProfile?.institutionName || user?.fullName || 'প্রতিষ্ঠান') 
+    : (userProfile?.fullName || user?.fullName || 'ব্যবহারকারী');
+
+  const userInitials = displayName
+    ? displayName.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase()
     : 'US';
 
   const currentRole = role || 'Subscriber';
@@ -301,7 +306,7 @@ export const RadixSidebar = () => {
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                     <span className="truncate font-semibold">
-                      {user?.fullName || 'ব্যবহারকারী'}
+                      {displayName}
                     </span>
                     <span className="truncate text-xs text-slate-500">
                       {user?.primaryEmailAddress?.emailAddress || ''}
@@ -321,7 +326,7 @@ export const RadixSidebar = () => {
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
                         src={user?.imageUrl}
-                        alt={user?.fullName || 'User'}
+                        alt={displayName}
                       />
                       <AvatarFallback className="rounded-lg bg-slate-100">
                         {userInitials}
@@ -329,7 +334,7 @@ export const RadixSidebar = () => {
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold text-slate-850">
-                        {user?.fullName || 'ব্যবহারকারী'}
+                        {displayName}
                       </span>
                       <span className="truncate text-xs text-slate-400">
                         {user?.primaryEmailAddress?.emailAddress || ''}
@@ -358,7 +363,7 @@ export const RadixSidebar = () => {
                 <DropdownMenuGroup>
                   <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
                     <Link 
-                      to="/dashboard/institution" 
+                      to="/dashboard/profile" 
                       className="flex items-center gap-2 w-full"
                       onClick={() => {
                         if (isMobile) {
@@ -366,10 +371,26 @@ export const RadixSidebar = () => {
                         }
                       }}
                     >
-                      <BadgeCheck className="size-4" />
-                      প্রতিষ্ঠানের প্রোফাইল
+                      <Users className="size-4" />
+                      আমার প্রোফাইল
                     </Link>
                   </DropdownMenuItem>
+                  {userProfile?.userType === 'Institution' && (
+                    <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
+                      <Link 
+                        to="/dashboard/institution" 
+                        className="flex items-center gap-2 w-full"
+                        onClick={() => {
+                          if (isMobile) {
+                            setOpenMobile(false);
+                          }
+                        }}
+                      >
+                        <BadgeCheck className="size-4" />
+                        প্রতিষ্ঠানের প্রোফাইল
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
                     <Link 
                       to="/dashboard/support" 

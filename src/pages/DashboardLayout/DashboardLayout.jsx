@@ -16,6 +16,8 @@ import { Separator } from '@/components/ui/separator';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { useAuth, UserButton } from '@clerk/react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useUserContext } from '@/context/UserContext';
+import OnboardingModal from '@/components/OnboardingModal';
 
 const ROUTE_TITLES = {
   '/dashboard': 'ড্যাশবোর্ড ওভারভিউ',
@@ -32,12 +34,13 @@ const ROUTE_TITLES = {
 
 export default function DashboardLayout() {
   const { isSignedIn, isLoaded } = useAuth();
+  const { userProfile, loading: profileLoading } = useUserContext();
   const location = useLocation();
 
-  if (!isLoaded) {
+  if (!isLoaded || (isSignedIn && profileLoading)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-55">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-650"></div>
       </div>
     );
   }
@@ -53,6 +56,10 @@ export default function DashboardLayout() {
     <TooltipProvider>
       <SidebarProvider>
         <div className="flex h-screen w-full bg-[#F5F5F7] text-[#1E293B] relative overflow-hidden">
+          {/* Compulsory Onboarding Modal overlay */}
+          {userProfile && !userProfile.isOnboarded && (
+            <OnboardingModal />
+          )}
           {/* Ambient Glowing Background Orbs */}
           <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
             {/* Top-Left Orb: Royal Purple */}
