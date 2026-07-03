@@ -1,19 +1,27 @@
-import * as React from 'react';
+import * as React from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useControlledState(props) {
   const { value, defaultValue, onChange } = props;
 
-  const [state, setInternalState] = React.useState(value !== undefined ? value : (defaultValue));
+  const [state, setInternalState] = React.useState(
+    value !== undefined ? value : defaultValue,
+  );
+  const [prevValue, setPrevValue] = React.useState(value);
 
-  React.useEffect(() => {
-    if (value !== undefined) setInternalState(value);
-  }, [value]);
+  if (value !== prevValue) {
+    setPrevValue(value);
+    if (value !== undefined) {
+      setInternalState(value);
+    }
+  }
 
-  const setState = React.useCallback((next, ...args) => {
-    setInternalState(next);
-    onChange?.(next, ...args);
-  }, [onChange]);
+  const setState = React.useCallback(
+    (next, ...args) => {
+      setInternalState(next);
+      onChange?.(next, ...args);
+    },
+    [onChange],
+  );
 
   return [state, setState];
 }

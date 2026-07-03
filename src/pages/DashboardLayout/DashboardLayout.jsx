@@ -34,7 +34,7 @@ const ROUTE_TITLES = {
 
 export default function DashboardLayout() {
   const { isSignedIn, isLoaded } = useAuth();
-  const { userProfile, loading: profileLoading } = useUserContext();
+  const { userProfile, role, loading: profileLoading } = useUserContext();
   const location = useLocation();
 
   if (!isLoaded || (isSignedIn && profileLoading)) {
@@ -56,8 +56,8 @@ export default function DashboardLayout() {
     <TooltipProvider>
       <SidebarProvider>
         <div className="flex h-screen w-full bg-[#F5F5F7] text-[#1E293B] relative overflow-hidden">
-          {/* Compulsory Onboarding Modal overlay */}
-          {userProfile && !userProfile.isOnboarded && (
+          {/* Compulsory Onboarding Modal overlay - only for Subscribers */}
+          {userProfile && role === 'Subscriber' && !userProfile.isOnboarded && (
             <OnboardingModal />
           )}
           {/* Ambient Glowing Background Orbs */}
