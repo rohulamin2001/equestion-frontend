@@ -3,6 +3,7 @@ import {
   Calendar,
   Check,
   ChevronRight,
+  Copy,
   Grid,
   Info,
   Loader2,
@@ -37,6 +38,7 @@ export default function Subscription() {
   // Dynamic packages & coupons state
   const [packagesList, setPackagesList] = useState([]);
   const [packagesLoading, setPackagesLoading] = useState(true);
+  const [couponsList, setCouponsList] = useState([]);
   const [checkoutPkg, setCheckoutPkg] = useState(null);
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -79,6 +81,7 @@ export default function Subscription() {
       setPackagesLoading(true);
       const res = await apiClient.get("/subscriptions/packages");
       setPackagesList(res.data.packages || []);
+      setCouponsList(res.data.coupons || []);
     } catch (err) {
       console.error("Error fetching packages:", err);
       toast.error("প্যাকেজ তথ্য লোড করতে ব্যর্থ হয়েছে");
@@ -352,6 +355,60 @@ export default function Subscription() {
           </div>
         )}
       </div>
+
+      {/* Active Coupons Showcase - Gorgeous & Animated Banner */}
+      {couponsList.length > 0 && (
+        <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 rounded-3xl p-6 text-white shadow-xl shadow-indigo-500/10 overflow-hidden relative group">
+          {/* Subtle background animated sparkles */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent)] pointer-events-none" />
+          <div className="absolute -top-12 -right-12 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:scale-150 transition-all duration-700" />
+          
+          <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2 max-w-lg text-left">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-black tracking-wider uppercase border border-white/20 animate-pulse">
+                <Sparkles className="h-3.5 w-3.5 text-yellow-300 animate-spin" style={{ animationDuration: '3s' }} />
+                বিশেষ অফার
+              </span>
+              <h2 className="text-xl font-extrabold tracking-tight">কুপন কোড ব্যবহার করে অতিরিক্ত ছাড় পান!</h2>
+              <p className="text-xs text-white/80 leading-relaxed font-semibold">
+                নিচের কুপন কোডগুলোর যেকোনো একটি কপি করুন এবং পেমেন্ট করার সময় ব্যবহার করে ছাড় উপভোগ করুন।
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-4 items-center">
+              {couponsList.map((coupon, idx) => (
+                <div 
+                  key={idx}
+                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center justify-between gap-4 shadow-sm hover:bg-white/15 transition-all duration-300 transform hover:-translate-y-0.5"
+                >
+                  <div className="space-y-1 text-left">
+                    <span className="text-[10px] font-bold text-white/60 uppercase tracking-wide">
+                      {coupon.discountType === "Percentage" ? `${coupon.value}% ছাড়` : `${coupon.value}৳ ছাড়`}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-base font-black tracking-widest text-yellow-300 select-all">
+                        {coupon.code}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(coupon.code);
+                      toast.success(`"${coupon.code}" কুপন কোড কপি করা হয়েছে!`);
+                    }}
+                    className="p-2.5 bg-white/10 hover:bg-white text-white hover:text-indigo-600 rounded-xl transition duration-200 active:scale-95 shadow-inner cursor-pointer"
+                    title="কোড কপি করুন"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Navigation Tabs */}
       <div className="flex border-b border-slate-200 gap-6">
