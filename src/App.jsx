@@ -23,6 +23,7 @@ import Subscription from "./pages/Subscription/Subscription";
 import Support from "./pages/Support/Support";
 import SyllabusManagement from "./pages/Syllabus/SyllabusManagement";
 import Profile from "./pages/Profile/Profile";
+import PricingManagement from "./pages/PricingManagement/PricingManagement";
 
 export default function App() {
   return (
@@ -171,6 +172,15 @@ export default function App() {
             element={
               <RoleRouteGuard allowedRoles={["Subscriber"]}>
                 <Subscription />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
+            path="admin/pricing"
+            element={
+              <RoleRouteGuard allowedRoles={["Super Admin", "Admin"]}>
+                <PricingManagement />
               </RoleRouteGuard>
             }
           />

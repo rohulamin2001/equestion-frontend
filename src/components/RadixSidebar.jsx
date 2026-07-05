@@ -1,187 +1,196 @@
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/animate-ui/components/radix/dropdown-menu';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/animate-ui/components/radix/dropdown-menu";
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup,
-    SidebarGroupLabel,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarRail,
-    useSidebar,
-} from '@/components/animate-ui/components/radix/sidebar';
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  useSidebar,
+} from "@/components/animate-ui/components/radix/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useUserContext } from "@/context/UserContext";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { SignOutButton, useUser } from "@clerk/react";
 import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from '@/components/ui/avatar';
-import { useUserContext } from '@/context/UserContext';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { SignOutButton, useUser } from '@clerk/react';
-import {
-    BadgeCheck,
-    Bell,
-    BookOpen,
-    ChevronLeft,
-    ChevronsUpDown,
-    CreditCard,
-    Database,
-    FolderOpen,
-    HelpCircle,
-    Home as HomeIcon,
-    LayoutDashboard,
-    LogOut,
-    Monitor,
-    PlusCircle,
-    ScanLine,
-    Sliders,
-    Sparkles,
-    Sparkles as SparklesIcon,
-    Users,
-} from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+  BadgeCheck,
+  Bell,
+  BookOpen,
+  ChevronLeft,
+  ChevronsUpDown,
+  CreditCard,
+  Database,
+  FolderOpen,
+  HelpCircle,
+  Home as HomeIcon,
+  LayoutDashboard,
+  LogOut,
+  Monitor,
+  PlusCircle,
+  ScanLine,
+  Sliders,
+  Sparkles,
+  Sparkles as SparklesIcon,
+  Users,
+} from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const DATA = {
   teams: [
     {
-      name: 'ইপ্রশ্নব্যাংক',
+      name: "ইপ্রশ্নব্যাংক",
       logo: BookOpen,
-      plan: 'SaaS Platform',
-    }
+      plan: "SaaS Platform",
+    },
   ],
   navGroups: [
     {
-      label: 'ওভারভিউ',
+      label: "ওভারভিউ",
       items: [
         {
-          title: 'ড্যাশবোর্ড',
-          url: '/dashboard',
+          title: "ড্যাশবোর্ড",
+          url: "/dashboard",
           icon: LayoutDashboard,
-          roles: ['Super Admin', 'Admin', 'Content Manager', 'Question Creator', 'Support Team', 'Subscriber'],
-        }
-      ]
+          roles: [
+            "Super Admin",
+            "Admin",
+            "Content Manager",
+            "Question Creator",
+            "Support Team",
+            "Subscriber",
+          ],
+        },
+      ],
     },
     {
-      label: 'প্রশ্ন ইঞ্জিন',
+      label: "প্রশ্ন ইঞ্জিন",
       items: [
         {
-          title: '১ ক্লিকে প্রশ্ন তৈরি',
-          url: '/dashboard/generate',
+          title: "১ ক্লিকে প্রশ্ন তৈরি",
+          url: "/dashboard/generate",
           icon: Sparkles,
-          roles: ['Subscriber'],
+          roles: ["Subscriber"],
         },
         {
-          title: 'প্রশ্নব্যাংক',
-          url: '/dashboard/bank',
+          title: "প্রশ্নব্যাংক",
+          url: "/dashboard/bank",
           icon: Database,
-          roles: ['Subscriber', 'Super Admin', 'Admin', 'Content Manager'],
+          roles: ["Subscriber", "Super Admin", "Admin", "Content Manager"],
         },
         {
-          title: 'প্রশ্ন অনুমোদন',
-          url: '/dashboard/question-approval',
+          title: "প্রশ্ন অনুমোদন",
+          url: "/dashboard/question-approval",
           icon: BadgeCheck,
-          roles: ['Super Admin', 'Admin', 'Content Manager'],
+          roles: ["Super Admin", "Admin", "Content Manager"],
         },
         {
-          title: 'আমার তৈরি প্রশ্ন',
-          url: '/dashboard/my-questions',
+          title: "আমার তৈরি প্রশ্ন",
+          url: "/dashboard/my-questions",
           icon: FolderOpen,
-          roles: ['Subscriber', 'Question Creator'],
+          roles: ["Subscriber", "Question Creator"],
         },
         {
-          title: 'নতুন প্রশ্ন যোগ',
-          url: '/dashboard/add-question',
+          title: "নতুন প্রশ্ন যোগ",
+          url: "/dashboard/add-question",
           icon: PlusCircle,
-          roles: ['Question Creator'],
-        }
-      ]
+          roles: ["Question Creator"],
+        },
+      ],
     },
     {
-      label: 'মূল্যায়ন',
+      label: "মূল্যায়ন",
       items: [
         {
-          title: 'অনলাইন পরীক্ষা',
-          url: '/dashboard/exams',
+          title: "অনলাইন পরীক্ষা",
+          url: "/dashboard/exams",
           icon: Monitor,
-          roles: ['Subscriber'],
+          roles: ["Subscriber"],
         },
         {
-          title: 'OMR মূল্যায়ন',
-          url: '/dashboard/omr',
+          title: "OMR মূল্যায়ন",
+          url: "/dashboard/omr",
           icon: ScanLine,
-          roles: ['Subscriber'],
-        }
-      ]
+          roles: ["Subscriber"],
+        },
+      ],
     },
     {
-      label: 'ব্যবস্থাপনা',
+      label: "ব্যবস্থাপনা",
       items: [
         {
-          title: 'স্টাফ ব্যবস্থাপনা',
-          url: '/dashboard/staff',
+          title: "স্টাফ ব্যবস্থাপনা",
+          url: "/dashboard/staff",
           icon: Users,
-          roles: ['Super Admin', 'Admin'],
+          roles: ["Super Admin", "Admin"],
         },
         {
-          title: 'সিলেবাস ব্যবস্থাপনা',
-          url: '/dashboard/syllabus',
+          title: "সিলেবাস ব্যবস্থাপনা",
+          url: "/dashboard/syllabus",
           icon: BookOpen,
-          roles: ['Super Admin', 'Admin', 'Content Manager'],
+          roles: ["Super Admin", "Admin", "Content Manager"],
         },
         {
-          title: 'সাবজেক্ট সেটআপ',
-          url: '/dashboard/subject-setup',
+          title: "সাবজেক্ট সেটআপ",
+          url: "/dashboard/subject-setup",
           icon: Sliders,
-          roles: ['Super Admin', 'Admin'],
+          roles: ["Super Admin", "Admin"],
         },
         {
-          title: 'মেটাডাটা সেটআপ',
-          url: '/dashboard/metadata-setup',
+          title: "মেটাডাটা সেটআপ",
+          url: "/dashboard/metadata-setup",
           icon: Sliders,
-          roles: ['Super Admin', 'Admin', 'Content Manager'],
+          roles: ["Super Admin", "Admin", "Content Manager"],
         },
         {
-          title: 'অ্যাকাডেমিক সেটআপ',
-          url: '/dashboard/academic-setup',
+          title: "অ্যাকাডেমিক সেটআপ",
+          url: "/dashboard/academic-setup",
           icon: Sliders,
-          roles: ['Super Admin'],
+          roles: ["Super Admin"],
         },
         {
-          title: 'আমার প্রতিষ্ঠান',
-          url: '/dashboard/institution',
-          icon: HomeIcon,
-          roles: ['Subscriber'],
-        },
-        {
-          title: 'সাবস্ক্রিপশন ও প্যাকেজ',
-          url: '/dashboard/subscription',
+          title: "প্যাকেজ ও ডিসকাউন্ট",
+          url: "/dashboard/admin/pricing",
           icon: CreditCard,
-          roles: ['Subscriber'],
-        }
-      ]
+          roles: ["Super Admin", "Admin"],
+        },
+        {
+          title: "আমার প্রতিষ্ঠান",
+          url: "/dashboard/institution",
+          icon: HomeIcon,
+          roles: ["Subscriber"],
+        },
+        {
+          title: "সাবস্ক্রিপশন ও প্যাকেজ",
+          url: "/dashboard/subscription",
+          icon: CreditCard,
+          roles: ["Subscriber"],
+        },
+      ],
     },
     {
-      label: 'সহায়তা',
+      label: "সহায়তা",
       items: [
         {
-          title: 'যোগাযোগ ও সাপোর্ট',
-          url: '/dashboard/support',
+          title: "যোগাযোগ ও সাপোর্ট",
+          url: "/dashboard/support",
           icon: HelpCircle,
-          roles: ['Subscriber', 'Support Team'],
-        }
-      ]
-    }
-  ]
+          roles: ["Subscriber", "Support Team"],
+        },
+      ],
+    },
+  ],
 };
 
 export const RadixSidebar = () => {
@@ -191,27 +200,37 @@ export const RadixSidebar = () => {
   const { toggleSidebar, setOpenMobile } = useSidebar();
   const { role, userProfile } = useUserContext();
 
-  const isInstitution = userProfile?.userType === 'Institution';
-  const displayName = isInstitution 
-    ? (userProfile?.institutionName || user?.fullName || 'প্রতিষ্ঠান') 
-    : (userProfile?.fullName || user?.fullName || 'ব্যবহারকারী');
+  const isInstitution = userProfile?.userType === "Institution";
+  const displayName = isInstitution
+    ? userProfile?.institutionName || user?.fullName || "প্রতিষ্ঠান"
+    : userProfile?.fullName || user?.fullName || "ব্যবহারকারী";
 
   const userInitials = displayName
-    ? displayName.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase()
-    : 'US';
+    ? displayName
+        .split(" ")
+        .filter(Boolean)
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "US";
 
-  const currentRole = role || 'Subscriber';
+  const currentRole = role || "Subscriber";
   const filteredNavGroups = DATA.navGroups
     .map((group) => {
       const items = group.items.filter(
-        (item) => currentRole === 'Super Admin' || item.roles.includes(currentRole)
+        (item) =>
+          currentRole === "Super Admin" || item.roles.includes(currentRole),
       );
       return { ...group, items };
     })
     .filter((group) => group.items.length > 0);
 
   return (
-    <Sidebar collapsible={isMobile ? "icon" : "none"} className="border-r border-black/[0.05] bg-glass-sidebar">
+    <Sidebar
+      collapsible={isMobile ? "icon" : "none"}
+      className="border-r border-black/[0.05] bg-glass-sidebar"
+    >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -229,10 +248,10 @@ export const RadixSidebar = () => {
                   </span>
                 </div>
               </div>
-              
+
               {/* Collapse Toggle Button */}
               {isMobile && (
-                <button 
+                <button
                   onClick={toggleSidebar}
                   className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors group-data-[collapsible=icon]:hidden"
                   title="মেনু সঙ্কুচিত করুন"
@@ -256,17 +275,17 @@ export const RadixSidebar = () => {
                 const isActive = location.pathname === item.url;
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      asChild 
+                    <SidebarMenuButton
+                      asChild
                       tooltip={item.title}
                       className={
-                        isActive 
-                          ? 'bg-[#4F46E5]/[0.10] text-[#4F46E5] font-bold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali' 
-                          : 'text-slate-700 hover:text-slate-900 hover:bg-black/[0.03] font-semibold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali'
+                        isActive
+                          ? "bg-[#4F46E5]/[0.10] text-[#4F46E5] font-bold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
+                          : "text-slate-700 hover:text-slate-900 hover:bg-black/[0.03] font-semibold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
                       }
                     >
-                      <Link 
-                        to={item.url} 
+                      <Link
+                        to={item.url}
                         className="flex items-center gap-3 w-full"
                         onClick={() => {
                           if (isMobile) {
@@ -274,8 +293,16 @@ export const RadixSidebar = () => {
                           }
                         }}
                       >
-                        <item.icon className={isActive ? 'text-[#4F46E5] size-[18px]' : 'text-slate-500 group-hover/menu-item:text-slate-800 size-[18px] transition-colors'} />
-                        <span className="font-sans tracking-tight">{item.title}</span>
+                        <item.icon
+                          className={
+                            isActive
+                              ? "text-[#4F46E5] size-[18px]"
+                              : "text-slate-500 group-hover/menu-item:text-slate-800 size-[18px] transition-colors"
+                          }
+                        />
+                        <span className="font-sans tracking-tight">
+                          {item.title}
+                        </span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -298,7 +325,7 @@ export const RadixSidebar = () => {
                   <Avatar className="h-8 w-8 rounded-lg border border-slate-200">
                     <AvatarImage
                       src={user?.imageUrl}
-                      alt={user?.fullName || 'User'}
+                      alt={user?.fullName || "User"}
                     />
                     <AvatarFallback className="rounded-lg bg-slate-100 text-slate-800 text-xs font-semibold">
                       {userInitials}
@@ -309,7 +336,7 @@ export const RadixSidebar = () => {
                       {displayName}
                     </span>
                     <span className="truncate text-xs text-slate-500">
-                      {user?.primaryEmailAddress?.emailAddress || ''}
+                      {user?.primaryEmailAddress?.emailAddress || ""}
                     </span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
@@ -317,17 +344,14 @@ export const RadixSidebar = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl border border-black/[0.05] bg-white/95 backdrop-blur-xl shadow-lg p-1.5 z-50"
-                side={isMobile ? 'bottom' : 'right'}
+                side={isMobile ? "bottom" : "right"}
                 align="end"
                 sideOffset={4}
               >
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-2.5 py-2 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage
-                        src={user?.imageUrl}
-                        alt={displayName}
-                      />
+                      <AvatarImage src={user?.imageUrl} alt={displayName} />
                       <AvatarFallback className="rounded-lg bg-slate-100">
                         {userInitials}
                       </AvatarFallback>
@@ -337,16 +361,19 @@ export const RadixSidebar = () => {
                         {displayName}
                       </span>
                       <span className="truncate text-xs text-slate-400">
-                        {user?.primaryEmailAddress?.emailAddress || ''}
+                        {user?.primaryEmailAddress?.emailAddress || ""}
                       </span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-black/[0.04]" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
-                    <Link 
-                      to="/dashboard/subscription" 
+                  <DropdownMenuItem
+                    asChild
+                    className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
+                  >
+                    <Link
+                      to="/dashboard/subscription"
                       className="flex items-center gap-2 w-full"
                       onClick={() => {
                         if (isMobile) {
@@ -361,9 +388,12 @@ export const RadixSidebar = () => {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator className="bg-black/[0.04]" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
-                    <Link 
-                      to="/dashboard/profile" 
+                  <DropdownMenuItem
+                    asChild
+                    className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
+                  >
+                    <Link
+                      to="/dashboard/profile"
                       className="flex items-center gap-2 w-full"
                       onClick={() => {
                         if (isMobile) {
@@ -375,10 +405,13 @@ export const RadixSidebar = () => {
                       আমার প্রোফাইল
                     </Link>
                   </DropdownMenuItem>
-                  {userProfile?.userType === 'Institution' && (
-                    <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
-                      <Link 
-                        to="/dashboard/institution" 
+                  {userProfile?.userType === "Institution" && (
+                    <DropdownMenuItem
+                      asChild
+                      className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
+                    >
+                      <Link
+                        to="/dashboard/institution"
                         className="flex items-center gap-2 w-full"
                         onClick={() => {
                           if (isMobile) {
@@ -391,9 +424,12 @@ export const RadixSidebar = () => {
                       </Link>
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem asChild className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali">
-                    <Link 
-                      to="/dashboard/support" 
+                  <DropdownMenuItem
+                    asChild
+                    className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
+                  >
+                    <Link
+                      to="/dashboard/support"
                       className="flex items-center gap-2 w-full"
                       onClick={() => {
                         if (isMobile) {
