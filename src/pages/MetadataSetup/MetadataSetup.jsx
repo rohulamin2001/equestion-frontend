@@ -433,7 +433,7 @@ export default function MetadataSetup() {
 
       {/* Edit dialog */}
       <Dialog open={!!editingItem} onOpenChange={(open) => !open && setEditingItem(null)}>
-        <DialogContent className="max-w-md bg-white/95 backdrop-blur-xl border border-black/[0.05] rounded-2xl shadow-xl z-50">
+        <DialogContent className="max-w-md bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-2xl shadow-xl z-50">
           <DialogHeader>
             <DialogTitle className="font-sans font-bold text-slate-800 text-lg">
               মেটাডাটা অপশন এডিট করুন
@@ -490,7 +490,7 @@ export default function MetadataSetup() {
 
       {/* Delete Confirmation Alert Dialog */}
       <AlertDialog open={!!deletingItem} onOpenChange={(open) => !open && setDeletingItem(null)}>
-        <AlertDialogPopup className="max-w-md bg-white/95 backdrop-blur-xl border border-black/[0.05] rounded-2xl shadow-xl z-50">
+        <AlertDialogPopup className="max-w-md bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-2xl shadow-xl z-50">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-sans font-bold text-slate-800 text-lg">
               আপনি কি নিশ্চিত?

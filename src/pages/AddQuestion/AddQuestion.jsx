@@ -2422,7 +2422,7 @@ export default function AddQuestion() {
         open={!!deleteConfirmId}
         onOpenChange={(open) => !open && setDeleteConfirmId(null)}
       >
-        <DialogContent className="max-w-md border border-black/[0.08] bg-white/[0.90] backdrop-blur-xl rounded-2xl shadow-xl">
+        <DialogContent className="max-w-md border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-650 font-bold">
               <AlertCircle

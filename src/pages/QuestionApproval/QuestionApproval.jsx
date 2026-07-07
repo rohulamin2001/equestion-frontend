@@ -1485,7 +1485,7 @@ export default function QuestionApproval() {
         open={!!selectedPreviewQuestion}
         onOpenChange={(open) => !open && setSelectedPreviewQuestion(null)}
       >
-        <DialogContent className="max-w-3xl border border-black/[0.08] bg-white/[0.92] backdrop-blur-xl rounded-3xl shadow-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden font-sans">
+        <DialogContent className="max-w-3xl border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-3xl shadow-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden font-sans">
           {selectedPreviewQuestion && (
             <div className="flex flex-col h-full min-h-0">
               {/* Modal Header */}
@@ -2504,7 +2504,7 @@ export default function QuestionApproval() {
         open={!!rejectConfirmId}
         onOpenChange={(open) => !open && setRejectConfirmId(null)}
       >
-        <DialogContent className="max-w-md border border-black/[0.08] bg-white/[0.90] backdrop-blur-xl rounded-2xl shadow-xl font-sans">
+        <DialogContent className="max-w-md border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl font-sans">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-650 font-bold">
               <XCircle className="size-5" />
@@ -2576,7 +2576,7 @@ export default function QuestionApproval() {
         open={!!selectedRejectionReason}
         onOpenChange={(open) => !open && setSelectedRejectionReason(null)}
       >
-        <DialogContent className="max-w-md border border-black/[0.08] bg-white/[0.90] backdrop-blur-xl rounded-2xl shadow-xl font-sans">
+        <DialogContent className="max-w-md border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl font-sans">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-rose-600 font-bold">
               <AlertCircle className="size-5" />

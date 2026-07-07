@@ -1553,7 +1553,7 @@ export default function MyQuestions() {
         open={!!deleteConfirmId}
         onOpenChange={(open) => !open && setDeleteConfirmId(null)}
       >
-        <DialogContent className="max-w-md border border-black/[0.08] bg-white/[0.90] backdrop-blur-xl rounded-2xl shadow-xl">
+        <DialogContent className="max-w-md border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600 font-bold">
               <AlertCircle className="size-5 animate-pulse" />
@@ -1603,7 +1603,7 @@ export default function MyQuestions() {
           }
         }}
       >
-        <DialogContent className="max-w-lg border border-black/[0.08] bg-white/[0.95] backdrop-blur-xl rounded-2xl shadow-xl font-sans">
+        <DialogContent className="max-w-lg border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl font-sans">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-[#4F46E5] font-bold">
               <RefreshCw className="size-5" />
@@ -1678,7 +1678,7 @@ export default function MyQuestions() {
         open={!!selectedRejectionReason}
         onOpenChange={(open) => !open && setSelectedRejectionReason(null)}
       >
-        <DialogContent className="max-w-md border border-black/[0.08] bg-white/[0.90] backdrop-blur-xl rounded-2xl shadow-xl font-sans">
+        <DialogContent className="max-w-md border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl font-sans">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-rose-600 font-bold">
               <AlertCircle className="size-5" />

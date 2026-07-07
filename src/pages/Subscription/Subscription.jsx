@@ -175,6 +175,7 @@ export default function Subscription() {
         fetchClassSubjects(selectedClass);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, selectedClass]);
 
 
@@ -434,6 +435,11 @@ export default function Subscription() {
                         : "border-slate-100 hover:border-indigo-400"
                     }`}
                   >
+                    {pkg.price === 0 && !isSubscribed && (
+                      <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-500 to-orange-500 text-white text-[9px] font-black uppercase tracking-wider py-1 px-3.5 rounded-bl-xl shadow-md animate-pulse">
+                        ফ্রি ক্যাম্পেইন
+                      </div>
+                    )}
                     <div>
                       <h3 className="text-base font-bold text-slate-800">
                         {pkg.title}
@@ -443,7 +449,19 @@ export default function Subscription() {
                       </p>
 
                       <div className="my-4 flex items-baseline gap-2">
-                        {pkg.price !== pkg.originalPrice ? (
+                        {pkg.price === 0 ? (
+                          <>
+                            <span className="text-2xl font-black text-orange-600 font-sans">
+                              ফ্রি (৳০)
+                            </span>
+                            <span className="text-xs text-slate-400 line-through font-sans">
+                              {pkg.originalPrice}/-
+                            </span>
+                            <span className="bg-orange-500 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-md animate-pulse">
+                              ফ্রি অফার
+                            </span>
+                          </>
+                        ) : pkg.price !== pkg.originalPrice ? (
                           <>
                             <span className="text-2xl font-black text-indigo-600 font-sans">
                               {pkg.price}/-
@@ -498,7 +516,7 @@ export default function Subscription() {
                         </>
                       ) : (
                         <>
-                          ক্রয় করুন
+                          {pkg.price === 0 ? "বিনামূল্যে অ্যাক্টিভেট করুন" : "ক্রয় করুন"}
                           <ChevronRight className="h-3.5 w-3.5" />
                         </>
                       )}
@@ -684,47 +702,52 @@ export default function Subscription() {
               <div className="flex justify-between text-sm text-slate-800 font-black border-t border-slate-200/60 pt-2.5">
                 <span>পরিশোধযোগ্য মোট মূল্য</span>
                 <span className="font-sans text-indigo-600">
-                  {appliedCoupon 
-                    ? Math.max(0, checkoutPkg?.price - appliedCoupon.discountAmount) 
-                    : checkoutPkg?.price}/- টাকা
+                  {(() => {
+                    const finalVal = appliedCoupon 
+                      ? Math.max(0, checkoutPkg?.price - appliedCoupon.discountAmount) 
+                      : checkoutPkg?.price;
+                    return finalVal === 0 ? "ফ্রি (৳০)" : `${finalVal}/- টাকা`;
+                  })()}
                 </span>
               </div>
             </div>
 
             {/* Coupon Code Section */}
-            <div className="space-y-2 text-left">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">কুপন কোড প্রয়োগ করুন</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="SAVE20"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                  disabled={appliedCoupon || couponLoading}
-                  className="flex-1 px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 text-slate-700 shadow-sm focus:bg-white hover:border-slate-300 uppercase font-sans"
-                />
-                {appliedCoupon ? (
-                  <button
-                    type="button"
-                    onClick={handleRemoveCoupon}
-                    className="px-4 h-11 bg-rose-50 text-rose-600 hover:bg-rose-100 transition rounded-xl text-xs font-bold cursor-pointer"
-                  >
-                    মুছে ফেলুন
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleApplyCoupon}
-                    disabled={couponLoading || !couponCode.trim()}
-                    className="px-4 h-11 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 disabled:bg-slate-50 disabled:text-slate-400 transition rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm border border-indigo-100/30"
-                  >
-                    {couponLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                    প্রয়োগ করুন
-                  </button>
-                )}
+            {checkoutPkg?.price > 0 && (
+              <div className="space-y-2 text-left">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">কুপন কোড প্রয়োগ করুন</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="SAVE20"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    disabled={appliedCoupon || couponLoading}
+                    className="flex-1 px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 text-slate-700 shadow-sm focus:bg-white hover:border-slate-300 uppercase font-sans"
+                  />
+                  {appliedCoupon ? (
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="px-4 h-11 bg-rose-50 text-rose-600 hover:bg-rose-100 transition rounded-xl text-xs font-bold cursor-pointer"
+                    >
+                      মুছে ফেলুন
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      disabled={couponLoading || !couponCode.trim()}
+                      className="px-4 h-11 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 disabled:bg-slate-50 disabled:text-slate-400 transition rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm border border-indigo-100/30"
+                    >
+                      {couponLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                      প্রয়োগ করুন
+                    </button>
+                  )}
+                </div>
+                {couponError && <p className="text-[10px] text-rose-500 font-bold">{couponError}</p>}
               </div>
-              {couponError && <p className="text-[10px] text-rose-500 font-bold">{couponError}</p>}
-            </div>
+            )}
 
             {/* Actions */}
             <div className="flex gap-3 pt-3 border-t border-slate-100">
@@ -742,7 +765,12 @@ export default function Subscription() {
                 className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 transition rounded-xl text-xs font-bold text-white shadow-md shadow-indigo-500/10 flex items-center justify-center gap-1 cursor-pointer"
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                নিশ্চিত পেমেন্ট করুন
+                {(() => {
+                  const finalVal = appliedCoupon 
+                    ? Math.max(0, checkoutPkg?.price - appliedCoupon.discountAmount) 
+                    : checkoutPkg?.price;
+                  return finalVal === 0 ? "বিনামূল্যে অ্যাক্টিভেট করুন" : "নিশ্চিত পেমেন্ট করুন";
+                })()}
               </button>
             </div>
           </div>

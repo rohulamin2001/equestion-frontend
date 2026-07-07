@@ -360,7 +360,7 @@ export default function StaffManagement() {
           onEscapeKeyDown={(e) => {
             if (formLoading) e.preventDefault();
           }}
-          className="max-w-lg p-0 border border-slate-200/60 overflow-hidden bg-white shadow-2xl rounded-2xl relative"
+          className="max-w-lg p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative"
         >
           <form
             onSubmit={handleAddStaff}

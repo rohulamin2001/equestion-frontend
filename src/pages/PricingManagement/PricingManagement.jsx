@@ -1,4 +1,10 @@
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Calendar,
   ChevronDown,
   Edit2,
@@ -7,18 +13,11 @@ import {
   PlusCircle,
   Trash2,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useState } from "react";
 import { toast } from "sonner";
 import { usePricingManagement } from "./hook/usePricingManagement";
 
 export default function PricingManagement() {
-
   const {
     packages: packagesList,
     loadingPackages: packagesLoading,
@@ -35,6 +34,7 @@ export default function PricingManagement() {
   const [editPrice, setEditPrice] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingDiscount, setEditingDiscount] = useState(null);
+  const [discountToDelete, setDiscountToDelete] = useState(null);
 
   // Dropdown states for Create Modal
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
@@ -52,7 +52,10 @@ export default function PricingManagement() {
   const [endDate, setEndDate] = useState("");
   const [usageLimit, setUsageLimit] = useState("");
 
-  const loading = updatePackagePrice.isPending || saveDiscount.isPending || deleteDiscount.isPending;
+  const loading =
+    updatePackagePrice.isPending ||
+    saveDiscount.isPending ||
+    deleteDiscount.isPending;
 
   const packageCategories = [
     { id: "tutor", label: "১। শিক্ষক/টিউটর প্যাকেজ" },
@@ -85,7 +88,7 @@ export default function PricingManagement() {
     try {
       await updatePackagePrice.mutateAsync({
         id: editingPkg.id,
-        basePrice: parseFloat(editPrice)
+        basePrice: parseFloat(editPrice),
       });
       toast.success("প্যাকেজের মূল্য সফলভাবে আপডেট করা হয়েছে!");
       setEditingPkg(null);
@@ -117,7 +120,7 @@ export default function PricingManagement() {
     try {
       await saveDiscount.mutateAsync({
         id: editingDiscount ? editingDiscount._id : undefined,
-        payload
+        payload,
       });
       if (editingDiscount) {
         toast.success("ডিসকাউন্ট/কুপন সফলভাবে সংশোধন করা হয়েছে!");
@@ -128,7 +131,9 @@ export default function PricingManagement() {
       resetForm();
     } catch (err) {
       console.error("Error saving discount:", err);
-      toast.error(err.response?.data?.error || "ডিসকাউন্ট সংরক্ষণ করতে ব্যর্থ হয়েছে");
+      toast.error(
+        err.response?.data?.error || "ডিসকাউন্ট সংরক্ষণ করতে ব্যর্থ হয়েছে",
+      );
     }
   };
 
@@ -140,22 +145,21 @@ export default function PricingManagement() {
     setTargetType(disc.targetType || "All");
     setTargetId(disc.targetId || "");
     setMinCartAmount(disc.minCartAmount || "");
-    setStartDate(disc.startDate ? new Date(disc.startDate).toISOString().split('T')[0] : "");
-    setEndDate(disc.endDate ? new Date(disc.endDate).toISOString().split('T')[0] : "");
+    setStartDate(
+      disc.startDate
+        ? new Date(disc.startDate).toISOString().split("T")[0]
+        : "",
+    );
+    setEndDate(
+      disc.endDate ? new Date(disc.endDate).toISOString().split("T")[0] : "",
+    );
     setUsageLimit(disc.usageLimit || "");
     setShowCreateModal(true);
   };
 
   // Delete Coupon/Discount
-  const handleDeleteDiscount = async (id) => {
-    if (!confirm("আপনি কি নিশ্চিতভাবে এই ডিসকাউন্টটি মুছে ফেলতে চান?")) return;
-    try {
-      await deleteDiscount.mutateAsync(id);
-      toast.success("ডিসকাউন্ট সফলভাবে মুছে ফেলা হয়েছে!");
-    } catch (err) {
-      console.error("Error deleting discount:", err);
-      toast.error("ডিসকাউন্ট মুছে ফেলতে ব্যর্থ হয়েছে");
-    }
+  const handleDeleteDiscount = (disc) => {
+    setDiscountToDelete(disc);
   };
 
   const resetForm = () => {
@@ -181,8 +185,12 @@ export default function PricingManagement() {
     <div className="p-6 space-y-6">
       {/* Title */}
       <div>
-        <h1 className="text-xl font-extrabold text-slate-800">প্যাকেজ ও ডিসকাউন্ট কন্ট্রোল প্যানেল</h1>
-        <p className="text-xs text-slate-400 mt-1">প্যাকেজগুলোর মূল্য পরিবর্তন এবং কুপন/ডিসকাউন্ট কোড পরিচালনা করুন</p>
+        <h1 className="text-xl font-extrabold text-slate-800">
+          প্যাকেজ ও ডিসকাউন্ট কন্ট্রোল প্যানেল
+        </h1>
+        <p className="text-xs text-slate-400 mt-1">
+          প্যাকেজগুলোর মূল্য পরিবর্তন এবং কুপন/ডিসকাউন্ট কোড পরিচালনা করুন
+        </p>
       </div>
 
       {/* Tabs */}
@@ -233,7 +241,10 @@ export default function PricingManagement() {
           {packagesLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[1, 2, 3].map((n) => (
-                <div key={n} className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4 animate-pulse">
+                <div
+                  key={n}
+                  className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4 animate-pulse"
+                >
                   <div className="h-4 bg-slate-100 rounded-md w-3/4"></div>
                   <div className="h-3 bg-slate-100 rounded-md w-1/4"></div>
                   <div className="h-10 bg-slate-100 rounded-xl w-full mt-6"></div>
@@ -245,19 +256,33 @@ export default function PricingManagement() {
               {packagesList
                 .filter((pkg) => pkg.category === selectedCategory)
                 .map((pkg) => (
-                  <div key={pkg.id} className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                  <div
+                    key={pkg.id}
+                    className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition"
+                  >
                     <div>
-                      <h3 className="text-base font-bold text-slate-800">{pkg.title}</h3>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-1">{pkg.id}</p>
-                      
+                      <h3 className="text-base font-bold text-slate-800">
+                        {pkg.title}
+                      </h3>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-1">
+                        {pkg.id}
+                      </p>
+
                       <div className="my-4 p-3 bg-slate-50 border rounded-xl flex items-baseline justify-between">
-                        <span className="text-xs text-slate-500 font-bold">বেস প্রাইস:</span>
-                        <span className="text-xl font-black text-indigo-600 font-sans">{pkg.originalPrice}/- ৳</span>
+                        <span className="text-xs text-slate-500 font-bold">
+                          বেস প্রাইস:
+                        </span>
+                        <span className="text-xl font-black text-indigo-600 font-sans">
+                          {pkg.originalPrice}/- ৳
+                        </span>
                       </div>
                     </div>
-                    
+
                     <button
-                      onClick={() => { setEditingPkg(pkg); setEditPrice(pkg.originalPrice); }}
+                      onClick={() => {
+                        setEditingPkg(pkg);
+                        setEditPrice(pkg.originalPrice);
+                      }}
                       className="w-full mt-2 py-2.5 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 transition rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border border-slate-100"
                     >
                       <Edit2 className="h-3.5 w-3.5" />
@@ -274,9 +299,14 @@ export default function PricingManagement() {
       {activeTab === "discounts" && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h3 className="text-sm font-bold text-slate-600">কুপন ও ছাড়ের তালিকা</h3>
+            <h3 className="text-sm font-bold text-slate-600">
+              কুপন ও ছাড়ের তালিকা
+            </h3>
             <button
-              onClick={() => { resetForm(); setShowCreateModal(true); }}
+              onClick={() => {
+                resetForm();
+                setShowCreateModal(true);
+              }}
               className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 transition text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow"
             >
               <PlusCircle className="h-4 w-4" />
@@ -292,103 +322,179 @@ export default function PricingManagement() {
           ) : discountsList.length === 0 ? (
             <div className="bg-white border border-slate-100 rounded-2xl p-12 shadow-sm text-center">
               <Info className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-              <p className="text-xs text-slate-400">কোনো কুপন বা ডিসকাউন্ট কোড পাওয়া যায়নি।</p>
+              <p className="text-xs text-slate-400">
+                কোনো কুপন বা ডিসকাউন্ট কোড পাওয়া যায়নি।
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {discountsList.map((disc) => (
-                <div key={disc._id} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-4 hover:shadow-md transition">
-                  <div className="flex items-start justify-between border-b border-slate-100 pb-3">
-                    <div>
-                      {disc.code ? (
-                        <span className="bg-indigo-50 text-indigo-600 text-xs font-extrabold px-2.5 py-1 rounded-lg font-sans tracking-wide uppercase border border-indigo-100">
-                          {disc.code}
-                        </span>
-                      ) : (
-                        <span className="bg-emerald-50 text-emerald-600 text-xs font-extrabold px-2.5 py-1 rounded-lg border border-emerald-100">
-                          প্রোমোশনাল ডিসকাউন্ট
-                        </span>
+              {discountsList.map((disc) => {
+                const now = new Date();
+                const isDateOver = disc.endDate
+                  ? new Date(disc.endDate) < now
+                  : false;
+                const isLimitReached =
+                  disc.usageLimit && disc.usedCount >= disc.usageLimit;
+                const expired = isDateOver || isLimitReached;
+
+                return (
+                  <div
+                    key={disc._id}
+                    className={`border rounded-2xl p-5 space-y-4 transition shadow-sm ${
+                      expired
+                        ? "bg-slate-50 border-slate-300/80 opacity-95"
+                        : "bg-white border-slate-200/50 hover:border-indigo-300 hover:shadow-md"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+                      <div className="flex flex-col gap-2.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {disc.code ? (
+                            <span
+                              className={`text-xs font-extrabold px-2.5 py-1 rounded-lg font-sans tracking-wide uppercase border ${
+                                expired
+                                  ? "bg-slate-100 text-slate-400 border-slate-200/50"
+                                  : "bg-indigo-50 text-indigo-600 border-indigo-100"
+                              }`}
+                            >
+                              {disc.code}
+                            </span>
+                          ) : (
+                            <span
+                              className={`text-xs font-extrabold px-2.5 py-1 rounded-lg border ${
+                                expired
+                                  ? "bg-slate-100 text-slate-400 border-slate-200/50"
+                                  : "bg-emerald-50 text-emerald-600 border-emerald-100"
+                              }`}
+                            >
+                              প্রোমোশনাল ডিসকাউন্ট
+                            </span>
+                          )}
+
+                          {expired ? (
+                            <span className="bg-rose-50 text-rose-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-rose-100/50">
+                              {isDateOver
+                                ? "মেয়াদোত্তীর্ণ"
+                                : "ব্যবহারের সীমা শেষ"}
+                            </span>
+                          ) : (
+                            <span className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-md border border-emerald-100 animate-pulse">
+                              সক্রিয়
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-slate-400">
+                          তৈরি হয়েছে: {formatDate(disc.createdAt)}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleStartEditDiscount(disc)}
+                          className="p-1.5 bg-slate-50 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition rounded-lg cursor-pointer"
+                          title="সম্পাদনা করুন"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteDiscount(disc)}
+                          className="p-1.5 bg-rose-50 text-rose-500 hover:bg-rose-100 transition rounded-lg cursor-pointer"
+                          title="মুছে ফেলুন"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Value and Scope */}
+                    <div
+                      className={`grid grid-cols-2 gap-3 text-xs ${expired ? "text-slate-400" : ""}`}
+                    >
+                      <div>
+                        <p className="text-slate-400">ছাড়ের পরিমাণ:</p>
+                        <p
+                          className={`text-sm font-black mt-0.5 font-sans ${expired ? "text-slate-500" : "text-slate-800"}`}
+                        >
+                          {disc.discountType === "Percentage" &&
+                          disc.value === 100 ? (
+                            <span className="inline-flex items-center px-2 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded text-[10px] font-extrabold animate-pulse font-sans">
+                              সম্পূর্ণ ফ্রি
+                            </span>
+                          ) : disc.discountType === "Percentage" ? (
+                            `${disc.value}%`
+                          ) : (
+                            `${disc.value}৳`
+                          )}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-slate-400">আওতাভুক্ত পরিধি:</p>
+                        <p
+                          className={`text-sm font-black mt-0.5 ${expired ? "text-slate-500" : "text-slate-800"}`}
+                        >
+                          {disc.targetType === "All" && "গ্লোবাল (সব প্যাকেজ)"}
+                          {disc.targetType === "SpecificCategory" &&
+                            `ক্যাটাগরি: ${getCategoryBengali(disc.targetId)}`}
+                          {disc.targetType === "SpecificPackage" &&
+                            `প্যাকেজ: ${getPackageBengali(disc.targetId)}`}
+                        </p>
+                      </div>
+                      {disc.code && (
+                        <>
+                          <div>
+                            <p className="text-slate-400">নূন্যতম ক্রয়সীমা:</p>
+                            <p
+                              className={`text-sm font-semibold mt-0.5 font-sans ${expired ? "text-slate-500" : "text-slate-800"}`}
+                            >
+                              {disc.minCartAmount || 0} ৳
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400">ব্যবহৃত হয়েছে:</p>
+                            <p
+                              className={`text-sm font-semibold mt-0.5 font-sans ${expired ? "text-slate-500" : "text-slate-800"}`}
+                            >
+                              {disc.usedCount}{" "}
+                              {disc.usageLimit ? `/ ${disc.usageLimit}` : "বার"}
+                            </p>
+                          </div>
+                        </>
                       )}
-                      <p className="text-[10px] text-slate-400 mt-2">তৈরি হয়েছে: {formatDate(disc.createdAt)}</p>
                     </div>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleStartEditDiscount(disc)}
-                        className="p-1.5 bg-slate-50 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition rounded-lg cursor-pointer"
-                        title="সম্পাদনা করুন"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteDiscount(disc._id)}
-                        className="p-1.5 bg-rose-50 text-rose-500 hover:bg-rose-100 transition rounded-lg cursor-pointer"
-                        title="মুছে ফেলুন"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
 
-                  {/* Value and Scope */}
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <p className="text-slate-400">ছাড়ের পরিমাণ:</p>
-                      <p className="text-sm font-black text-slate-800 mt-0.5 font-sans">
-                        {disc.discountType === "Percentage" ? `${disc.value}%` : `${disc.value}৳`}
-                      </p>
+                    {/* Period info */}
+                    <div
+                      className={`p-2.5 border rounded-xl flex items-center justify-between text-[11px] font-sans ${
+                        expired
+                          ? "bg-slate-100/50 border-slate-200/50 text-slate-400"
+                          : "bg-slate-50 border-slate-100 text-slate-500"
+                      }`}
+                    >
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                        শুরু: {formatDate(disc.startDate)}
+                      </span>
+                      <span>শেষ: {formatDate(disc.endDate)}</span>
                     </div>
-                    <div>
-                      <p className="text-slate-400">আওতাভুক্ত পরিধি:</p>
-                      <p className="text-sm font-black text-slate-800 mt-0.5">
-                        {disc.targetType === "All" && "গ্লোবাল (সব প্যাকেজ)"}
-                        {disc.targetType === "SpecificCategory" && `ক্যাটাগরি: ${getCategoryBengali(disc.targetId)}`}
-                        {disc.targetType === "SpecificPackage" && `প্যাকেজ: ${getPackageBengali(disc.targetId)}`}
-                      </p>
-                    </div>
-                    {disc.code && (
-                      <>
-                        <div>
-                          <p className="text-slate-400">নূন্যতম ক্রয়সীমা:</p>
-                          <p className="text-sm font-semibold text-slate-800 mt-0.5 font-sans">
-                            {disc.minCartAmount || 0} ৳
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-slate-400">ব্যবহৃত হয়েছে:</p>
-                          <p className="text-sm font-semibold text-slate-800 mt-0.5 font-sans">
-                            {disc.usedCount} {disc.usageLimit ? `/ ${disc.usageLimit}` : "বার"}
-                          </p>
-                        </div>
-                      </>
-                    )}
                   </div>
-
-                  {/* Period info */}
-                  <div className="p-2.5 bg-slate-50 border rounded-xl flex items-center justify-between text-[11px] text-slate-500 font-sans">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="h-3.5 w-3.5 text-slate-400" />
-                      শুরু: {formatDate(disc.startDate)}
-                    </span>
-                    <span>
-                      শেষ: {formatDate(disc.endDate)}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
       )}
 
       {/* Edit Price Modal */}
-      <Dialog open={!!editingPkg} onOpenChange={(open) => {
-        if (!open && !loading) {
-          setEditingPkg(null);
-          setEditPrice("");
-        }
-      }}>
+      <Dialog
+        open={!!editingPkg}
+        onOpenChange={(open) => {
+          if (!open && !loading) {
+            setEditingPkg(null);
+            setEditPrice("");
+          }
+        }}
+      >
         <DialogContent
           from="top"
           showCloseButton={!loading}
@@ -399,14 +505,20 @@ export default function PricingManagement() {
               <Edit2 className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <DialogTitle className="font-extrabold text-slate-800 text-base leading-snug">{editingPkg?.title}</DialogTitle>
-              <DialogDescription className="text-slate-400 text-xs font-normal leading-relaxed uppercase tracking-wider font-sans">প্যাকেজ আইডি: {editingPkg?.id}</DialogDescription>
+              <DialogTitle className="font-extrabold text-slate-800 text-base leading-snug">
+                {editingPkg?.title}
+              </DialogTitle>
+              <DialogDescription className="text-slate-400 text-xs font-normal leading-relaxed uppercase tracking-wider font-sans">
+                প্যাকেজ আইডি: {editingPkg?.id}
+              </DialogDescription>
             </div>
           </div>
 
           <div className="p-6 space-y-4">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">নতুন বেস প্রাইস (৳)</label>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                নতুন বেস প্রাইস (৳)
+              </label>
               <input
                 type="number"
                 placeholder="যেমন: ৭০০"
@@ -419,7 +531,10 @@ export default function PricingManagement() {
             <div className="flex gap-3 pt-3 border-t border-slate-100">
               <button
                 type="button"
-                onClick={() => { setEditingPkg(null); setEditPrice(""); }}
+                onClick={() => {
+                  setEditingPkg(null);
+                  setEditPrice("");
+                }}
                 className="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 transition rounded-xl text-xs font-bold text-slate-600 cursor-pointer"
               >
                 বাতিল
@@ -439,27 +554,38 @@ export default function PricingManagement() {
       </Dialog>
 
       {/* Create Discount/Coupon Modal */}
-      <Dialog open={showCreateModal} onOpenChange={(open) => {
-        if (!open && !loading) {
-          setShowCreateModal(false);
-          resetForm();
-        }
-      }}>
+      <Dialog
+        open={showCreateModal}
+        onOpenChange={(open) => {
+          if (!open && !loading) {
+            setShowCreateModal(false);
+            resetForm();
+          }
+        }}
+      >
         <DialogContent
           from="top"
           showCloseButton={!loading}
           className="max-w-lg p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative max-h-[90vh] overflow-y-auto"
         >
-           <div className="px-6 pt-6 pb-5 border-b border-slate-100 flex items-start gap-4 text-left">
+          <div className="px-6 pt-6 pb-5 border-b border-slate-100 flex items-start gap-4 text-left">
             <div className="p-2.5 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-xl shrink-0 shadow-sm">
-              {editingDiscount ? <Edit2 className="h-5 w-5" /> : <PlusCircle className="h-5 w-5" />}
+              {editingDiscount ? (
+                <Edit2 className="h-5 w-5" />
+              ) : (
+                <PlusCircle className="h-5 w-5" />
+              )}
             </div>
             <div className="space-y-1">
               <DialogTitle className="font-extrabold text-slate-800 text-base leading-snug">
-                {editingDiscount ? "ডিসকাউন্ট/কুপন কোড সংশোধন করুন" : "নতুন ডিসকাউন্ট/কুপন তৈরি করুন"}
+                {editingDiscount
+                  ? "ডিসকাউন্ট/কুপন কোড সংশোধন করুন"
+                  : "নতুন ডিসকাউন্ট/কুপন তৈরি করুন"}
               </DialogTitle>
               <DialogDescription className="text-slate-400 text-xs font-normal leading-relaxed">
-                {editingDiscount ? "অফারের নতুন প্রকারভেদ, মূল্য এবং মেয়াদ নির্ধারণ করুন" : "অফারের প্রকারভেদ, মূল্য এবং মেয়াদ নির্ধারণ করুন"}
+                {editingDiscount
+                  ? "অফারের নতুন প্রকারভেদ, মূল্য এবং মেয়াদ নির্ধারণ করুন"
+                  : "অফারের প্রকারভেদ, মূল্য এবং মেয়াদ নির্ধারণ করুন"}
               </DialogDescription>
             </div>
           </div>
@@ -468,7 +594,9 @@ export default function PricingManagement() {
             <div className="grid grid-cols-2 gap-4">
               {/* Code */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">কুপন কোড (ঐচ্ছিক)</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                  কুপন কোড (ঐচ্ছিক)
+                </label>
                 <input
                   type="text"
                   placeholder="SAVE30"
@@ -480,34 +608,63 @@ export default function PricingManagement() {
 
               {/* Discount Type */}
               <div className="space-y-1 relative">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">ডিসকাউন্ট টাইপ</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                  ডিসকাউন্ট টাইপ
+                </label>
                 <div className="relative">
                   <button
                     type="button"
                     onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)}
                     className="w-full px-4 border border-slate-200 rounded-xl text-xs bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm cursor-pointer"
                   >
-                    <span>{discountType === "Percentage" ? "শতকরা ছাড় (%)" : "ফ্ল্যাট ছাড় (৳)"}</span>
-                    <ChevronDown className={`size-4 text-slate-400 transition-transform duration-300 ${isTypeDropdownOpen ? 'rotate-180' : ''}`} />
+                    <span>
+                      {discountType === "Percentage" && value === "100"
+                        ? "সম্পূর্ণ ফ্রি (১০০% ছাড়)"
+                        : discountType === "Percentage"
+                          ? "শতকরা ছাড় (%)"
+                          : "ফ্ল্যাট ছাড় (৳)"}
+                    </span>
+                    <ChevronDown
+                      className={`size-4 text-slate-400 transition-transform duration-300 ${isTypeDropdownOpen ? "rotate-180" : ""}`}
+                    />
                   </button>
                   {isTypeDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]">
                       {[
                         { value: "Percentage", label: "শতকরা ছাড় (%)" },
-                        { value: "Flat", label: "ফ্ল্যাট ছাড় (৳)" }
+                        { value: "Flat", label: "ফ্ল্যাট ছাড় (৳)" },
+                        { value: "Free", label: "সম্পূর্ণ ফ্রি (১০০% ছাড়)" },
                       ].map((opt) => {
-                        const isSelected = discountType === opt.value;
+                        const isSelected =
+                          opt.value === "Free"
+                            ? discountType === "Percentage" && value === "100"
+                            : opt.value === "Percentage"
+                              ? discountType === "Percentage" && value !== "100"
+                              : discountType === "Flat";
                         return (
                           <button
                             key={opt.value}
                             type="button"
-                            onClick={() => { setDiscountType(opt.value); setIsTypeDropdownOpen(false); }}
+                            onClick={() => {
+                              if (opt.value === "Free") {
+                                setDiscountType("Percentage");
+                                setValue("100");
+                              } else {
+                                setDiscountType(opt.value);
+                                if (value === "100") setValue("");
+                              }
+                              setIsTypeDropdownOpen(false);
+                            }}
                             className={`w-full text-left px-3.5 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer hover:bg-slate-50/80 ${
-                              isSelected ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                              isSelected
+                                ? "bg-indigo-50 text-indigo-600"
+                                : "text-slate-700"
                             }`}
                           >
                             <span>{opt.label}</span>
-                            {isSelected && <span className="size-1.5 rounded-full bg-indigo-500" />}
+                            {isSelected && (
+                              <span className="size-1.5 rounded-full bg-indigo-500" />
+                            )}
                           </button>
                         );
                       })}
@@ -518,19 +675,24 @@ export default function PricingManagement() {
 
               {/* Value */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">ডিসকাউন্ট মান (৳ / %)</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                  ডিসকাউন্ট মান (৳ / %)
+                </label>
                 <input
                   type="number"
                   placeholder="যেমন: ৩০"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
-                  className="w-full px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 text-slate-700 shadow-sm focus:bg-white hover:border-slate-300 font-sans"
+                  disabled={discountType === "Percentage" && value === "100"}
+                  className="w-full px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 text-slate-700 shadow-sm focus:bg-white hover:border-slate-300 font-sans disabled:bg-slate-50 disabled:text-slate-400"
                 />
               </div>
 
               {/* Minimum Purchase */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">নূন্যতম ক্রয়সীমা (৳)</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                  নূন্যতম ক্রয়সীমা (৳)
+                </label>
                 <input
                   type="number"
                   placeholder="যেমন: ৫০০"
@@ -542,7 +704,9 @@ export default function PricingManagement() {
 
               {/* Scope Target Type */}
               <div className="space-y-1 relative">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">ছাড়ের পরিধি</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                  ছাড়ের পরিধি
+                </label>
                 <div className="relative">
                   <button
                     type="button"
@@ -554,27 +718,43 @@ export default function PricingManagement() {
                       {targetType === "SpecificCategory" && "ক্যাটাগরি ভিত্তিক"}
                       {targetType === "SpecificPackage" && "নির্দিষ্ট প্যাকেজ"}
                     </span>
-                    <ChevronDown className={`size-4 text-slate-400 transition-transform duration-300 ${isScopeDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                      className={`size-4 text-slate-400 transition-transform duration-300 ${isScopeDropdownOpen ? "rotate-180" : ""}`}
+                    />
                   </button>
                   {isScopeDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]">
                       {[
                         { value: "All", label: "গ্লোবাল (সবার জন্য)" },
-                        { value: "SpecificCategory", label: "ক্যাটাগরি ভিত্তিক" },
-                        { value: "SpecificPackage", label: "নির্দিষ্ট প্যাকেজ" }
+                        {
+                          value: "SpecificCategory",
+                          label: "ক্যাটাগরি ভিত্তিক",
+                        },
+                        {
+                          value: "SpecificPackage",
+                          label: "নির্দিষ্ট প্যাকেজ",
+                        },
                       ].map((opt) => {
                         const isSelected = targetType === opt.value;
                         return (
                           <button
                             key={opt.value}
                             type="button"
-                            onClick={() => { setTargetType(opt.value); setTargetId(""); setIsScopeDropdownOpen(false); }}
+                            onClick={() => {
+                              setTargetType(opt.value);
+                              setTargetId("");
+                              setIsScopeDropdownOpen(false);
+                            }}
                             className={`w-full text-left px-3.5 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer hover:bg-slate-50/80 ${
-                              isSelected ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
+                              isSelected
+                                ? "bg-indigo-50 text-indigo-600"
+                                : "text-slate-700"
                             }`}
                           >
                             <span>{opt.label}</span>
-                            {isSelected && <span className="size-1.5 rounded-full bg-indigo-500" />}
+                            {isSelected && (
+                              <span className="size-1.5 rounded-full bg-indigo-500" />
+                            )}
                           </button>
                         );
                       })}
@@ -592,53 +772,71 @@ export default function PricingManagement() {
                   <div className="relative">
                     <button
                       type="button"
-                      onClick={() => setIsTargetDropdownOpen(!isTargetDropdownOpen)}
+                      onClick={() =>
+                        setIsTargetDropdownOpen(!isTargetDropdownOpen)
+                      }
                       className="w-full px-4 border border-slate-200 rounded-xl text-xs bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm cursor-pointer text-left"
                     >
                       <span className="truncate">
                         {targetType === "SpecificCategory"
-                          ? (packageCategories.find((c) => c.id === targetId)?.label || "ক্যাটাগরি নির্বাচন করুন")
-                          : (packagesList.find((p) => p.id === targetId)?.title || "প্যাকেজ নির্বাচন করুন")}
+                          ? packageCategories.find((c) => c.id === targetId)
+                              ?.label || "ক্যাটাগরি নির্বাচন করুন"
+                          : packagesList.find((p) => p.id === targetId)
+                              ?.title || "প্যাকেজ নির্বাচন করুন"}
                       </span>
-                      <ChevronDown className={`size-4 text-slate-400 transition-transform duration-300 ${isTargetDropdownOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown
+                        className={`size-4 text-slate-400 transition-transform duration-300 ${isTargetDropdownOpen ? "rotate-180" : ""}`}
+                      />
                     </button>
                     {isTargetDropdownOpen && (
                       <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] max-h-[220px] overflow-y-auto">
-                        {targetType === "SpecificCategory" ? (
-                          packageCategories.map((c) => {
-                            const isSelected = targetId === c.id;
-                            return (
-                              <button
-                                key={c.id}
-                                type="button"
-                                onClick={() => { setTargetId(c.id); setIsTargetDropdownOpen(false); }}
-                                className={`w-full text-left px-3.5 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer hover:bg-slate-50/80 ${
-                                  isSelected ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
-                                }`}
-                              >
-                                <span>{c.label}</span>
-                                {isSelected && <span className="size-1.5 rounded-full bg-indigo-500" />}
-                              </button>
-                            );
-                          })
-                        ) : (
-                          packagesList.map((p) => {
-                            const isSelected = targetId === p.id;
-                            return (
-                              <button
-                                key={p.id}
-                                type="button"
-                                onClick={() => { setTargetId(p.id); setIsTargetDropdownOpen(false); }}
-                                className={`w-full text-left px-3.5 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer hover:bg-slate-50/80 ${
-                                  isSelected ? 'bg-indigo-50 text-indigo-600' : 'text-slate-700'
-                                }`}
-                              >
-                                <span className="truncate">{p.title}</span>
-                                {isSelected && <span className="size-1.5 rounded-full bg-indigo-500" />}
-                              </button>
-                            );
-                          })
-                        )}
+                        {targetType === "SpecificCategory"
+                          ? packageCategories.map((c) => {
+                              const isSelected = targetId === c.id;
+                              return (
+                                <button
+                                  key={c.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setTargetId(c.id);
+                                    setIsTargetDropdownOpen(false);
+                                  }}
+                                  className={`w-full text-left px-3.5 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer hover:bg-slate-50/80 ${
+                                    isSelected
+                                      ? "bg-indigo-50 text-indigo-600"
+                                      : "text-slate-700"
+                                  }`}
+                                >
+                                  <span>{c.label}</span>
+                                  {isSelected && (
+                                    <span className="size-1.5 rounded-full bg-indigo-500" />
+                                  )}
+                                </button>
+                              );
+                            })
+                          : packagesList.map((p) => {
+                              const isSelected = targetId === p.id;
+                              return (
+                                <button
+                                  key={p.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setTargetId(p.id);
+                                    setIsTargetDropdownOpen(false);
+                                  }}
+                                  className={`w-full text-left px-3.5 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer hover:bg-slate-50/80 ${
+                                    isSelected
+                                      ? "bg-indigo-50 text-indigo-600"
+                                      : "text-slate-700"
+                                  }`}
+                                >
+                                  <span className="truncate">{p.title}</span>
+                                  {isSelected && (
+                                    <span className="size-1.5 rounded-full bg-indigo-500" />
+                                  )}
+                                </button>
+                              );
+                            })}
                       </div>
                     )}
                   </div>
@@ -647,7 +845,9 @@ export default function PricingManagement() {
 
               {/* Start Date */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">শুরুর তারিখ</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                  শুরুর তারিখ
+                </label>
                 <input
                   type="date"
                   value={startDate}
@@ -658,7 +858,9 @@ export default function PricingManagement() {
 
               {/* End Date */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">শেষের তারিখ</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                  শেষের তারিখ
+                </label>
                 <input
                   type="date"
                   value={endDate}
@@ -669,7 +871,9 @@ export default function PricingManagement() {
 
               {/* Usage Limit */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">সর্বোচ্চ ব্যবহার সীমা (ঐচ্ছিক)</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                  সর্বোচ্চ ব্যবহার সীমা (ঐচ্ছিক)
+                </label>
                 <input
                   type="number"
                   placeholder="যেমন: ১০০"
@@ -696,6 +900,68 @@ export default function PricingManagement() {
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 সংরক্ষণ করুন
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog
+        open={!!discountToDelete}
+        onOpenChange={(open) => {
+          if (!open && !loading) {
+            setDiscountToDelete(null);
+          }
+        }}
+      >
+        <DialogContent
+          from="top"
+          showCloseButton={!loading}
+          className="max-w-md p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative"
+        >
+          <div className="p-6 text-center space-y-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-50">
+              <Trash2 className="h-6 w-6 text-rose-600 animate-bounce" />
+            </div>
+            
+            <div className="space-y-2">
+              <DialogTitle className="text-center font-extrabold text-slate-800 text-lg">
+                আপনি কি নিশ্চিত?
+              </DialogTitle>
+              <DialogDescription className="text-center text-slate-500 text-xs font-normal leading-relaxed">
+                আপনি কি নিশ্চিত যে আপনি কুপন কোড <strong>{discountToDelete?.code || "প্রোমোশনাল ডিসকাউন্ট"}</strong> স্থায়ীভাবে মুছে ফেলতে চান? এটি আর পুনরুদ্ধার করা যাবে না।
+              </DialogDescription>
+            </div>
+
+            <div className="flex gap-3 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => setDiscountToDelete(null)}
+                className="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 transition rounded-xl text-xs font-bold text-slate-600 cursor-pointer disabled:opacity-50"
+              >
+                না, বাতিল করুন
+              </button>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={async () => {
+                  if (discountToDelete) {
+                    try {
+                      await deleteDiscount.mutateAsync(discountToDelete._id);
+                      toast.success("ডিসকাউন্ট সফলভাবে মুছে ফেলা হয়েছে!");
+                      setDiscountToDelete(null);
+                    } catch (err) {
+                      console.error("Error deleting discount:", err);
+                      toast.error("ডিসকাউন্ট মুছে ফেলতে ব্যর্থ হয়েছে");
+                    }
+                  }
+                }}
+                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 transition rounded-xl text-xs font-bold text-white shadow-md shadow-rose-500/10 flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
+              >
+                {loading && <Loader2 className="h-4 w-4 animate-spin text-white" />}
+                {loading ? "মুছে ফেলা হচ্ছে..." : "হ্যাঁ, মুছে করুন"}
               </button>
             </div>
           </div>

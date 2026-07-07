@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@clerk/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../lib/apiClient";
 
 export const usePricingManagement = () => {
@@ -11,7 +11,10 @@ export const usePricingManagement = () => {
     queryKey: ["packages"],
     queryFn: async () => {
       const res = await apiClient.get("/subscriptions/packages");
-      return res.data.packages || [];
+      return {
+        packages: res.data.packages || [],
+        coupons: res.data.coupons || [],
+      };
     },
   });
 
@@ -34,7 +37,7 @@ export const usePricingManagement = () => {
       const res = await apiClient.put(
         `/subscriptions/admin/packages/${id}`,
         { basePrice },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       return res.data;
     },
@@ -51,14 +54,14 @@ export const usePricingManagement = () => {
         const res = await apiClient.put(
           `/subscriptions/admin/discounts/${id}`,
           payload,
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
         return res.data;
       } else {
         const res = await apiClient.post(
           "/subscriptions/admin/discounts",
           payload,
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
         return res.data;
       }
@@ -75,7 +78,7 @@ export const usePricingManagement = () => {
       const token = await getToken();
       const res = await apiClient.delete(
         `/subscriptions/admin/discounts/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       return res.data;
     },
@@ -86,7 +89,9 @@ export const usePricingManagement = () => {
   });
 
   return {
-    packages: packagesQuery.data || [],
+    packages:
+      packagesQuery.data?.packages ||
+      (Array.isArray(packagesQuery.data) ? packagesQuery.data : []),
     loadingPackages: packagesQuery.isLoading,
     refetchPackages: packagesQuery.refetch,
 

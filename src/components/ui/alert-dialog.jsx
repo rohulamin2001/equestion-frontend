@@ -96,7 +96,7 @@ const AlertDialogPopup = React.forwardRef(
               exit={directionVariants.exit}
               transition={transition}
               className={cn(
-                "relative w-full max-w-md rounded-2xl border border-slate-100 bg-white p-6 shadow-xl focus:outline-none overflow-visible",
+                "relative w-full max-w-md rounded-2xl border border-slate-200/50 bg-glass-elevated backdrop-blur-xl p-6 shadow-2xl focus:outline-none overflow-visible",
                 className
               )}
               {...props}

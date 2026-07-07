@@ -1397,7 +1397,7 @@ export default function QuestionBank() {
       >
         <DialogContent
           showCloseButton={false}
-          className="max-w-3xl border border-black/[0.08] bg-white/[0.92] backdrop-blur-xl rounded-3xl shadow-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden font-sans"
+          className="max-w-3xl border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-3xl shadow-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden font-sans"
         >
           {selectedPreviewQuestion && (
             <div className="flex flex-col h-full min-h-0">
@@ -2066,7 +2066,7 @@ export default function QuestionBank() {
         open={!!deleteConfirmId}
         onOpenChange={(open) => !open && setDeleteConfirmId(null)}
       >
-        <DialogContent className="max-w-md border border-black/[0.08] bg-white/[0.90] backdrop-blur-xl rounded-2xl shadow-xl">
+        <DialogContent className="max-w-md border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600 font-bold">
               <AlertCircle className="size-5 animate-pulse" />
