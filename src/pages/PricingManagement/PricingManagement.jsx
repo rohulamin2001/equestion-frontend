@@ -11,11 +11,16 @@ import {
   Info,
   Loader2,
   PlusCircle,
+  Search,
   Trash2,
+  User,
+  UserCheck,
+  UserX,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { usePricingManagement } from "./hook/usePricingManagement";
+import { translateSubscriptionKey } from "../../constants/subscriptions";
 
 export default function PricingManagement() {
   const {
@@ -23,18 +28,28 @@ export default function PricingManagement() {
     loadingPackages: packagesLoading,
     discounts: discountsList,
     loadingDiscounts: discountsLoading,
+    subscribers: subscribersList,
+    subscribersTotal,
+    subscribersPages,
+    loadingSubscribers: subscribersLoading,
+    subscribersPage,
+    setSubscribersPage,
+    subscribersSearch,
+    setSubscribersSearch,
     updatePackagePrice,
     saveDiscount,
     deleteDiscount,
+    toggleSuspension,
   } = usePricingManagement();
 
-  const [activeTab, setActiveTab] = useState("packages"); // 'packages' or 'discounts'
+  const [activeTab, setActiveTab] = useState("packages"); // 'packages', 'discounts' or 'subscribers'
   const [selectedCategory, setSelectedCategory] = useState("tutor");
   const [editingPkg, setEditingPkg] = useState(null);
   const [editPrice, setEditPrice] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingDiscount, setEditingDiscount] = useState(null);
   const [discountToDelete, setDiscountToDelete] = useState(null);
+  const [suspendingSubId, setSuspendingSubId] = useState(null);
 
   // Dropdown states for Create Modal
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
@@ -56,6 +71,44 @@ export default function PricingManagement() {
     updatePackagePrice.isPending ||
     saveDiscount.isPending ||
     deleteDiscount.isPending;
+
+  const getSubscriberSubPackageTitle = (sub) => {
+    if (sub.purchaseType === "Package") {
+      const pkg = packagesList.find((p) => p.id === sub.packageId);
+      const title = pkg ? pkg.title : translateSubscriptionKey(sub.packageId);
+      return `প্যাকেজ: ${title}`;
+    }
+    if (sub.purchaseType === "Class") {
+      const translatedClasses = sub.classNames?.map((c) => translateSubscriptionKey(c)).join(", ") || "";
+      return `শ্রেণী: ${translatedClasses}`;
+    }
+    if (sub.purchaseType === "Subject") {
+      return `বিষয়ভিত্তিক: ${sub.subjectIds?.map((s) => s.subjectName).join(", ") || `${sub.subjectIds?.length || 0} টি বিষয়`}`;
+    }
+    return "অজানা সাবস্ক্রিপশন";
+  };
+
+  const handleToggleSuspension = async (sub, userId) => {
+    try {
+      setSuspendingSubId(sub._id);
+      const isSuspending = !sub.isSuspended;
+      await toggleSuspension.mutateAsync({
+        userId,
+        subscriptionId: sub._id,
+        isSuspended: isSuspending,
+      });
+      toast.success(
+        isSuspending
+          ? "সাবস্ক্রিপশন সফলভাবে স্থগিত করা হয়েছে!"
+          : "সাবস্ক্রিপশন সফলভাবে পুনরায় সচল করা হয়েছে!"
+      );
+    } catch (err) {
+      console.error(err);
+      toast.error("সাবস্ক্রিপশন আপডেট করতে ব্যর্থ হয়েছে।");
+    } finally {
+      setSuspendingSubId(null);
+    }
+  };
 
   const packageCategories = [
     { id: "tutor", label: "১। শিক্ষক/টিউটর প্যাকেজ" },
@@ -214,6 +267,16 @@ export default function PricingManagement() {
           }`}
         >
           ডিসকাউন্ট ও কুপন কোড
+        </button>
+        <button
+          onClick={() => setActiveTab("subscribers")}
+          className={`px-5 py-3 text-xs font-bold transition border-b-2 ${
+            activeTab === "subscribers"
+              ? "border-indigo-600 text-indigo-600"
+              : "border-transparent text-slate-400 hover:text-slate-600"
+          }`}
+        >
+          গ্রাহক সাবস্ক্রিপশন তালিকা
         </button>
       </div>
 
@@ -484,6 +547,257 @@ export default function PricingManagement() {
           )}
         </div>
       )}
+
+      {/* Tab 3: Subscribers list */}
+      {activeTab === "subscribers" && (
+        <div className="space-y-6">
+          {/* Search bar */}
+          <div className="flex items-center gap-3 bg-white p-4 border border-slate-100 rounded-2xl shadow-sm text-left">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="নাম বা মোবাইল নাম্বার দিয়ে গ্রাহক খুঁজুন..."
+                value={subscribersSearch}
+                onChange={(e) => {
+                  setSubscribersSearch(e.target.value);
+                  setSubscribersPage(1);
+                }}
+                className="w-full pl-11 pr-4 h-11 bg-slate-50/50 border border-slate-200 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none focus:ring-4 focus:ring-indigo-50 transition-all text-slate-700 font-sans"
+              />
+            </div>
+            {subscribersSearch && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSubscribersSearch("");
+                  setSubscribersPage(1);
+                }}
+                className="text-xs text-slate-400 hover:text-slate-600 font-semibold px-2 py-1 cursor-pointer"
+              >
+                মুছে ফেলুন
+              </button>
+            )}
+          </div>
+
+          {/* Subscribers grid */}
+          {subscribersLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[1, 2].map((n) => (
+                <div
+                  key={n}
+                  className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4 animate-pulse"
+                >
+                  <div className="h-6 bg-slate-100 rounded-md w-1/3"></div>
+                  <div className="h-4 bg-slate-100 rounded-md w-1/2"></div>
+                  <div className="h-10 bg-slate-100 rounded-xl w-full mt-6"></div>
+                </div>
+              ))}
+            </div>
+          ) : subscribersList.length === 0 ? (
+            <div className="bg-white border border-slate-100 rounded-2xl p-12 shadow-sm text-center">
+              <Info className="h-8 w-8 text-slate-300 mx-auto mb-2" />
+              <p className="text-xs text-slate-400">
+                কোনো গ্রাহক পাওয়া যায়নি।
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {subscribersList.map((user) => (
+                      <div
+                        key={user._id}
+                        className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-4 text-left flex flex-col justify-between hover:shadow-md transition"
+                      >
+                        <div className="space-y-3.5">
+                          {/* User Header */}
+                          <div className="flex items-center gap-3 border-b border-slate-50 pb-3">
+                            <div className="p-2.5 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-xl">
+                              <User className="h-5 w-5" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h4 className="text-sm font-bold text-slate-800">
+                                  {user.fullName ||
+                                    `${user.firstName || ""} ${user.lastName || ""}`}
+                                </h4>
+                                <span
+                                  className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${
+                                    user.role === "Super Admin" ||
+                                    user.role === "Admin"
+                                      ? "bg-indigo-50 text-indigo-600 border-indigo-100"
+                                      : "bg-slate-100 text-slate-600 border-slate-200"
+                                  }`}
+                                >
+                                  {user.role}
+                                </span>
+                              </div>
+                              <p className="text-xs text-slate-500 font-semibold font-sans mt-0.5">
+                                {user.phoneNumber}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Subscriptions List */}
+                          <div className="space-y-3">
+                            <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-wide">
+                              সাবস্ক্রিপশনসমূহ
+                            </h5>
+                            {!user.subscriptions ||
+                            user.subscriptions.length === 0 ? (
+                              <p className="text-xs text-slate-400 italic">
+                                কোনো সক্রিয় বা স্থগিত সাবস্ক্রিপশন নেই।
+                              </p>
+                            ) : (
+                              <div className="space-y-2.5">
+                                {user.subscriptions.map((sub) => {
+                                  const isExpired =
+                                    new Date(sub.endDate) < new Date();
+                                  const isSuspended = sub.isSuspended;
+
+                                  return (
+                                    <div
+                                      key={sub._id}
+                                      className={`p-3 border rounded-xl flex items-center justify-between gap-4 transition ${
+                                        isSuspended
+                                          ? "bg-rose-50/20 border-rose-100 text-slate-500"
+                                          : isExpired
+                                            ? "bg-slate-50/50 border-slate-100 text-slate-400"
+                                            : "bg-white border-slate-100 text-slate-700"
+                                      }`}
+                                    >
+                                      <div className="space-y-1 text-left flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                          <p className="text-xs font-bold text-slate-800 truncate">
+                                            {getSubscriberSubPackageTitle(sub)}
+                                          </p>
+                                          {isSuspended ? (
+                                            <span className="bg-rose-50 text-rose-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-rose-100/50">
+                                              স্থগিত
+                                            </span>
+                                          ) : isExpired ? (
+                                            <span className="bg-slate-100 text-slate-400 text-[9px] font-bold px-1.5 py-0.5 rounded border border-slate-200/50">
+                                              মেয়াদোত্তীর্ণ
+                                            </span>
+                                          ) : (
+                                            <span className="bg-emerald-50 text-emerald-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-100">
+                                              সক্রিয়
+                                            </span>
+                                          )}
+                                        </div>
+                                        <p className="text-[10px] text-slate-400 font-sans">
+                                          মেয়াদ: {formatDate(sub.startDate)} -{" "}
+                                          {formatDate(sub.endDate)}
+                                        </p>
+                                      </div>
+
+                                      {!isExpired && (
+                                        <button
+                                          type="button"
+                                          disabled={suspendingSubId === sub._id}
+                                          onClick={() =>
+                                            handleToggleSuspension(
+                                              sub,
+                                              user._id,
+                                            )
+                                          }
+                                          className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer disabled:opacity-50 ${
+                                            isSuspended
+                                              ? "bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-100"
+                                              : "bg-rose-50 text-rose-600 border border-rose-100/50 hover:bg-rose-100"
+                                          }`}
+                                        >
+                                          {suspendingSubId === sub._id ? (
+                                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                          ) : isSuspended ? (
+                                            <UserCheck className="h-3.5 w-3.5" />
+                                          ) : (
+                                            <UserX className="h-3.5 w-3.5" />
+                                          )}
+                                          {isSuspended
+                                            ? "সচল করুন"
+                                            : "স্থগিত করুন"}
+                                        </button>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Server-side Pagination Section */}
+                  {subscribersPages > 1 && (
+                    <div className="flex items-center justify-between border-t border-slate-100 pt-5 flex-wrap gap-3">
+                      <p className="text-xs text-slate-500 font-medium">
+                        মোট গ্রাহক:{" "}
+                        <span className="font-bold text-slate-700">
+                          {subscribersTotal}
+                        </span>{" "}
+                        জনের মধ্যে{" "}
+                        <span className="font-bold text-slate-700">
+                          {(subscribersPage - 1) * 10 + 1}
+                        </span>{" "}
+                        -{" "}
+                        <span className="font-bold text-slate-700">
+                          {Math.min(subscribersPage * 10, subscribersTotal)}
+                        </span>{" "}
+                        জন দেখানো হচ্ছে
+                      </p>
+
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          disabled={subscribersPage === 1}
+                          onClick={() =>
+                            setSubscribersPage((prev) => Math.max(1, prev - 1))
+                          }
+                          className="px-3.5 py-2 bg-slate-50 border border-slate-200 hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-600 transition flex items-center gap-1 cursor-pointer"
+                        >
+                          পূর্ববর্তী
+                        </button>
+                        {Array.from({ length: subscribersPages }).map(
+                          (_, idx) => {
+                            const pageNum = idx + 1;
+                            return (
+                              <button
+                                key={pageNum}
+                                type="button"
+                                onClick={() => setSubscribersPage(pageNum)}
+                                className={`h-9 w-9 rounded-xl text-xs font-bold font-sans transition flex items-center justify-center border cursor-pointer ${
+                                  subscribersPage === pageNum
+                                    ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/10"
+                                    : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                                }`}
+                              >
+                                {pageNum}
+                              </button>
+                            );
+                          },
+                        )}
+                        <button
+                          type="button"
+                          disabled={subscribersPage === subscribersPages}
+                          onClick={() =>
+                            setSubscribersPage((prev) =>
+                              Math.min(subscribersPages, prev + 1),
+                            )
+                          }
+                          className="px-3.5 py-2 bg-slate-50 border border-slate-200 hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-600 transition flex items-center gap-1 cursor-pointer"
+                        >
+                          পরবর্তী
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
       {/* Edit Price Modal */}
       <Dialog
@@ -924,13 +1238,17 @@ export default function PricingManagement() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-50">
               <Trash2 className="h-6 w-6 text-rose-600 animate-bounce" />
             </div>
-            
+
             <div className="space-y-2">
               <DialogTitle className="text-center font-extrabold text-slate-800 text-lg">
                 আপনি কি নিশ্চিত?
               </DialogTitle>
               <DialogDescription className="text-center text-slate-500 text-xs font-normal leading-relaxed">
-                আপনি কি নিশ্চিত যে আপনি কুপন কোড <strong>{discountToDelete?.code || "প্রোমোশনাল ডিসকাউন্ট"}</strong> স্থায়ীভাবে মুছে ফেলতে চান? এটি আর পুনরুদ্ধার করা যাবে না।
+                আপনি কি নিশ্চিত যে আপনি কুপন কোড{" "}
+                <strong>
+                  {discountToDelete?.code || "প্রোমোশনাল ডিসকাউন্ট"}
+                </strong>{" "}
+                স্থায়ীভাবে মুছে ফেলতে চান? এটি আর পুনরুদ্ধার করা যাবে না।
               </DialogDescription>
             </div>
 
@@ -960,7 +1278,9 @@ export default function PricingManagement() {
                 }}
                 className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 transition rounded-xl text-xs font-bold text-white shadow-md shadow-rose-500/10 flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
               >
-                {loading && <Loader2 className="h-4 w-4 animate-spin text-white" />}
+                {loading && (
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                )}
                 {loading ? "মুছে ফেলা হচ্ছে..." : "হ্যাঁ, মুছে করুন"}
               </button>
             </div>

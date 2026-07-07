@@ -120,7 +120,7 @@ export default function Generator() {
     const now = new Date();
     
     return userSubs.some(sub => {
-      if (!sub.isActive || new Date(sub.endDate) < now) return false;
+      if (!sub.isActive || sub.isSuspended || new Date(sub.endDate) < now) return false;
 
       // Fallback check for teacher package
       if (sub.packageId && sub.packageId.startsWith("teacher-")) {
