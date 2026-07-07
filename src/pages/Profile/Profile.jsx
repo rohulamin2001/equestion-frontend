@@ -1,4 +1,5 @@
 import { useAuth, useClerk, useReverification, useUser } from "@clerk/react";
+import { useQuery } from "@tanstack/react-query";
 import {
   Camera,
   CheckCircle2,
@@ -42,6 +43,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
+import { translateSubscriptionKey } from "../../constants/subscriptions";
 import { useUserContext } from "../../context/UserContext";
 import apiClient from "../../lib/apiClient";
 
@@ -54,6 +56,37 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("info"); // 'info' or 'security'
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
+
+  // Fetch active subscriptions
+  const { data: mySubs = [], isLoading: mySubsLoading } = useQuery({
+    queryKey: ["mySubscriptions"],
+    queryFn: async () => {
+      const token = await getToken();
+      const res = await apiClient.get("/subscriptions/my-subscriptions", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return res.data.subscriptions || [];
+    },
+  });
+
+  // Fetch packages for titles fallback
+  const { data: packagesList = [] } = useQuery({
+    queryKey: ["packages"],
+    queryFn: async () => {
+      const res = await apiClient.get("/subscriptions/packages");
+      return res.data.packages || [];
+    },
+  });
+
+  const formatDate = (dateVal) => {
+    if (!dateVal) return "";
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return "";
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   // Profile Form States
   const [firstName, setFirstName] = useState("");
@@ -621,11 +654,11 @@ export default function Profile() {
 
   const roleLabels = {
     "Super Admin": "সুপার এডমিন",
-    "Admin": "এডমিন",
+    Admin: "এডমিন",
     "Content Manager": "কনটেন্ট ম্যানেজার",
     "Question Creator": "প্রশ্ন ক্রিয়েটর",
     "Support Team": "সাপোর্ট টিম",
-    "Subscriber": "সাবস্ক্রাইবার",
+    Subscriber: "সাবস্ক্রাইবার",
   };
 
   return (
@@ -651,7 +684,7 @@ export default function Profile() {
               : "border-transparent text-slate-500 hover:text-slate-900"
           }`}
         >
-          {(!isSubscriber || isTeacher) ? (
+          {!isSubscriber || isTeacher ? (
             <GraduationCap className="h-4 w-4" />
           ) : (
             <Landmark className="h-4 w-4" />
@@ -668,6 +701,17 @@ export default function Profile() {
         >
           <KeyRound className="h-4 w-4" />
           নিরাপত্তা ও অ্যাকাউন্ট
+        </button>
+        <button
+          onClick={() => setActiveTab("subscriptions")}
+          className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all font-bengali ${
+            activeTab === "subscriptions"
+              ? "border-indigo-600 text-indigo-600"
+              : "border-transparent text-slate-500 hover:text-slate-900"
+          }`}
+        >
+          <ShieldCheck className="h-4 w-4" />
+          সাবস্ক্রিপশন
         </button>
       </div>
 
@@ -712,7 +756,7 @@ export default function Profile() {
               />
               <div className="text-center">
                 <h4 className="text-sm font-bold text-slate-800 font-sans">
-                  {(!isSubscriber || isTeacher)
+                  {!isSubscriber || isTeacher
                     ? "প্রোফাইল ছবি পরিবর্তন করুন"
                     : "প্রতিষ্ঠানের লোগো পরিবর্তন করুন"}
                 </h4>
@@ -727,7 +771,9 @@ export default function Profile() {
               {!isSubscriber && (
                 <div className="space-y-4 font-bengali">
                   <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <span className="text-xs font-semibold text-slate-500">আপনার রোল:</span>
+                    <span className="text-xs font-semibold text-slate-500">
+                      আপনার রোল:
+                    </span>
                     <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-650 border border-indigo-100 font-sans">
                       {roleLabels[role] || role}
                     </span>
@@ -1758,6 +1804,96 @@ export default function Profile() {
                 </AlertDialogPopup>
               </AlertDialog>
             </div>
+          </motion.div>
+        )}
+
+        {activeTab === "subscriptions" && (
+          <motion.div
+            key="subscriptions"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.15, ease: "easeInOut" }}
+            className="bg-white p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6"
+          >
+            <div>
+              <h3 className="text-base font-bold text-slate-800 flex items-center gap-2 mb-1 text-left font-bengali">
+                <Sparkles className="h-5 w-5 text-indigo-500 animate-pulse" />
+                আপনার সক্রিয় লাইসেন্স সমূহ
+              </h3>
+              <p className="text-xs text-slate-400 text-left mb-6 font-bengali">
+                আপনার অ্যাকাউন্টে সক্রিয় সাবস্ক্রিপশন এবং বিষয়ভিত্তিক
+                লাইসেন্সসমূহের তালিকা
+              </p>
+            </div>
+
+            {mySubsLoading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+              </div>
+            ) : mySubs.length === 0 ? (
+              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex items-start gap-3 text-left font-bengali">
+                <ShieldCheck className="h-6 w-6 text-slate-400 shrink-0" />
+                <div>
+                  <p className="text-sm font-bold text-slate-700">
+                    কোনো সক্রিয় লাইসেন্স পাওয়া যায়নি
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    প্রশ্নপত্র তৈরির সম্পূর্ণ অ্যাক্সেস পেতে দয়া করে
+                    সাবস্ক্রিপশন প্যানেল থেকে কোনো প্যাকেজ বা বিষয় ক্রয় করুন।
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left font-bengali">
+                {mySubs.map((sub, idx) => (
+                  <div
+                    key={idx}
+                    className="border border-indigo-50 bg-indigo-50/10 p-5 rounded-2xl flex items-center justify-between hover:shadow-sm transition"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-md">
+                          {sub.purchaseType === "Package"
+                            ? "গ্রুপ প্যাক"
+                            : sub.purchaseType === "Class"
+                              ? "শ্রেণি প্যাক"
+                              : "বিষয় প্যাক"}
+                        </span>
+                        <span className="text-xs font-bold text-slate-700">
+                          {sub.purchaseType === "Package"
+                            ? packagesList.find((p) => p.id === sub.packageId)
+                                ?.title ||
+                              translateSubscriptionKey(sub.packageId)
+                            : sub.purchaseType === "Class"
+                              ? sub.classNames
+                                  ?.map((c) => translateSubscriptionKey(c))
+                                  .join(", ") || ""
+                              : "একক বিষয়"}
+                        </span>
+                      </div>
+                      {sub.purchaseType === "Subject" && sub.subjectIds && (
+                        <p className="text-xs text-slate-500 mt-2">
+                          বিষয়:{" "}
+                          <span className="font-bold text-slate-700">
+                            {sub.subjectIds
+                              .map((s) => s.subjectName)
+                              .join(", ")}
+                          </span>
+                        </p>
+                      )}
+                      <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mt-3 font-sans">
+                        <Camera className="h-3.5 w-3.5" />
+                        <span>মেয়াদ শেষ: {formatDate(sub.endDate)}</span>
+                      </div>
+                    </div>
+                    <div className="h-10 w-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm border border-emerald-100">
+                      <CheckCircle2 className="h-5 w-5" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
