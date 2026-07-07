@@ -366,9 +366,9 @@ export default function StaffManagement() {
             onSubmit={handleAddStaff}
             className="flex flex-col h-full max-h-[85vh]"
           >
-            <DialogHeader className="bg-white px-6 pt-6 pb-5 border-b border-slate-100/80 relative flex flex-col space-y-0 mb-0 text-left">
+            <DialogHeader className="bg-transparent px-6 pt-6 pb-5 border-b border-slate-200/50 relative flex flex-col space-y-0 mb-0 text-left">
               <div className="flex items-start gap-4 pr-8">
-                <div className="p-2 bg-primary/10 border border-primary/20 text-primary rounded-xl shrink-0 mt-0.5 shadow-sm shadow-primary/10">
+                <div className="p-2 bg-primary/10 border border-primary/20 text-primary rounded-xl shrink-0 mt-0.5 shadow-sm shadow-primary/5">
                   <UserPlus className="size-5" />
                 </div>
                 <div className="space-y-1">
@@ -394,7 +394,7 @@ export default function StaffManagement() {
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     disabled={formLoading}
-                    className="px-4 py-3 rounded-xl border-slate-250 focus-visible:ring-primary/30 focus-visible:border-primary h-11 transition-all shadow-sm focus-visible:ring-4 focus-visible:ring-offset-0"
+                    className="px-4 py-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus-visible:bg-white focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-50/50 focus-visible:ring-offset-0 h-11 transition-all shadow-sm text-slate-700 text-xs font-semibold"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -407,7 +407,7 @@ export default function StaffManagement() {
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     disabled={formLoading}
-                    className="px-4 py-3 rounded-xl border-slate-250 focus-visible:ring-primary/30 focus-visible:border-primary h-11 transition-all shadow-sm focus-visible:ring-4 focus-visible:ring-offset-0"
+                    className="px-4 py-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus-visible:bg-white focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-50/50 focus-visible:ring-offset-0 h-11 transition-all shadow-sm text-slate-700 text-xs font-semibold"
                   />
                 </div>
               </div>
@@ -416,14 +416,14 @@ export default function StaffManagement() {
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                   Mobile Number (মোবাইল নাম্বার)
                 </label>
-                <Input
+                 <Input
                   required
                   type="tel"
                   placeholder="e.g. 01712345678"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   disabled={formLoading}
-                  className="px-4 py-3 rounded-xl border-slate-250 focus-visible:ring-primary/30 focus-visible:border-primary h-11 transition-all shadow-sm focus-visible:ring-4 focus-visible:ring-offset-0"
+                  className="px-4 py-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus-visible:bg-white focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-50/50 focus-visible:ring-offset-0 h-11 transition-all shadow-sm text-slate-700 text-xs font-semibold"
                 />
               </div>
 
@@ -440,7 +440,7 @@ export default function StaffManagement() {
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={formLoading}
                     minLength={8}
-                    className="pl-4 pr-11 py-3 rounded-xl border-slate-250 focus-visible:ring-primary/30 focus-visible:border-primary h-11 transition-all shadow-sm focus-visible:ring-4 focus-visible:ring-offset-0 w-full"
+                    className="pl-4 pr-11 py-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus-visible:bg-white focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-50/50 focus-visible:ring-offset-0 h-11 transition-all shadow-sm text-slate-700 text-xs font-semibold w-full"
                   />
                   <button
                     type="button"
@@ -469,10 +469,10 @@ export default function StaffManagement() {
                     <button
                       type="button"
                       disabled={formLoading}
-                      className="w-full px-4 border border-slate-200 rounded-xl text-sm bg-white hover:bg-slate-50/50 hover:border-primary/60 focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm disabled:bg-slate-50 disabled:text-slate-400 cursor-pointer"
+                      className="w-full px-4 border border-slate-200 rounded-xl text-xs bg-white/75 hover:bg-white hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm disabled:bg-slate-50 disabled:text-slate-400 cursor-pointer transition-all duration-200"
                     >
                       <span className="flex items-center gap-2">
-                        <Shield className="size-4 text-primary" />
+                        <Shield className="size-4 text-indigo-500" />
                         {BENGALI_ROLES[role] || role}
                       </span>
                       <ChevronDown
@@ -483,7 +483,7 @@ export default function StaffManagement() {
 
                   <DropdownMenuContent
                     align="start"
-                    className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
+                    className="w-[var(--radix-dropdown-menu-trigger-width)] bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
                   >
                     {[
                       "Admin",
@@ -496,9 +496,9 @@ export default function StaffManagement() {
                         <DropdownMenuItem
                           key={roleKey}
                           onSelect={() => setRole(roleKey)}
-                          className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition flex items-center justify-between cursor-pointer focus:bg-primary/10 focus:text-primary hover:bg-slate-50/80 group ${
+                          className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50/80 group ${
                             isSelected
-                              ? "bg-primary/10 text-primary"
+                              ? "bg-indigo-50 text-indigo-600"
                               : "text-slate-700"
                           }`}
                         >
@@ -517,7 +517,7 @@ export default function StaffManagement() {
                             {BENGALI_ROLES[roleKey]}
                           </span>
                           {isSelected && (
-                            <span className="size-1.5 rounded-full bg-primary" />
+                            <span className="size-1.5 rounded-full bg-indigo-600" />
                           )}
                         </DropdownMenuItem>
                       );
@@ -527,7 +527,7 @@ export default function StaffManagement() {
               </div>
             </div>
 
-            <DialogFooter className="bg-slate-50/70 px-6 py-3.5 border-t border-slate-100/85 flex flex-col-reverse sm:flex-row justify-end gap-2.5 mt-0">
+            <DialogFooter className="bg-transparent px-6 py-3.5 border-t border-slate-200/50 flex flex-col-reverse sm:flex-row justify-end gap-2.5 mt-0">
               <DialogClose asChild>
                 <ModalCancelButton disabled={formLoading}>
                   বাতিল করুন

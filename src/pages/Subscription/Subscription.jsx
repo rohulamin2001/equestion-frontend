@@ -37,6 +37,10 @@ export default function Subscription() {
     purchaseSubscription,
   } = useSubscription();
 
+  const activeSubs = userSubs.filter(
+    (sub) => sub.isActive && !sub.isSuspended && new Date(sub.endDate) >= new Date()
+  );
+
   const [activeTab, setActiveTab] = useState("packages"); // 'packages' or 'subjects'
   const [allSubjects, setAllSubjects] = useState([]);
   const [subjectsLoading, setSubjectsLoading] = useState(false);
@@ -48,6 +52,7 @@ export default function Subscription() {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponError, setCouponError] = useState("");
+  const [showCouponInput, setShowCouponInput] = useState(false);
 
   const couponLoading = validateCoupon.isPending;
   const loading = purchaseSubscription.isPending;
@@ -295,7 +300,7 @@ export default function Subscription() {
           <div className="flex justify-center py-6">
             <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
           </div>
-        ) : userSubs.length === 0 ? (
+        ) : activeSubs.length === 0 ? (
           <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start gap-3">
             <Info className="h-5 w-5 text-slate-400 mt-0.5" />
             <div>
@@ -310,7 +315,7 @@ export default function Subscription() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {userSubs.map((sub, idx) => (
+            {activeSubs.map((sub, idx) => (
               <div
                 key={idx}
                 className="border border-indigo-50 bg-indigo-50/10 p-4 rounded-2xl flex items-center justify-between"
@@ -495,7 +500,7 @@ export default function Subscription() {
               {packagesList
                 .filter((pkg) => pkg.category === selectedCategory)
                 .map((pkg) => {
-                  const isSubscribed = userSubs.some(
+                  const isSubscribed = activeSubs.some(
                     (s) => s.packageId === pkg.id,
                   );
                   return (
@@ -739,6 +744,7 @@ export default function Subscription() {
             setCheckoutPkg(null);
             setAppliedCoupon(null);
             setCouponCode("");
+            setShowCouponInput(false);
           }
         }}
       >
@@ -811,44 +817,56 @@ export default function Subscription() {
             {/* Coupon Code Section */}
             {checkoutPkg?.price > 0 && (
               <div className="space-y-2 text-left">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                  কুপন কোড প্রয়োগ করুন
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="SAVE20"
-                    value={couponCode}
-                    onChange={(e) =>
-                      setCouponCode(e.target.value.toUpperCase())
-                    }
-                    disabled={appliedCoupon || couponLoading}
-                    className="flex-1 px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 text-slate-700 shadow-sm focus:bg-white hover:border-slate-300 uppercase font-sans"
+                <button
+                  type="button"
+                  onClick={() => setShowCouponInput(!showCouponInput)}
+                  className="flex items-center gap-1 text-xs font-black text-indigo-650 hover:text-indigo-700 transition focus:outline-none cursor-pointer tracking-wide select-none"
+                >
+                  <span>কুপন কোড প্রয়োগ করুন</span>
+                  <ChevronRight
+                    className={`h-4 w-4 transform transition-transform duration-250 text-indigo-500 ${
+                      showCouponInput ? "rotate-90" : "rotate-0"
+                    }`}
                   />
-                  {appliedCoupon ? (
-                    <button
-                      type="button"
-                      onClick={handleRemoveCoupon}
-                      className="px-4 h-11 bg-rose-50 text-rose-600 hover:bg-rose-100 transition rounded-xl text-xs font-semibold cursor-pointer"
-                    >
-                      মুছে ফেলুন
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleApplyCoupon}
-                      disabled={couponLoading || !couponCode.trim()}
-                      className="px-4 h-11 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 disabled:bg-slate-50 disabled:text-slate-400 transition rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm border border-indigo-100/30"
-                    >
-                      {couponLoading && (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      )}
-                      প্রয়োগ করুন
-                    </button>
-                  )}
-                </div>
+                </button>
+
+                {showCouponInput && (
+                  <div className="flex gap-2 animate-in fade-in slide-in-from-top-1 duration-200 mt-2">
+                    <input
+                      type="text"
+                      placeholder="SAVE20"
+                      value={couponCode}
+                      onChange={(e) =>
+                        setCouponCode(e.target.value.toUpperCase())
+                      }
+                      disabled={appliedCoupon || couponLoading}
+                      className="flex-1 px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 text-slate-700 shadow-sm focus:bg-white hover:border-slate-300 uppercase font-sans"
+                    />
+                    {appliedCoupon ? (
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="px-4 h-11 bg-rose-50 text-rose-600 hover:bg-rose-100 transition rounded-xl text-xs font-semibold cursor-pointer"
+                      >
+                        মুছে ফেলুন
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleApplyCoupon}
+                        disabled={couponLoading || !couponCode.trim()}
+                        className="px-4 h-11 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 disabled:bg-slate-50 disabled:text-slate-400 transition rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm border border-indigo-100/30"
+                      >
+                        {couponLoading && (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        )}
+                        প্রয়োগ করুন
+                      </button>
+                    )}
+                  </div>
+                )}
                 {couponError && (
-                  <p className="text-[10px] text-rose-500 font-bold">
+                  <p className="text-[10px] text-rose-500 font-bold mt-1.5">
                     {couponError}
                   </p>
                 )}
@@ -863,6 +881,7 @@ export default function Subscription() {
                   setCheckoutPkg(null);
                   setAppliedCoupon(null);
                   setCouponCode("");
+                  setShowCouponInput(false);
                 }}
                 className="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 transition rounded-xl text-xs font-semibold text-slate-600 cursor-pointer"
               >

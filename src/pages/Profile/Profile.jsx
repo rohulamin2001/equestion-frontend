@@ -1831,68 +1831,83 @@ export default function Profile() {
               <div className="flex justify-center py-12">
                 <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
               </div>
-            ) : mySubs.length === 0 ? (
-              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex items-start gap-3 text-left font-bengali">
-                <ShieldCheck className="h-6 w-6 text-slate-400 shrink-0" />
-                <div>
-                  <p className="text-sm font-bold text-slate-700">
-                    কোনো সক্রিয় লাইসেন্স পাওয়া যায়নি
-                  </p>
-                  <p className="text-xs text-slate-400 mt-1">
-                    প্রশ্নপত্র তৈরির সম্পূর্ণ অ্যাক্সেস পেতে দয়া করে
-                    সাবস্ক্রিপশন প্যানেল থেকে কোনো প্যাকেজ বা বিষয় ক্রয় করুন।
-                  </p>
-                </div>
-              </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left font-bengali">
-                {mySubs.map((sub, idx) => (
-                  <div
-                    key={idx}
-                    className="border border-indigo-50 bg-indigo-50/10 p-5 rounded-2xl flex items-center justify-between hover:shadow-sm transition"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-md">
-                          {sub.purchaseType === "Package"
-                            ? "গ্রুপ প্যাক"
-                            : sub.purchaseType === "Class"
-                              ? "শ্রেণি প্যাক"
-                              : "বিষয় প্যাক"}
-                        </span>
-                        <span className="text-xs font-bold text-slate-700">
-                          {sub.purchaseType === "Package"
-                            ? packagesList.find((p) => p.id === sub.packageId)
-                                ?.title ||
-                              translateSubscriptionKey(sub.packageId)
-                            : sub.purchaseType === "Class"
-                              ? sub.classNames
-                                  ?.map((c) => translateSubscriptionKey(c))
-                                  .join(", ") || ""
-                              : "একক বিষয়"}
-                        </span>
-                      </div>
-                      {sub.purchaseType === "Subject" && sub.subjectIds && (
-                        <p className="text-xs text-slate-500 mt-2">
-                          বিষয়:{" "}
-                          <span className="font-bold text-slate-700">
-                            {sub.subjectIds
-                              .map((s) => s.subjectName)
-                              .join(", ")}
-                          </span>
+              (() => {
+                const activeSubs = mySubs.filter(
+                  (sub) =>
+                    sub.isActive &&
+                    !sub.isSuspended &&
+                    new Date(sub.endDate) >= new Date(),
+                );
+                if (activeSubs.length === 0) {
+                  return (
+                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex items-start gap-3 text-left font-bengali">
+                      <ShieldCheck className="h-6 w-6 text-slate-400 shrink-0" />
+                      <div>
+                        <p className="text-sm font-bold text-slate-700">
+                          কোনো সক্রিয় লাইসেন্স পাওয়া যায়নি
                         </p>
-                      )}
-                      <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mt-3 font-sans">
-                        <Camera className="h-3.5 w-3.5" />
-                        <span>মেয়াদ শেষ: {formatDate(sub.endDate)}</span>
+                        <p className="text-xs text-slate-400 mt-1">
+                          প্রশ্নপত্র তৈরির সম্পূর্ণ অ্যাক্সেস পেতে দয়া করে
+                          সাবস্ক্রিপশন প্যানেল থেকে কোনো প্যাকেজ বা বিষয় ক্রয়
+                          করুন।
+                        </p>
                       </div>
                     </div>
-                    <div className="h-10 w-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm border border-emerald-100">
-                      <CheckCircle2 className="h-5 w-5" />
-                    </div>
+                  );
+                }
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left font-bengali">
+                    {activeSubs.map((sub, idx) => (
+                      <div
+                        key={idx}
+                        className="border border-indigo-50 bg-indigo-50/10 p-5 rounded-2xl flex items-center justify-between hover:shadow-sm transition"
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-md">
+                              {sub.purchaseType === "Package"
+                                ? "গ্রুপ প্যাক"
+                                : sub.purchaseType === "Class"
+                                  ? "শ্রেণি প্যাক"
+                                  : "বিষয় প্যাক"}
+                            </span>
+                            <span className="text-xs font-bold text-slate-700">
+                              {sub.purchaseType === "Package"
+                                ? packagesList.find(
+                                    (p) => p.id === sub.packageId,
+                                  )?.title ||
+                                  translateSubscriptionKey(sub.packageId)
+                                : sub.purchaseType === "Class"
+                                  ? sub.classNames
+                                      ?.map((c) => translateSubscriptionKey(c))
+                                      .join(", ") || ""
+                                  : "একক বিষয়"}
+                            </span>
+                          </div>
+                          {sub.purchaseType === "Subject" && sub.subjectIds && (
+                            <p className="text-xs text-slate-500 mt-2">
+                              বিষয়:{" "}
+                              <span className="font-bold text-slate-700">
+                                {sub.subjectIds
+                                  .map((s) => s.subjectName)
+                                  .join(", ")}
+                              </span>
+                            </p>
+                          )}
+                          <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mt-3 font-sans">
+                            <Camera className="h-3.5 w-3.5" />
+                            <span>মেয়াদ শেষ: {formatDate(sub.endDate)}</span>
+                          </div>
+                        </div>
+                        <div className="h-10 w-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm border border-emerald-100">
+                          <CheckCircle2 className="h-5 w-5" />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                );
+              })()
             )}
           </motion.div>
         )}
