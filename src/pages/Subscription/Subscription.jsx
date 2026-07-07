@@ -21,29 +21,36 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useUserContext } from "../../context/UserContext";
 import apiClient from "../../lib/apiClient";
+import { useSubscription } from "./hook/useSubscription";
 
 export default function Subscription() {
   const { refreshProfile } = useUserContext();
   const { getToken } = useAuth();
+  
+  const {
+    packages: packagesList,
+    coupons: couponsList,
+    loadingPackages: packagesLoading,
+    mySubscriptions: userSubs,
+    loadingSubscriptions: subsLoading,
+    validateCoupon,
+    purchaseSubscription,
+  } = useSubscription();
+
   const [activeTab, setActiveTab] = useState("packages"); // 'packages' or 'subjects'
-  const [loading, setLoading] = useState(false);
-  const [userSubs, setUserSubs] = useState([]);
-  const [subsLoading, setSubsLoading] = useState(true);
   const [allSubjects, setAllSubjects] = useState([]);
   const [subjectsLoading, setSubjectsLoading] = useState(false);
   const [selectedClass, setSelectedClass] = useState("Class 7");
   const [selectedSubjects, setSelectedSubjects] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("tutor");
 
-  // Dynamic packages & coupons state
-  const [packagesList, setPackagesList] = useState([]);
-  const [packagesLoading, setPackagesLoading] = useState(true);
-  const [couponsList, setCouponsList] = useState([]);
   const [checkoutPkg, setCheckoutPkg] = useState(null);
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponError, setCouponError] = useState("");
-  const [couponLoading, setCouponLoading] = useState(false);
+
+  const couponLoading = validateCoupon.isPending;
+  const loading = purchaseSubscription.isPending;
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
@@ -75,49 +82,24 @@ export default function Subscription() {
     { id: "teacher-subject", label: "৫। বিষয়ভিত্তিক শিক্ষক প্যাকেজ" }
   ];
 
-  // Fetch packages list from backend
-  const fetchPackages = async () => {
-    try {
-      setPackagesLoading(true);
-      const res = await apiClient.get("/subscriptions/packages");
-      setPackagesList(res.data.packages || []);
-      setCouponsList(res.data.coupons || []);
-    } catch (err) {
-      console.error("Error fetching packages:", err);
-      toast.error("প্যাকেজ তথ্য লোড করতে ব্যর্থ হয়েছে");
-    } finally {
-      setPackagesLoading(false);
-    }
-  };
-
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
       setCouponError("কুপন কোড লিখুন");
       return;
     }
-    setCouponLoading(true);
     setCouponError("");
     try {
-      const token = await getToken();
-      const res = await apiClient.post(
-        "/subscriptions/validate-coupon",
-        {
-          code: couponCode,
-          packageId: checkoutPkg.id,
-          cartTotal: checkoutPkg.price
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      setAppliedCoupon(res.data.coupon);
+      const res = await validateCoupon.mutateAsync({
+        code: couponCode,
+        packageId: checkoutPkg.id,
+        cartTotal: checkoutPkg.price
+      });
+      setAppliedCoupon(res);
       toast.success("কুপন কোড সফলভাবে প্রয়োগ করা হয়েছে!");
     } catch (err) {
       console.error("Coupon validation error:", err);
       setCouponError(err.response?.data?.error || "কুপন কোডটি অবৈধ বা মেয়াদোত্তীর্ণ");
       setAppliedCoupon(null);
-    } finally {
-      setCouponLoading(false);
     }
   };
 
@@ -128,43 +110,32 @@ export default function Subscription() {
   };
 
   const handleConfirmPurchase = async () => {
-    setLoading(true);
-    try {
-      const token = await getToken();
-      const payload = checkoutPkg.isSubjectPack
-        ? {
-            purchaseType: "Subject",
-            subjectIds: checkoutPkg.subjectIds,
-            couponCode: appliedCoupon ? appliedCoupon.code : undefined,
-            cartTotal: checkoutPkg.price
-          }
-        : {
-            purchaseType: "Package",
-            packageId: checkoutPkg.id,
-            classNames: checkoutPkg.classes,
-            couponCode: appliedCoupon ? appliedCoupon.code : undefined,
-            cartTotal: checkoutPkg.price
-          };
+    const payload = checkoutPkg.isSubjectPack
+      ? {
+          purchaseType: "Subject",
+          subjectIds: checkoutPkg.subjectIds,
+          couponCode: appliedCoupon ? appliedCoupon.code : undefined,
+          cartTotal: checkoutPkg.price
+        }
+      : {
+          purchaseType: "Package",
+          packageId: checkoutPkg.id,
+          classNames: checkoutPkg.classes,
+          couponCode: appliedCoupon ? appliedCoupon.code : undefined,
+          cartTotal: checkoutPkg.price
+        };
 
-      await apiClient.post(
-        "/subscriptions/purchase",
-        payload,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+    try {
+      await purchaseSubscription.mutateAsync(payload);
       toast.success(`${checkoutPkg.title} সফলভাবে ক্রয় করা হয়েছে!`);
       setCheckoutPkg(null);
       setAppliedCoupon(null);
       setCouponCode("");
       setSelectedSubjects([]);
-      fetchSubscriptions();
       refreshProfile();
     } catch (err) {
       console.error("Purchase error:", err);
       toast.error(err.response?.data?.error || "ক্রয় সম্পন্ন করতে ব্যর্থ হয়েছে");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -178,23 +149,6 @@ export default function Subscription() {
       subjectIds: selectedSubjects,
       isSubjectPack: true
     });
-  };
-
-  // Fetch active subscriptions
-  const fetchSubscriptions = async () => {
-    try {
-      setSubsLoading(true);
-      const token = await getToken();
-      const res = await apiClient.get("/subscriptions/my-subscriptions", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUserSubs(res.data.subscriptions || []);
-    } catch (err) {
-      console.error("Error fetching subscriptions:", err);
-      toast.error("সাবস্ক্রিপশন তথ্য লোড করতে ব্যর্থ হয়েছে");
-    } finally {
-      setSubsLoading(false);
-    }
   };
 
   // Fetch subjects of selected class
@@ -214,13 +168,6 @@ export default function Subscription() {
       setSubjectsLoading(false);
     }
   };
-
-  useEffect(() => {
-    Promise.resolve().then(() => {
-      fetchSubscriptions();
-      fetchPackages();
-    });
-  }, []);
 
   useEffect(() => {
     if (activeTab === "subjects" && selectedClass) {
