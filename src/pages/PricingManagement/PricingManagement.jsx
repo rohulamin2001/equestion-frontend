@@ -16,11 +16,20 @@ import {
   User,
   UserCheck,
   UserX,
+  CreditCard,
+  Percent,
+  Users,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AnimatePresence, motion } from "motion/react";
 import { usePricingManagement } from "./hook/usePricingManagement";
 import { translateSubscriptionKey } from "../../constants/subscriptions";
+const PRICING_TABS = [
+  { id: "packages", label: "প্যাকেজ মূল্য নিয়ন্ত্রণ", icon: CreditCard },
+  { id: "discounts", label: "ডিসকাউন্ট ও কুপন কোড", icon: Percent },
+  { id: "subscribers", label: "গ্রাহক সাবস্ক্রিপশন তালিকা", icon: Users },
+];
 
 export default function PricingManagement() {
   const {
@@ -235,50 +244,55 @@ export default function PricingManagement() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 pb-12 w-full font-bengali">
       {/* Title */}
-      <div>
-        <h1 className="text-xl font-extrabold text-slate-800">
+      <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
+        <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">
           প্যাকেজ ও ডিসকাউন্ট কন্ট্রোল প্যানেল
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-slate-500 text-sm mt-1">
           প্যাকেজগুলোর মূল্য পরিবর্তন এবং কুপন/ডিসকাউন্ট কোড পরিচালনা করুন
         </p>
       </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-slate-100">
-        <button
-          onClick={() => setActiveTab("packages")}
-          className={`px-5 py-3 text-xs font-bold transition border-b-2 ${
-            activeTab === "packages"
-              ? "border-indigo-600 text-indigo-600"
-              : "border-transparent text-slate-400 hover:text-slate-600"
-          }`}
-        >
-          প্যাকেজ মূল্য নিয়ন্ত্রণ
-        </button>
-        <button
-          onClick={() => setActiveTab("discounts")}
-          className={`px-5 py-3 text-xs font-bold transition border-b-2 ${
-            activeTab === "discounts"
-              ? "border-indigo-600 text-indigo-600"
-              : "border-transparent text-slate-400 hover:text-slate-600"
-          }`}
-        >
-          ডিসকাউন্ট ও কুপন কোড
-        </button>
-        <button
-          onClick={() => setActiveTab("subscribers")}
-          className={`px-5 py-3 text-xs font-bold transition border-b-2 ${
-            activeTab === "subscribers"
-              ? "border-indigo-600 text-indigo-600"
-              : "border-transparent text-slate-400 hover:text-slate-600"
-          }`}
-        >
-          গ্রাহক সাবস্ক্রিপশন তালিকা
-        </button>
+      {/* Tabs list */}
+      <div className="flex flex-wrap gap-2 p-1.5 bg-black/[0.02] border border-black/[0.05] rounded-2xl backdrop-blur-sm">
+        {PRICING_TABS.map((tab) => {
+          const IconComponent = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition cursor-pointer select-none ${
+                isActive
+                  ? "text-white"
+                  : "text-slate-650 hover:bg-black/[0.03]"
+              }`}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="pricingActiveTabBackground"
+                  className="absolute inset-0 bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] rounded-xl -z-10 shadow-md shadow-purple-500/10"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+              <IconComponent className="size-4 relative z-10" />
+              <span className="relative z-10">{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -15 }}
+          transition={{ duration: 0.25 }}
+          className="w-full space-y-6"
+        >
 
       {/* Tab 1: Package pricing control */}
       {activeTab === "packages" && (
@@ -798,6 +812,8 @@ export default function PricingManagement() {
               )}
             </div>
           )}
+        </motion.div>
+      </AnimatePresence>
 
       {/* Edit Price Modal */}
       <Dialog

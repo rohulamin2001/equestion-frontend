@@ -416,7 +416,7 @@ export default function StaffManagement() {
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                   Mobile Number (মোবাইল নাম্বার)
                 </label>
-                 <Input
+                <Input
                   required
                   type="tel"
                   placeholder="e.g. 01712345678"
