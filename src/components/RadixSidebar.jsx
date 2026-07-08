@@ -87,7 +87,7 @@ const DATA = {
           title: "প্রশ্নব্যাংক",
           url: "/dashboard/bank",
           icon: Database,
-          roles: ["Subscriber", "Super Admin", "Admin", "Content Manager"],
+          roles: ["Super Admin", "Admin"],
         },
         {
           title: "প্রশ্ন অনুমোদন",
@@ -99,7 +99,7 @@ const DATA = {
           title: "আমার তৈরি প্রশ্ন",
           url: "/dashboard/my-questions",
           icon: FolderOpen,
-          roles: ["Subscriber", "Question Creator"],
+          roles: ["Question Creator"],
         },
         {
           title: "নতুন প্রশ্ন যোগ",

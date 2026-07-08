@@ -100,7 +100,6 @@ export default function App() {
             element={
               <RoleRouteGuard
                 allowedRoles={[
-                  "Subscriber",
                   "Super Admin",
                   "Admin",
                   "Content Manager",
@@ -125,7 +124,7 @@ export default function App() {
           <Route
             path="my-questions"
             element={
-              <RoleRouteGuard allowedRoles={["Subscriber", "Question Creator"]}>
+              <RoleRouteGuard allowedRoles={["Question Creator"]}>
                 <MyQuestions />
               </RoleRouteGuard>
             }
