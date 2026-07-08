@@ -3,7 +3,13 @@ import JoditEditor from "jodit-react";
 import { Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-export default function Editor({ value = "", onChange = () => {}, placeholder = "", height = 300, ...props }) {
+export default function Editor({
+  value = "",
+  onChange = () => {},
+  placeholder = "",
+  height = 300,
+  ...props
+}) {
   const { getToken } = useAuth();
   const [token, setToken] = useState("");
   const [loadingToken, setLoadingToken] = useState(true);
@@ -15,7 +21,10 @@ export default function Editor({ value = "", onChange = () => {}, placeholder = 
         const jwt = await getToken();
         setToken(jwt || "");
       } catch (err) {
-        console.error("Error fetching Clerk auth token for editor upload:", err);
+        console.error(
+          "Error fetching Clerk auth token for editor upload:",
+          err,
+        );
       } finally {
         setLoadingToken(false);
       }
@@ -25,7 +34,7 @@ export default function Editor({ value = "", onChange = () => {}, placeholder = 
 
   const config = useMemo(() => {
     const apiBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:8001";
-    
+
     return {
       readonly: false,
       placeholder: placeholder || "এখানে বিস্তারিত লিখুন...",
@@ -34,35 +43,57 @@ export default function Editor({ value = "", onChange = () => {}, placeholder = 
       addNewLine: false,
       toolbarButtonSize: "middle",
       buttons: [
-        "bold", "italic", "underline", "strikethrough", "|",
-        "superscript", "subscript", "|",
-        "ul", "ol", "|",
-        "font", "fontsize", "brush", "paragraph", "|",
-        "table", "image", "link", "|",
-        "align", "undo", "redo", "|",
-        "hr", "eraser", "source"
+        "bold",
+        "italic",
+        "underline",
+        "strikethrough",
+        "|",
+        "superscript",
+        "subscript",
+        "|",
+        "ul",
+        "ol",
+        "|",
+        "font",
+        "fontsize",
+        "brush",
+        "paragraph",
+        "|",
+        "table",
+        "image",
+        "link",
+        "|",
+        "align",
+        "undo",
+        "redo",
+        "|",
+        "hr",
+        "eraser",
+        "source",
       ],
       // File upload configuration for Cloudinary
-      uploader: token ? {
-        url: `${apiBaseUrl}/api/upload`,
-        format: "json",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        filesVariableName: "image",
-        // Map Jodit's upload response
-        isSuccess: (resp) => resp.success === true,
-        getMessage: (resp) => resp.error || "Image uploaded successfully",
-        process: (resp) => {
-          return {
-            files: resp.files || [resp.url],
-            path: resp.url,
-            baseurl: "",
-            error: resp.error ? 1 : 0,
-            msg: resp.error || "",
-          };
-        },
-      } : undefined,
+      uploader: token
+        ? {
+            url: `${apiBaseUrl}/api/upload`,
+            format: "json",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            filesVariableName: "image",
+            // Map Jodit's upload response
+            isSuccess: (resp) => resp.success === true,
+            getMessage: (resp) => resp.error || "Image uploaded successfully",
+            process: (resp) => {
+              return {
+                files: resp.files || [resp.url],
+                path: resp.url,
+                baseurl: "",
+                error: resp.error ? 1 : 0,
+                msg: resp.error || "",
+              };
+            },
+          }
+        : undefined,
     };
   }, [token, placeholder, height]);
 

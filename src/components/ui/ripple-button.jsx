@@ -1,9 +1,9 @@
-import * as React from "react"
-import { motion, AnimatePresence } from "motion/react"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "./button-variants";
+import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "motion/react";
+import * as React from "react";
 
-const RippleButtonContext = React.createContext(null)
+const RippleButtonContext = React.createContext(null);
 
 const RippleButton = React.forwardRef(
   (
@@ -17,43 +17,44 @@ const RippleButton = React.forwardRef(
       children,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const [ripples, setRipples] = React.useState([])
+    const [ripples, setRipples] = React.useState([]);
 
     const addRipple = React.useCallback((ripple) => {
-      setRipples((prev) => [...prev, ripple])
-    }, [])
+      setRipples((prev) => [...prev, ripple]);
+    }, []);
 
     const removeRipple = React.useCallback((id) => {
-      setRipples((prev) => prev.filter((r) => r.id !== id))
-    }, [])
+      setRipples((prev) => prev.filter((r) => r.id !== id));
+    }, []);
 
     const handlePointerDown = (event) => {
-      const rect = event.currentTarget.getBoundingClientRect()
-      const x = event.clientX - rect.left
-      const y = event.clientY - rect.top
-      
-      const w = rect.width
-      const h = rect.height
-      const diameter = Math.max(
-        Math.sqrt(x * x + y * y),
-        Math.sqrt((w - x) * (w - x) + y * y),
-        Math.sqrt(x * x + (h - y) * (h - y)),
-        Math.sqrt((w - x) * (w - x) + (h - y) * (h - y))
-      ) * 2
+      const rect = event.currentTarget.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      const w = rect.width;
+      const h = rect.height;
+      const diameter =
+        Math.max(
+          Math.sqrt(x * x + y * y),
+          Math.sqrt((w - x) * (w - x) + y * y),
+          Math.sqrt(x * x + (h - y) * (h - y)),
+          Math.sqrt((w - x) * (w - x) + (h - y) * (h - y)),
+        ) * 2;
 
       addRipple({
         id: Math.random().toString(36).substr(2, 9),
         x,
         y,
         size: diameter,
-      })
+      });
 
       if (onPointerDown) {
-        onPointerDown(event)
+        onPointerDown(event);
       }
-    }
+    };
 
     return (
       <RippleButtonContext.Provider value={{ ripples, removeRipple }}>
@@ -65,17 +66,17 @@ const RippleButton = React.forwardRef(
           className={cn(
             buttonVariants({ variant, size }),
             "relative overflow-hidden cursor-pointer select-none",
-            className
+            className,
           )}
           {...props}
         >
           {children}
         </motion.button>
       </RippleButtonContext.Provider>
-    )
-  }
-)
-RippleButton.displayName = "RippleButton"
+    );
+  },
+);
+RippleButton.displayName = "RippleButton";
 
 const RippleButtonRipples = ({
   color = "var(--ripple-button-ripple-color, rgba(255, 255, 255, 0.35))",
@@ -84,12 +85,12 @@ const RippleButtonRipples = ({
   className,
   ...props
 }) => {
-  const context = React.useContext(RippleButtonContext)
+  const context = React.useContext(RippleButtonContext);
   if (!context) {
-    throw new Error("RippleButtonRipples must be used within RippleButton")
+    throw new Error("RippleButtonRipples must be used within RippleButton");
   }
 
-  const { ripples, removeRipple } = context
+  const { ripples, removeRipple } = context;
 
   return (
     <span className="absolute inset-0 block pointer-events-none overflow-hidden rounded-[inherit]">
@@ -117,8 +118,8 @@ const RippleButtonRipples = ({
         ))}
       </AnimatePresence>
     </span>
-  )
-}
-RippleButtonRipples.displayName = "RippleButtonRipples"
+  );
+};
+RippleButtonRipples.displayName = "RippleButtonRipples";
 
-export { RippleButton, RippleButtonRipples }
+export { RippleButton, RippleButtonRipples };

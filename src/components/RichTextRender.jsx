@@ -13,10 +13,13 @@ function parseAndRenderMath(html) {
   processedHtml = processedHtml.replace(blockRegex, (match, p1, p2) => {
     const formula = p1 || p2;
     try {
-      return `<div class="katex-block-wrapper my-4 flex justify-center overflow-x-auto">${katex.renderToString(formula.trim(), {
-        displayMode: true,
-        throwOnError: false,
-      })}</div>`;
+      return `<div class="katex-block-wrapper my-4 flex justify-center overflow-x-auto">${katex.renderToString(
+        formula.trim(),
+        {
+          displayMode: true,
+          throwOnError: false,
+        },
+      )}</div>`;
     } catch (err) {
       console.error("KaTeX Block Error:", err);
       return match;
@@ -50,7 +53,10 @@ function stripOuterP(html) {
   if (!html) return "";
   let trimmed = html.trim();
   // Remove leading <p...> and trailing </p> if they wrap the content
-  if (trimmed.toLowerCase().startsWith("<p") && trimmed.toLowerCase().endsWith("</p>")) {
+  if (
+    trimmed.toLowerCase().startsWith("<p") &&
+    trimmed.toLowerCase().endsWith("</p>")
+  ) {
     trimmed = trimmed.replace(/^<p[^>]*>/i, "").replace(/<\/p>$/i, "");
   }
   return trimmed;
@@ -65,7 +71,12 @@ function stripOuterP(html) {
  *  - inline: if true, strips the outer <p> wrapper and renders as <span>
  *            so text flows on the same line as adjacent labels (e.g. "উত্তর:")
  */
-export default function RichTextRender({ content, className = "", inline = false, ...props }) {
+export default function RichTextRender({
+  content,
+  className = "",
+  inline = false,
+  ...props
+}) {
   const renderedContent = useMemo(() => {
     const parsed = parseAndRenderMath(content);
     return inline ? stripOuterP(parsed) : parsed;
