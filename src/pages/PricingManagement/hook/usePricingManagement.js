@@ -130,6 +130,21 @@ export const usePricingManagement = () => {
     },
   });
 
+  // Remove subscription (for super admin)
+  const removeSubscriptionMutation = useMutation({
+    mutationFn: async ({ userId, subscriptionId }) => {
+      const token = await getToken();
+      const res = await apiClient.delete(
+        `/subscriptions/subscribers/${userId}/remove/${subscriptionId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscribers"] });
+    },
+  });
+
   return {
     packages:
       packagesQuery.data?.packages ||
@@ -157,5 +172,6 @@ export const usePricingManagement = () => {
     saveDiscount: saveDiscountMutation,
     deleteDiscount: deleteDiscountMutation,
     toggleSuspension: toggleSuspensionMutation,
+    removeSubscription: removeSubscriptionMutation,
   };
 };

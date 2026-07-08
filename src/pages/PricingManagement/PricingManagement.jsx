@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -5,17 +6,23 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Calendar,
   ChevronDown,
   CreditCard,
   Edit2,
   Info,
   Loader2,
+  MoreVertical,
   Percent,
   PlusCircle,
   Search,
   Trash2,
-  User,
   UserCheck,
   Users,
   UserX,
@@ -24,6 +31,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { translateSubscriptionKey } from "../../constants/subscriptions";
+import { useUserContext } from "../../context/UserContext";
 import { usePricingManagement } from "./hook/usePricingManagement";
 const PRICING_TABS = [
   { id: "packages", label: "প্যাকেজ মূল্য নিয়ন্ত্রণ", icon: CreditCard },
@@ -49,7 +57,11 @@ export default function PricingManagement() {
     saveDiscount,
     deleteDiscount,
     toggleSuspension,
+    removeSubscription,
   } = usePricingManagement();
+
+  const { role: loggedInUserRole } = useUserContext();
+  const isSuperAdmin = loggedInUserRole === "Super Admin";
 
   const [activeTab, setActiveTab] = useState("packages"); // 'packages', 'discounts' or 'subscribers'
   const [selectedCategory, setSelectedCategory] = useState("tutor");
@@ -58,8 +70,8 @@ export default function PricingManagement() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingDiscount, setEditingDiscount] = useState(null);
   const [discountToDelete, setDiscountToDelete] = useState(null);
-  const [suspendingSubId, setSuspendingSubId] = useState(null);
   const [pendingSuspension, setPendingSuspension] = useState(null);
+  const [subscriptionToDelete, setSubscriptionToDelete] = useState(null);
 
   // Dropdown states for Create Modal
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
@@ -102,7 +114,6 @@ export default function PricingManagement() {
 
   const handleToggleSuspension = async (sub, userId) => {
     try {
-      setSuspendingSubId(sub._id);
       const isSuspending = !sub.isSuspended;
       await toggleSuspension.mutateAsync({
         userId,
@@ -117,8 +128,6 @@ export default function PricingManagement() {
     } catch (err) {
       console.error(err);
       toast.error("সাবস্ক্রিপশন আপডেট করতে ব্যর্থ হয়েছে।");
-    } finally {
-      setSuspendingSubId(null);
     }
   };
 
@@ -623,135 +632,181 @@ export default function PricingManagement() {
               ) : (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {subscribersList.map((user) => (
-                      <div
-                        key={user._id}
-                        className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-4 text-left flex flex-col justify-between hover:shadow-md transition"
-                      >
-                        <div className="space-y-3.5">
-                          {/* User Header */}
-                          <div className="flex items-center gap-3 border-b border-slate-50 pb-3">
-                            <div className="p-2.5 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-xl">
-                              <User className="h-5 w-5" />
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <h4 className="text-sm font-bold text-slate-800">
-                                  {user.fullName ||
-                                    `${user.firstName || ""} ${user.lastName || ""}`}
-                                </h4>
-                                <span
-                                  className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${
-                                    user.role === "Super Admin" ||
-                                    user.role === "Admin"
-                                      ? "bg-indigo-50 text-indigo-600 border-indigo-100"
-                                      : "bg-slate-100 text-slate-600 border-slate-200"
-                                  }`}
-                                >
-                                  {user.role}
-                                </span>
+                    {subscribersList.map((user) => {
+                      const userName =
+                        user.fullName ||
+                        `${user.firstName || ""} ${user.lastName || ""}`;
+                      const initials = userName
+                        .trim()
+                        .split(" ")
+                        .map((p) => p[0])
+                        .slice(0, 2)
+                        .join("")
+                        .toUpperCase();
+
+                      return (
+                        <div
+                          key={user._id}
+                          className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-4 text-left flex flex-col justify-between hover:shadow-md transition"
+                        >
+                          <div className="space-y-3.5">
+                            {/* User Header */}
+                            <div className="flex items-center gap-3 border-b border-slate-50 pb-3">
+                              <Avatar className="h-10 w-10 border border-slate-100 rounded-xl overflow-hidden shadow-sm">
+                                <AvatarImage
+                                  src={user.imageUrl}
+                                  alt={userName}
+                                  className="object-cover"
+                                />
+                                <AvatarFallback className="bg-indigo-50 text-indigo-600 font-bold text-xs flex items-center justify-center h-full w-full">
+                                  {initials || "U"}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <h4 className="text-sm font-bold text-slate-800">
+                                    {user.fullName ||
+                                      `${user.firstName || ""} ${user.lastName || ""}`}
+                                  </h4>
+                                  <span
+                                    className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${
+                                      user.role === "Super Admin" ||
+                                      user.role === "Admin"
+                                        ? "bg-indigo-50 text-indigo-600 border-indigo-100"
+                                        : "bg-slate-100 text-slate-600 border-slate-200"
+                                    }`}
+                                  >
+                                    {user.role}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-slate-500 font-semibold font-sans mt-0.5">
+                                  {user.phoneNumber}
+                                </p>
                               </div>
-                              <p className="text-xs text-slate-500 font-semibold font-sans mt-0.5">
-                                {user.phoneNumber}
-                              </p>
                             </div>
-                          </div>
 
-                          {/* Subscriptions List */}
-                          <div className="space-y-3">
-                            <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-wide">
-                              সাবস্ক্রিপশনসমূহ
-                            </h5>
-                            {!user.subscriptions ||
-                            user.subscriptions.length === 0 ? (
-                              <p className="text-xs text-slate-400 italic">
-                                কোনো সক্রিয় বা স্থগিত সাবস্ক্রিপশন নেই।
-                              </p>
-                            ) : (
-                              <div className="space-y-2.5">
-                                {user.subscriptions.map((sub) => {
-                                  const isExpired =
-                                    new Date(sub.endDate) < new Date();
-                                  const isSuspended = sub.isSuspended;
+                            {/* Subscriptions List */}
+                            <div className="space-y-3">
+                              <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-wide">
+                                সাবস্ক্রিপশনসমূহ
+                              </h5>
+                              {!user.subscriptions ||
+                              user.subscriptions.length === 0 ? (
+                                <p className="text-xs text-slate-400 italic">
+                                  কোনো সক্রিয় বা স্থগিত সাবস্ক্রিপশন নেই।
+                                </p>
+                              ) : (
+                                <div className="space-y-2.5">
+                                  {user.subscriptions.map((sub) => {
+                                    const isExpired =
+                                      new Date(sub.endDate) < new Date();
+                                    const isSuspended = sub.isSuspended;
 
-                                  return (
-                                    <div
-                                      key={sub._id}
-                                      className={`p-3 border rounded-xl flex items-center justify-between gap-4 transition ${
-                                        isSuspended
-                                          ? "bg-rose-50/20 border-rose-100 text-slate-500"
-                                          : isExpired
-                                            ? "bg-slate-50/50 border-slate-100 text-slate-400"
-                                            : "bg-white border-slate-100 text-slate-700"
-                                      }`}
-                                    >
-                                      <div className="space-y-1 text-left flex-1 min-w-0">
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                          <p className="text-xs font-bold text-slate-800 truncate">
-                                            {getSubscriberSubPackageTitle(sub)}
+                                    return (
+                                      <div
+                                        key={sub._id}
+                                        className={`p-3 border rounded-xl flex items-center justify-between gap-4 transition ${
+                                          isSuspended
+                                            ? "bg-rose-50/20 border-rose-100 text-slate-500"
+                                            : isExpired
+                                              ? "bg-slate-50/50 border-slate-100 text-slate-400"
+                                              : "bg-white border-slate-100 text-slate-700"
+                                        }`}
+                                      >
+                                        <div className="space-y-1 text-left flex-1 min-w-0">
+                                          <div className="flex items-center gap-2 flex-wrap">
+                                            <p className="text-xs font-bold text-slate-800 truncate">
+                                              {getSubscriberSubPackageTitle(
+                                                sub,
+                                              )}
+                                            </p>
+                                            {isSuspended ? (
+                                              <span className="bg-rose-50 text-rose-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-rose-100/50">
+                                                স্থগিত
+                                              </span>
+                                            ) : isExpired ? (
+                                              <span className="bg-slate-100 text-slate-400 text-[9px] font-bold px-1.5 py-0.5 rounded border border-slate-200/50">
+                                                মেয়াদোত্তীর্ণ
+                                              </span>
+                                            ) : (
+                                              <span className="bg-emerald-50 text-emerald-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-100">
+                                                সক্রিয়
+                                              </span>
+                                            )}
+                                          </div>
+                                          <p className="text-[10px] text-slate-400 font-sans">
+                                            মেয়াদ: {formatDate(sub.startDate)} -{" "}
+                                            {formatDate(sub.endDate)}
                                           </p>
-                                          {isSuspended ? (
-                                            <span className="bg-rose-50 text-rose-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-rose-100/50">
-                                              স্থগিত
-                                            </span>
-                                          ) : isExpired ? (
-                                            <span className="bg-slate-100 text-slate-400 text-[9px] font-bold px-1.5 py-0.5 rounded border border-slate-200/50">
-                                              মেয়াদোত্তীর্ণ
-                                            </span>
-                                          ) : (
-                                            <span className="bg-emerald-50 text-emerald-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-100">
-                                              সক্রিয়
-                                            </span>
-                                          )}
                                         </div>
-                                        <p className="text-[10px] text-slate-400 font-sans">
-                                          মেয়াদ: {formatDate(sub.startDate)} -{" "}
-                                          {formatDate(sub.endDate)}
-                                        </p>
-                                      </div>
 
-                                      {!isExpired && (
-                                        <button
-                                          type="button"
-                                          disabled={
-                                            suspendingSubId === sub._id ||
-                                            (pendingSuspension?.sub?._id ===
-                                              sub._id &&
-                                              toggleSuspension.isPending)
-                                          }
-                                          onClick={() =>
-                                            setPendingSuspension({
-                                              sub,
-                                              userId: user._id,
-                                            })
-                                          }
-                                          className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer disabled:opacity-50 ${
-                                            isSuspended
-                                              ? "bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-100"
-                                              : "bg-rose-50 text-rose-600 border border-rose-100/50 hover:bg-rose-100"
-                                          }`}
-                                        >
-                                          {suspendingSubId === sub._id ? (
-                                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                          ) : isSuspended ? (
-                                            <UserCheck className="h-3.5 w-3.5" />
-                                          ) : (
-                                            <UserX className="h-3.5 w-3.5" />
-                                          )}
-                                          {isSuspended
-                                            ? "সচল করুন"
-                                            : "স্থগিত করুন"}
-                                        </button>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
+                                        {!isExpired && (
+                                          <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                              <button
+                                                type="button"
+                                                className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-700 transition cursor-pointer"
+                                              >
+                                                <MoreVertical className="size-4" />
+                                              </button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent
+                                              align="end"
+                                              className="w-40 bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
+                                            >
+                                              <DropdownMenuItem
+                                                onSelect={() =>
+                                                  setPendingSuspension({
+                                                    sub,
+                                                    userId: user._id,
+                                                  })
+                                                }
+                                                className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 text-slate-700"
+                                              >
+                                                {isSuspended ? (
+                                                  <>
+                                                    <UserCheck className="size-3.5 text-emerald-600" />
+                                                    <span className="text-emerald-600">
+                                                      সচল করুন
+                                                    </span>
+                                                  </>
+                                                ) : (
+                                                  <>
+                                                    <UserX className="size-3.5 text-rose-600" />
+                                                    <span className="text-rose-600">
+                                                      স্থগিত করুন
+                                                    </span>
+                                                  </>
+                                                )}
+                                              </DropdownMenuItem>
+
+                                              {isSuperAdmin && (
+                                                <DropdownMenuItem
+                                                  onSelect={() =>
+                                                    setSubscriptionToDelete({
+                                                      sub,
+                                                      userId: user._id,
+                                                    })
+                                                  }
+                                                  className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 cursor-pointer focus:bg-rose-50 focus:text-rose-600 text-rose-600 border-t border-slate-100/50"
+                                                >
+                                                  <Trash2 className="size-3.5" />
+                                                  <span>রিমুভ করুন</span>
+                                                </DropdownMenuItem>
+                                              )}
+                                            </DropdownMenuContent>
+                                          </DropdownMenu>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   {/* Server-side Pagination Section */}
@@ -1397,6 +1452,77 @@ export default function PricingManagement() {
                 {toggleSuspension.isPending
                   ? "প্রক্রিয়াধীন..."
                   : "নিশ্চিত করুন"}
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Subscription Delete Confirmation Dialog */}
+      <Dialog
+        open={!!subscriptionToDelete}
+        onOpenChange={(open) => {
+          if (!open && !removeSubscription.isPending) {
+            setSubscriptionToDelete(null);
+          }
+        }}
+      >
+        <DialogContent
+          from="top"
+          showCloseButton={!removeSubscription.isPending}
+          className="max-w-md p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative"
+        >
+          <div className="p-6 text-center space-y-4 font-bengali">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-50">
+              <Trash2 className="h-6 w-6 text-rose-600 animate-bounce" />
+            </div>
+
+            <div className="space-y-2">
+              <DialogTitle className="text-center font-extrabold text-slate-800 text-lg">
+                সাবস্ক্রিপশন মুছে ফেলবেন?
+              </DialogTitle>
+              <DialogDescription className="text-center text-slate-500 text-xs font-normal leading-relaxed">
+                আপনি কি নিশ্চিত যে আপনি এই গ্রাহকের সাবস্ক্রিপশনটি{" "}
+                <strong>স্থায়ীভাবে মুছে ফেলতে</strong> চান? এটি আর পুনরুদ্ধার
+                করা যাবে না।
+              </DialogDescription>
+            </div>
+
+            <div className="flex gap-3 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                disabled={removeSubscription.isPending}
+                onClick={() => setSubscriptionToDelete(null)}
+                className="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 transition rounded-xl text-xs font-bold text-slate-600 cursor-pointer disabled:opacity-50"
+              >
+                না, বাতিল করুন
+              </button>
+              <button
+                type="button"
+                disabled={removeSubscription.isPending}
+                onClick={async () => {
+                  if (subscriptionToDelete) {
+                    try {
+                      await removeSubscription.mutateAsync({
+                        userId: subscriptionToDelete.userId,
+                        subscriptionId: subscriptionToDelete.sub._id,
+                      });
+                      toast.success("সাবস্ক্রিপশন সফলভাবে মুছে ফেলা হয়েছে!");
+                      setSubscriptionToDelete(null);
+                    } catch (err) {
+                      console.error("Error deleting subscription:", err);
+                      toast.error("সাবস্ক্রিপশন মুছে ফেলতে ব্যর্থ হয়েছে");
+                    }
+                  }
+                }}
+                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 transition rounded-xl text-xs font-bold text-white shadow-md shadow-rose-500/10 flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
+              >
+                {removeSubscription.isPending && (
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                )}
+                {removeSubscription.isPending
+                  ? "মুছে ফেলা হচ্ছে..."
+                  : "হ্যাঁ, মুছে ফেলুন"}
               </button>
             </div>
           </div>
