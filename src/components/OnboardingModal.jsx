@@ -1,9 +1,95 @@
-import React, { useState } from 'react';
-import { useUserContext } from '../context/UserContext';
-import { useUser, useAuth } from '@clerk/react';
-import apiClient from '../lib/apiClient';
-import { GraduationCap, Landmark, Sparkles, Phone, Mail, Globe, MapPin, ArrowLeft, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { useAuth, useUser } from "@clerk/react";
+import confetti from "canvas-confetti";
+import {
+  ArrowLeft,
+  ChevronDown,
+  Globe,
+  GraduationCap,
+  Landmark,
+  Loader2,
+  Mail,
+  MapPin,
+  Phone,
+  Sparkles,
+} from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useUserContext } from "../context/UserContext";
+import apiClient from "../lib/apiClient";
+
+function CustomSelect({
+  value,
+  onChange,
+  options,
+  placeholder,
+  className = "",
+  isEmerald = false,
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const selectedOpt = options.find((o) => o.value === value);
+
+  return (
+    <div className="relative w-full">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-full px-3 h-10 border border-slate-200 rounded-xl text-xs bg-white hover:bg-slate-50/50 focus:outline-none transition-all duration-200 font-semibold text-slate-700 flex justify-between items-center cursor-pointer shadow-sm ${
+          isEmerald
+            ? "hover:border-emerald-400 focus:ring-emerald-500/20"
+            : "hover:border-indigo-400 focus:ring-indigo-500/20"
+        } ${className}`}
+      >
+        <span className={value ? "text-slate-800" : "text-slate-400"}>
+          {selectedOpt ? selectedOpt.label : placeholder}
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute top-full left-0 right-0 mt-1.5 bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-xl shadow-2xl p-1.5 space-y-0.5 z-50 animate-in fade-in-0 zoom-in-95 duration-100 max-h-60 overflow-y-auto">
+            {options.map((opt) => {
+              const isSelected = opt.value === value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => {
+                    onChange(opt.value);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-between cursor-pointer ${
+                    isEmerald
+                      ? isSelected
+                        ? "bg-emerald-50 text-emerald-600"
+                        : "text-slate-700 hover:bg-emerald-50/40"
+                      : isSelected
+                        ? "bg-indigo-50 text-indigo-600"
+                        : "text-slate-700 hover:bg-indigo-50/40"
+                  }`}
+                >
+                  <span>{opt.label}</span>
+                  {isSelected && (
+                    <span
+                      className={`size-1.5 rounded-full ${isEmerald ? "bg-emerald-500" : "bg-indigo-500"}`}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function OnboardingModal() {
   const { refreshProfile } = useUserContext();
@@ -14,39 +100,48 @@ export default function OnboardingModal() {
   const [loading, setLoading] = useState(false);
 
   // Form States
-  const [firstName, setFirstName] = useState(user?.firstName || '');
-  const [lastName, setLastName] = useState(user?.lastName || '');
-  const [designation, setDesignation] = useState('');
-  const [institutionName, setInstitutionName] = useState('');
+  const [firstName, setFirstName] = useState(user?.firstName || "");
+  const [lastName, setLastName] = useState(user?.lastName || "");
+  const [designation, setDesignation] = useState("");
+  const [institutionName, setInstitutionName] = useState("");
 
   // Institution specific form states
-  const [institutionType, setInstitutionType] = useState('');
-  const [institutionMedium, setInstitutionMedium] = useState('');
-  const [founderName, setFounderName] = useState('');
-  const [foundingYear, setFoundingYear] = useState('');
-  const [eiin, setEiin] = useState('');
-  const [institutionCode, setInstitutionCode] = useState('');
-  const [studentCountRange, setStudentCountRange] = useState('');
-  const [contactNumber, setContactNumber] = useState('');
-  const [officialEmail, setOfficialEmail] = useState('');
-  const [officialWebsite, setOfficialWebsite] = useState('');
+  const [institutionType, setInstitutionType] = useState("");
+  const [institutionMedium, setInstitutionMedium] = useState("");
+  const [founderName, setFounderName] = useState("");
+  const [foundingYear, setFoundingYear] = useState("");
+  const [eiin, setEiin] = useState("");
+  const [institutionCode, setInstitutionCode] = useState("");
+  const [studentCountRange, setStudentCountRange] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [officialEmail, setOfficialEmail] = useState("");
+  const [officialWebsite, setOfficialWebsite] = useState("");
 
   // Address states
-  const [division, setDivision] = useState('');
-  const [district, setDistrict] = useState('');
-  const [upazila, setUpazila] = useState('');
-  const [postOffice, setPostOffice] = useState('');
-  const [fullAddress, setFullAddress] = useState('');
+  const [division, setDivision] = useState("");
+  const [district, setDistrict] = useState("");
+  const [upazila, setUpazila] = useState("");
+  const [postOffice, setPostOffice] = useState("");
+  const [fullAddress, setFullAddress] = useState("");
 
-  const divisions = ['ঢাকা', 'চট্টগ্রাম', 'রাজশাহী', 'খুলনা', 'বরিশাল', 'সিলেট', 'রংপুর', 'ময়মনসিংহ'];
+  const divisions = [
+    "ঢাকা",
+    "চট্টগ্রাম",
+    "রাজশাহী",
+    "খুলনা",
+    "বরিশাল",
+    "সিলেট",
+    "রংপুর",
+    "ময়মনসিংহ",
+  ];
   const studentRanges = [
-    { value: '1-100', label: '১–১০০ জন' },
-    { value: '101-300', label: '১০১–৩০০ জন' },
-    { value: '301-500', label: '৩০১–৫০০ জন' },
-    { value: '501-1,000', label: '৫০১–১,০০০ জন' },
-    { value: '1,001-2,000', label: '১,০০১–২,০০০ জন' },
-    { value: '2,001-5,000', label: '২,০০১–৫,০০০ জন' },
-    { value: '5,001+', label: '৫,০০১+ জন' }
+    { value: "1-100", label: "১–১০০ জন" },
+    { value: "101-300", label: "১০১–৩০০ জন" },
+    { value: "301-500", label: "৩০১–৫০০ জন" },
+    { value: "501-1,000", label: "৫০১–১,০০০ জন" },
+    { value: "1,001-2,000", label: "১,০০১–২,০০০ জন" },
+    { value: "2,001-5,000", label: "২,০০১–৫,০০০ জন" },
+    { value: "5,001+", label: "৫,০০১+ জন" },
   ];
 
   const handleSelectRole = (role) => {
@@ -66,9 +161,9 @@ export default function OnboardingModal() {
     try {
       let payload = { userType };
 
-      if (userType === 'Teacher') {
+      if (userType === "Teacher") {
         if (!firstName.trim() || !lastName.trim() || !institutionName.trim()) {
-          toast.error('দয়া করে সব আবশ্যক ক্ষেত্রগুলো পূরণ করুন।');
+          toast.error("দয়া করে সব আবশ্যক ক্ষেত্রগুলো পূরণ করুন।");
           setLoading(false);
           return;
         }
@@ -94,7 +189,7 @@ export default function OnboardingModal() {
           !postOffice.trim() ||
           !fullAddress.trim()
         ) {
-          toast.error('দয়া করে সব আবশ্যক ক্ষেত্রগুলো পূরণ করুন।');
+          toast.error("দয়া করে সব আবশ্যক ক্ষেত্রগুলো পূরণ করুন।");
           setLoading(false);
           return;
         }
@@ -122,29 +217,64 @@ export default function OnboardingModal() {
       }
 
       const token = await getToken();
-      const response = await apiClient.put('/users/onboard', payload, {
+      const response = await apiClient.put("/users/onboard", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       if (response.data.success) {
-        toast.success('অনবোর্ডিং সফলভাবে সম্পন্ন হয়েছে!');
+        toast.success("অনবোর্ডিং সফলভাবে সম্পন্ন হয়েছে!");
+
+        // Trigger a gorgeous confetti celebration
+        const duration = 2.5 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = {
+          startVelocity: 30,
+          spread: 360,
+          ticks: 60,
+          zIndex: 99999,
+        };
+
+        const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+        const interval = setInterval(function () {
+          const timeLeft = animationEnd - Date.now();
+
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+
+          const particleCount = 50 * (timeLeft / duration);
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+          });
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+          });
+        }, 250);
+
         await refreshProfile();
       }
     } catch (error) {
-      console.error('Onboarding failed:', error);
-      toast.error(error.response?.data?.error || 'অনবোর্ডিং সম্পন্ন করতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+      console.error("Onboarding failed:", error);
+      toast.error(
+        error.response?.data?.error ||
+          "অনবোর্ডিং সম্পন্ন করতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।",
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const isTeacher = userType === 'Teacher';
+  const isTeacher = userType === "Teacher";
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-      <div className="w-full max-w-2xl bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 transition-all duration-300 transform scale-100 flex flex-col my-8">
-        
+      <div className="w-full max-w-2xl bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 transition-all duration-300 transform scale-100 flex flex-col my-8 max-h-[85vh] overflow-hidden">
         {/* Progress Header */}
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -164,10 +294,14 @@ export default function OnboardingModal() {
             <button
               onClick={handleBack}
               disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-55 hover:text-slate-900 transition-colors disabled:opacity-50"
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold border transition-all duration-300 shadow-sm disabled:opacity-50 ${
+                isTeacher
+                  ? "text-indigo-600 border-indigo-100 bg-indigo-50/30 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-500/20"
+                  : "text-emerald-600 border-emerald-100 bg-emerald-50/30 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:shadow-lg hover:shadow-emerald-500/20"
+              }`}
             >
-              <ArrowLeft className="h-4 w-4" />
-              পেছনে ফিরুন
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span>পেছনে ফিরুন</span>
             </button>
           )}
         </div>
@@ -180,14 +314,15 @@ export default function OnboardingModal() {
                 ইপ্রশ্নব্যাংক-এ আপনাকে স্বাগতম!
               </h1>
               <p className="text-sm text-slate-500 max-w-md mx-auto leading-relaxed font-bengali">
-                ড্যাশবোর্ডে প্রবেশ করার আগে দয়া করে আপনার সঠিক ভূমিকা নির্বাচন করুন। এটি আপনার জন্য উপযুক্ত ফিচারগুলো সক্রিয় করবে।
+                ড্যাশবোর্ডে প্রবেশ করার আগে দয়া করে আপনার সঠিক ভূমিকা নির্বাচন
+                করুন। এটি আপনার জন্য উপযুক্ত ফিচারগুলো সক্রিয় করবে।
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
               {/* Teacher Selection Card */}
               <button
-                onClick={() => handleSelectRole('Teacher')}
+                onClick={() => handleSelectRole("Teacher")}
                 className="group p-6 text-left rounded-2xl border-2 border-slate-100 hover:border-indigo-500 bg-white hover:bg-slate-50 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-6"
               >
                 <div className="p-4 bg-indigo-50 text-indigo-600 rounded-2xl group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300 w-fit">
@@ -198,14 +333,16 @@ export default function OnboardingModal() {
                     আমি একজন শিক্ষক
                   </h3>
                   <p className="text-sm text-slate-500 font-bengali leading-relaxed">
-                    ব্যক্তিগতভাবে প্রশ্ন তৈরি, শিক্ষার্থীদের অনলাইন পরীক্ষা নেওয়া এবং ওএমআর মূল্যায়নের জন্য আপনার শিক্ষক অ্যাকাউন্ট তৈরি করুন।
+                    ব্যক্তিগতভাবে প্রশ্ন তৈরি, শিক্ষার্থীদের অনলাইন পরীক্ষা
+                    নেওয়া এবং ওএমআর মূল্যায়নের জন্য আপনার শিক্ষক অ্যাকাউন্ট তৈরি
+                    করুন।
                   </p>
                 </div>
               </button>
 
               {/* Institution Selection Card */}
               <button
-                onClick={() => handleSelectRole('Institution')}
+                onClick={() => handleSelectRole("Institution")}
                 className="group p-6 text-left rounded-2xl border-2 border-slate-100 hover:border-emerald-500 bg-white hover:bg-slate-50 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-6"
               >
                 <div className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300 w-fit">
@@ -216,7 +353,9 @@ export default function OnboardingModal() {
                     শিক্ষা প্রতিষ্ঠান
                   </h3>
                   <p className="text-sm text-slate-500 font-bengali leading-relaxed">
-                    আপনার স্কুল, কলেজ, মাদ্রাসা বা কোচিং সেন্টারের জন্য প্রাতিষ্ঠানিক অ্যাকাউন্ট তৈরি করে শিক্ষক ও শিক্ষার্থী পরিচালনা করুন।
+                    আপনার স্কুল, কলেজ, মাদ্রাসা বা কোচিং সেন্টারের জন্য
+                    প্রাতিষ্ঠানিক অ্যাকাউন্ট তৈরি করে শিক্ষক ও শিক্ষার্থী
+                    পরিচালনা করুন।
                   </p>
                 </div>
               </button>
@@ -226,9 +365,11 @@ export default function OnboardingModal() {
 
         {/* Step 2: Form */}
         {step === 2 && (
-          <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
-            <div className="p-6 md:p-8 space-y-6 max-h-[60vh] overflow-y-auto">
-              
+          <form
+            onSubmit={handleSubmit}
+            className="flex-1 flex flex-col overflow-y-auto"
+          >
+            <div className="p-6 md:p-8 space-y-6 overflow-visible pb-32">
               {/* Teacher Form Fields */}
               {isTeacher && (
                 <div className="space-y-4 font-bengali">
@@ -238,7 +379,9 @@ export default function OnboardingModal() {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">প্রথম নাম <span className="text-red-500">*</span></label>
+                      <label className="text-xs font-semibold text-slate-600">
+                        প্রথম নাম <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="text"
                         required
@@ -249,7 +392,9 @@ export default function OnboardingModal() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">শেষ নাম <span className="text-red-500">*</span></label>
+                      <label className="text-xs font-semibold text-slate-600">
+                        শেষ নাম <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="text"
                         required
@@ -263,37 +408,43 @@ export default function OnboardingModal() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">মোবাইল নম্বর (ভেরিফাইড)</label>
+                      <label className="text-xs font-semibold text-slate-600">
+                        মোবাইল নম্বর (ভেরিফাইড)
+                      </label>
                       <input
                         type="text"
                         disabled
-                        value={user?.primaryPhoneNumber?.phoneNumber || ''}
+                        value={user?.primaryPhoneNumber?.phoneNumber || ""}
                         className="w-full h-10 px-3 rounded-xl border border-slate-100 bg-slate-50 text-slate-400 text-sm font-sans font-medium"
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">পদবি (Designation)</label>
-                      <select
+                      <label className="text-xs font-semibold text-slate-600">
+                        পদবি (Designation)
+                      </label>
+                      <CustomSelect
                         value={designation}
-                        onChange={(e) => setDesignation(e.target.value)}
-                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
-                      >
-                        <option value="">পদবি নির্বাচন করুন</option>
-                        <option value="সহকারী শিক্ষক">সহকারী শিক্ষক</option>
-                        <option value="সিনিয়র শিক্ষক">সিনিয়র শিক্ষক</option>
-                        <option value="প্রধান শিক্ষক">প্রধান শিক্ষক</option>
-                        <option value="প্রভাষক">প্রভাষক</option>
-                        <option value="সহকারী অধ্যাপক">সহকারী অধ্যাপক</option>
-                        <option value="সহযোগী অধ্যাপক">সহযোগী অধ্যাপক</option>
-                        <option value="অধ্যাপক">অধ্যাপক</option>
-                        <option value="প্রিন্সিপাল">প্রিন্সিপাল</option>
-                        <option value="অন্যান্য">অন্যান্য</option>
-                      </select>
+                        onChange={setDesignation}
+                        placeholder="পদবি নির্বাচন করুন"
+                        options={[
+                          { value: "সহকারী শিক্ষক", label: "সহকারী শিক্ষক" },
+                          { value: "সিনিয়র শিক্ষক", label: "সিনিয়র শিক্ষক" },
+                          { value: "প্রধান শিক্ষক", label: "প্রধান শিক্ষক" },
+                          { value: "প্রভাষক", label: "প্রভাষক" },
+                          { value: "সহকারী অধ্যাপক", label: "সহকারী অধ্যাপক" },
+                          { value: "সহযোগী অধ্যাপক", label: "সহযোগী অধ্যাপক" },
+                          { value: "অধ্যাপক", label: "অধ্যাপক" },
+                          { value: "প্রিন্সিপাল", label: "প্রিন্সিপাল" },
+                          { value: "অন্যান্য", label: "অন্যান্য" },
+                        ]}
+                      />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-slate-600">প্রতিষ্ঠানের নাম <span className="text-red-500">*</span></label>
+                    <label className="text-xs font-semibold text-slate-600">
+                      প্রতিষ্ঠানের নাম <span className="text-red-500">*</span>
+                    </label>
                     <input
                       type="text"
                       required
@@ -313,58 +464,66 @@ export default function OnboardingModal() {
                     <Landmark className="h-5 w-5 text-emerald-500" />
                     শিক্ষা প্রতিষ্ঠানের তথ্য
                   </h3>
-                  
+
                   {/* Type, Medium, Name */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">প্রতিষ্ঠানের ধরন <span className="text-red-500">*</span></label>
-                      <select
-                        required
+                      <label className="text-xs font-semibold text-slate-600">
+                        প্রতিষ্ঠানের ধরন <span className="text-red-500">*</span>
+                      </label>
+                      <CustomSelect
                         value={institutionType}
-                        onChange={(e) => setInstitutionType(e.target.value)}
-                        className="w-full h-10 px-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm"
-                      >
-                        <option value="">নির্বাচন করুন</option>
-                        <option value="School">স্কুল</option>
-                        <option value="College">কলেজ</option>
-                        <option value="School & College">স্কুল অ্যান্ড কলেজ</option>
-                        <option value="Madrasah">মাদ্রাসা</option>
-                        <option value="Coaching Center">কোচিং সেন্টার</option>
-                        <option value="Other">অন্যান্য</option>
-                      </select>
+                        onChange={setInstitutionType}
+                        placeholder="নির্বাচন করুন"
+                        isEmerald={true}
+                        options={[
+                          { value: "School", label: "স্কুল" },
+                          { value: "College", label: "কলেজ" },
+                          {
+                            value: "School & College",
+                            label: "স্কুল অ্যান্ড কলেজ",
+                          },
+                          { value: "Madrasah", label: "মাদ্রাসা" },
+                          { value: "Coaching Center", label: "কোচিং সেন্টার" },
+                          { value: "Other", label: "অন্যান্য" },
+                        ]}
+                      />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">মাধ্যম <span className="text-red-500">*</span></label>
-                      <select
-                        required
+                      <label className="text-xs font-semibold text-slate-600">
+                        মাধ্যম <span className="text-red-500">*</span>
+                      </label>
+                      <CustomSelect
                         value={institutionMedium}
-                        onChange={(e) => setInstitutionMedium(e.target.value)}
-                        className="w-full h-10 px-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm"
-                      >
-                        <option value="">নির্বাচন করুন</option>
-                        <option value="Bangla">বাংলা</option>
-                        <option value="English">ইংরেজি</option>
-                        <option value="both">উভয় (English & Bangla)</option>
-                      </select>
+                        onChange={setInstitutionMedium}
+                        placeholder="নির্বাচন করুন"
+                        isEmerald={true}
+                        options={[
+                          { value: "Bangla", label: "বাংলা" },
+                          { value: "English", label: "ইংরেজি" },
+                          { value: "both", label: "উভয় (English & Bangla)" },
+                        ]}
+                      />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">ছাত্র-ছাত্রীর সংখ্যা <span className="text-red-500">*</span></label>
-                      <select
-                        required
+                      <label className="text-xs font-semibold text-slate-600">
+                        ছাত্র-ছাত্রীর সংখ্যা{" "}
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <CustomSelect
                         value={studentCountRange}
-                        onChange={(e) => setStudentCountRange(e.target.value)}
-                        className="w-full h-10 px-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm"
-                      >
-                        <option value="">নির্বাচন করুন</option>
-                        {studentRanges.map(range => (
-                          <option key={range.value} value={range.value}>{range.label}</option>
-                        ))}
-                      </select>
+                        onChange={setStudentCountRange}
+                        placeholder="নির্বাচন করুন"
+                        isEmerald={true}
+                        options={studentRanges}
+                      />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-slate-600">প্রতিষ্ঠানের নাম <span className="text-red-500">*</span></label>
+                    <label className="text-xs font-semibold text-slate-600">
+                      প্রতিষ্ঠানের নাম <span className="text-red-500">*</span>
+                    </label>
                     <input
                       type="text"
                       required
@@ -378,7 +537,9 @@ export default function OnboardingModal() {
                   {/* Founder & Founding Year */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">প্রতিষ্ঠাতার নাম <span className="text-red-500">*</span></label>
+                      <label className="text-xs font-semibold text-slate-600">
+                        প্রতিষ্ঠাতার নাম <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="text"
                         required
@@ -389,7 +550,9 @@ export default function OnboardingModal() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">প্রতিষ্ঠা সাল <span className="text-red-500">*</span></label>
+                      <label className="text-xs font-semibold text-slate-600">
+                        প্রতিষ্ঠা সাল <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="text"
                         required
@@ -404,7 +567,9 @@ export default function OnboardingModal() {
                   {/* EIIN & Code */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">EIIN (ঐচ্ছিক)</label>
+                      <label className="text-xs font-semibold text-slate-600">
+                        EIIN (ঐচ্ছিক)
+                      </label>
                       <input
                         type="text"
                         value={eiin}
@@ -414,7 +579,9 @@ export default function OnboardingModal() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">প্রতিষ্ঠান কোড (ঐচ্ছিক)</label>
+                      <label className="text-xs font-semibold text-slate-600">
+                        প্রতিষ্ঠান কোড (ঐচ্ছিক)
+                      </label>
                       <input
                         type="text"
                         value={institutionCode}
@@ -431,24 +598,28 @@ export default function OnboardingModal() {
                       <MapPin className="h-4 w-4 text-emerald-500" />
                       প্রতিষ্ঠানের ঠিকানা
                     </h4>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-slate-600">বিভাগ <span className="text-red-500">*</span></label>
-                        <select
-                          required
+                        <label className="text-[11px] font-semibold text-slate-600">
+                          বিভাগ <span className="text-red-500">*</span>
+                        </label>
+                        <CustomSelect
                           value={division}
-                          onChange={(e) => setDivision(e.target.value)}
-                          className="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
-                        >
-                          <option value="">নির্বাচন</option>
-                          {divisions.map(div => (
-                            <option key={div} value={div}>{div}</option>
-                          ))}
-                        </select>
+                          onChange={setDivision}
+                          placeholder="নির্বাচন"
+                          isEmerald={true}
+                          className="h-9 text-xs"
+                          options={divisions.map((div) => ({
+                            value: div,
+                            label: div,
+                          }))}
+                        />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-slate-600">জেলা <span className="text-red-500">*</span></label>
+                        <label className="text-[11px] font-semibold text-slate-600">
+                          জেলা <span className="text-red-500">*</span>
+                        </label>
                         <input
                           type="text"
                           required
@@ -459,7 +630,9 @@ export default function OnboardingModal() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-slate-600">উপজেলা <span className="text-red-500">*</span></label>
+                        <label className="text-[11px] font-semibold text-slate-600">
+                          উপজেলা <span className="text-red-500">*</span>
+                        </label>
                         <input
                           type="text"
                           required
@@ -470,7 +643,9 @@ export default function OnboardingModal() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-slate-600">ডাকঘর <span className="text-red-500">*</span></label>
+                        <label className="text-[11px] font-semibold text-slate-600">
+                          ডাকঘর <span className="text-red-500">*</span>
+                        </label>
                         <input
                           type="text"
                           required
@@ -483,7 +658,9 @@ export default function OnboardingModal() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-semibold text-slate-600">সম্পূর্ণ ঠিকানা <span className="text-red-500">*</span></label>
+                      <label className="text-[11px] font-semibold text-slate-600">
+                        সম্পূর্ণ ঠিকানা <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="text"
                         required
@@ -498,7 +675,9 @@ export default function OnboardingModal() {
                   {/* Communication fields */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">যোগাযোগের মোবাইল <span className="text-red-500">*</span></label>
+                      <label className="text-xs font-semibold text-slate-600">
+                        যোগাযোগের মোবাইল <span className="text-red-500">*</span>
+                      </label>
                       <div className="relative">
                         <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                         <input
@@ -512,7 +691,9 @@ export default function OnboardingModal() {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">অফিসিয়াল ইমেইল (ঐচ্ছিক)</label>
+                      <label className="text-xs font-semibold text-slate-600">
+                        অফিসিয়াল ইমেইল (ঐচ্ছিক)
+                      </label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                         <input
@@ -525,7 +706,9 @@ export default function OnboardingModal() {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-600">অফিসিয়াল ওয়েবসাইট (ঐচ্ছিক)</label>
+                      <label className="text-xs font-semibold text-slate-600">
+                        অফিসিয়াল ওয়েবসাইট (ঐচ্ছিক)
+                      </label>
                       <div className="relative">
                         <Globe className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                         <input
@@ -538,10 +721,8 @@ export default function OnboardingModal() {
                       </div>
                     </div>
                   </div>
-
                 </div>
               )}
-
             </div>
 
             {/* Form Footer Action */}
@@ -550,9 +731,9 @@ export default function OnboardingModal() {
                 type="submit"
                 disabled={loading}
                 className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white shadow-lg transition-all duration-300 ${
-                  isTeacher 
-                    ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/25' 
-                    : 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/25'
+                  isTeacher
+                    ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/25"
+                    : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/25"
                 } disabled:opacity-50`}
               >
                 {loading ? (
@@ -561,16 +742,12 @@ export default function OnboardingModal() {
                     সংরক্ষণ করা হচ্ছে...
                   </>
                 ) : (
-                  <>
-                    তথ্য সংরক্ষণ করুন
-                  </>
+                  <>তথ্য সংরক্ষণ করুন</>
                 )}
               </button>
             </div>
-
           </form>
         )}
-
       </div>
     </div>
   );

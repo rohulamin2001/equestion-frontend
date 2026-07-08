@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { translateSubscriptionKey } from "../../constants/subscriptions";
 import { useUserContext } from "../../context/UserContext";
 import apiClient from "../../lib/apiClient";
 import { useSubscription } from "./hook/useSubscription";
@@ -38,7 +39,8 @@ export default function Subscription() {
   } = useSubscription();
 
   const activeSubs = userSubs.filter(
-    (sub) => sub.isActive && !sub.isSuspended && new Date(sub.endDate) >= new Date()
+    (sub) =>
+      sub.isActive && !sub.isSuspended && new Date(sub.endDate) >= new Date(),
   );
 
   const [activeTab, setActiveTab] = useState("packages"); // 'packages' or 'subjects'
@@ -330,10 +332,14 @@ export default function Subscription() {
                           : "বিষয় প্যাক"}
                     </span>
                     <span className="text-xs font-bold text-slate-700">
-                      {sub.packageId
+                      {sub.purchaseType === "Package"
                         ? packagesList.find((p) => p.id === sub.packageId)
-                            ?.title
-                        : sub.classNames?.[0] || "একক বিষয়"}
+                            ?.title || translateSubscriptionKey(sub.packageId)
+                        : sub.purchaseType === "Class"
+                          ? sub.classNames
+                              ?.map((c) => translateSubscriptionKey(c))
+                              .join(", ") || ""
+                          : "একক বিষয়"}
                     </span>
                   </div>
                   {sub.purchaseType === "Subject" && sub.subjectIds && (
