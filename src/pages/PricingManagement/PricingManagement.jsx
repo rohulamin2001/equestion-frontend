@@ -26,6 +26,12 @@ import {
   UserCheck,
   Users,
   UserX,
+  GraduationCap,
+  Layers,
+  Building2,
+  School,
+  BookOpen,
+  Package,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
@@ -65,6 +71,7 @@ export default function PricingManagement() {
 
   const [activeTab, setActiveTab] = useState("packages"); // 'packages', 'discounts' or 'subscribers'
   const [selectedCategory, setSelectedCategory] = useState("tutor");
+  const [selectedPkgVersion, setSelectedPkgVersion] = useState("Bangla");
   const [editingPkg, setEditingPkg] = useState(null);
   const [editPrice, setEditPrice] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -141,6 +148,23 @@ export default function PricingManagement() {
     { id: "school", label: "৪। শ্রেণি ভিত্তিক প্যাকেজ" },
     { id: "teacher-subject", label: "৫। বিষয়ভিত্তিক শিক্ষক প্যাকেজ" },
   ];
+
+  const getCategoryIcon = (catId) => {
+    switch (catId) {
+      case "tutor":
+        return GraduationCap;
+      case "bundle":
+        return Layers;
+      case "coaching":
+        return Building2;
+      case "school":
+        return School;
+      case "teacher-subject":
+        return BookOpen;
+      default:
+        return Package;
+    }
+  };
 
   const getCategoryBengali = (catId) => {
     const found = packageCategories.find((c) => c.id === catId);
@@ -314,20 +338,66 @@ export default function PricingManagement() {
           {activeTab === "packages" && (
             <div className="space-y-6">
               {/* Sub-tabs / Categories Selector */}
-              <div className="flex flex-wrap gap-2 border-b border-slate-100 pb-4">
-                {packageCategories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                      selectedCategory === cat.id
-                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/10"
-                        : "bg-slate-50 text-slate-600 hover:bg-slate-100"
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
+              <div className="flex flex-wrap items-center justify-center gap-2 border-b border-slate-100/80 pb-6">
+                {packageCategories.map((cat) => {
+                  const Icon = getCategoryIcon(cat.id);
+                  const isActive = selectedCategory === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={`relative px-4 py-2.5 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-colors duration-300 z-10 cursor-pointer ${
+                        isActive
+                          ? "text-white"
+                          : "text-slate-600 bg-slate-50 hover:bg-slate-100 hover:text-slate-800"
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.div
+                          layoutId="pricingCategoryIndicator"
+                          className="absolute inset-0 bg-indigo-600 rounded-xl shadow-md shadow-indigo-600/20"
+                          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        />
+                      )}
+                      <Icon className={`h-4 w-4 relative z-10 transition-transform duration-300 ${isActive ? "scale-110" : ""}`} />
+                      <span className="relative z-10">{cat.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Version Switcher Tabs */}
+              <div className="flex justify-center mb-2">
+                <div className="flex gap-1 bg-slate-100/80 backdrop-blur-md p-1.5 border border-slate-200/50 rounded-xl w-fit relative shadow-inner">
+                  {[
+                    { id: "Bangla", label: "বাংলা ভার্সন" },
+                    { id: "English", label: "English Version" },
+                  ].map((ver) => {
+                    const isActive = selectedPkgVersion === ver.id;
+                    return (
+                      <button
+                        key={ver.id}
+                        type="button"
+                        onClick={() => setSelectedPkgVersion(ver.id)}
+                        className={`relative px-6 py-2.5 rounded-lg text-xs font-bold transition-colors duration-300 cursor-pointer z-10 ${
+                          isActive
+                            ? "text-white"
+                            : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        {isActive && (
+                          <motion.div
+                            layoutId="pricingPkgVersionIndicator"
+                            className="absolute inset-0 bg-indigo-600 rounded-lg shadow-sm"
+                            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                          />
+                        )}
+                        <span className="relative z-10">{ver.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Grid list of packages */}
@@ -347,7 +417,7 @@ export default function PricingManagement() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {packagesList
-                    .filter((pkg) => pkg.category === selectedCategory)
+                    .filter((pkg) => pkg.category === selectedCategory && (pkg.version || "Bangla") === selectedPkgVersion)
                     .map((pkg) => (
                       <div
                         key={pkg.id}
