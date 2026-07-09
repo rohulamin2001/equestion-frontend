@@ -77,11 +77,13 @@ export default function PricingManagement() {
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
   const [isScopeDropdownOpen, setIsScopeDropdownOpen] = useState(false);
   const [isTargetDropdownOpen, setIsTargetDropdownOpen] = useState(false);
+  const [isVersionDropdownOpen, setIsVersionDropdownOpen] = useState(false);
 
   // New Coupon Form states
   const [code, setCode] = useState("");
   const [discountType, setDiscountType] = useState("Percentage");
   const [value, setValue] = useState("");
+  const [version, setVersion] = useState("Both");
   const [targetType, setTargetType] = useState("All");
   const [targetId, setTargetId] = useState("");
   const [minCartAmount, setMinCartAmount] = useState("");
@@ -95,19 +97,20 @@ export default function PricingManagement() {
     deleteDiscount.isPending;
 
   const getSubscriberSubPackageTitle = (sub) => {
+    const verText = sub.version ? ` (${sub.version === "Bangla" ? "বাংলা" : "ইংরেজি"})` : "";
     if (sub.purchaseType === "Package") {
       const pkg = packagesList.find((p) => p.id === sub.packageId);
       const title = pkg ? pkg.title : translateSubscriptionKey(sub.packageId);
-      return `প্যাকেজ: ${title}`;
+      return `প্যাকেজ: ${title}${verText}`;
     }
     if (sub.purchaseType === "Class") {
       const translatedClasses =
         sub.classNames?.map((c) => translateSubscriptionKey(c)).join(", ") ||
         "";
-      return `শ্রেণী: ${translatedClasses}`;
+      return `শ্রেণী: ${translatedClasses}${verText}`;
     }
     if (sub.purchaseType === "Subject") {
-      return `বিষয়ভিত্তিক: ${sub.subjectIds?.map((s) => s.subjectName).join(", ") || `${sub.subjectIds?.length || 0} টি বিষয়`}`;
+      return `বিষয়ভিত্তিক: ${sub.subjectIds?.map((s) => s.subjectName).join(", ") || `${sub.subjectIds?.length || 0} টি বিষয়`}${verText}`;
     }
     return "অজানা সাবস্ক্রিপশন";
   };
@@ -183,6 +186,7 @@ export default function PricingManagement() {
       code: code || undefined,
       discountType,
       value: parseFloat(value),
+      version,
       targetType,
       targetId: targetType !== "All" ? targetId : undefined,
       minCartAmount: minCartAmount ? parseFloat(minCartAmount) : 0,
@@ -216,6 +220,7 @@ export default function PricingManagement() {
     setCode(disc.code || "");
     setDiscountType(disc.discountType || "Percentage");
     setValue(disc.value || "");
+    setVersion(disc.version || "Both");
     setTargetType(disc.targetType || "All");
     setTargetId(disc.targetId || "");
     setMinCartAmount(disc.minCartAmount || "");
@@ -241,6 +246,8 @@ export default function PricingManagement() {
     setCode("");
     setDiscountType("Percentage");
     setValue("");
+    setVersion("Both");
+    setIsVersionDropdownOpen(false);
     setTargetType("All");
     setTargetId("");
     setMinCartAmount("");
@@ -350,9 +357,14 @@ export default function PricingManagement() {
                           <h3 className="text-base font-bold text-slate-800">
                             {pkg.title}
                           </h3>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-1">
-                            {pkg.id}
-                          </p>
+                          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">
+                              {pkg.id}
+                            </p>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200/50 text-slate-500 font-sans">
+                              {pkg.version === "English" ? "English Version" : "বাংলা ভার্সন"}
+                            </span>
+                          </div>
 
                           <div className="my-4 p-3 bg-slate-50 border rounded-xl flex items-baseline justify-between">
                             <span className="text-xs text-slate-500 font-bold">
@@ -468,6 +480,14 @@ export default function PricingManagement() {
                                   সক্রিয়
                                 </span>
                               )}
+
+                              <span className="bg-slate-50 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-200/50 font-sans">
+                                {disc.version === "Both"
+                                  ? "উভয় ভার্সন"
+                                  : disc.version === "Bangla"
+                                    ? "বাংলা ভার্সন"
+                                    : "English Version"}
+                              </span>
                             </div>
                             <p className="text-[10px] text-slate-400">
                               তৈরি হয়েছে: {formatDate(disc.createdAt)}
@@ -1095,6 +1115,62 @@ export default function PricingManagement() {
                   onChange={(e) => setMinCartAmount(e.target.value)}
                   className="w-full px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 text-slate-700 shadow-sm focus:bg-white hover:border-slate-300 font-sans"
                 />
+              </div>
+
+              {/* Applicable Version */}
+              <div className="space-y-1 relative">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                  প্রযোজ্য ভার্সন
+                </label>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsVersionDropdownOpen(!isVersionDropdownOpen)}
+                    className="w-full px-4 border border-slate-200 rounded-xl text-xs bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm cursor-pointer"
+                  >
+                    <span>
+                      {version === "Both"
+                        ? "উভয় ভার্সন (বাংলা ও ইংরেজি)"
+                        : version === "Bangla"
+                          ? "বাংলা ভার্সন"
+                          : "ইংরেজি ভার্সন"}
+                    </span>
+                    <ChevronDown
+                      className={`size-4 text-slate-400 transition-transform duration-300 ${isVersionDropdownOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  {isVersionDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]">
+                      {[
+                        { value: "Both", label: "উভয় ভার্সন (বাংলা ও ইংরেজি)" },
+                        { value: "Bangla", label: "বাংলা ভার্সন" },
+                        { value: "English", label: "ইংরেজি ভার্সন" },
+                      ].map((opt) => {
+                        const isSelected = version === opt.value;
+                        return (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => {
+                              setVersion(opt.value);
+                              setIsVersionDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-3.5 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer hover:bg-slate-50/80 ${
+                              isSelected
+                                ? "bg-indigo-50 text-indigo-650"
+                                : "text-slate-700"
+                            }`}
+                          >
+                            <span>{opt.label}</span>
+                            {isSelected && (
+                              <span className="size-1.5 rounded-full bg-indigo-500" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Scope Target Type */}

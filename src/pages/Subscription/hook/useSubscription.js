@@ -32,11 +32,11 @@ export const useSubscription = () => {
 
   // Validate coupon code
   const validateCouponMutation = useMutation({
-    mutationFn: async ({ code, packageId, cartTotal }) => {
+    mutationFn: async ({ code, packageId, version, cartTotal }) => {
       const token = await getToken();
       const res = await apiClient.post(
         "/subscriptions/validate-coupon",
-        { code, packageId, cartTotal },
+        { code, packageId, version, cartTotal },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       return res.data.coupon;

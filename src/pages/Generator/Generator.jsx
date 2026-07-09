@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
+import { CATEGORIES_MAP } from "../../constants/categories";
 import { useGenerator } from "./hook/useGenerator";
 
 export default function Generator() {
@@ -31,6 +32,7 @@ export default function Generator() {
     setSelectedChapters,
     questionType,
     setQuestionType,
+    activeCategories,
     totalMarks,
     setTotalMarks,
     showSubjectModal,
@@ -149,7 +151,7 @@ export default function Generator() {
                   >
                     <span>
                       {classes.find((cls) => cls.value === selectedClass)
-                        ?.label || selectedClass}
+                        ?.label || "শ্রেণি সিলেক্ট করুন"}
                     </span>
                     <ChevronDown className="h-4 w-4 text-slate-400" />
                   </button>
@@ -302,9 +304,23 @@ export default function Generator() {
                     onChange={(e) => setQuestionType(e.target.value)}
                     className="w-full h-11 px-4 pr-10 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm appearance-none bg-white font-sans font-medium text-slate-800 cursor-pointer"
                   >
-                    <option value="MCQ">বহুনির্বাচনী</option>
-                    <option value="Creative">সৃজনশীল</option>
-                    <option value="Combined">সমন্বিত</option>
+                    {activeCategories.length === 0 ? (
+                      <option value="">প্রথমে বিষয় সিলেক্ট করুন</option>
+                    ) : (
+                      <>
+                        {activeCategories.map((catValue) => {
+                          const catObj = CATEGORIES_MAP.find(
+                            (c) => c.value === catValue,
+                          );
+                          return (
+                            <option key={catValue} value={catValue}>
+                              {catObj ? catObj.label : catValue}
+                            </option>
+                          );
+                        })}
+                        <option value="Combined">সমন্বিত</option>
+                      </>
+                    )}
                   </select>
                   <ChevronDown className="absolute right-4 top-3.5 h-4 w-4 text-slate-400 pointer-events-none" />
                 </div>

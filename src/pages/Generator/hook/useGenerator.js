@@ -3,17 +3,15 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useUserContext } from "../../../context/UserContext";
 import apiClient from "../../../lib/apiClient";
 
 export const useGenerator = () => {
-  const { userProfile } = useUserContext();
   const navigate = useNavigate();
   const { getToken } = useAuth();
 
   // Form states
   const [examName, setExamName] = useState("");
-  const [selectedClass, setSelectedClass] = useState("Class 7");
+  const [selectedClass, setSelectedClass] = useState("");
   const [selectedSubjects, setSelectedSubjects] = useState([]);
   const [tempSelectedSubjects, setTempSelectedSubjects] = useState([]);
   const [selectedChapters, setSelectedChapters] = useState([]);
@@ -55,12 +53,6 @@ export const useGenerator = () => {
 
   // Filter classes based on active subscriptions
   const activeClasses = (() => {
-    if (
-      userProfile?.role &&
-      ["Super Admin", "Admin"].includes(userProfile.role)
-    ) {
-      return classes.map((c) => c.value);
-    }
     const now = new Date();
     const clsSet = new Set();
     userSubs.forEach((sub) => {
@@ -96,29 +88,14 @@ export const useGenerator = () => {
       const isCurrentClassActive = filteredClasses.some(
         (c) => c.value === selectedClass,
       );
-      if (!isCurrentClassActive && selectedClass !== filteredClasses[0].value) {
-        setSelectedClass(filteredClasses[0].value);
+      if (selectedClass && !isCurrentClassActive) {
+        setSelectedClass("");
       }
-    } else if (filteredClasses.length === 0 && selectedClass !== "") {
+    } else if (selectedClass !== "") {
       setSelectedClass("");
     }
   }
-  /////////////////////////////////////////
-  /////////////////////////////////////////
-  /////////////////////////////////////////
-  /////////////////////////////////////////
-  /////////////////////////////////////////
-  /////////////////////////////////////////
-  /////////////////////////////////////////
-  // subscription sober jonno applicable seta hok super admin admin or others
-  ///////////////////////////////
-  ///////////////////////////////
-  ///////////////////////////////
-  ///////////////////////////////
-  ///////////////////////////////
-  ///////////////////////////////
-  ///////////////////////////////
-  ///////////////////////////////
+
   // Fetch syllabus details for selected class using React Query
   const syllabusQuery = useQuery({
     queryKey: ["syllabus", selectedClass],
@@ -172,6 +149,10 @@ export const useGenerator = () => {
   };
 
   const handleOpenSubjectModal = () => {
+    if (!selectedClass) {
+      toast.error("দয়া করে প্রথমে শ্রেণি সিলেক্ট করুন!");
+      return;
+    }
     setTempSelectedSubjects(selectedSubjects);
     setShowSubjectModal(true);
   };
@@ -179,7 +160,6 @@ export const useGenerator = () => {
   // Verify access helper for a subject
   const hasSubjectAccess = (subject) => {
     if (!subject) return false;
-    if (["Super Admin", "Admin"].includes(userProfile?.role)) return true;
 
     const subId = subject.subjectId?._id || subject.subjectId;
     const subjectName =
@@ -192,6 +172,7 @@ export const useGenerator = () => {
 
       // Fallback check for teacher package
       if (sub.packageId && sub.packageId.startsWith("teacher-")) {
+        if (sub.version && sub.version !== subject.version) return false;
         const pkgKey = sub.packageId;
         const classesList = [
           "Class 6",
@@ -239,7 +220,10 @@ export const useGenerator = () => {
       }
 
       if (sub.purchaseType === "Package" || sub.purchaseType === "Class") {
-        return sub.classNames?.includes(selectedClass);
+        return (
+          sub.classNames?.includes(selectedClass) &&
+          sub.version === subject.version
+        );
       }
       if (sub.purchaseType === "Subject") {
         return sub.subjectIds?.some((s) => (s._id || s) === subId);
@@ -322,6 +306,23 @@ export const useGenerator = () => {
     },
   });
 
+  const activeCategories = (() => {
+    if (!selectedSubjects || selectedSubjects.length === 0) return [];
+    const catSet = new Set();
+    selectedSubjects.forEach((sub) => {
+      const cats = sub.subjectId?.categories || sub.categories || [];
+      cats.forEach((cat) => catSet.add(cat));
+    });
+    return Array.from(catSet);
+  })();
+
+  // Reset questionType if it's invalid for current subjects
+  const isQuestionTypeValid =
+    activeCategories.includes(questionType) || questionType === "Combined";
+  if (activeCategories.length > 0 && !isQuestionTypeValid) {
+    setQuestionType(activeCategories[0]);
+  }
+
   return {
     // States & Setters
     examName,
@@ -336,6 +337,7 @@ export const useGenerator = () => {
     setSelectedChapters,
     questionType,
     setQuestionType,
+    activeCategories,
     totalMarks,
     setTotalMarks,
     showSubjectModal,

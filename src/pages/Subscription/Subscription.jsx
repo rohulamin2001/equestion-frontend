@@ -16,9 +16,15 @@ import {
   Lock,
   Package,
   Sparkles,
+  GraduationCap,
+  Layers,
+  Building2,
+  School,
+  BookOpen,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { motion } from "motion/react";
 import { translateSubscriptionKey } from "../../constants/subscriptions";
 import { useUserContext } from "../../context/UserContext";
 import apiClient from "../../lib/apiClient";
@@ -49,6 +55,7 @@ export default function Subscription() {
   const [selectedClass, setSelectedClass] = useState("Class 7");
   const [selectedSubjects, setSelectedSubjects] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("tutor");
+  const [selectedVersion, setSelectedVersion] = useState("Bangla");
 
   const [checkoutPkg, setCheckoutPkg] = useState(null);
   const [couponCode, setCouponCode] = useState("");
@@ -104,6 +111,23 @@ export default function Subscription() {
     { id: "teacher-subject", label: "৫। বিষয়ভিত্তিক শিক্ষক প্যাকেজ" },
   ];
 
+  const getCategoryIcon = (catId) => {
+    switch (catId) {
+      case "tutor":
+        return GraduationCap;
+      case "bundle":
+        return Layers;
+      case "coaching":
+        return Building2;
+      case "school":
+        return School;
+      case "teacher-subject":
+        return BookOpen;
+      default:
+        return Package;
+    }
+  };
+
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
       setCouponError("কুপন কোড লিখুন");
@@ -114,6 +138,7 @@ export default function Subscription() {
       const res = await validateCoupon.mutateAsync({
         code: couponCode,
         packageId: checkoutPkg.id,
+        version: checkoutPkg.version,
         cartTotal: checkoutPkg.price,
       });
       setAppliedCoupon(res);
@@ -138,6 +163,7 @@ export default function Subscription() {
       ? {
           purchaseType: "Subject",
           subjectIds: checkoutPkg.subjectIds,
+          version: checkoutPkg.version,
           couponCode: appliedCoupon ? appliedCoupon.code : undefined,
           cartTotal: checkoutPkg.price,
         }
@@ -145,6 +171,7 @@ export default function Subscription() {
           purchaseType: "Package",
           packageId: checkoutPkg.id,
           classNames: checkoutPkg.classes,
+          version: checkoutPkg.version,
           couponCode: appliedCoupon ? appliedCoupon.code : undefined,
           cartTotal: checkoutPkg.price,
         };
@@ -166,6 +193,10 @@ export default function Subscription() {
   };
 
   const handleSubjectCheckout = () => {
+    const firstSubId = selectedSubjects[0];
+    const firstSub = allSubjects.find((s) => s._id === firstSubId);
+    const subVersion = firstSub ? firstSub.version : "Bangla";
+
     setCheckoutPkg({
       id: "subject-custom-pack",
       title: `বিষয় প্যাক (${selectedSubjects.length} টি বিষয়)`,
@@ -173,6 +204,7 @@ export default function Subscription() {
       originalPrice: selectedSubjects.length * 100,
       classes: [selectedClass],
       subjectIds: selectedSubjects,
+      version: subVersion,
       isSubjectPack: true,
     });
   };
@@ -223,6 +255,7 @@ export default function Subscription() {
 
       // Fallback check for teacher package
       if (sub.packageId && sub.packageId.startsWith("teacher-")) {
+        if (sub.version && sub.version !== subject?.version) return false;
         const pkgKey = sub.packageId;
         const classes = [
           "Class 6",
@@ -270,7 +303,10 @@ export default function Subscription() {
       }
 
       if (sub.purchaseType === "Package" || sub.purchaseType === "Class") {
-        return sub.classNames?.includes(className);
+        return (
+          sub.classNames?.includes(className) &&
+          sub.version === subject?.version
+        );
       }
       if (sub.purchaseType === "Subject") {
         return sub.subjectIds?.some((s) => (s._id || s) === subId);
@@ -437,49 +473,113 @@ export default function Subscription() {
       )}
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-slate-200 gap-6">
-        <button
-          onClick={() => setActiveTab("packages")}
-          className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all ${
-            activeTab === "packages"
-              ? "border-indigo-600 text-indigo-600"
-              : "border-transparent text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <Package className="h-4 w-4" />
-          প্যাকেজসমূহ
-        </button>
-        <button
-          onClick={() => setActiveTab("subjects")}
-          className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all ${
-            activeTab === "subjects"
-              ? "border-indigo-600 text-indigo-600"
-              : "border-transparent text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <Grid className="h-4 w-4" />
-          বিষয় বাছাই করুন
-        </button>
+      <div className="flex justify-center my-4">
+        <div className="bg-slate-100/70 backdrop-blur-md border border-slate-200/50 p-1.5 rounded-2xl flex gap-1.5 w-full max-w-md shadow-sm relative">
+          <button
+            type="button"
+            onClick={() => setActiveTab("packages")}
+            className={`flex-1 relative py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors duration-300 z-10 cursor-pointer ${
+              activeTab === "packages"
+                ? "text-indigo-600"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            {activeTab === "packages" && (
+              <motion.div
+                layoutId="activeTabIndicator"
+                className="absolute inset-0 bg-white rounded-xl shadow-sm border border-slate-200/20"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
+            )}
+            <Package className={`h-4 w-4 relative z-10 transition-transform duration-300 ${activeTab === "packages" ? "scale-110" : ""}`} />
+            <span className="relative z-10">প্যাকেজসমূহ</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("subjects")}
+            className={`flex-1 relative py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors duration-300 z-10 cursor-pointer ${
+              activeTab === "subjects"
+                ? "text-indigo-600"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            {activeTab === "subjects" && (
+              <motion.div
+                layoutId="activeTabIndicator"
+                className="absolute inset-0 bg-white rounded-xl shadow-sm border border-slate-200/20"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
+            )}
+            <Grid className={`h-4 w-4 relative z-10 transition-transform duration-300 ${activeTab === "subjects" ? "scale-110" : ""}`} />
+            <span className="relative z-10">বিষয় বাছাই করুন</span>
+          </button>
+        </div>
       </div>
 
       {/* Tab 1: Packages List */}
       {activeTab === "packages" && (
         <div className="space-y-6">
           {/* Sub-tabs / Categories Selector */}
-          <div className="flex flex-wrap gap-2 border-b border-slate-100 pb-4">
-            {packageCategories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                  selectedCategory === cat.id
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/10"
-                    : "bg-slate-50 text-slate-600 hover:bg-slate-100"
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center justify-center gap-2 border-b border-slate-100/80 pb-6">
+            {packageCategories.map((cat) => {
+              const Icon = getCategoryIcon(cat.id);
+              const isActive = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`relative px-4 py-2.5 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-colors duration-300 z-10 cursor-pointer ${
+                    isActive
+                      ? "text-white"
+                      : "text-slate-600 bg-slate-50 hover:bg-slate-100 hover:text-slate-800"
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeCategoryIndicator"
+                      className="absolute inset-0 bg-indigo-600 rounded-xl shadow-md shadow-indigo-600/20"
+                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    />
+                  )}
+                  <Icon className={`h-4 w-4 relative z-10 transition-transform duration-300 ${isActive ? "scale-110" : ""}`} />
+                  <span className="relative z-10">{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Version Switcher Tabs */}
+          <div className="flex justify-center mb-2">
+            <div className="flex gap-1 bg-slate-100/80 backdrop-blur-md p-1.5 border border-slate-200/50 rounded-xl w-fit relative shadow-inner">
+              {[
+                { id: "Bangla", label: "বাংলা ভার্সন" },
+                { id: "English", label: "English Version" },
+              ].map((ver) => {
+                const isActive = selectedVersion === ver.id;
+                return (
+                  <button
+                    key={ver.id}
+                    type="button"
+                    onClick={() => setSelectedVersion(ver.id)}
+                    className={`relative px-6 py-2.5 rounded-lg text-xs font-bold transition-colors duration-300 cursor-pointer z-10 ${
+                      isActive
+                        ? "text-white"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeVersionIndicator"
+                        className="absolute inset-0 bg-indigo-600 rounded-lg shadow-sm"
+                        transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                      />
+                    )}
+                    <span className="relative z-10">{ver.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Filtered Packages Grid */}
@@ -504,10 +604,10 @@ export default function Subscription() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {packagesList
-                .filter((pkg) => pkg.category === selectedCategory)
+                .filter((pkg) => pkg.category === selectedCategory && (pkg.version || "Bangla") === selectedVersion)
                 .map((pkg) => {
                   const isSubscribed = activeSubs.some(
-                    (s) => s.packageId === pkg.id,
+                    (s) => s.packageId === pkg.id && s.version === pkg.version,
                   );
                   return (
                     <div
