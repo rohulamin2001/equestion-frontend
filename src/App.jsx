@@ -9,21 +9,25 @@ import Generator from "./pages/Generator/Generator";
 import Home from "./pages/Home/Home";
 import Institution from "./pages/Institution/Institution";
 //login file
+import CreatedQuestions from "./pages/CreatedQuestions/CreatedQuestions";
 import Login from "./pages/Login/Login";
 import MetadataSetup from "./pages/MetadataSetup/MetadataSetup";
 import MyQuestions from "./pages/MyQuestions/MyQuestions";
 import OMREvaluation from "./pages/OMREvaluation/OMREvaluation";
 import Overview from "./pages/Overview/Overview";
+import PricingManagement from "./pages/PricingManagement/PricingManagement";
+import Profile from "./pages/Profile/Profile";
 import QuestionApproval from "./pages/QuestionApproval/QuestionApproval";
 import QuestionBank from "./pages/QuestionBank/QuestionBank";
+import QuestionPreview from "./pages/Questions/QuestionPreview";
+import Questions from "./pages/Questions/Questions";
+import QuestionSelect from "./pages/Questions/QuestionSelect";
 import Signup from "./pages/Signup/Signup";
 import StaffManagement from "./pages/Staff/StaffManagement";
 import SubjectSetup from "./pages/SubjectSetup/SubjectSetup";
 import Subscription from "./pages/Subscription/Subscription";
 import Support from "./pages/Support/Support";
 import SyllabusManagement from "./pages/Syllabus/SyllabusManagement";
-import Profile from "./pages/Profile/Profile";
-import PricingManagement from "./pages/PricingManagement/PricingManagement";
 
 export default function App() {
   return (
@@ -96,14 +100,21 @@ export default function App() {
           />
 
           <Route
+            path="created-questions"
+            element={
+              <RoleRouteGuard
+                allowedRoles={["Super Admin", "Admin", "Subscriber"]}
+              >
+                <CreatedQuestions />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
             path="bank"
             element={
               <RoleRouteGuard
-                allowedRoles={[
-                  "Super Admin",
-                  "Admin",
-                  "Content Manager",
-                ]}
+                allowedRoles={["Super Admin", "Admin", "Content Manager"]}
               >
                 <QuestionBank />
               </RoleRouteGuard>
@@ -185,6 +196,33 @@ export default function App() {
           />
 
           <Route
+            path="questions"
+            element={
+              <RoleRouteGuard allowedRoles={["Subscriber"]}>
+                <Questions />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
+            path="questions/select"
+            element={
+              <RoleRouteGuard allowedRoles={["Subscriber"]}>
+                <QuestionSelect />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
+            path="questions/preview"
+            element={
+              <RoleRouteGuard allowedRoles={["Subscriber"]}>
+                <QuestionPreview />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
             path="support"
             element={
               <RoleRouteGuard allowedRoles={["Subscriber", "Support Team"]}>
@@ -193,12 +231,7 @@ export default function App() {
             }
           />
 
-          <Route
-            path="profile"
-            element={
-              <Profile />
-            }
-          />
+          <Route path="profile" element={<Profile />} />
 
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>

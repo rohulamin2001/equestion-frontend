@@ -177,7 +177,7 @@ export default function AcademicSetup() {
 
   const handleVersionToggle = (ver) => {
     if (versions.includes(ver)) {
-      if (versions.length === 1) { toast.error('কমপক্ষে একটি সক্রিয় সংস্করণ (Version) নির্বাচন করতে হবে।'); return; }
+      if (versions.length === 1) { toast.error('কমপক্ষে একটি সক্রিয় ভার্সন (Version) নির্বাচন করতে হবে।'); return; }
       setVersions(versions.filter(v => v !== ver));
     } else {
       setVersions([...versions, ver]);
@@ -215,7 +215,7 @@ export default function AcademicSetup() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">অ্যাকাডেমিক সেটআপ (সুপার এডমিন)</h1>
-          <p className="text-slate-500 text-sm mt-1">আপনার শিক্ষাপ্রতিষ্ঠানের ধরণ, স্তর এবং ভাষা সংস্করণসমূহ কনফিগার করুন।</p>
+          <p className="text-slate-500 text-sm mt-1">আপনার শিক্ষাপ্রতিষ্ঠানের ধরণ, স্তর এবং ভার্সনসমূহ কনফিগার করুন।</p>
         </div>
         <div className="p-3 bg-[#4F46E5]/10 text-[#4F46E5] rounded-2xl shrink-0">
           <Sliders className="size-6" />
@@ -429,14 +429,14 @@ export default function AcademicSetup() {
 
         {/* Step 3: Versions */}
         <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4">
-          <h3 className="font-bold text-slate-800 text-lg border-b border-black/[0.05] pb-2">৩. ভাষা সংস্করণ (Active Versions)</h3>
+          <h3 className="font-bold text-slate-800 text-lg border-b border-black/[0.05] pb-2">৩. ভার্সন (Active Versions)</h3>
           <p className="text-xs text-slate-500">
-            আপনার শিক্ষাপ্রতিষ্ঠানে কোন কোন ভাষা সংস্করণ সক্রিয় রয়েছে সিলেক্ট করুন:
+            আপনার শিক্ষাপ্রতিষ্ঠানে কোন কোন ভার্সন সক্রিয় রয়েছে সিলেক্ট করুন:
           </p>
           <div className="flex flex-wrap gap-4">
             {[
-              { value: 'Bangla',  label: 'বাংলা সংস্করণ (Bangla Version)' },
-              { value: 'English', label: 'ইংরেজি সংস্করণ (English Version)' },
+              { value: 'Bangla',  label: 'বাংলা (Bangla)' },
+              { value: 'English', label: 'ইংরেজি (English)' },
             ].map((ver) => {
               const isChecked = versions.includes(ver.value);
               return (

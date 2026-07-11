@@ -2,8 +2,9 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from '@/components/animate-ui/components/radix/sidebar';
-import { RadixSidebar } from '@/components/RadixSidebar';
+} from "@/components/animate-ui/components/radix/sidebar";
+import OnboardingModal from "@/components/OnboardingModal";
+import { RadixSidebar } from "@/components/RadixSidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,25 +12,25 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { useAuth, UserButton } from '@clerk/react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useUserContext } from '@/context/UserContext';
-import OnboardingModal from '@/components/OnboardingModal';
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { useUserContext } from "@/context/UserContext";
+import { useAuth, UserButton } from "@clerk/react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 const ROUTE_TITLES = {
-  '/dashboard': 'ড্যাশবোর্ড ওভারভিউ',
-  '/dashboard/generate': '১ ক্লিকে প্রশ্ন তৈরি',
-  '/dashboard/bank': 'প্রশ্নব্যাংক',
-  '/dashboard/my-questions': 'আমার তৈরি প্রশ্ন',
-  '/dashboard/add-question': 'নতুন প্রশ্ন যোগ',
-  '/dashboard/exams': 'অনলাইন পরীক্ষা',
-  '/dashboard/omr': 'OMR মূল্যায়ন',
-  '/dashboard/institution': 'আমার প্রতিষ্ঠান',
-  '/dashboard/subscription': 'সাবস্ক্রিপশন ও প্যাকেজ',
-  '/dashboard/support': 'যোগাযোগ ও সাপোর্ট'
+  "/dashboard": "ড্যাশবোর্ড ওভারভিউ",
+  "/dashboard/generate": "১ ক্লিকে প্রশ্ন তৈরি",
+  "/dashboard/created-questions": "তৈরিকৃত প্রশ্ন",
+  "/dashboard/bank": "প্রশ্নব্যাংক",
+  "/dashboard/my-questions": "আমার তৈরি প্রশ্ন",
+  "/dashboard/add-question": "নতুন প্রশ্ন যোগ",
+  "/dashboard/exams": "অনলাইন পরীক্ষা",
+  "/dashboard/omr": "OMR মূল্যায়ন",
+  "/dashboard/institution": "আমার প্রতিষ্ঠান",
+  "/dashboard/subscription": "সাবস্ক্রিপশন ও প্যাকেজ",
+  "/dashboard/support": "যোগাযোগ ও সাপোর্ট",
 };
 
 export default function DashboardLayout() {
@@ -50,14 +51,14 @@ export default function DashboardLayout() {
     return <Navigate to="/login" replace />;
   }
 
-  const currentTitle = ROUTE_TITLES[location.pathname] || 'ড্যাশবোর্ড';
+  const currentTitle = ROUTE_TITLES[location.pathname] || "ড্যাশবোর্ড";
 
   return (
     <TooltipProvider>
       <SidebarProvider>
         <div className="flex h-screen w-full bg-[#F5F5F7] text-[#1E293B] relative overflow-hidden">
           {/* Compulsory Onboarding Modal overlay - only for Subscribers */}
-          {userProfile && role === 'Subscriber' && !userProfile.isOnboarded && (
+          {userProfile && role === "Subscriber" && !userProfile.isOnboarded && (
             <OnboardingModal />
           )}
           {/* Ambient Glowing Background Orbs */}
@@ -76,7 +77,10 @@ export default function DashboardLayout() {
             <header className="flex h-16 shrink-0 items-center justify-between border-b border-black/[0.05] bg-white/[0.40] backdrop-blur-[20px] saturate-[180%] px-6 sticky top-0 z-50 transition-[width,height] ease-linear">
               <div className="flex items-center gap-2">
                 <SidebarTrigger className="lg:hidden -ml-1 text-slate-500 hover:text-slate-800" />
-                <Separator orientation="vertical" className="lg:hidden mx-2 h-4 bg-slate-200" />
+                <Separator
+                  orientation="vertical"
+                  className="lg:hidden mx-2 h-4 bg-slate-200"
+                />
                 <Breadcrumb>
                   <BreadcrumbList>
                     <BreadcrumbItem className="hidden lg:block">

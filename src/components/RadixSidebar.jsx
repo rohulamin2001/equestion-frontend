@@ -84,6 +84,12 @@ const DATA = {
           roles: ["Subscriber"],
         },
         {
+          title: "তৈরিকৃত প্রশ্ন",
+          url: "/dashboard/created-questions",
+          icon: FolderOpen,
+          roles: ["Super Admin", "Admin", "Subscriber"],
+        },
+        {
           title: "প্রশ্নব্যাংক",
           url: "/dashboard/bank",
           icon: Database,
@@ -199,6 +205,7 @@ export const RadixSidebar = () => {
   const { user } = useUser();
   const { toggleSidebar, setOpenMobile } = useSidebar();
   const { role, userProfile } = useUserContext();
+  const currentRole = role || "Subscriber";
 
   const isInstitution = userProfile?.userType === "Institution";
   const displayName = isInstitution
@@ -215,7 +222,6 @@ export const RadixSidebar = () => {
         .toUpperCase()
     : "US";
 
-  const currentRole = role || "Subscriber";
   const filteredNavGroups = DATA.navGroups
     .map((group) => {
       const items = group.items.filter(

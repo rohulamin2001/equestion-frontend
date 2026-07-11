@@ -73,14 +73,16 @@ function stripOuterP(html) {
  */
 export default function RichTextRender({
   content,
+  html,
   className = "",
   inline = false,
   ...props
 }) {
   const renderedContent = useMemo(() => {
-    const parsed = parseAndRenderMath(content);
+    const rawContent = content || html;
+    const parsed = parseAndRenderMath(rawContent);
     return inline ? stripOuterP(parsed) : parsed;
-  }, [content, inline]);
+  }, [content, html, inline]);
 
   if (inline) {
     return (

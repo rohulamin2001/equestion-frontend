@@ -433,7 +433,7 @@ export default function AddQuestion() {
                   {(!qm.config?.versions || qm.config.versions.length > 1) && (
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                        ভাষা সংস্করণ
+                        ভার্সন
                       </label>
                       <div className="grid grid-cols-2 gap-2">
                         {[

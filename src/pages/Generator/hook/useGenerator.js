@@ -288,10 +288,12 @@ export const useGenerator = () => {
     },
     onSuccess: (results) => {
       toast.success("প্রশ্ন সেট সফলভাবে তৈরি করা হয়েছে!");
-      if (results.length > 0 && results[0].data?.questionSet?._id) {
-        navigate(
-          `/dashboard/questions?setId=${results[0].data.questionSet._id}`,
-        );
+      if (results.length > 0) {
+        const ids = results
+          .map((r) => r.data?.questionSet?._id)
+          .filter(Boolean)
+          .join(",");
+        navigate(`/dashboard/questions?setId=${ids}`);
       } else {
         navigate("/dashboard/questions");
       }

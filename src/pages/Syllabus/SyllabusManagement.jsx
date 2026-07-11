@@ -258,7 +258,7 @@ export default function SyllabusManagement() {
                                 ? 'bg-blue-50 border-blue-200 text-blue-700'
                                 : 'bg-emerald-50 border-emerald-200 text-emerald-700'
                             }`}>
-                              {subject.version === 'English' ? 'ইংরেজি সংস্করণ' : 'বাংলা সংস্করণ'}
+                               {subject.version === 'English' ? 'ইংরেজি' : 'বাংলা'}
                             </span>
                           )}
                           {subject.group && subject.group !== 'General' && (
@@ -582,12 +582,12 @@ export default function SyllabusManagement() {
                     {(!config?.versions || config.versions.length > 1) && (
                       <div className="space-y-2">
                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                          ভাষা সংস্করণ (Language Version) <span className="text-indigo-400">*</span>
+                          ভার্সন (Version) <span className="text-indigo-400">*</span>
                         </label>
                         <div className="grid grid-cols-2 gap-2">
                           {[
-                            { value: 'Bangla', label: 'বাংলা সংস্করণ' },
-                            { value: 'English', label: 'ইংরেজি সংস্করণ' },
+                            { value: 'Bangla', label: 'বাংলা' },
+                            { value: 'English', label: 'ইংরেজি' },
                           ].map((ver) => {
                             const isSelected = formVersion === ver.value;
                             return (

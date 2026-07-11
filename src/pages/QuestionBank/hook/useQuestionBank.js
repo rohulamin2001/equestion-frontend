@@ -1,15 +1,40 @@
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { useUserContext } from "@/context/UserContext";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
+import apiClient from "@/lib/apiClient";
+import { useAuth } from "@clerk/react";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function useQuestionBank() {
+  const { getToken } = useAuth();
+
+  // Fetch stats from backend
+  const { data: statsData } = useQuery({
+    queryKey: ["questionStats"],
+    queryFn: async () => {
+      const token = await getToken();
+      const response = await apiClient.get("/questions/stats", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    },
+  });
+
+  const stats = statsData?.stats || {
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    school: 0,
+    college: 0,
+    madrasah: 0,
+  };
   const navigate = useNavigate();
   const [pageSize, setPageSizeState] = useState(10);
   const qm = useQuestionManagement({ isPersonalOnly: false, pageSize });
   const { userProfile, role } = useUserContext();
-
 
   // Dialog / Modal States
   const [selectedPreviewQuestion, setSelectedPreviewQuestion] = useState(null);
@@ -17,25 +42,33 @@ export function useQuestionBank() {
   const [showFilters, setShowFilters] = useState(false);
 
   // Fetch global questions from pages
-  const { 
-    data: questionsData, 
-    isLoading, 
-    isError, 
+  const {
+    data: questionsData,
+    isLoading,
+    isError,
     refetch,
     fetchNextPage,
     hasNextPage,
-    isFetchingNextPage
+    isFetchingNextPage,
   } = qm.questionsQuery;
 
   const questions = questionsData?.pages
     ? questionsData.pages.flatMap((p) => p.questions)
     : [];
 
-  const filterActiveTypes = Array.from(new Set(qm.allowedClasses.map(c => c.type)));
+  const filterActiveTypes = Array.from(
+    new Set(qm.allowedClasses.map((c) => c.type)),
+  );
   const filterActiveLevels = qm.filterType
-    ? Array.from(new Set(qm.allowedClasses.filter(c => c.type === qm.filterType).map(c => c.level)))
-    : Array.from(new Set(qm.allowedClasses.map(c => c.level)));
-  const filterActiveClasses = qm.allowedClasses.filter(c => {
+    ? Array.from(
+        new Set(
+          qm.allowedClasses
+            .filter((c) => c.type === qm.filterType)
+            .map((c) => c.level),
+        ),
+      )
+    : Array.from(new Set(qm.allowedClasses.map((c) => c.level)));
+  const filterActiveClasses = qm.allowedClasses.filter((c) => {
     const typeMatch = !qm.filterType || c.type === qm.filterType;
     const levelMatch = !qm.filterLevel || c.level === qm.filterLevel;
     return typeMatch && levelMatch;
@@ -50,11 +83,17 @@ export function useQuestionBank() {
       qm.setFilterChapter("");
       return;
     }
-    const levels = Array.from(new Set(qm.allowedClasses.filter(c => c.type === type).map(c => c.level)));
+    const levels = Array.from(
+      new Set(
+        qm.allowedClasses.filter((c) => c.type === type).map((c) => c.level),
+      ),
+    );
     if (levels.length > 0) {
       const firstLevel = levels[0];
       qm.setFilterLevel(firstLevel);
-      const classes = qm.allowedClasses.filter(c => c.type === type && c.level === firstLevel);
+      const classes = qm.allowedClasses.filter(
+        (c) => c.type === type && c.level === firstLevel,
+      );
       if (classes.length > 0) {
         qm.setFilterClass(classes[0].value, type, firstLevel);
         qm.setFilterSubjectId("");
@@ -71,7 +110,9 @@ export function useQuestionBank() {
       qm.setFilterChapter("");
       return;
     }
-    const classes = qm.allowedClasses.filter(c => c.type === qm.filterType && c.level === level);
+    const classes = qm.allowedClasses.filter(
+      (c) => c.type === qm.filterType && c.level === level,
+    );
     if (classes.length > 0) {
       qm.setFilterClass(classes[0].value, qm.filterType, level);
       qm.setFilterSubjectId("");
@@ -86,7 +127,9 @@ export function useQuestionBank() {
     const classMatch = !qm.filterClass || s.className === qm.filterClass;
     return typeMatch && levelMatch && classMatch;
   });
-  const selectedSyllabusObj = qm.syllabusList.find((s) => s._id === qm.filterSubjectId);
+  const selectedSyllabusObj = qm.syllabusList.find(
+    (s) => s._id === qm.filterSubjectId,
+  );
   const filterChapters = selectedSyllabusObj?.chapters || [];
 
   // Reset filters
@@ -121,7 +164,8 @@ export function useQuestionBank() {
   // Check management permission (creator or Super Admin / Admin)
   const canManageQuestion = (q) => {
     if (!q || !userProfile) return false;
-    const isCreator = q.creatorId?._id === userProfile._id || q.creatorId === userProfile._id;
+    const isCreator =
+      q.creatorId?._id === userProfile._id || q.creatorId === userProfile._id;
     const isAdmin = ["Super Admin", "Admin"].includes(role);
     return isCreator || isAdmin;
   };
@@ -154,26 +198,29 @@ export function useQuestionBank() {
     if (qm.filterSubjectId && selectedSyllabusObj) {
       const subjectCats = selectedSyllabusObj?.subjectId?.categories || [];
       if (subjectCats.length > 0) {
-        return subjectCats.map(catVal => {
-          const matched = CATEGORIES_MAP.find(c => c.value === catVal);
+        return subjectCats.map((catVal) => {
+          const matched = CATEGORIES_MAP.find((c) => c.value === catVal);
           return matched || { value: catVal, label: catVal };
         });
       }
     }
 
     const activeSyllabuses = qm.syllabusList.filter(
-      (s) => s.className === qm.filterClass && s.institutionType === qm.filterType && s.academicLevel === qm.filterLevel
+      (s) =>
+        s.className === qm.filterClass &&
+        s.institutionType === qm.filterType &&
+        s.academicLevel === qm.filterLevel,
     );
 
     const catSet = new Set();
-    activeSyllabuses.forEach(s => {
+    activeSyllabuses.forEach((s) => {
       const cats = s.subjectId?.categories || [];
-      cats.forEach(c => catSet.add(c));
+      cats.forEach((c) => catSet.add(c));
     });
 
     if (catSet.size > 0) {
-      return Array.from(catSet).map(catVal => {
-        const matched = CATEGORIES_MAP.find(c => c.value === catVal);
+      return Array.from(catSet).map((catVal) => {
+        const matched = CATEGORIES_MAP.find((c) => c.value === catVal);
         return matched || { value: catVal, label: catVal };
       });
     }
@@ -196,9 +243,12 @@ export function useQuestionBank() {
   };
 
   // Count Statistics
-  const totalCount = questionsData?.pages?.[0]?.pagination?.total || questions.length;
+  const totalCount =
+    questionsData?.pages?.[0]?.pagination?.total || questions.length;
   const mcqCount = questions.filter((q) => q.category === "MCQ").length;
-  const creativeCount = questions.filter((q) => q.category === "Creative").length;
+  const creativeCount = questions.filter(
+    (q) => q.category === "Creative",
+  ).length;
   const otherCount = questions.length - mcqCount - creativeCount;
 
   const setPageSize = (size) => {
@@ -240,6 +290,7 @@ export function useQuestionBank() {
     mcqCount,
     creativeCount,
     otherCount,
+    stats,
     // Pagination & Infinite Scroll exports
     pageSize,
     setPageSize,

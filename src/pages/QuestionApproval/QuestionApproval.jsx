@@ -791,17 +791,17 @@ export default function QuestionApproval() {
                 {/* Version */}
                 <div className="space-y-1">
                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-sans">
-                    সংস্করণ
+                    ভার্সন
                   </label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
                         <span>
                           {qm.filterVersion === "Bangla"
-                            ? "বাংলা সংস্করণ"
+                            ? "বাংলা"
                             : qm.filterVersion === "English"
-                              ? "ইংরেজি সংস্করণ"
-                              : "সকল সংস্করণ"}
+                              ? "ইংরেজি"
+                              : "সকল ভার্সন"}
                         </span>
                         <ChevronDown className="size-3.5 text-slate-400" />
                       </button>
@@ -815,14 +815,14 @@ export default function QuestionApproval() {
                             : "text-slate-700"
                         }`}
                       >
-                        <span>সকল সংস্করণ</span>
+                        <span>সকল ভার্সন</span>
                         {!qm.filterVersion && (
                           <span className="size-1 rounded-full bg-indigo-500" />
                         )}
                       </DropdownMenuItem>
                       {[
-                        { value: "Bangla", label: "বাংলা সংস্করণ" },
-                        { value: "English", label: "ইংরেজি সংস্করণ" },
+                        { value: "Bangla", label: "বাংলা" },
+                        { value: "English", label: "ইংরেজি" },
                       ].map((v) => {
                         const isSelected = qm.filterVersion === v.value;
                         return (
@@ -909,6 +909,23 @@ export default function QuestionApproval() {
                       <span className="bg-rose-100 text-rose-650 border border-rose-200 px-2 py-0.5 rounded flex items-center gap-1.5">
                         <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
                         নতুন
+                      </span>
+                    )}
+                    {q.institutionType && (
+                      <span
+                        className={`px-2 py-0.5 rounded border ${
+                          q.institutionType === "School"
+                            ? "bg-sky-55/60 text-sky-700 border-sky-100"
+                            : q.institutionType === "College"
+                              ? "bg-orange-55/60 text-orange-700 border-orange-100"
+                              : "bg-emerald-55/60 text-emerald-700 border-emerald-100"
+                        }`}
+                      >
+                        {q.institutionType === "School"
+                          ? "স্কুল"
+                          : q.institutionType === "College"
+                            ? "কলেজ"
+                            : "মাদ্রাসা"}
                       </span>
                     )}
                     {classObj && (
@@ -1563,11 +1580,11 @@ export default function QuestionApproval() {
                       <div className="bg-cyan-50 text-cyan-700 border border-cyan-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
                         <span className="size-1.5 rounded-full bg-cyan-500" />
                         <span>
-                          সংস্করণ:{" "}
+                          ভার্সন:{" "}
                           {selectedPreviewQuestion.subjectId.version ===
                           "Bangla"
-                            ? "বাংলা সংস্করণ"
-                            : "ইংরেজি সংস্করণ"}
+                            ? "বাংলা"
+                            : "ইংরেজি"}
                         </span>
                       </div>
                     )}
