@@ -316,10 +316,11 @@ export default function SubjectSetup() {
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
                   ভার্সন <span className="text-indigo-400">*</span>
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {[
                     { value: 'Bangla', label: 'বাংলা' },
                     { value: 'English', label: 'ইংরেজি' },
+                    { value: 'Madrasah', label: 'মাদ্রাসা' },
                   ].map((ver) => (
                     <label
                       key={ver.value}
@@ -473,6 +474,7 @@ export default function SubjectSetup() {
                     { value: 'All', label: 'সব ভার্সন' },
                     { value: 'Bangla', label: 'বাংলা' },
                     { value: 'English', label: 'ইংরেজি' },
+                    { value: 'Madrasah', label: 'মাদ্রাসা' },
                   ].map((tab) => (
                     <button
                       key={tab.value}
@@ -700,10 +702,11 @@ export default function SubjectSetup() {
                 {(!config?.versions || config.versions.length > 1) && (
                   <div className="space-y-2">
                     <label className="text-xs font-semibold text-slate-600 block">ভার্সন</label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       {[
                         { value: 'Bangla', label: 'বাংলা' },
                         { value: 'English', label: 'ইংরেজি' },
+                        { value: 'Madrasah', label: 'মাদ্রাসা' },
                       ].map((ver) => (
                         <label
                           key={ver.value}

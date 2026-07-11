@@ -555,6 +555,7 @@ export default function Subscription() {
               {[
                 { id: "Bangla", label: "বাংলা ভার্সন" },
                 { id: "English", label: "English Version" },
+                { id: "Madrasah", label: "মাদ্রাসা" },
               ].map((ver) => {
                 const isActive = selectedVersion === ver.id;
                 return (

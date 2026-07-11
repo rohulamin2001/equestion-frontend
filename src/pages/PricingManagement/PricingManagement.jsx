@@ -104,7 +104,8 @@ export default function PricingManagement() {
     deleteDiscount.isPending;
 
   const getSubscriberSubPackageTitle = (sub) => {
-    const verText = sub.version ? ` (${sub.version === "Bangla" ? "বাংলা" : "ইংরেজি"})` : "";
+    const verLabels = { Bangla: "বাংলা", English: "ইংরেজি", Madrasah: "মাদ্রাসা" };
+    const verText = sub.version ? ` (${verLabels[sub.version] || sub.version})` : "";
     if (sub.purchaseType === "Package") {
       const pkg = packagesList.find((p) => p.id === sub.packageId);
       const title = pkg ? pkg.title : translateSubscriptionKey(sub.packageId);
@@ -395,6 +396,7 @@ export default function PricingManagement() {
                   {[
                     { id: "Bangla", label: "বাংলা ভার্সন" },
                     { id: "English", label: "English Version" },
+                    { id: "Madrasah", label: "মাদ্রাসা" },
                   ].map((ver) => {
                     const isActive = selectedPkgVersion === ver.id;
                     return (
@@ -477,7 +479,11 @@ export default function PricingManagement() {
                               {pkg.id}
                             </p>
                             <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200/50 text-slate-500 font-sans">
-                              {pkg.version === "English" ? "English Version" : "বাংলা ভার্সন"}
+                              {pkg.version === "English"
+                                ? "English Version"
+                                : pkg.version === "Madrasah"
+                                  ? "মাদ্রাসা"
+                                  : "বাংলা ভার্সন"}
                             </span>
                           </div>
 
@@ -597,11 +603,19 @@ export default function PricingManagement() {
                               )}
 
                               <span className="bg-slate-50 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-200/50 font-sans">
-                                {disc.version === "Both"
-                                  ? "উভয় ভার্সন"
+                                {disc.version === "Both" || disc.version === "All"
+                                  ? "সব ভার্সন"
                                   : disc.version === "Bangla"
-                                    ? "বাংলা ভার্সন"
-                                    : "English Version"}
+                                    ? "বাংলা"
+                                    : disc.version === "English"
+                                      ? "ইংরেজি"
+                                      : disc.version === "Madrasah"
+                                        ? "মাদ্রাসা"
+                                        : disc.version === "Bangla,English"
+                                          ? "বাংলা ও ইংরেজি"
+                                          : disc.version === "Bangla,Madrasah"
+                                            ? "বাংলা ও মাদ্রাসা"
+                                            : "ইংরেজি ও মাদ্রাসা"}
                               </span>
                             </div>
                             <p className="text-[10px] text-slate-400">
@@ -1244,11 +1258,19 @@ export default function PricingManagement() {
                     className="w-full px-4 border border-slate-200 rounded-xl text-xs bg-white hover:bg-slate-50/50 hover:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm cursor-pointer"
                   >
                     <span>
-                      {version === "Both"
-                        ? "উভয় ভার্সন (বাংলা ও ইংরেজি)"
+                      {version === "Both" || version === "All"
+                        ? "সবগুলো"
                         : version === "Bangla"
-                          ? "বাংলা ভার্সন"
-                          : "ইংরেজি ভার্সন"}
+                          ? "বাংলা"
+                          : version === "English"
+                            ? "ইংরেজি"
+                            : version === "Madrasah"
+                              ? "মাদ্রাসা"
+                              : version === "Bangla,English"
+                                ? "বাংলা ও ইংরেজি"
+                                : version === "Bangla,Madrasah"
+                                  ? "বাংলা ও মাদ্রাসা"
+                                  : "ইংরেজি ও মাদ্রাসা"}
                     </span>
                     <ChevronDown
                       className={`size-4 text-slate-400 transition-transform duration-300 ${isVersionDropdownOpen ? "rotate-180" : ""}`}
@@ -1257,9 +1279,13 @@ export default function PricingManagement() {
                   {isVersionDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]">
                       {[
-                        { value: "Both", label: "উভয় ভার্সন (বাংলা ও ইংরেজি)" },
-                        { value: "Bangla", label: "বাংলা ভার্সন" },
-                        { value: "English", label: "ইংরেজি ভার্সন" },
+                        { value: "Both", label: "সবগুলো" },
+                        { value: "Bangla", label: "বাংলা" },
+                        { value: "English", label: "ইংরেজি" },
+                        { value: "Madrasah", label: "মাদ্রাসা" },
+                        { value: "Bangla,English", label: "বাংলা ও ইংরেজি" },
+                        { value: "Bangla,Madrasah", label: "বাংলা ও মাদ্রাসা" },
+                        { value: "English,Madrasah", label: "ইংরেজি ও মাদ্রাসা" },
                       ].map((opt) => {
                         const isSelected = version === opt.value;
                         return (

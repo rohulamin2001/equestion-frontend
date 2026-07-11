@@ -90,6 +90,11 @@ export function useSyllabusManagement() {
       setFormSubjectId('');
       setFormSubjectCode('');
       setFormYears([new Date().getFullYear()]);
+      if (val === 'Madrasah') {
+        setUserFormVersion('Madrasah');
+      } else if (userFormVersion === 'Madrasah') {
+        setUserFormVersion('Bangla');
+      }
     }
   };
 
@@ -246,7 +251,11 @@ export function useSyllabusManagement() {
     setFormSubjectCode('');
     setFormGroup('General');
     setFormYears([new Date().getFullYear()]);
-    setUserFormVersion(null);
+    if (selectedType === 'Madrasah') {
+      setUserFormVersion('Madrasah');
+    } else {
+      setUserFormVersion(null);
+    }
     setFormChapters([{ chapterNumber: 1, chapterName: '', topicsString: '' }]);
     setEditingSyllabus(null);
   };

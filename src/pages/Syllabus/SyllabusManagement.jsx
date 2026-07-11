@@ -584,11 +584,18 @@ export default function SyllabusManagement() {
                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
                           ভার্সন (Version) <span className="text-indigo-400">*</span>
                         </label>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className={`grid gap-2 ${formType === 'Madrasah' ? 'grid-cols-1' : 'grid-cols-2'}`}>
                           {[
                             { value: 'Bangla', label: 'বাংলা' },
                             { value: 'English', label: 'ইংরেজি' },
-                          ].map((ver) => {
+                            { value: 'Madrasah', label: 'মাদ্রাসা' },
+                          ].filter((ver) => {
+                            if (formType === 'Madrasah') {
+                              return ver.value === 'Madrasah';
+                            } else {
+                              return ver.value !== 'Madrasah';
+                            }
+                          }).map((ver) => {
                             const isSelected = formVersion === ver.value;
                             return (
                               <label

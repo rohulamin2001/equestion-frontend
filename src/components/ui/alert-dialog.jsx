@@ -40,10 +40,10 @@ const AlertDialogPortal = ({ children, ...props }) => {
 const AlertDialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Overlay asChild ref={ref}>
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
+      initial={{ opacity: 0, filter: 'blur(4px)' }}
+      animate={{ opacity: 1, filter: 'blur(0px)' }}
+      exit={{ opacity: 0, filter: 'blur(4px)' }}
+      transition={{ duration: 0.12, ease: 'easeInOut' }}
       className={cn(
         "fixed inset-0 z-50 bg-black/40 backdrop-blur-sm",
         className,
@@ -60,31 +60,31 @@ const AlertDialogPopup = React.forwardRef(
       className,
       children,
       from = "top",
-      transition = { type: "spring", stiffness: 150, damping: 25 },
+      transition = { type: "spring", stiffness: 300, damping: 28 },
       ...props
     },
     ref,
   ) => {
     const animationVariants = {
       top: {
-        initial: { opacity: 0, y: -40, scale: 0.95 },
-        animate: { opacity: 1, y: 0, scale: 1 },
-        exit: { opacity: 0, y: -40, scale: 0.95 },
+        initial: { opacity: 0, y: -24, scale: 0.95, filter: 'blur(4px)' },
+        animate: { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' },
+        exit: { opacity: 0, y: -24, scale: 0.95, filter: 'blur(4px)' },
       },
       bottom: {
-        initial: { opacity: 0, y: 40, scale: 0.95 },
-        animate: { opacity: 1, y: 0, scale: 1 },
-        exit: { opacity: 0, y: 40, scale: 0.95 },
+        initial: { opacity: 0, y: 24, scale: 0.95, filter: 'blur(4px)' },
+        animate: { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' },
+        exit: { opacity: 0, y: 24, scale: 0.95, filter: 'blur(4px)' },
       },
       left: {
-        initial: { opacity: 0, x: -40, scale: 0.95 },
-        animate: { opacity: 1, x: 0, scale: 1 },
-        exit: { opacity: 0, x: -40, scale: 0.95 },
+        initial: { opacity: 0, x: -24, scale: 0.95, filter: 'blur(4px)' },
+        animate: { opacity: 1, x: 0, scale: 1, filter: 'blur(0px)' },
+        exit: { opacity: 0, x: -24, scale: 0.95, filter: 'blur(4px)' },
       },
       right: {
-        initial: { opacity: 0, x: 40, scale: 0.95 },
-        animate: { opacity: 1, x: 0, scale: 1 },
-        exit: { opacity: 0, x: 40, scale: 0.95 },
+        initial: { opacity: 0, x: 24, scale: 0.95, filter: 'blur(4px)' },
+        animate: { opacity: 1, x: 0, scale: 1, filter: 'blur(0px)' },
+        exit: { opacity: 0, x: 24, scale: 0.95, filter: 'blur(4px)' },
       },
     };
 

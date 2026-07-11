@@ -437,6 +437,7 @@ export default function AcademicSetup() {
             {[
               { value: 'Bangla',  label: 'বাংলা (Bangla)' },
               { value: 'English', label: 'ইংরেজি (English)' },
+              { value: 'Madrasah', label: 'মাদ্রাসা (Madrasah)' },
             ].map((ver) => {
               const isChecked = versions.includes(ver.value);
               return (

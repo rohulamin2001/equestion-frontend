@@ -435,10 +435,11 @@ export default function AddQuestion() {
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                         ভার্সন
                       </label>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-3 gap-2">
                         {[
                           { value: "Bangla", label: "বাংলা" },
                           { value: "English", label: "ইংরেজি" },
+                          { value: "Madrasah", label: "মাদ্রাসা" },
                         ].map((ver) => {
                           const isSelected = qm.formVersion === ver.value;
                           return (
