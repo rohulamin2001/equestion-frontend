@@ -14,7 +14,7 @@ export const usePricingManagement = () => {
   const packagesQuery = useQuery({
     queryKey: ["packages"],
     queryFn: async () => {
-      const res = await apiClient.get("/subscriptions/packages");
+      const res = await apiClient.get("/subscriptions/packages?all=true");
       return {
         packages: res.data.packages || [],
         coupons: res.data.coupons || [],
@@ -34,13 +34,16 @@ export const usePricingManagement = () => {
     },
   });
 
-  // Update Package Price
-  const updatePackagePriceMutation = useMutation({
-    mutationFn: async ({ id, basePrice }) => {
+  // Update Package (Price or Status)
+  const updatePackageMutation = useMutation({
+    mutationFn: async ({ id, basePrice, isActive }) => {
       const token = await getToken();
+      const payload = {};
+      if (basePrice !== undefined) payload.basePrice = basePrice;
+      if (isActive !== undefined) payload.isActive = isActive;
       const res = await apiClient.put(
         `/subscriptions/admin/packages/${id}`,
-        { basePrice },
+        payload,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       return res.data;
@@ -168,7 +171,7 @@ export const usePricingManagement = () => {
     subscribersSearch,
     setSubscribersSearch,
 
-    updatePackagePrice: updatePackagePriceMutation,
+    updatePackage: updatePackageMutation,
     saveDiscount: saveDiscountMutation,
     deleteDiscount: deleteDiscountMutation,
     toggleSuspension: toggleSuspensionMutation,

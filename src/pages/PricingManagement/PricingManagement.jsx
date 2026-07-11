@@ -59,7 +59,7 @@ export default function PricingManagement() {
     setSubscribersPage,
     subscribersSearch,
     setSubscribersSearch,
-    updatePackagePrice,
+    updatePackage,
     saveDiscount,
     deleteDiscount,
     toggleSuspension,
@@ -99,7 +99,7 @@ export default function PricingManagement() {
   const [usageLimit, setUsageLimit] = useState("");
 
   const loading =
-    updatePackagePrice.isPending ||
+    updatePackage.isPending ||
     saveDiscount.isPending ||
     deleteDiscount.isPending;
 
@@ -187,7 +187,7 @@ export default function PricingManagement() {
       return;
     }
     try {
-      await updatePackagePrice.mutateAsync({
+      await updatePackage.mutateAsync({
         id: editingPkg.id,
         basePrice: parseFloat(editPrice),
       });
@@ -197,6 +197,28 @@ export default function PricingManagement() {
     } catch (err) {
       console.error("Error updating price:", err);
       toast.error(err.response?.data?.error || "মূল্য আপডেট করতে ব্যর্থ হয়েছে");
+    }
+  };
+
+  // Toggle Package Show/Hide
+  const handleToggleActive = async (pkg) => {
+    try {
+      const nextActiveState = !pkg.isActive;
+      await updatePackage.mutateAsync({
+        id: pkg.id,
+        isActive: nextActiveState,
+      });
+      toast.success(
+        nextActiveState
+          ? "প্যাকেজটি সফলভাবে দৃশ্যমান করা হয়েছে!"
+          : "প্যাকেজটি সফলভাবে লুকানো হয়েছে!"
+      );
+    } catch (err) {
+      console.error("Error toggling package active status:", err);
+      toast.error(
+        err.response?.data?.error ||
+          "প্যাকেজের দৃশ্যমানতা পরিবর্তন করতে ব্যর্থ হয়েছে",
+      );
     }
   };
 
@@ -421,13 +443,36 @@ export default function PricingManagement() {
                     .map((pkg) => (
                       <div
                         key={pkg.id}
-                        className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition"
+                        className={`bg-white border rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition duration-200 ${
+                          pkg.isActive ? "border-slate-100" : "border-slate-200 bg-slate-50/50 opacity-75"
+                        }`}
                       >
                         <div>
-                          <h3 className="text-base font-bold text-slate-800">
-                            {pkg.title}
-                          </h3>
-                          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                          <div className="flex items-start justify-between gap-4">
+                            <h3 className="text-base font-bold text-slate-800 leading-tight">
+                              {pkg.title}
+                            </h3>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <span className={`text-[10px] font-extrabold ${pkg.isActive ? "text-indigo-600" : "text-slate-400"}`}>
+                                {pkg.isActive ? "দৃশ্যমান" : "লুকানো"}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleToggleActive(pkg)}
+                                disabled={loading}
+                                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-250 ease-in-out focus:outline-none ${
+                                  pkg.isActive ? "bg-indigo-600" : "bg-slate-300"
+                                }`}
+                              >
+                                <span
+                                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-250 ease-in-out ${
+                                    pkg.isActive ? "translate-x-4" : "translate-x-0"
+                                  }`}
+                                />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">
                               {pkg.id}
                             </p>
