@@ -21,7 +21,7 @@ export const useGenerator = () => {
   // Modal and filter states
   const [showSubjectModal, setShowSubjectModal] = useState(false);
   const [showChapterModal, setShowChapterModal] = useState(false);
-  const [subjectFilter, setSubjectFilter] = useState("all"); // 'all', 'bangla', 'english'
+  const [subjectFilter, setSubjectFilter] = useState("all"); // 'all', 'bangla', 'english', 'madrasah'
 
   const classes = [
     { value: "Class 3", label: "৩য় শ্রেণী" },
@@ -105,10 +105,12 @@ export const useGenerator = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const fetchedSyllabus = res.data.syllabus || [];
-      // Sort: Bangla version first, English version second
+      // Sort: Bangla version first, English version second, Madrasah version third
       return [...fetchedSyllabus].sort((a, b) => {
-        if (a.version === "Bangla" && b.version === "English") return -1;
-        if (a.version === "English" && b.version === "Bangla") return 1;
+        if (a.version === "Bangla" && b.version !== "Bangla") return -1;
+        if (b.version === "Bangla" && a.version !== "Bangla") return 1;
+        if (a.version === "English" && b.version === "Madrasah") return -1;
+        if (a.version === "Madrasah" && b.version === "English") return 1;
         return 0;
       });
     },
@@ -173,7 +175,7 @@ export const useGenerator = () => {
       // Fallback check for teacher package
       if (sub.packageId && sub.packageId.startsWith("teacher-")) {
         if (sub.version && sub.version !== subject.version) return false;
-        const pkgKey = sub.packageId;
+        const pkgKey = sub.packageId.replace("-madrasah", "");
         const classesList = [
           "Class 6",
           "Class 7",
@@ -241,6 +243,7 @@ export const useGenerator = () => {
     if (!hasSubjectAccess(item)) return false;
     if (subjectFilter === "bangla") return item.version === "Bangla";
     if (subjectFilter === "english") return item.version === "English";
+    if (subjectFilter === "madrasah") return item.version === "Madrasah";
     return true;
   });
 

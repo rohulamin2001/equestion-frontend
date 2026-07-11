@@ -199,7 +199,12 @@ export default function Generator() {
                         >
                           <span>
                             {s.subjectName} (
-                            {s.version === "Bangla" ? "বাংলা" : "ইংরেজি"})
+                            {s.version === "Bangla"
+                              ? "বাংলা"
+                              : s.version === "Madrasah"
+                                ? "মাদ্রাসা"
+                                : "ইংরেজি"}
+                            )
                           </span>
                           <span
                             role="button"
@@ -379,7 +384,7 @@ export default function Generator() {
           </DialogHeader>
 
           {/* Filters (centered badges) */}
-          <div className="p-4 bg-slate-50/50 flex justify-center gap-2 border-b border-slate-100/50">
+          <div className="p-4 bg-slate-50/50 flex justify-center gap-2 flex-wrap border-b border-slate-100/50">
             <button
               type="button"
               onClick={() => setSubjectFilter("all")}
@@ -412,6 +417,17 @@ export default function Generator() {
               }`}
             >
               English Version
+            </button>
+            <button
+              type="button"
+              onClick={() => setSubjectFilter("madrasah")}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer select-none ${
+                subjectFilter === "madrasah"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/10"
+                  : "bg-white text-slate-600 border border-slate-200/60 hover:bg-slate-50"
+              }`}
+            >
+              মাদ্রাসা
             </button>
           </div>
 
@@ -463,7 +479,11 @@ export default function Generator() {
                       </span>
                     </div>
                     <span className="text-[9px] font-sans font-bold text-slate-400 uppercase tracking-wide px-2 py-0.5 bg-slate-100 border rounded-md">
-                      {item.version}
+                      {item.version === "Bangla"
+                        ? "বাংলা"
+                        : item.version === "Madrasah"
+                          ? "মাদ্রাসা"
+                          : "ইংরেজি"}
                     </span>
                   </div>
                 );
@@ -532,7 +552,12 @@ export default function Generator() {
                   <div key={subId} className="space-y-2">
                     <h4 className="text-xs font-bold text-indigo-600 bg-indigo-50/50 px-2 py-1 rounded-lg border border-indigo-100/30">
                       {sub.subjectName} (
-                      {sub.version === "Bangla" ? "বাংলা" : "ইংরেজি"})
+                      {sub.version === "Bangla"
+                        ? "বাংলা"
+                        : sub.version === "Madrasah"
+                          ? "মাদ্রাসা"
+                          : "ইংরেজি"}
+                      )
                     </h4>
                     {!sub.chapters || sub.chapters.length === 0 ? (
                       <p className="text-[11px] text-slate-400 italic pl-2">
