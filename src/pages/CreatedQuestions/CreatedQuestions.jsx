@@ -1,8 +1,14 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { translateSubscriptionKey } from "@/constants/subscriptions";
-import { useUserContext } from "@/context/UserContext";
-import apiClient from "@/lib/apiClient";
-import { useAuth } from "@clerk/react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Calendar,
   FileText,
@@ -12,153 +18,24 @@ import {
   Loader2,
   Trash2,
 } from "lucide-react";
-import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { toast } from "sonner";
+import { useCreatedQuestions } from "./hook/useCreatedQuestions";
 
 export default function CreatedQuestions() {
-  const { role, userProfile } = useUserContext();
-  const { getToken } = useAuth();
-  const queryClient = useQueryClient();
-  const [expandedClass, setExpandedClass] = useState(null);
-  const [selectedVersion, setSelectedVersion] = useState("Bangla");
-
-  const currentRole = role || "Subscriber";
-
-  // Parse active classes from subscription (Super Admin/Admin see all 3-12)
-  const activeClasses = useMemo(() => {
-    if (currentRole === "Super Admin" || currentRole === "Admin") {
-      return [
-        "Class 3",
-        "Class 4",
-        "Class 5",
-        "Class 6",
-        "Class 7",
-        "Class 8",
-        "Class 9",
-        "Class 10",
-        "Class 11",
-        "Class 12",
-      ];
-    }
-    const clsSet = new Set();
-    userProfile?.subscriptions?.forEach((sub) => {
-      if (sub.isSuspended || !sub.isActive) return;
-      const end = new Date(sub.endDate);
-      if (end < new Date()) return;
-
-      if (sub.packageId && sub.packageId.startsWith("teacher-")) {
-        ["Class 6", "Class 7", "Class 8", "Class 9", "Class 10"].forEach((c) =>
-          clsSet.add(c),
-        );
-      } else if (
-        sub.purchaseType === "Package" ||
-        sub.purchaseType === "Class"
-      ) {
-        sub.classNames?.forEach((c) => clsSet.add(c));
-      } else if (sub.purchaseType === "Subject") {
-        sub.subjectIds?.forEach((s) => {
-          const clsName = s?.className;
-          if (clsName) clsSet.add(clsName);
-        });
-      }
-    });
-
-    const sorted = Array.from(clsSet)
-      .filter((c) => {
-        const num = parseInt(c.replace(/\D/g, "")) || 0;
-        return num >= 3 && num <= 12;
-      })
-      .sort((a, b) => {
-        const getNum = (str) => parseInt(str.replace(/\D/g, "")) || 0;
-        return getNum(a) - getNum(b);
-      });
-    return sorted;
-  }, [userProfile, currentRole]);
-
-  // Fetch question sets
-  const { data: questionSets, isLoading } = useQuery({
-    queryKey: ["createdQuestionSets"],
-    queryFn: async () => {
-      const token = await getToken();
-      if (!token) return [];
-      const res = await apiClient.get("/question-sets", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return res.data.questionSets || [];
-    },
-    enabled: !!userProfile,
-  });
-
-  // Delete question set mutation
-  const deleteMutation = useMutation({
-    mutationFn: async (setId) => {
-      const token = await getToken();
-      await apiClient.delete(`/question-sets/${setId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    },
-    onSuccess: () => {
-      toast.success("প্রশ্ন সেটটি সফলভাবে মুছে ফেলা হয়েছে");
-      queryClient.invalidateQueries({ queryKey: ["createdQuestionSets"] });
-    },
-    onError: (err) => {
-      console.error("Delete failed:", err);
-      toast.error("প্রশ্ন সেটটি মুছতে ব্যর্থ হয়েছে");
-    },
-  });
-
-  const handleDelete = (e, setId) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (confirm("আপনি কি নিশ্চিতভাবে এই প্রশ্ন সেটটি মুছে ফেলতে চান?")) {
-      deleteMutation.mutate(setId);
-    }
-  };
-
-  // Calculate count for each category version
-  const versionCounts = useMemo(() => {
-    let bangla = 0;
-    let english = 0;
-    let madrasah = 0;
-
-    (questionSets || []).forEach((set) => {
-      const instType = set.subjectId?.institutionType;
-      const ver = set.subjectId?.version;
-
-      if (instType === "Madrasah") {
-        madrasah++;
-      } else if (ver === "English") {
-        english++;
-      } else {
-        bangla++;
-      }
-    });
-    return { bangla, english, madrasah };
-  }, [questionSets]);
-
-  // Group question sets by class name and category version
-  const questionSetsByClass = useMemo(() => {
-    const map = {};
-    (questionSets || []).forEach((set) => {
-      const instType = set.subjectId?.institutionType;
-      const ver = set.subjectId?.version;
-
-      const matches =
-        selectedVersion === "Madrasah"
-          ? instType === "Madrasah"
-          : selectedVersion === "English"
-            ? instType !== "Madrasah" && ver === "English"
-            : instType !== "Madrasah" && ver !== "English";
-
-      if (matches) {
-        const cls = set.className;
-        if (!map[cls]) map[cls] = [];
-        map[cls].push(set);
-      }
-    });
-    return map;
-  }, [questionSets, selectedVersion]);
+  const {
+    expandedClass,
+    setExpandedClass,
+    selectedVersion,
+    setSelectedVersion,
+    setToDelete,
+    setSetToDelete,
+    activeClasses,
+    isLoading,
+    deleteMutation,
+    handleDeleteClick,
+    versionCounts,
+    questionSetsByClass,
+  } = useCreatedQuestions();
 
   if (isLoading) {
     return (
@@ -369,7 +246,7 @@ export default function CreatedQuestions() {
 
                           {/* Delete Set Button */}
                           <button
-                            onClick={(e) => handleDelete(e, set._id)}
+                            onClick={(e) => handleDeleteClick(e, set._id)}
                             disabled={deleteMutation.isPending}
                             className="absolute right-3 top-3 p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-500 rounded-lg opacity-0 group-hover:opacity-100 transition cursor-pointer"
                             title="মুছে ফেলুন"
@@ -405,6 +282,35 @@ export default function CreatedQuestions() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Alert Dialog */}
+      <AlertDialog
+        open={!!setToDelete}
+        onOpenChange={(open) => !open && setSetToDelete(null)}
+      >
+        <AlertDialogPopup className="max-w-md p-6 border border-slate-200/50 bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative text-left">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-bengali text-base font-extrabold text-slate-850">
+              প্রশ্ন সেট মুছে ফেলুন
+            </AlertDialogTitle>
+            <AlertDialogDescription className="font-bengali text-xs text-slate-500 mt-2 font-medium">
+              আপনি কি নিশ্চিতভাবে এই প্রশ্ন সেটটি মুছে ফেলতে চান? এই কাজটি আর
+              ফিরিয়ে আনা সম্ভব নয়।
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex items-center gap-2 justify-end mt-4">
+            <AlertDialogCancel className="font-bengali text-xs font-semibold px-4 py-2 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl cursor-pointer">
+              বাতিল করুন
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteMutation.mutate(setToDelete)}
+              className="font-bengali text-xs font-bold px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl cursor-pointer"
+            >
+              {deleteMutation.isPending ? "মুছে ফেলা হচ্ছে..." : "মুছে ফেলুন"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogPopup>
+      </AlertDialog>
     </div>
   );
 }

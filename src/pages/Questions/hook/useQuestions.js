@@ -41,6 +41,20 @@ export function useQuestions() {
   const questionSets = questionSetsQuery.data || [];
   const activeSet = questionSets.find((s) => s._id === activeSetId);
 
+  // Fetch syllabus list to map chapter numbers to chapter names
+  const syllabusListQuery = useQuery({
+    queryKey: ["syllabusList"],
+    queryFn: async () => {
+      const token = await getToken();
+      const res = await apiClient.get("/syllabus", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return res.data.syllabus || [];
+    },
+  });
+
+  const syllabusList = syllabusListQuery.data || [];
+
   // Fetch other question sets of the user (for Unique Mode exclusion)
   const allQuestionSetsQuery = useQuery({
     queryKey: ["allQuestionSets"],
@@ -193,5 +207,6 @@ export function useQuestions() {
     setSelectedDifficulties,
 
     updateQuestionSet: updateQuestionSetMutation,
+    syllabusList,
   };
 }
