@@ -28,7 +28,6 @@ export default function QuestionSelect() {
   const targetId = searchParams.get("setId") || "";
 
   const {
-    questionSets,
     loadingSets,
     activeSetId,
     setActiveSetId,
@@ -45,13 +44,13 @@ export default function QuestionSelect() {
     setSelectedLevels,
     selectedTags,
     setSelectedTags,
-    selectedDifficulties,
-    setSelectedDifficulties,
     updateQuestionSet,
   } = useQuestions();
 
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const [initializedSetId, setInitializedSetId] = useState(null);
 
   // Set active set ID on load
   useEffect(() => {
@@ -61,11 +60,10 @@ export default function QuestionSelect() {
   }, [targetId, activeSetId, setActiveSetId]);
 
   // Sync selected questions with the set's existing questions once loaded
-  useEffect(() => {
-    if (activeSet?.questions) {
-      setSelectedQuestions(activeSet.questions);
-    }
-  }, [activeSet]);
+  if (activeSet && activeSet._id !== initializedSetId) {
+    setInitializedSetId(activeSet._id);
+    setSelectedQuestions(activeSet.questions || []);
+  }
 
   const handleSaveQuestions = async () => {
     if (!activeSetId) return;
@@ -236,7 +234,7 @@ export default function QuestionSelect() {
                           : "bg-white border-slate-150 hover:border-slate-300"
                       }`}
                     >
-                      <div className="space-y-2 text-xs text-slate-800 flex-1">
+                      <div className="space-y-2 text-[13px] text-slate-800 flex-1">
                         {/* MCQ Stem/Options */}
                         {q.category === "MCQ" && q.mcqData && (
                           <div className="space-y-1.5">

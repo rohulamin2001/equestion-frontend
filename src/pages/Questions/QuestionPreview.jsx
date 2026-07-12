@@ -26,7 +26,6 @@ export default function QuestionPreview() {
     searchParams.get("setId") || searchParams.get("setIds") || "";
 
   const {
-    questionSets,
     loadingSets,
     activeSetId,
     setActiveSetId,
@@ -71,6 +70,7 @@ export default function QuestionPreview() {
   });
 
   const [activeTab, setActiveTab] = useState("settings"); // settings or download
+  const [initializedSetId, setInitializedSetId] = useState(null);
 
   // Set active set ID on load
   useEffect(() => {
@@ -79,12 +79,13 @@ export default function QuestionPreview() {
     }
   }, [targetId, activeSetId, setActiveSetId]);
 
-  // Load layout settings on mount
-  useEffect(() => {
-    if (activeSet?.settings) {
+  // Sync layout settings with active set's settings once loaded
+  if (activeSet && activeSet._id !== initializedSetId) {
+    setInitializedSetId(activeSet._id);
+    if (activeSet.settings) {
       setLayoutSettings(activeSet.settings);
     }
-  }, [activeSet]);
+  }
 
   const handleSaveSettings = async (newSettings) => {
     if (!activeSetId) return;
