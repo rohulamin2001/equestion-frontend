@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.maateen.me/kalpurush/font.css");
+@import url("https://fonts.maateen.me/solaiman-lipi/font.css");
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
@@ -8,50 +10,50 @@
 
 @layer base {
   :root {
-    --background: #F5F5F7;
-    --foreground: #1E293B;
+    --background: #f5f5f7;
+    --foreground: #1e293b;
 
     --card: rgba(255, 255, 255, 0.45);
-    --card-foreground: #1E293B;
+    --card-foreground: #1e293b;
 
-    --popover: rgba(255, 255, 255, 0.90);
-    --popover-foreground: #1E293B;
+    --popover: rgba(255, 255, 255, 0.9);
+    --popover-foreground: #1e293b;
 
-    --primary: #4F46E5;
-    --primary-foreground: #FFFFFF;
+    --primary: #4f46e5;
+    --primary-foreground: #ffffff;
 
-    --secondary: #8B5CF6;
-    --secondary-foreground: #FFFFFF;
+    --secondary: #8b5cf6;
+    --secondary-foreground: #ffffff;
 
-    --muted: #F1F5F9;
-    --muted-foreground: #64748B;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
 
-    --accent: rgba(79, 70, 229, 0.10);
-    --accent-foreground: #4F46E5;
+    --accent: rgba(79, 70, 229, 0.1);
+    --accent-foreground: #4f46e5;
 
     --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: 210 40% 98%;
 
     --border: rgba(0, 0, 0, 0.06);
     --input: rgba(0, 0, 0, 0.05);
-    --ring: #4F46E5;
+    --ring: #4f46e5;
 
     --radius: 0.625rem;
 
-    --chart-1: #4F46E5;
-    --chart-2: #10B981;
-    --chart-3: #F97316;
-    --chart-4: #06B6D4;
-    --chart-5: #F43F5E;
+    --chart-1: #4f46e5;
+    --chart-2: #10b981;
+    --chart-3: #f97316;
+    --chart-4: #06b6d4;
+    --chart-5: #f43f5e;
 
-    --sidebar: rgba(255, 255, 255, 0.30);
-    --sidebar-foreground: #1E293B;
-    --sidebar-primary: #4F46E5;
-    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar: rgba(255, 255, 255, 0.3);
+    --sidebar-foreground: #1e293b;
+    --sidebar-primary: #4f46e5;
+    --sidebar-primary-foreground: #ffffff;
     --sidebar-accent: rgba(0, 0, 0, 0.03);
-    --sidebar-accent-foreground: #1E293B;
+    --sidebar-accent-foreground: #1e293b;
     --sidebar-border: rgba(0, 0, 0, 0.05);
-    --sidebar-ring: #4F46E5;
+    --sidebar-ring: #4f46e5;
   }
 
   .dark {
@@ -97,8 +99,8 @@
     --sidebar-ring: oklch(0.556 0 0);
   }
   :root {
-    --font-heading: 'Noto Sans Bengali', 'Geist Variable', sans-serif;
-    --font-sans: 'Noto Sans Bengali', 'Geist Variable', sans-serif;
+    --font-heading: "Noto Sans Bengali", "Geist Variable", sans-serif;
+    --font-sans: "Noto Sans Bengali", "Geist Variable", sans-serif;
   }
   * {
     border-color: var(--border);
@@ -157,26 +159,30 @@
     backdrop-filter: blur(20px) saturate(190%) !important;
     -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
     border: 1px solid rgba(0, 0, 0, 0.06) !important;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04), inset 0 1px 1px 0 rgba(255, 255, 255, 0.80) !important;
+    box-shadow:
+      0 8px 32px 0 rgba(31, 38, 135, 0.04),
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.8) !important;
   }
 
   .bg-glass-elevated {
-    background: rgba(255, 255, 255, 0.70) !important;
+    background: rgba(255, 255, 255, 0.7) !important;
     backdrop-filter: blur(24px) saturate(200%) !important;
     -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
-    box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.06), inset 0 1px 1px 0 rgba(255, 255, 255, 0.90) !important;
+    box-shadow:
+      0 16px 48px 0 rgba(0, 0, 0, 0.06),
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.9) !important;
   }
 
   .bg-glass-sidebar {
-    background: rgba(255, 255, 255, 0.30) !important;
+    background: rgba(255, 255, 255, 0.3) !important;
     backdrop-filter: blur(40px) !important;
     -webkit-backdrop-filter: blur(40px) !important;
     border-right: 1px solid rgba(0, 0, 0, 0.05) !important;
   }
 
   .inner-glow {
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.80) !important;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.8) !important;
   }
 
   .accent-glow-purple {
@@ -185,7 +191,7 @@
 
   /* Bengali Specific Typography Helpers */
   .font-bengali {
-    font-family: 'Noto Sans Bengali', sans-serif !important;
+    font-family: "Noto Sans Bengali", sans-serif !important;
     letter-spacing: 0 !important;
     line-height: 1.75 !important;
   }

@@ -11,147 +11,34 @@ import {
   Sliders,
   Trash2,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
-import RichTextRender from "../../components/RichTextRender.jsx";
-import { useQuestions } from "./hook/useQuestions";
+import FloatingFormatToolbar from "../../components/FloatingFormatToolbar.jsx";
+import InlineEditable from "../../components/InlineEditable.jsx";
+import { translateSubscriptionKey } from "../../constants/subscriptions.js";
+import { useQuestionPreview } from "./hook/useQuestionPreview";
 
 export default function QuestionPreview() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  const targetId = searchParams.get("setId") || "";
-  const idsParam =
-    searchParams.get("setId") || searchParams.get("setIds") || "";
-
   const {
     loadingSets,
-    activeSetId,
-    setActiveSetId,
     activeSet,
-    updateQuestionSet,
-  } = useQuestions();
-
-  // Local state for layout settings
-  const [layoutSettings, setLayoutSettings] = useState({
-    paperSize: "A4",
-    columns: 1,
-    columnDivider: true,
-    lineSpacing: 0,
-    columnGap: 15,
-    fontSize: 14,
-    fontFamily: "Bangla",
-    optionStyle: "●",
-    attachments: {
-      answerSheet: false,
-      omr: false,
-      important: false,
-      questionInfo: false,
-      studentInfo: false,
-      marksGrid: false,
-      subjectCode: false,
-    },
-    metadata: {
-      className: true,
-      subjectName: true,
-      chapterName: true,
-      setCode: true,
-      programName: true,
-      instructions: true,
-    },
-    branding: {
-      logo: false,
-      header: false,
-      footer: false,
-      watermark: false,
-      address: false,
-    },
-  });
-
-  const [activeTab, setActiveTab] = useState("settings"); // settings or download
-  const [initializedSetId, setInitializedSetId] = useState(null);
-
-  // Set active set ID on load
-  useEffect(() => {
-    if (targetId && activeSetId !== targetId) {
-      setActiveSetId(targetId);
-    }
-  }, [targetId, activeSetId, setActiveSetId]);
-
-  // Sync layout settings with active set's settings once loaded
-  if (activeSet && activeSet._id !== initializedSetId) {
-    setInitializedSetId(activeSet._id);
-    if (activeSet.settings) {
-      setLayoutSettings(activeSet.settings);
-    }
-  }
-
-  const handleSaveSettings = async (newSettings) => {
-    if (!activeSetId) return;
-    try {
-      await updateQuestionSet.mutateAsync({
-        id: activeSetId,
-        payload: { settings: newSettings },
-      });
-    } catch (err) {
-      console.error("Error saving settings:", err);
-    }
-  };
-
-  const updateSettingField = (category, field, value) => {
-    setLayoutSettings((prev) => {
-      let updated;
-      if (category) {
-        updated = {
-          ...prev,
-          [category]: {
-            ...prev[category],
-            [field]: value,
-          },
-        };
-      } else {
-        updated = {
-          ...prev,
-          [field]: value,
-        };
-      }
-      handleSaveSettings(updated);
-      return updated;
-    });
-  };
-
-  const handleRemoveQuestion = async (questionId) => {
-    if (!activeSet) return;
-    try {
-      const updatedQuestions = activeSet.questions
-        .filter((q) => (q._id || q) !== questionId)
-        .map((q) => q._id || q);
-      await updateQuestionSet.mutateAsync({
-        id: activeSetId,
-        payload: { questions: updatedQuestions },
-      });
-      toast.success("প্রশ্নটি বাদ দেওয়া হয়েছে");
-    } catch (err) {
-      console.error("Error removing question:", err);
-      toast.error("প্রশ্ন সরাতে ব্যর্থ হয়েছে।");
-    }
-  };
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const handleSaveAll = () => {
-    toast.success("প্রশ্নপত্র সেটিংস সংরক্ষণ করা হয়েছে!");
-    navigate(`/dashboard/questions?setId=${idsParam}`);
-  };
-
-  const handleGoBackToSelect = () => {
-    navigate(
-      `/dashboard/questions/select?setId=${activeSetId}&setIds=${idsParam}`,
-    );
-  };
+    layoutSettings,
+    activeTab,
+    setActiveTab,
+    editingSubjectCode,
+    setEditingSubjectCode,
+    toolbarVisible,
+    toolbarPos,
+    groupedQuestions,
+    handleEditorActivate,
+    handleEditorDeactivate,
+    handleSaveSetField,
+    handleSaveQuestionEdit,
+    updateSettingField,
+    handleRemoveQuestion,
+    handlePrint,
+    handleSaveAll,
+    handleGoBackToSelect,
+    userProfile,
+  } = useQuestionPreview();
 
   if (loadingSets || !activeSet) {
     return (
@@ -167,7 +54,7 @@ export default function QuestionPreview() {
   return (
     <div className="space-y-6 pb-12 font-bengali text-left">
       {/* Top Header Card */}
-      <div className="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
+      <div className="max-w-[1220px] mx-auto w-full bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <button
@@ -205,19 +92,47 @@ export default function QuestionPreview() {
         </div>
       </div>
 
+      {/* Warning Notice */}
+      <div className="max-w-[1220px] mx-auto w-full bg-amber-50 border border-amber-200/60 rounded-2xl p-4 shadow-sm flex items-start gap-3 print:hidden">
+        <div className="p-2 bg-amber-100 rounded-full shrink-0 mt-0.5">
+          <svg
+            className="size-4 text-amber-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+        <div>
+          <h4 className="text-sm font-bold text-amber-900">সতর্কবার্তা</h4>
+          <p className="text-xs text-amber-800/80 mt-0.5 leading-relaxed font-medium">
+            অনুগ্রহ করে লক্ষ্য করবেন, এখানে করা কোনো পরিবর্তন মূল ডাটাবেজে
+            সংরক্ষণ করা হয় না। এটি শুধুমাত্র আপনার প্রিন্ট বা ডাউনলোডের
+            সুবিধার্থে প্রশ্নপত্রের লেআউট সাময়িকভাবে সাজিয়ে নেয়ার একটি ব্যবস্থা
+            মাত্র। আপনার প্রয়োজনীয় কাস্টমাইজেশন শেষে দয়া করে প্রশ্নপত্রটি
+            প্রিন্ট অথবা ডাউনলোড করে নিতে ভুলবেন না। আপনাকে অসংখ্য ধন্যবাদ।
+          </p>
+        </div>
+      </div>
       {/* Main Preview Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative print:block print:w-full print:m-0 print:p-0">
-        {/* Left Pane (8 cols): A4 Printable paper preview */}
-        <div className="lg:col-span-8 space-y-4 print:w-full print:absolute print:left-0 print:top-0 print:m-0 print:p-0">
+      <div className="flex flex-col lg:flex-row gap-6 items-start justify-center max-w-[1220px] mx-auto w-full print:block print:w-full print:m-0 print:p-0">
+        {/* Left Pane (A4 Printable paper preview) */}
+        <div className="flex-1 w-full max-w-[820px] space-y-4 print:w-full print:absolute print:left-0 print:top-0 print:m-0 print:p-0">
           <div className="flex justify-between items-center print:hidden border border-slate-200/50 bg-[#FBFBFC] px-4 py-3 rounded-2xl shadow-sm">
             <span className="text-xs font-black text-slate-700">
               কুইক সেটিংস
             </span>
             <button
               onClick={handleGoBackToSelect}
-              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow cursor-pointer"
+              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs transition flex items-center gap-1.5 shadow cursor-pointer"
             >
-              <Plus className="size-3.5" />
+              <Plus className=" size-3.5" />
               আরও প্রশ্ন যুক্ত করুন
             </button>
           </div>
@@ -228,169 +143,492 @@ export default function QuestionPreview() {
               fontFamily:
                 layoutSettings.fontFamily === "English"
                   ? "Outfit, sans-serif"
-                  : "Inter, sans-serif",
+                  : "'SutonnyMJ', 'SutonnyMJ-Regular', 'Kalpurush', 'SolaimanLipi', sans-serif",
               fontSize: `${layoutSettings.fontSize}px`,
             }}
           >
-            {/* Header Metadata block */}
-            <div className="text-center space-y-2 border-b-2 border-slate-200 pb-4 mb-6">
-              {layoutSettings.branding.logo && (
-                <div className="mx-auto w-12 h-12 bg-indigo-50 border rounded-full flex items-center justify-center text-indigo-600 font-black text-xs">
-                  LOGO
+            <div className="space-y-3 mb-6 select-none">
+              {/* Three-column Top Layout */}
+              <div className="grid grid-cols-12 items-center gap-2">
+                {/* Left Column: Obtained Marks */}
+                <div className="col-span-3 flex justify-start items-center">
+                  {layoutSettings.attachments.marksGrid ? (
+                    <div className="flex items-stretch border border-black overflow-hidden h-7 select-none">
+                      <span className="bg-black text-white px-2 flex items-center justify-center  font-normal leading-none">
+                        প্রাপ্ত নম্বর
+                      </span>
+                      <span className="w-10 bg-white flex items-center justify-center border-l border-black"></span>
+                    </div>
+                  ) : (
+                    <div className="w-1"></div>
+                  )}
+                </div>
+
+                {/* Center Column: School, Exam, Class, Subject, Chapters */}
+                <div className="col-span-6 text-center space-y-1">
+                  {/* School Name */}
+                  <div className="block">
+                    <InlineEditable
+                      value={
+                        activeSet.institutionName ||
+                        userProfile?.institutionName ||
+                        "সোনার বাংলা হাই স্কুল"
+                      }
+                      onSave={(val) =>
+                        handleSaveSetField("institutionName", val)
+                      }
+                      onActivate={handleEditorActivate}
+                      onDeactivate={handleEditorDeactivate}
+                      className="text-xl font-black text-slate-900 tracking-wide uppercase block text-center"
+                      placeholder="প্রতিষ্ঠানের নাম লিখুন"
+                      renderRichText={false}
+                      inline={false}
+                    />
+                  </div>
+
+                  {/* Exam Name */}
+                  {layoutSettings.metadata.programName && (
+                    <div className="block">
+                      <InlineEditable
+                        value={activeSet.examName || "টেস্ট পরীক্ষা"}
+                        onSave={(val) => handleSaveSetField("examName", val)}
+                        onActivate={handleEditorActivate}
+                        onDeactivate={handleEditorDeactivate}
+                        className="text-sm font-normal text-slate-800 tracking-wide block text-center"
+                        placeholder="পরীক্ষার নাম লিখুন"
+                        renderRichText={false}
+                        inline={false}
+                      />
+                    </div>
+                  )}
+
+                  {/* Class Name */}
+                  {layoutSettings.metadata.className && (
+                    <div className="block">
+                      <InlineEditable
+                        value={
+                          activeSet.className
+                            ? translateSubscriptionKey(activeSet.className)
+                            : "ষষ্ঠ শ্রেণি"
+                        }
+                        onSave={(val) => handleSaveSetField("className", val)}
+                        onActivate={handleEditorActivate}
+                        onDeactivate={handleEditorDeactivate}
+                        className="text-xs font-normal text-slate-700 block text-center"
+                        placeholder="শ্রেণী লিখুন"
+                        renderRichText={false}
+                        inline={false}
+                      />
+                    </div>
+                  )}
+
+                  {/* Subject Name */}
+                  {layoutSettings.metadata.subjectName && (
+                    <div className="block">
+                      <InlineEditable
+                        value={activeSet.subjectName || "বাংলা ১ম পত্র"}
+                        onSave={(val) => handleSaveSetField("subjectName", val)}
+                        onActivate={handleEditorActivate}
+                        onDeactivate={handleEditorDeactivate}
+                        className="text-xs font-normal text-slate-800 block text-center"
+                        placeholder="বিষয় লিখুন"
+                        renderRichText={false}
+                        inline={false}
+                      />
+                    </div>
+                  )}
+
+                  {/* Chapters Info */}
+                  {layoutSettings.metadata.chapterName && (
+                    <div className="block">
+                      <InlineEditable
+                        value={
+                          activeSet.chapters && activeSet.chapters.length > 0
+                            ? activeSet.chapters.join(", ")
+                            : "গদ্য ১ - সততার পুরস্কার"
+                        }
+                        onSave={(val) =>
+                          handleSaveSetField(
+                            "chapters",
+                            val
+                              .split(",")
+                              .map((c) => c.trim())
+                              .filter(Boolean),
+                          )
+                        }
+                        onActivate={handleEditorActivate}
+                        onDeactivate={handleEditorDeactivate}
+                        className="text-[11px] text-slate-500 font-normal block text-center"
+                        placeholder="অধ্যায় নম্বর"
+                        renderRichText={false}
+                        inline={false}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Right Column: Set Code and Subject Code Stacked */}
+                <div className="col-span-3 flex flex-col items-end gap-1.5">
+                  {/* Set Code */}
+                  {layoutSettings.metadata.setCode ? (
+                    <div className="flex items-center gap-1.5 text-[11px] font-normal text-slate-800">
+                      <span>সেট কোড:</span>
+                      <span className="w-7 h-5 border border-black flex items-center justify-center bg-white font-normal font-sans">
+                        <InlineEditable
+                          value={activeSet.setCode || "ক"}
+                          onSave={(val) => handleSaveSetField("setCode", val)}
+                          onActivate={handleEditorActivate}
+                          onDeactivate={handleEditorDeactivate}
+                          renderRichText={false}
+                          className="text-center font-normal"
+                          placeholder="কোড"
+                        />
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="h-5"></div>
+                  )}
+
+                  {/* Subject Code */}
+                  {layoutSettings.attachments.subjectCode ? (
+                    <div className="flex items-center gap-1.5 text-[11px] font-normal text-slate-800">
+                      <span>বিষয় কোড :</span>
+                      {editingSubjectCode ? (
+                        <input
+                          type="text"
+                          defaultValue={activeSet.subjectCode || "১০১"}
+                          onBlur={(e) => {
+                            handleSaveSetField("subjectCode", e.target.value);
+                            setEditingSubjectCode(false);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              handleSaveSetField("subjectCode", e.target.value);
+                              setEditingSubjectCode(false);
+                            }
+                          }}
+                          autoFocus
+                          className="w-16 px-1 py-0.5 border border-indigo-500 rounded text-center font-sans text-xs focus:outline-none print:hidden"
+                        />
+                      ) : (
+                        <div
+                          onClick={() => setEditingSubjectCode(true)}
+                          className="flex gap-0.5 font-sans font-normal cursor-pointer hover:opacity-80 print:cursor-default"
+                          title="এডিট করতে ক্লিক করুন"
+                        >
+                          {String(activeSet.subjectCode || "১০১")
+                            .split("")
+                            .map((digit, i) => (
+                              <span
+                                key={i}
+                                className="w-4 h-5 border border-black flex items-center justify-center bg-white text-[10px]"
+                              >
+                                {digit}
+                              </span>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="h-5"></div>
+                  )}
+                </div>
+              </div>
+
+              {/* Time and Marks Row */}
+              <div className="flex justify-between items-center text-xs text-slate-800 font-normal px-1 py-1.5">
+                <div className="flex items-center gap-1">
+                  <span>সময়—</span>
+                  <InlineEditable
+                    value={layoutSettings.examTime || "১ ঘণ্টা ৫০ মিনিট"}
+                    onSave={(val) => updateSettingField(null, "examTime", val)}
+                    onActivate={handleEditorActivate}
+                    onDeactivate={handleEditorDeactivate}
+                    renderRichText={false}
+                    className="font-normal"
+                  />
+                </div>
+                <div className="flex items-center gap-1">
+                  <span>পূর্ণমান—</span>
+                  <InlineEditable
+                    value={
+                      activeSet.totalMarks ? String(activeSet.totalMarks) : "৭৯"
+                    }
+                    onSave={(val) =>
+                      handleSaveSetField("totalMarks", Number(val) || 0)
+                    }
+                    onActivate={handleEditorActivate}
+                    onDeactivate={handleEditorDeactivate}
+                    renderRichText={false}
+                    className="font-normal"
+                  />
+                </div>
+              </div>
+
+              {/* Student Info Row */}
+              {layoutSettings.attachments.studentInfo && (
+                <div className="flex justify-between items-center text-xs font-normal pt-2 pb-1 text-slate-800 select-none ">
+                  <div className="flex-1 max-w-[50%] flex items-center gap-1">
+                    <span>শিক্ষার্থীর নাম: </span>
+                    <span className="flex-1 border-b border-dotted border-slate-400 h-4"></span>
+                  </div>
+                  <div className="w-[20%] flex items-center justify-center gap-1">
+                    <span>শাখা: </span>
+                    <span className="w-[60%] border-b border-dotted border-slate-400 h-4"></span>
+                  </div>
+                  <div className="w-[20%] flex items-center justify-end gap-1">
+                    <span>রোল: </span>
+                    <span className="w-[60%] border-b border-dotted border-slate-400 h-4"></span>
+                  </div>
                 </div>
               )}
-              {layoutSettings.metadata.programName && (
-                <h1 className="text-xl font-black text-slate-800 tracking-wide uppercase font-sans">
-                  {activeSet.examName}
-                </h1>
-              )}
-              {layoutSettings.metadata.className && (
-                <h2 className="text-sm font-bold text-slate-600">
-                  {activeSet.className}
-                </h2>
-              )}
 
-              <div className="flex justify-center gap-2 flex-wrap text-xs text-slate-500 font-semibold">
-                {layoutSettings.metadata.subjectName && (
-                  <span>বিষয়: {activeSet.subjectName}</span>
-                )}
-                {layoutSettings.metadata.chapterName &&
-                  activeSet.chapters?.length > 0 && (
-                    <span>• অধ্যায়: {activeSet.chapters.join(", ")}</span>
-                  )}
-              </div>
-
-              <div className="flex items-center justify-between text-xs text-slate-700 font-bold px-2 pt-2">
-                <span>সময়: ১ ঘণ্টা ৪০ মিনিট</span>
-                <span>পূর্ণমান: {activeSet.totalMarks}</span>
-              </div>
+              {/* Instructions Row */}
               {layoutSettings.metadata.instructions && (
-                <div className="text-center text-xs text-rose-500/80 font-bold border-t border-dashed mt-2 pt-2">
+                <div className="text-center text-xs text-slate-850 font-normal border-t border-b border-dotted border-slate-400 py-1.5 mt-2 select-none">
                   প্রশ্নপত্রে কোনো প্রকার দাগ/চিহ্ন দেয়া যাবে না।
                 </div>
               )}
             </div>
 
-            {/* Questions List Render */}
-            {activeSet.questions && activeSet.questions.length > 0 ? (
-              <div
-                className={`grid gap-6 print:gap-4`}
-                style={{
-                  gridTemplateColumns: `repeat(${layoutSettings.columns}, minmax(0, 1fr))`,
-                  columnGap: `${layoutSettings.columnGap}px`,
-                }}
-              >
-                {activeSet.questions.map((q, idx) => {
-                  const serialNum = (idx + 1).toLocaleString("bn-BD");
-                  return (
+            {/* Questions List Render (Grouped by Category) */}
+            {groupedQuestions && groupedQuestions.length > 0 ? (
+              <div className="space-y-8">
+                {groupedQuestions.map((group) => (
+                  <div key={group.category} className="space-y-4">
+                    {/* Section Header */}
+                    <div className="text-center font-normal text-sm text-slate-800 pt-1 print:pt-0">
+                      {group.label}
+                    </div>
+
                     <div
-                      key={q._id}
-                      className="relative group border border-transparent hover:border-indigo-100 hover:bg-indigo-50/10 p-2.5 rounded-xl transition print:border-none print:hover:border-none print:hover:bg-transparent print:p-0"
+                      className="grid gap-6 print:gap-4"
                       style={{
-                        marginBottom: `${layoutSettings.lineSpacing}px`,
+                        gridTemplateColumns: `repeat(${layoutSettings.columns}, minmax(0, 1fr))`,
+                        columnGap: `${layoutSettings.columnGap}px`,
                       }}
                     >
-                      {/* Remove button (Hover only) */}
-                      <button
-                        onClick={() => handleRemoveQuestion(q._id)}
-                        className="absolute right-2 top-2 p-1.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-100 opacity-0 group-hover:opacity-100 transition print:hidden cursor-pointer"
-                        title="বাদ দিন"
-                      >
-                        <Trash2 className="size-3.5" />
-                      </button>
+                      {group.questions.map((q) => {
+                        const serialNum = (q.serialNumber || 1).toLocaleString(
+                          "bn-BD",
+                        );
+                        return (
+                          <div
+                            key={q._id}
+                            className="relative group border border-transparent hover:border-indigo-100 hover:bg-indigo-50/10 p-2.5 rounded-xl transition print:border-none print:hover:border-none print:hover:bg-transparent print:p-0"
+                            style={{
+                              marginBottom: `${layoutSettings.lineSpacing}px`,
+                            }}
+                          >
+                            {/* Remove button (Hover only) */}
+                            <button
+                              onClick={() => handleRemoveQuestion(q._id)}
+                              className="absolute right-2 top-2 p-1.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-100 opacity-0 group-hover:opacity-100 transition print:hidden cursor-pointer"
+                              title="বাদ দিন"
+                            >
+                              <Trash2 className="size-3.5" />
+                            </button>
 
-                      <div className="flex items-start gap-2.5 text-xs text-slate-800">
-                        <span className="font-extrabold text-slate-500 min-w-[20px]">
-                          {serialNum}।
-                        </span>
-                        <div className="flex-1 space-y-2">
-                          {/* MCQ format */}
-                          {q.category === "MCQ" && q.mcqData && (
-                            <div className="space-y-2">
-                              <div className="font-bold">
-                                <RichTextRender html={q.mcqData.questionText} />
-                              </div>
-                              {q.mcqData.options && (
-                                <div className="grid grid-cols-2 gap-2 text-slate-600 text-[13px]">
-                                  {q.mcqData.options.map((opt, oIdx) => {
-                                    const prefix = ["ক", "খ", "গ", "ঘ"][oIdx];
-                                    return (
-                                      <div
-                                        key={oIdx}
-                                        className="flex items-start gap-1"
-                                      >
-                                        <span className="font-black text-slate-400">
-                                          {layoutSettings.optionStyle === "()"
-                                            ? `(${prefix})`
-                                            : `${prefix}${layoutSettings.optionStyle}`}
-                                        </span>
-                                        <span>{opt}</span>
+                            <div className="flex items-start gap-2.5 text-inherit text-slate-800">
+                              <span className="font-normal text-slate-500 min-w-[20px]">
+                                {serialNum}।
+                              </span>
+                              <div className="flex-1 space-y-2">
+                                {/* MCQ format */}
+                                {q.category === "MCQ" && q.mcqData && (
+                                  <div className="space-y-2">
+                                    <div className="font-normal">
+                                      <InlineEditable
+                                        value={q.mcqData.questionText}
+                                        onSave={(val) =>
+                                          handleSaveQuestionEdit(q, {
+                                            mcqData: {
+                                              ...q.mcqData,
+                                              questionText: val,
+                                            },
+                                          })
+                                        }
+                                        onActivate={handleEditorActivate}
+                                        onDeactivate={handleEditorDeactivate}
+                                      />
+                                    </div>
+                                    {q.mcqData.options && (
+                                      <div className="grid grid-cols-2 gap-2 text-slate-600/90 text-inherit">
+                                        {q.mcqData.options.map((opt, oIdx) => {
+                                          const prefix = ["ক", "খ", "গ", "ঘ"][
+                                            oIdx
+                                          ];
+                                          return (
+                                            <div
+                                              key={oIdx}
+                                              className="flex items-start gap-1"
+                                            >
+                                              <span className="font-normal text-slate-400">
+                                                {layoutSettings.optionStyle ===
+                                                "()"
+                                                  ? `(${prefix})`
+                                                  : `${prefix}${layoutSettings.optionStyle}`}
+                                              </span>
+                                              <div className="flex-1">
+                                                <InlineEditable
+                                                  value={opt}
+                                                  onSave={(val) => {
+                                                    const newOpts = [
+                                                      ...q.mcqData.options,
+                                                    ];
+                                                    newOpts[oIdx] = val;
+                                                    handleSaveQuestionEdit(q, {
+                                                      mcqData: {
+                                                        ...q.mcqData,
+                                                        options: newOpts,
+                                                      },
+                                                    });
+                                                  }}
+                                                  onActivate={
+                                                    handleEditorActivate
+                                                  }
+                                                  onDeactivate={
+                                                    handleEditorDeactivate
+                                                  }
+                                                />
+                                              </div>
+                                            </div>
+                                          );
+                                        })}
                                       </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          {/* CQ format */}
-                          {q.category === "Creative" && q.creativeData && (
-                            <div className="space-y-2">
-                              <div className="font-medium text-slate-600 bg-slate-50 border p-2 rounded-lg italic">
-                                <RichTextRender html={q.creativeData.stem} />
-                              </div>
-                              {q.creativeData.subQuestions && (
-                                <div className="space-y-1 text-slate-700 pl-2 text-[13px]">
-                                  {Object.entries(
-                                    q.creativeData.subQuestions,
-                                  ).map(([key, sq], sqIdx) => {
-                                    const letter = ["ক", "খ", "গ", "ঘ"][sqIdx];
-                                    return (
-                                      <div
-                                        key={key}
-                                        className="flex justify-between items-baseline gap-2"
-                                      >
-                                        <div className="flex items-start gap-1">
-                                          <span className="font-bold">
-                                            {letter})
-                                          </span>
-                                          <span className="text-[13px]">
-                                            {sq.text}
-                                          </span>
-                                        </div>
-                                        <span className="text-[10px] text-slate-400 font-bold shrink-0 font-sans">
-                                          {[1, 2, 3, 4][sqIdx]}
-                                        </span>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          {/* General format */}
-                          {q.category !== "MCQ" &&
-                            q.category !== "Creative" &&
-                            q.generalData && (
-                              <div className="space-y-1">
-                                <div className="font-bold">
-                                  <RichTextRender
-                                    html={q.generalData.questionText}
-                                  />
-                                </div>
-                                {q.generalData.stem && (
-                                  <div className="text-[11px] text-slate-500 italic bg-slate-50 p-1.5 border rounded-lg">
-                                    <RichTextRender html={q.generalData.stem} />
+                                    )}
                                   </div>
                                 )}
+
+                                {/* CQ format */}
+                                {q.category === "Creative" &&
+                                  q.creativeData && (
+                                    <div className="space-y-2">
+                                      <div className="font-medium text-slate-600 bg-slate-50 border p-2 rounded-lg italic">
+                                        <InlineEditable
+                                          value={q.creativeData.stem}
+                                          onSave={(val) =>
+                                            handleSaveQuestionEdit(q, {
+                                              creativeData: {
+                                                ...q.creativeData,
+                                                stem: val,
+                                              },
+                                            })
+                                          }
+                                          onActivate={handleEditorActivate}
+                                          onDeactivate={handleEditorDeactivate}
+                                        />
+                                      </div>
+                                      {q.creativeData.subQuestions && (
+                                        <div className="space-y-1 text-slate-700 pl-2 text-inherit">
+                                          {Object.entries(
+                                            q.creativeData.subQuestions,
+                                          ).map(([key, sq], sqIdx) => {
+                                            const letter = ["ক", "খ", "গ", "ঘ"][
+                                              sqIdx
+                                            ];
+                                            return (
+                                              <div
+                                                key={key}
+                                                className="flex justify-between items-baseline gap-2"
+                                              >
+                                                <div className="flex items-start gap-1 flex-1">
+                                                  <span className="font-normal">
+                                                    {letter})
+                                                  </span>
+                                                  <div className="flex-1 text-inherit">
+                                                    <InlineEditable
+                                                      value={sq.text}
+                                                      onSave={(val) => {
+                                                        handleSaveQuestionEdit(
+                                                          q,
+                                                          {
+                                                            creativeData: {
+                                                              ...q.creativeData,
+                                                              subQuestions: {
+                                                                ...q
+                                                                  .creativeData
+                                                                  .subQuestions,
+                                                                [key]: {
+                                                                  ...sq,
+                                                                  text: val,
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        );
+                                                      }}
+                                                      onActivate={
+                                                        handleEditorActivate
+                                                      }
+                                                      onDeactivate={
+                                                        handleEditorDeactivate
+                                                      }
+                                                    />
+                                                  </div>
+                                                </div>
+                                                <span className="text-[10px] text-slate-400 font-normal shrink-0 font-sans">
+                                                  {[1, 2, 3, 4][sqIdx]}
+                                                </span>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+
+                                {/* General format */}
+                                {q.category !== "MCQ" &&
+                                  q.category !== "Creative" &&
+                                  q.generalData && (
+                                    <div className="space-y-1">
+                                      <div className="font-normal">
+                                        <InlineEditable
+                                          value={
+                                            q.generalData.questionText || ""
+                                          }
+                                          onSave={(val) =>
+                                            handleSaveQuestionEdit(q, {
+                                              generalData: {
+                                                ...q.generalData,
+                                                questionText: val,
+                                              },
+                                            })
+                                          }
+                                          onActivate={handleEditorActivate}
+                                          onDeactivate={handleEditorDeactivate}
+                                        />
+                                      </div>
+                                      {q.generalData.stem && (
+                                        <div className="text-[11px] text-slate-500 italic bg-slate-50 p-1.5 border rounded-lg">
+                                          <InlineEditable
+                                            value={q.generalData.stem}
+                                            onSave={(val) =>
+                                              handleSaveQuestionEdit(q, {
+                                                generalData: {
+                                                  ...q.generalData,
+                                                  stem: val,
+                                                },
+                                              })
+                                            }
+                                            onActivate={handleEditorActivate}
+                                            onDeactivate={
+                                              handleEditorDeactivate
+                                            }
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
                               </div>
-                            )}
-                        </div>
-                      </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="border border-dashed border-slate-200 bg-slate-50/20 p-8 rounded-2xl text-center py-12">
@@ -410,8 +648,8 @@ export default function QuestionPreview() {
           </div>
         </div>
 
-        {/* Right Pane (4 cols): Layout Settings Sidebar */}
-        <div className="lg:col-span-4 space-y-6 print:hidden">
+        {/* Right Pane: Layout Settings Sidebar */}
+        <div className="w-full lg:w-[360px] lg:shrink-0 space-y-6 print:hidden lg:sticky lg:top-6">
           <div className="flex gap-1.5 p-1 bg-black/[0.02] border border-black/[0.04] rounded-2xl backdrop-blur-sm">
             {[
               { id: "settings", label: "সেটিংস", icon: Settings },
@@ -698,7 +936,14 @@ export default function QuestionPreview() {
           )}
         </div>
       </div>
-
+      <FloatingFormatToolbar
+        visible={toolbarVisible}
+        position={toolbarPos}
+        fontSize={layoutSettings.fontSize}
+        onChangeFontSize={(newSize) =>
+          updateSettingField(null, "fontSize", newSize)
+        }
+      />
       {/* Embedded print styles */}
       <style>{`
         @media print {

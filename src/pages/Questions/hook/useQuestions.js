@@ -1,6 +1,11 @@
 import { useAuth } from "@clerk/react";
-import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import apiClient from "../../../lib/apiClient";
 
@@ -9,8 +14,12 @@ export function useQuestions() {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
 
-  const setIdParam = searchParams.get("setId") || searchParams.get("setIds") || "";
-  const setIds = useMemo(() => setIdParam.split(",").filter(Boolean), [setIdParam]);
+  const setIdParam =
+    searchParams.get("setId") || searchParams.get("setIds") || "";
+  const setIds = useMemo(
+    () => setIdParam.split(",").filter(Boolean),
+    [setIdParam],
+  );
 
   // Active Subject for drawer questions selection
   const [activeSetId, setActiveSetId] = useState(null);
@@ -72,7 +81,7 @@ export function useQuestions() {
   const excludedQuestionIds = useMemo(() => {
     if (!uniqueMode) return [];
     const otherSets = (allQuestionSetsQuery.data || []).filter(
-      (s) => s._id !== activeSetId
+      (s) => s._id !== activeSetId,
     );
     const ids = new Set();
     otherSets.forEach((s) => {
@@ -98,7 +107,7 @@ export function useQuestions() {
     initialPageParam: 1,
     queryFn: async ({ pageParam = 1 }) => {
       const token = await getToken();
-      
+
       const params = {
         className: activeSet.className,
         category: activeSet.category,
@@ -123,14 +132,14 @@ export function useQuestions() {
       // Client-side filtering for Cognitive Level
       if (selectedLevels.length > 0) {
         questionsList = questionsList.filter((q) =>
-          selectedLevels.includes(q.level)
+          selectedLevels.includes(q.level),
         );
       }
 
       // Client-side filtering for Difficulty
       if (selectedDifficulties.length > 0) {
         questionsList = questionsList.filter((q) =>
-          selectedDifficulties.includes(q.difficulty)
+          selectedDifficulties.includes(q.difficulty),
         );
       }
 
@@ -138,10 +147,20 @@ export function useQuestions() {
       if (selectedTags.length > 0) {
         questionsList = questionsList.filter((q) => {
           return selectedTags.some((tag) => {
-            if (tag === "Exercise") return q.specialSearch?.includes("Exercise") || q.year?.includes("Exercise");
-            if (tag === "HasImage") return !!q.mcqData?.stem?.includes("<img") || !!q.mcqData?.questionText?.includes("<img");
-            if (tag === "MultipleCompletion") return q.mcqData?.mcqType === "MultipleCompletion";
-            if (tag === "StimulusBased") return q.mcqData?.mcqType === "StimulusBased";
+            if (tag === "Exercise")
+              return (
+                q.specialSearch?.includes("Exercise") ||
+                q.year?.includes("Exercise")
+              );
+            if (tag === "HasImage")
+              return (
+                !!q.mcqData?.stem?.includes("<img") ||
+                !!q.mcqData?.questionText?.includes("<img")
+              );
+            if (tag === "MultipleCompletion")
+              return q.mcqData?.mcqType === "MultipleCompletion";
+            if (tag === "StimulusBased")
+              return q.mcqData?.mcqType === "StimulusBased";
             return false;
           });
         });
@@ -150,7 +169,7 @@ export function useQuestions() {
       // Filter out excluded question IDs for Unique Mode
       if (uniqueMode && excludedQuestionIds.length > 0) {
         questionsList = questionsList.filter(
-          (q) => !excludedQuestionIds.includes(q._id)
+          (q) => !excludedQuestionIds.includes(q._id),
         );
       }
 
@@ -177,6 +196,31 @@ export function useQuestions() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["questionSets", setIds] });
+    },
+  });
+
+  // Update Question Mutation (PUT /api/questions/:id)
+  const updateQuestionMutation = useMutation({
+    mutationFn: async ({ id, payload }) => {
+      const token = await getToken();
+      const res = await apiClient.put(`/questions/${id}`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["questionSets", setIds] });
+    },
+  });
+
+  // Create Question Mutation (POST /api/questions)
+  const createQuestionMutation = useMutation({
+    mutationFn: async (payload) => {
+      const token = await getToken();
+      const res = await apiClient.post("/questions", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return res.data.question;
     },
   });
 
@@ -207,6 +251,8 @@ export function useQuestions() {
     setSelectedDifficulties,
 
     updateQuestionSet: updateQuestionSetMutation,
+    updateQuestion: updateQuestionMutation,
+    createQuestion: createQuestionMutation,
     syllabusList,
   };
 }

@@ -52,12 +52,14 @@ function parseAndRenderMath(html) {
 function stripOuterP(html) {
   if (!html) return "";
   let trimmed = html.trim();
-  // Remove leading <p...> and trailing </p> if they wrap the content
-  if (
+  while (
     trimmed.toLowerCase().startsWith("<p") &&
     trimmed.toLowerCase().endsWith("</p>")
   ) {
-    trimmed = trimmed.replace(/^<p[^>]*>/i, "").replace(/<\/p>$/i, "");
+    trimmed = trimmed
+      .replace(/^<p[^>]*>/i, "")
+      .replace(/<\/p>$/i, "")
+      .trim();
   }
   return trimmed;
 }
@@ -87,7 +89,7 @@ export default function RichTextRender({
   if (inline) {
     return (
       <span
-        className={`inline [&_*]:inline [&_p]:inline [&_p]:m-0 [&_p]:p-0 font-serif leading-relaxed text-[15px] select-text break-words jodit-rendered-content ${className}`}
+        className={`inline [&_*]:inline [&_p]:inline [&_p]:m-0 [&_p]:p-0 leading-relaxed text-inherit select-text break-words jodit-rendered-content ${className}`}
         dangerouslySetInnerHTML={{ __html: renderedContent }}
         {...props}
       />
@@ -96,7 +98,7 @@ export default function RichTextRender({
 
   return (
     <div
-      className={`prose max-w-none dark:prose-invert font-serif leading-relaxed text-[15px] select-text break-words jodit-rendered-content ${className}`}
+      className={`prose max-w-none dark:prose-invert leading-relaxed text-inherit select-text break-words jodit-rendered-content ${className}`}
       dangerouslySetInnerHTML={{ __html: renderedContent }}
       {...props}
     />
