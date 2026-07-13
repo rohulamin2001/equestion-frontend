@@ -138,7 +138,7 @@ export default function QuestionPreview() {
           </div>
 
           <div
-            className="bg-white border border-slate-200/60 rounded-3xl p-8 shadow-sm print:border-none print:shadow-none print:p-0 select-none print:select-text"
+            className="bg-white border border-slate-200/60 p-8 shadow-sm print:border-none print:shadow-none print:p-0 select-none print:select-text"
             style={{
               fontFamily:
                 layoutSettings.fontFamily === "English"
