@@ -16,6 +16,23 @@ import InlineEditable from "../../components/InlineEditable.jsx";
 import { translateSubscriptionKey } from "../../constants/subscriptions.js";
 import { useQuestionPreview } from "./hook/useQuestionPreview";
 
+// Helper to parse Bengali numerals as standard numbers
+const parseBanglaNumber = (val) => {
+  if (!val) return 0;
+  let cleanStr = String(val)
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .trim();
+
+  const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+  const englishStr = cleanStr.replace(/[০-৯]/g, (d) =>
+    String(banglaDigits.indexOf(d)),
+  );
+
+  const parsed = Number(englishStr);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
 export default function QuestionPreview() {
   const {
     loadingSets,
@@ -168,7 +185,9 @@ export default function QuestionPreview() {
                     >
                       <InlineEditable
                         value={activeSet.obtainedMarksLabel || "প্রাপ্ত নম্বর"}
-                        onSave={(val) => handleSaveSetField("obtainedMarksLabel", val)}
+                        onSave={(val) =>
+                          handleSaveSetField("obtainedMarksLabel", val)
+                        }
                         onActivate={handleEditorActivate}
                         onDeactivate={handleEditorDeactivate}
                         className="bg-black text-white px-2 flex items-center justify-center font-normal leading-none h-full"
@@ -390,10 +409,12 @@ export default function QuestionPreview() {
                   <span>পূর্ণমান :</span>
                   <InlineEditable
                     value={
-                      activeSet.totalMarks ? String(activeSet.totalMarks) : "৭৯"
+                      activeSet.totalMarks
+                        ? Number(activeSet.totalMarks).toLocaleString("bn-BD")
+                        : "৭৯"
                     }
                     onSave={(val) =>
-                      handleSaveSetField("totalMarks", Number(val) || 0)
+                      handleSaveSetField("totalMarks", parseBanglaNumber(val))
                     }
                     onActivate={handleEditorActivate}
                     onDeactivate={handleEditorDeactivate}
