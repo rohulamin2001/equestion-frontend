@@ -1,16 +1,18 @@
-import { useState, useEffect } from "react";
 import {
-  Bold,
-  Italic,
-  Underline,
-  AlignLeft,
   AlignCenter,
-  AlignRight,
   AlignJustify,
+  AlignLeft,
+  AlignRight,
+  Baseline,
+  Bold,
   Eraser,
+  Highlighter,
+  Italic,
   Minus,
   Plus,
+  Underline,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function FloatingFormatToolbar({
   visible,
@@ -23,6 +25,50 @@ export default function FloatingFormatToolbar({
     underline: false,
   });
   const [currentFontSize, setCurrentFontSize] = useState(fontSize);
+
+  const [showTextColor, setShowTextColor] = useState(false);
+  const [showBgColor, setShowBgColor] = useState(false);
+
+  const textColors = [
+    { name: "Slate", value: "#1e293b" },
+    { name: "Red", value: "#ef4444" },
+    { name: "Blue", value: "#3b82f6" },
+    { name: "Green", value: "#22c55e" },
+    { name: "Purple", value: "#a855f7" },
+    { name: "Orange", value: "#f97316" },
+  ];
+
+  const bgColors = [
+    { name: "None", value: "transparent" },
+    { name: "Yellow", value: "#fef08a" },
+    { name: "Green", value: "#bbf7d0" },
+    { name: "Blue", value: "#bfdbfe" },
+    { name: "Pink", value: "#fbcfe8" },
+    { name: "Orange", value: "#fed7aa" },
+  ];
+
+  const toggleTextColor = (e) => {
+    e.preventDefault();
+    setShowTextColor(!showTextColor);
+    setShowBgColor(false);
+  };
+
+  const toggleBgColor = (e) => {
+    e.preventDefault();
+    setShowBgColor(!showBgColor);
+    setShowTextColor(false);
+  };
+
+  // Close menus when toolbar visibility changes
+  useEffect(() => {
+    if (!visible) {
+      const timer = setTimeout(() => {
+        setShowTextColor(false);
+        setShowBgColor(false);
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
 
   // Monitor selection change to update bold/italic/underline states and active font size
   useEffect(() => {
@@ -80,7 +126,7 @@ export default function FloatingFormatToolbar({
     }
 
     document.execCommand(command, false, value);
-    
+
     // Trigger selection change to update button active states immediately
     const event = new Event("selectionchange");
     document.dispatchEvent(event);
@@ -136,7 +182,9 @@ export default function FloatingFormatToolbar({
           type="button"
           onMouseDown={(e) => handleCommand(e, "bold")}
           className={`p-1.5 hover:bg-slate-800 rounded-lg transition cursor-pointer ${
-            activeStates.bold ? "text-indigo-400 bg-slate-800" : "text-slate-350 hover:text-white"
+            activeStates.bold
+              ? "text-indigo-400 bg-slate-800"
+              : "text-slate-350 hover:text-white"
           }`}
           title="Bold (গাঢ়)"
         >
@@ -146,7 +194,9 @@ export default function FloatingFormatToolbar({
           type="button"
           onMouseDown={(e) => handleCommand(e, "italic")}
           className={`p-1.5 hover:bg-slate-800 rounded-lg transition cursor-pointer ${
-            activeStates.italic ? "text-indigo-400 bg-slate-800" : "text-slate-350 hover:text-white"
+            activeStates.italic
+              ? "text-indigo-400 bg-slate-800"
+              : "text-slate-350 hover:text-white"
           }`}
           title="Italic (বাঁকা)"
         >
@@ -156,7 +206,9 @@ export default function FloatingFormatToolbar({
           type="button"
           onMouseDown={(e) => handleCommand(e, "underline")}
           className={`p-1.5 hover:bg-slate-800 rounded-lg transition cursor-pointer ${
-            activeStates.underline ? "text-indigo-400 bg-slate-800" : "text-slate-350 hover:text-white"
+            activeStates.underline
+              ? "text-indigo-400 bg-slate-800"
+              : "text-slate-350 hover:text-white"
           }`}
           title="Underline"
         >
@@ -198,6 +250,92 @@ export default function FloatingFormatToolbar({
         >
           <AlignJustify className="size-3.5" />
         </button>
+      </div>
+
+      {/* Colors (Text & Highlight) */}
+      <div className="flex items-center gap-0.5 border-r border-slate-700/60 pr-2 mr-1">
+        {/* Text Color Button */}
+        <div className="relative">
+          <button
+            type="button"
+            onMouseDown={toggleTextColor}
+            className={`p-1.5 hover:bg-slate-800 rounded-lg transition cursor-pointer ${
+              showTextColor
+                ? "text-indigo-400 bg-slate-800"
+                : "text-slate-350 hover:text-white"
+            }`}
+            title="লেখা কালার করুন"
+          >
+            <Baseline className="size-3.5" />
+          </button>
+
+          {showTextColor && (
+            <div
+              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-1.5 bg-slate-900 border border-slate-700/60 rounded-xl shadow-2xl flex gap-1 z-[60]"
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              {textColors.map((col) => (
+                <button
+                  key={col.value}
+                  type="button"
+                  onMouseDown={(e) => {
+                    handleCommand(e, "foreColor", col.value);
+                    setShowTextColor(false);
+                  }}
+                  className="w-5 h-5 rounded-full border border-slate-700 hover:scale-110 active:scale-95 transition cursor-pointer shrink-0"
+                  style={{ backgroundColor: col.value }}
+                  title={col.name}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Text Background Color (Highlight) Button */}
+        <div className="relative">
+          <button
+            type="button"
+            onMouseDown={toggleBgColor}
+            className={`p-1.5 hover:bg-slate-800 rounded-lg transition cursor-pointer ${
+              showBgColor
+                ? "text-indigo-400 bg-slate-800"
+                : "text-slate-350 hover:text-white"
+            }`}
+            title="লেখা হাইলাইট করুন"
+          >
+            <Highlighter className="size-3.5" />
+          </button>
+
+          {showBgColor && (
+            <div
+              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-1.5 bg-slate-900 border border-slate-700/60 rounded-xl shadow-2xl flex gap-1 z-[60]"
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              {bgColors.map((col) => (
+                <button
+                  key={col.value}
+                  type="button"
+                  onMouseDown={(e) => {
+                    handleCommand(e, "backColor", col.value);
+                    setShowBgColor(false);
+                  }}
+                  className="w-5 h-5 rounded-full border border-slate-700 hover:scale-110 active:scale-95 transition cursor-pointer shrink-0 flex items-center justify-center"
+                  style={{
+                    backgroundColor:
+                      col.value === "transparent" ? "#475569" : col.value,
+                  }}
+                  title={col.name === "None" ? "নো কালার" : col.name}
+                >
+                  {col.name === "None" && (
+                    <span className="text-[10px] text-slate-300 font-bold leading-none">
+                      ×
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Clear Formatting */}

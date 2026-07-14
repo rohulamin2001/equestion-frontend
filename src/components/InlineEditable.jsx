@@ -30,6 +30,12 @@ export default function InlineEditable({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const editorRef = useRef(null);
+  const clickCoordsRef = useRef(null);
+
+  const handleStartEdit = (e) => {
+    clickCoordsRef.current = { x: e.clientX, y: e.clientY };
+    setIsEditing(true);
+  };
 
   useEffect(() => {
     if (isEditing && editorRef.current) {
@@ -37,11 +43,37 @@ export default function InlineEditable({
       editorRef.current.innerHTML = displayVal;
       editorRef.current.focus();
 
+      if (clickCoordsRef.current) {
+        const { x, y } = clickCoordsRef.current;
+        clickCoordsRef.current = null;
+        try {
+          let range;
+          if (document.caretRangeFromPoint) {
+            range = document.caretRangeFromPoint(x, y);
+          } else if (document.caretPositionFromPoint) {
+            const position = document.caretPositionFromPoint(x, y);
+            if (position) {
+              range = document.createRange();
+              range.setStart(position.offsetNode, position.offset);
+              range.setEnd(position.offsetNode, position.offset);
+            }
+          }
+          if (range) {
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+          }
+        } catch {
+          // Ignored
+        }
+      }
+
       if (onActivate) {
         const rect = editorRef.current.getBoundingClientRect();
         onActivate(rect);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditing]);
 
   const handleBlur = () => {
@@ -77,7 +109,7 @@ export default function InlineEditable({
     return (
       <span
         key="viewer"
-        onClick={() => setIsEditing(true)}
+        onClick={handleStartEdit}
         style={style}
         className={`cursor-text rounded px-1 -mx-1 border border-transparent hover:border-dashed hover:border-indigo-400/50 hover:bg-indigo-50/10 transition print:border-none print:p-0 print:m-0 ${
           inline ? "inline" : "block"
