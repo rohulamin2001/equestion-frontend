@@ -299,14 +299,28 @@ export default function CreatedQuestions() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex items-center gap-2 justify-end mt-4">
-            <AlertDialogCancel className="font-bengali text-xs font-semibold px-4 py-2 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl cursor-pointer">
+            <AlertDialogCancel
+              disabled={deleteMutation.isPending}
+              className="font-bengali text-xs font-semibold px-4 py-2 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl cursor-pointer"
+            >
               বাতিল করুন
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteMutation.mutate(setToDelete)}
-              className="font-bengali text-xs font-bold px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                deleteMutation.mutate(setToDelete);
+              }}
+              disabled={deleteMutation.isPending}
+              className="font-bengali text-xs font-bold px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl cursor-pointer flex items-center gap-1.5"
             >
-              {deleteMutation.isPending ? "মুছে ফেলা হচ্ছে..." : "মুছে ফেলুন"}
+              {deleteMutation.isPending ? (
+                <>
+                  <Loader2 className="size-3.5 animate-spin" />
+                  মুছে ফেলা হচ্ছে...
+                </>
+              ) : (
+                "মুছে ফেলুন"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogPopup>

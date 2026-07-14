@@ -502,12 +502,16 @@ export default function MetadataSetup() {
           <AlertDialogFooter className="flex gap-2">
             <AlertDialogCancel
               onClick={() => setDeletingItem(null)}
+              disabled={deleteMutation.isPending}
               className="border-black/[0.10] text-slate-600 hover:bg-black/[0.02] rounded-xl h-10 px-5 font-semibold cursor-pointer"
             >
               বাতিল
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deletingItem && deleteMutation.mutate(deletingItem._id)}
+              onClick={(e) => {
+                e.preventDefault();
+                if (deletingItem) deleteMutation.mutate(deletingItem._id);
+              }}
               disabled={deleteMutation.isPending}
               className="bg-red-500 hover:bg-red-650 text-white rounded-xl h-10 px-5 font-semibold cursor-pointer shadow-md shadow-red-500/10"
             >
