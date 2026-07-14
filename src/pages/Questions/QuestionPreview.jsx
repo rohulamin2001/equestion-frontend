@@ -164,14 +164,19 @@ export default function QuestionPreview() {
                   {layoutSettings.attachments.marksGrid ? (
                     <div
                       className="flex items-stretch border border-black overflow-hidden h-7 select-none"
-                      style={{ fontSize: "16px", fontWeight: 700 }}
+                      style={{ fontSize: "16px", fontWeight: 400 }}
                     >
-                      <span
-                        className="bg-black text-white px-2 flex items-center justify-center  font-normal leading-none"
-                        style={{ fontSize: "16px", fontWeight: 700 }}
-                      >
-                        প্রাপ্ত নম্বর
-                      </span>
+                      <InlineEditable
+                        value={activeSet.obtainedMarksLabel || "প্রাপ্ত নম্বর"}
+                        onSave={(val) => handleSaveSetField("obtainedMarksLabel", val)}
+                        onActivate={handleEditorActivate}
+                        onDeactivate={handleEditorDeactivate}
+                        className="bg-black text-white px-2 flex items-center justify-center font-normal leading-none h-full"
+                        style={{ fontSize: "16px", fontWeight: 400 }}
+                        placeholder="প্রাপ্ত নম্বর"
+                        renderRichText={false}
+                        inline={false}
+                      />
                       <span className="w-10 bg-white flex items-center justify-center border-l border-black"></span>
                     </div>
                   ) : (

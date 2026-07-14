@@ -145,7 +145,7 @@ export default function InlineEditable({
       onKeyDown={handleKeyDown}
       style={style}
       className={`outline-none border border-indigo-500 rounded px-1 -mx-1 bg-white text-slate-800 ${
-        inline ? "inline" : "block min-h-[32px]"
+        inline ? "inline" : "block min-h-[1.2em]"
       } ${className}`}
     />
   );

@@ -245,3 +245,8 @@
 .question-paper-container b {
   font-weight: 700 !important;
 }
+
+/* Reset paragraph margins inside contenteditable editor blocks to prevent layout shifts */
+[contenteditable="true"] p {
+  margin: 0 !important;
+}
