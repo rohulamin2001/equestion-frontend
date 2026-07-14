@@ -112,8 +112,8 @@ export default function InlineEditable({
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
       style={style}
-      className={`outline-none border border-indigo-500 ring-2 ring-indigo-500/20 rounded px-1 -mx-1 bg-white text-slate-800 ${
-        inline ? "inline-block min-w-[40px]" : "block min-h-[32px]"
+      className={`outline-none border border-indigo-500 rounded px-1 -mx-1 bg-white text-slate-800 ${
+        inline ? "inline" : "block min-h-[32px]"
       } ${className}`}
     />
   );

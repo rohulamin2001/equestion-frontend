@@ -1,19 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap");
-@import url("https://fonts.maateen.me/kalpurush/font.css");
 @import url("https://fonts.maateen.me/solaiman-lipi/font.css");
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+
+@font-face {
+  font-family: 'Kalpurush';
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+  src: url('https://fonts.maateen.me/kalpurush/Kalpurush-v0.258.woff2') format('woff2'),
+       url('https://fonts.maateen.me/kalpurush/Kalpurush-v0.258.ttf') format('truetype');
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@font-face {
-  font-family: "Purna";
-  src:
-    local("Purna"), local("Purna Regular"), local("Purna-Regular"),
-    local("purna");
-}
 
 @layer base {
   :root {
@@ -214,12 +215,33 @@
 }
 
 /* Question Paper Font Override to bypass global Noto Sans Bengali */
-.question-paper-container,
-.question-paper-container * {
-  font-family: 'Purna', 'SutonnyMJ', 'SutonnyMJ-Regular', 'Kalpurush', 'SolaimanLipi', sans-serif !important;
+.question-paper-container.font-family-Purno,
+.question-paper-container.font-family-Purno * {
+  font-family: 'Purno', 'SutonnyMJ', 'SutonnyMJ-Regular', 'Kalpurush', 'SolaimanLipi', sans-serif !important;
+}
+
+.question-paper-container.font-family-SutonnyMJ,
+.question-paper-container.font-family-SutonnyMJ * {
+  font-family: 'SutonnyMJ', 'SutonnyMJ-Regular', 'Purno', 'Kalpurush', 'SolaimanLipi', sans-serif !important;
+}
+
+.question-paper-container.font-family-Kalpurush,
+.question-paper-container.font-family-Kalpurush * {
+  font-family: 'Kalpurush', 'SolaimanLipi', 'Purno', 'SutonnyMJ', sans-serif !important;
+}
+
+.question-paper-container.font-family-SolaimanLipi,
+.question-paper-container.font-family-SolaimanLipi * {
+  font-family: 'SolaimanLipi', 'Kalpurush', 'Purno', 'SutonnyMJ', sans-serif !important;
 }
 
 .question-paper-container.is-english,
 .question-paper-container.is-english * {
   font-family: 'Outfit', sans-serif !important;
+}
+
+/* Force bold tags inside question paper to have bold font weight */
+.question-paper-container strong,
+.question-paper-container b {
+  font-weight: 700 !important;
 }

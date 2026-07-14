@@ -40,6 +40,15 @@ export default function QuestionPreview() {
     userProfile,
   } = useQuestionPreview();
 
+  const activeFont = [
+    "Purno",
+    "SutonnyMJ",
+    "Kalpurush",
+    "SolaimanLipi",
+  ].includes(layoutSettings.fontFamily)
+    ? layoutSettings.fontFamily
+    : "Purno";
+
   if (loadingSets || !activeSet) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center space-y-3">
@@ -138,12 +147,12 @@ export default function QuestionPreview() {
           </div>
 
           <div
-            className={`question-paper-container ${layoutSettings.fontFamily === "English" ? "is-english" : ""} bg-white border border-slate-200/60 p-8 shadow-sm print:border-none print:shadow-none print:p-0 select-none print:select-text`}
+            className={`question-paper-container ${layoutSettings.fontFamily === "English" ? "is-english" : `font-family-${activeFont}`} bg-white border border-slate-200/60 p-8 shadow-sm print:border-none print:shadow-none print:p-0 select-none print:select-text`}
             style={{
               fontFamily:
                 layoutSettings.fontFamily === "English"
                   ? "Outfit, sans-serif"
-                  : "'Purna', 'SutonnyMJ', 'SutonnyMJ-Regular', 'Kalpurush', 'SolaimanLipi', sans-serif",
+                  : `'${activeFont}', 'Purno', 'SutonnyMJ', 'SutonnyMJ-Regular', 'Kalpurush', 'SolaimanLipi', sans-serif`,
               fontSize: `${layoutSettings.fontSize}px`,
             }}
           >
@@ -153,8 +162,14 @@ export default function QuestionPreview() {
                 {/* Left Column: Obtained Marks */}
                 <div className="col-span-3 flex justify-start items-center">
                   {layoutSettings.attachments.marksGrid ? (
-                    <div className="flex items-stretch border border-black overflow-hidden h-7 select-none" style={{ fontSize: "16px", fontWeight: 400 }}>
-                      <span className="bg-black text-white px-2 flex items-center justify-center  font-normal leading-none" style={{ fontSize: "16px", fontWeight: 400 }}>
+                    <div
+                      className="flex items-stretch border border-black overflow-hidden h-7 select-none"
+                      style={{ fontSize: "16px", fontWeight: 700 }}
+                    >
+                      <span
+                        className="bg-black text-white px-2 flex items-center justify-center  font-normal leading-none"
+                        style={{ fontSize: "16px", fontWeight: 700 }}
+                      >
                         প্রাপ্ত নম্বর
                       </span>
                       <span className="w-10 bg-white flex items-center justify-center border-l border-black"></span>
@@ -165,7 +180,10 @@ export default function QuestionPreview() {
                 </div>
 
                 {/* Center Column: School, Exam, Class, Subject, Chapters */}
-                <div className="col-span-6 text-center space-y-1">
+                <div
+                  className="col-span-6 text-center space-y-0.5"
+                  style={{ lineHeight: "1.25" }}
+                >
                   {/* School Name */}
                   <div className="block">
                     <InlineEditable
@@ -180,7 +198,7 @@ export default function QuestionPreview() {
                       onActivate={handleEditorActivate}
                       onDeactivate={handleEditorDeactivate}
                       className="text-slate-900 tracking-wide uppercase block text-center"
-                      style={{ fontSize: "20px", fontWeight: 400 }}
+                      style={{ fontSize: "20px", fontWeight: 700 }}
                       placeholder="প্রতিষ্ঠানের নাম লিখুন"
                       renderRichText={false}
                       inline={false}
@@ -195,8 +213,8 @@ export default function QuestionPreview() {
                         onSave={(val) => handleSaveSetField("examName", val)}
                         onActivate={handleEditorActivate}
                         onDeactivate={handleEditorDeactivate}
-                        className="text-slate-800 tracking-wide block text-center"
-                        style={{ fontSize: "18px", fontWeight: 400 }}
+                        className="text-slate-850 tracking-wide block text-center"
+                        style={{ fontSize: "18px", fontWeight: 700 }}
                         placeholder="পরীক্ষার নাম লিখুন"
                         renderRichText={false}
                         inline={false}
@@ -275,7 +293,10 @@ export default function QuestionPreview() {
                 <div className="col-span-3 flex flex-col items-end gap-1.5">
                   {/* Set Code */}
                   {layoutSettings.metadata.setCode ? (
-                    <div className="flex items-center gap-1.5 font-normal text-slate-800" style={{ fontSize: "16px", fontWeight: 400 }}>
+                    <div
+                      className="flex items-center gap-1.5 font-normal text-slate-800"
+                      style={{ fontSize: "16px", fontWeight: 400 }}
+                    >
                       <span>সেট কোড:</span>
                       <span className="w-8 h-6 border border-black flex items-center justify-center bg-white font-normal font-sans">
                         <InlineEditable
@@ -296,7 +317,10 @@ export default function QuestionPreview() {
 
                   {/* Subject Code */}
                   {layoutSettings.attachments.subjectCode ? (
-                    <div className="flex items-center gap-1.5 font-normal text-slate-800" style={{ fontSize: "16px", fontWeight: 400 }}>
+                    <div
+                      className="flex items-center gap-1.5 font-normal text-slate-800"
+                      style={{ fontSize: "16px", fontWeight: 400 }}
+                    >
                       <span>বিষয় কোড :</span>
                       {editingSubjectCode ? (
                         <input
@@ -326,7 +350,7 @@ export default function QuestionPreview() {
                             .map((digit, i) => (
                               <span
                                 key={i}
-                                className="w-5 h-6 border border-black flex items-center justify-center bg-white text-base"
+                                className="w-5 h-6 border border-black flex items-center justify-center bg-white text-base font-bold"
                               >
                                 {digit}
                               </span>
@@ -341,9 +365,12 @@ export default function QuestionPreview() {
               </div>
 
               {/* Time and Marks Row */}
-              <div className="flex justify-between items-center text-slate-800 font-normal px-1 py-1.5" style={{ fontSize: "16px", fontWeight: 400 }}>
+              <div
+                className="flex justify-between items-center text-slate-800 font-normal px-1 py-1  mt-2 mb-1"
+                style={{ fontSize: "16px", fontWeight: 400 }}
+              >
                 <div className="flex items-center gap-1">
-                  <span>সময়: </span>
+                  <span>সময় : </span>
                   <InlineEditable
                     value={layoutSettings.examTime || "১ ঘণ্টা ৫০ মিনিট"}
                     onSave={(val) => updateSettingField(null, "examTime", val)}
@@ -355,7 +382,7 @@ export default function QuestionPreview() {
                   />
                 </div>
                 <div className="flex items-center gap-1">
-                  <span>পূর্ণমান: </span>
+                  <span>পূর্ণমান :</span>
                   <InlineEditable
                     value={
                       activeSet.totalMarks ? String(activeSet.totalMarks) : "৭৯"
@@ -374,7 +401,10 @@ export default function QuestionPreview() {
 
               {/* Student Info Row */}
               {layoutSettings.attachments.studentInfo && (
-                <div className="flex justify-between items-center text-xs font-normal pt-2 pb-1 text-slate-800 select-none " style={{ fontSize: "16px", fontWeight: 400 }}>
+                <div
+                  className="flex justify-between items-center text-xs font-normal pt-2 pb-1 text-slate-800 select-none "
+                  style={{ fontSize: "16px", fontWeight: 400 }}
+                >
                   <div className="flex-1 max-w-[50%] flex items-center gap-1">
                     <span>শিক্ষার্থীর নাম: </span>
                     <span className="flex-1 border-b border-dotted border-slate-400 h-4"></span>
@@ -840,6 +870,29 @@ export default function QuestionPreview() {
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Font Selection */}
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-500 block">
+                      বাংলা ফন্ট
+                    </label>
+                    <select
+                      value={activeFont}
+                      onChange={(e) =>
+                        updateSettingField(null, "fontFamily", e.target.value)
+                      }
+                      className="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    >
+                      <option value="Purno">পূর্ণ (Purno)</option>
+                      <option value="SutonnyMJ">
+                        সুতন্বী এমজে (SutonnyMJ)
+                      </option>
+                      <option value="Kalpurush">কালপুরুষ (Kalpurush)</option>
+                      <option value="SolaimanLipi">
+                        সোলাইমান লিপি (SolaimanLipi)
+                      </option>
+                    </select>
                   </div>
 
                   {/* Prefix Prefix style */}

@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import {
   Bold,
   Italic,
@@ -14,15 +14,76 @@ import {
 
 export default function FloatingFormatToolbar({
   visible,
-  position = { top: 0, left: 0 },
   fontSize = 14,
   onChangeFontSize,
 }) {
+  const [activeStates, setActiveStates] = useState({
+    bold: false,
+    italic: false,
+    underline: false,
+  });
+  const [currentFontSize, setCurrentFontSize] = useState(fontSize);
+
+  // Monitor selection change to update bold/italic/underline states and active font size
+  useEffect(() => {
+    if (!visible) return;
+
+    const updateStates = () => {
+      // 1. Update text formatting states
+      try {
+        setActiveStates({
+          bold: document.queryCommandState("bold"),
+          italic: document.queryCommandState("italic"),
+          underline: document.queryCommandState("underline"),
+        });
+      } catch {
+        // Ignored
+      }
+
+      // 2. Update computed font size of the active element
+      const activeEl = document.activeElement;
+      if (activeEl && activeEl.getAttribute("contenteditable") === "true") {
+        const style = window.getComputedStyle(activeEl);
+        const sizePx = parseFloat(style.fontSize);
+        if (sizePx) {
+          setCurrentFontSize(Math.round(sizePx));
+        }
+      } else {
+        setCurrentFontSize(fontSize);
+      }
+    };
+
+    document.addEventListener("selectionchange", updateStates);
+    updateStates();
+
+    return () => {
+      document.removeEventListener("selectionchange", updateStates);
+    };
+  }, [visible, fontSize]);
+
   if (!visible) return null;
 
   const handleCommand = (e, command, value = null) => {
     e.preventDefault();
+    const activeEl = document.activeElement;
+
+    // Check if the user is editing a contentEditable block
+    if (activeEl && activeEl.getAttribute("contenteditable") === "true") {
+      const selection = window.getSelection();
+      // If there's no highlighted text selection, select the entire block content automatically
+      if (selection.isCollapsed) {
+        const range = document.createRange();
+        range.selectNodeContents(activeEl);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+
     document.execCommand(command, false, value);
+    
+    // Trigger selection change to update button active states immediately
+    const event = new Event("selectionchange");
+    document.dispatchEvent(event);
   };
 
   return (
@@ -30,7 +91,7 @@ export default function FloatingFormatToolbar({
       className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 print:hidden transition-all duration-200 ease-out flex items-center gap-1.5 px-4 py-2 bg-slate-900/95 backdrop-blur-xl border border-slate-700/60 shadow-2xl rounded-full text-slate-200"
       onMouseDown={(e) => e.preventDefault()}
     >
-      <span className="text-[11px] font-bold text-slate-400 border-r border-slate-700/60 pr-2.5 mr-1 hidden sm:inline">
+      <span className="text-[11px] font-bold text-slate-400 border-r border-slate-700/60 pr-2.5 mr-1 hidden sm:inline select-none">
         টেক্সট ফরম্যাট
       </span>
 
@@ -41,23 +102,27 @@ export default function FloatingFormatToolbar({
             type="button"
             onMouseDown={(e) => {
               e.preventDefault();
-              onChangeFontSize(Math.max(10, fontSize - 1));
+              const newSize = Math.max(10, currentFontSize - 1);
+              setCurrentFontSize(newSize);
+              onChangeFontSize(newSize);
             }}
-            className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-300 hover:text-white transition cursor-pointer"
+            className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-350 hover:text-white transition cursor-pointer"
             title="ফন্ট ছোট করুন"
           >
             <Minus className="size-3.5" />
           </button>
-          <span className="text-xs font-black min-w-[24px] text-center font-sans text-white">
-            {fontSize}
+          <span className="text-xs font-black min-w-[24px] text-center font-sans text-white select-none">
+            {currentFontSize}
           </span>
           <button
             type="button"
             onMouseDown={(e) => {
               e.preventDefault();
-              onChangeFontSize(Math.min(32, fontSize + 1));
+              const newSize = Math.min(32, currentFontSize + 1);
+              setCurrentFontSize(newSize);
+              onChangeFontSize(newSize);
             }}
-            className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-300 hover:text-white transition cursor-pointer"
+            className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-350 hover:text-white transition cursor-pointer"
             title="ফন্ট বড় করুন"
           >
             <Plus className="size-3.5" />
@@ -70,7 +135,9 @@ export default function FloatingFormatToolbar({
         <button
           type="button"
           onMouseDown={(e) => handleCommand(e, "bold")}
-          className="p-1.5 hover:bg-slate-800 hover:text-indigo-400 rounded-lg transition cursor-pointer"
+          className={`p-1.5 hover:bg-slate-800 rounded-lg transition cursor-pointer ${
+            activeStates.bold ? "text-indigo-400 bg-slate-800" : "text-slate-350 hover:text-white"
+          }`}
           title="Bold (গাঢ়)"
         >
           <Bold className="size-3.5" />
@@ -78,7 +145,9 @@ export default function FloatingFormatToolbar({
         <button
           type="button"
           onMouseDown={(e) => handleCommand(e, "italic")}
-          className="p-1.5 hover:bg-slate-800 hover:text-indigo-400 rounded-lg transition cursor-pointer"
+          className={`p-1.5 hover:bg-slate-800 rounded-lg transition cursor-pointer ${
+            activeStates.italic ? "text-indigo-400 bg-slate-800" : "text-slate-350 hover:text-white"
+          }`}
           title="Italic (বাঁকা)"
         >
           <Italic className="size-3.5" />
@@ -86,7 +155,9 @@ export default function FloatingFormatToolbar({
         <button
           type="button"
           onMouseDown={(e) => handleCommand(e, "underline")}
-          className="p-1.5 hover:bg-slate-800 hover:text-indigo-400 rounded-lg transition cursor-pointer"
+          className={`p-1.5 hover:bg-slate-800 rounded-lg transition cursor-pointer ${
+            activeStates.underline ? "text-indigo-400 bg-slate-800" : "text-slate-350 hover:text-white"
+          }`}
           title="Underline"
         >
           <Underline className="size-3.5" />
