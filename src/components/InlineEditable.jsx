@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import RichTextRender from "./RichTextRender.jsx";
 
 function stripOuterP(html) {
@@ -26,13 +26,14 @@ export default function InlineEditable({
   inline = true,
   onActivate,
   onDeactivate,
+  style = {},
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const editorRef = useRef(null);
 
   useEffect(() => {
     if (isEditing && editorRef.current) {
-      const displayVal = inline ? stripOuterP(value) : (value || "");
+      const displayVal = inline ? stripOuterP(value) : value || "";
       editorRef.current.innerHTML = displayVal;
       editorRef.current.focus();
 
@@ -77,6 +78,7 @@ export default function InlineEditable({
       <span
         key="viewer"
         onClick={() => setIsEditing(true)}
+        style={style}
         className={`cursor-text rounded px-1 -mx-1 border border-transparent hover:border-dashed hover:border-indigo-400/50 hover:bg-indigo-50/10 transition print:border-none print:p-0 print:m-0 ${
           inline ? "inline" : "block"
         } ${className}`}
@@ -87,7 +89,9 @@ export default function InlineEditable({
             <RichTextRender html={value} inline={inline} />
           ) : (
             <span
-              dangerouslySetInnerHTML={{ __html: inline ? stripOuterP(value) : value }}
+              dangerouslySetInnerHTML={{
+                __html: inline ? stripOuterP(value) : value,
+              }}
             />
           )
         ) : (
@@ -107,6 +111,7 @@ export default function InlineEditable({
       suppressContentEditableWarning
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
+      style={style}
       className={`outline-none border border-indigo-500 ring-2 ring-indigo-500/20 rounded px-1 -mx-1 bg-white text-slate-800 ${
         inline ? "inline-block min-w-[40px]" : "block min-h-[32px]"
       } ${className}`}
