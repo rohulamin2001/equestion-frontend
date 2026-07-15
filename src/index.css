@@ -88,6 +88,22 @@
   src: url("./assets/fonts/SutonnyOMJ.ttf") format("truetype");
 }
 
+/* 7. Noto Sans Bengali */
+@font-face {
+  font-family: "Noto Sans Bengali";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/NotoSansBengali-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Noto Sans Bengali";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/NotoSansBengali-Bold.ttf") format("truetype");
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -183,8 +199,8 @@
     --sidebar-ring: oklch(0.556 0 0);
   }
   :root {
-    --font-heading: "SolaimanLipi", "Geist Variable", sans-serif;
-    --font-sans: "SolaimanLipi", "Geist Variable", sans-serif;
+    --font-heading: "Noto Sans Bengali", "Geist Variable", sans-serif;
+    --font-sans: "Noto Sans Bengali", "Geist Variable", sans-serif;
   }
   * {
     border-color: var(--border);
@@ -275,7 +291,7 @@
 
   /* Bengali Specific Typography Helpers */
   .font-bengali {
-    font-family: "SolaimanLipi", sans-serif !important;
+    font-family: "Noto Sans Bengali", sans-serif !important;
     letter-spacing: 0 !important;
     line-height: 1.75 !important;
   }

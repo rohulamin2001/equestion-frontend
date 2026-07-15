@@ -40,8 +40,6 @@ export default function QuestionPreview() {
     layoutSettings,
     activeTab,
     setActiveTab,
-    editingSubjectCode,
-    setEditingSubjectCode,
     toolbarVisible,
     toolbarPos,
     groupedQuestions,
@@ -56,6 +54,16 @@ export default function QuestionPreview() {
     handleGoBackToSelect,
     userProfile,
   } = useQuestionPreview();
+
+  const handleSaveSubjectCodeDigit = (index, char) => {
+    const cleanedChar = char ? String(char).trim().charAt(0) : "";
+    let codeStr = String(activeSet.subjectCode || "১০১");
+    while (codeStr.length < 3) codeStr += " ";
+    const codeArr = codeStr.split("");
+    codeArr[index] = cleanedChar || " ";
+    const newCode = codeArr.join("");
+    handleSaveSetField("subjectCode", newCode);
+  };
 
   const activeFont = [
     "Purno",
@@ -348,41 +356,35 @@ export default function QuestionPreview() {
                       style={{ fontSize: "16px", fontWeight: 400 }}
                     >
                       <span>বিষয় কোড :</span>
-                      {editingSubjectCode ? (
-                        <input
-                          type="text"
-                          defaultValue={activeSet.subjectCode || "১০১"}
-                          onBlur={(e) => {
-                            handleSaveSetField("subjectCode", e.target.value);
-                            setEditingSubjectCode(false);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              handleSaveSetField("subjectCode", e.target.value);
-                              setEditingSubjectCode(false);
-                            }
-                          }}
-                          autoFocus
-                          className="w-16 px-1 py-0.5 border border-indigo-500 rounded text-center font-sans text-xs focus:outline-none print:hidden"
-                        />
-                      ) : (
-                        <div
-                          onClick={() => setEditingSubjectCode(true)}
-                          className="flex gap-0.5 font-sans font-normal cursor-pointer hover:opacity-80 print:cursor-default"
-                          title="এডিট করতে ক্লিক করুন"
-                        >
-                          {String(activeSet.subjectCode || "১০১")
-                            .split("")
-                            .map((digit, i) => (
-                              <span
-                                key={i}
-                                className="w-5 h-6 border border-black flex items-center justify-center bg-white text-base font-bold"
-                              >
-                                {digit}
-                              </span>
-                            ))}
-                        </div>
-                      )}
+                      <div className="flex gap-0 font-sans font-normal">
+                        {[0, 1, 2].map((i) => {
+                          const codeVal = String(
+                            activeSet.subjectCode || "১০১",
+                          );
+                          const digit = codeVal[i] || "";
+                          const borderClass =
+                            i === 0
+                              ? "border-2 border-black !border-2 !border-black"
+                              : "border-2 border-l-0 border-black !border-2 !border-l-0 !border-black";
+                          return (
+                            <InlineEditable
+                              key={i}
+                              value={digit}
+                              onSave={(val) =>
+                                handleSaveSubjectCodeDigit(i, val)
+                              }
+                              onActivate={handleEditorActivate}
+                              onDeactivate={handleEditorDeactivate}
+                              renderRichText={false}
+                              className={`w-6 h-6 flex items-center justify-center bg-white text-base font-bold text-center !px-0 !mx-0 !bg-white !rounded-none select-text ${borderClass}`}
+                              style={{ fontSize: "16px", fontWeight: 700 }}
+                              placeholder=""
+                              inline={false}
+                              singleLine={true}
+                            />
+                          );
+                        })}
+                      </div>
                     </div>
                   ) : (
                     <div className="h-5"></div>
@@ -436,7 +438,9 @@ export default function QuestionPreview() {
                   <div className="flex-1 max-w-[55%] flex items-baseline gap-0">
                     <InlineEditable
                       value={activeSet.studentNameLabel || "শিক্ষার্থীর নাম:"}
-                      onSave={(val) => handleSaveSetField("studentNameLabel", val)}
+                      onSave={(val) =>
+                        handleSaveSetField("studentNameLabel", val)
+                      }
                       onActivate={handleEditorActivate}
                       onDeactivate={handleEditorDeactivate}
                       renderRichText={false}
@@ -1009,7 +1013,9 @@ export default function QuestionPreview() {
                         সোলাইমান লিপি (SolaimanLipi)
                       </option>
                       <option value="Nikosh">নিকোষ (Nikosh)</option>
-                      <option value="TiroBangla">তিরো বাংলা (TiroBangla)</option>
+                      <option value="TiroBangla">
+                        তিরো বাংলা (TiroBangla)
+                      </option>
                     </select>
                   </div>
 
