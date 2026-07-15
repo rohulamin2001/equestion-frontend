@@ -62,6 +62,8 @@ export default function QuestionPreview() {
     "SutonnyMJ",
     "Kalpurush",
     "SolaimanLipi",
+    "Nikosh",
+    "TiroBangla",
   ].includes(layoutSettings.fontFamily)
     ? layoutSettings.fontFamily
     : "Purno";
@@ -1006,6 +1008,8 @@ export default function QuestionPreview() {
                       <option value="SolaimanLipi">
                         সোলাইমান লিপি (SolaimanLipi)
                       </option>
+                      <option value="Nikosh">নিকোষ (Nikosh)</option>
+                      <option value="TiroBangla">তিরো বাংলা (TiroBangla)</option>
                     </select>
                   </div>
 

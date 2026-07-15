@@ -1,19 +1,91 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap");
-@import url("https://fonts.maateen.me/solaiman-lipi/font.css");
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
+/* ==========================================
+   LOCAL BENGALI FONTS SETUP
+   ========================================== */
+
+/* 1. SolaimanLipi */
+@font-face {
+  font-family: "SolaimanLipi";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/SolaimanLipi-Normal.ttf") format("truetype");
+}
+@font-face {
+  font-family: "SolaimanLipi";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/SolaimanLipi-Bold.ttf") format("truetype");
+}
+
+/* 2. Kalpurush */
 @font-face {
   font-family: "Kalpurush";
-  font-display: swap;
-  font-style: normal;
   font-weight: 400;
-  src:
-    url("https://fonts.maateen.me/kalpurush/Kalpurush-v0.258.woff2")
-      format("woff2"),
-    url("https://fonts.maateen.me/kalpurush/Kalpurush-v0.258.ttf")
-      format("truetype");
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/kalpurush.ttf") format("truetype");
+}
+
+/* 3. Purno */
+@font-face {
+  font-family: "Purno";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/Purno Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Purno";
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url("./assets/fonts/Purno Italic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Purno";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/Purno Bold.ttf") format("truetype");
+}
+
+/* 4. Tiro Bangla */
+@font-face {
+  font-family: "TiroBangla";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/TiroBangla-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "TiroBangla";
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url("./assets/fonts/TiroBangla-Italic.ttf") format("truetype");
+}
+
+/* 5. Nikosh */
+@font-face {
+  font-family: "Nikosh";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/Nikosh.ttf") format("truetype");
+}
+
+/* 6. SutonnyMJ */
+@font-face {
+  font-family: "SutonnyMJ";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/SutonnyOMJ.ttf") format("truetype");
 }
 
 @tailwind base;
@@ -111,8 +183,8 @@
     --sidebar-ring: oklch(0.556 0 0);
   }
   :root {
-    --font-heading: "Noto Sans Bengali", "Geist Variable", sans-serif;
-    --font-sans: "Noto Sans Bengali", "Geist Variable", sans-serif;
+    --font-heading: "SolaimanLipi", "Geist Variable", sans-serif;
+    --font-sans: "SolaimanLipi", "Geist Variable", sans-serif;
   }
   * {
     border-color: var(--border);
@@ -203,7 +275,7 @@
 
   /* Bengali Specific Typography Helpers */
   .font-bengali {
-    font-family: "Noto Sans Bengali", sans-serif !important;
+    font-family: "SolaimanLipi", sans-serif !important;
     letter-spacing: 0 !important;
     line-height: 1.75 !important;
   }
@@ -243,6 +315,18 @@
 .question-paper-container.font-family-SolaimanLipi * {
   font-family:
     "SolaimanLipi", "Kalpurush", "Purno", "SutonnyMJ", sans-serif !important;
+}
+
+.question-paper-container.font-family-Nikosh,
+.question-paper-container.font-family-Nikosh * {
+  font-family:
+    "Nikosh", "SolaimanLipi", "Kalpurush", "Purno", "SutonnyMJ", sans-serif !important;
+}
+
+.question-paper-container.font-family-TiroBangla,
+.question-paper-container.font-family-TiroBangla * {
+  font-family:
+    "TiroBangla", "SolaimanLipi", "Kalpurush", "Purno", "SutonnyMJ", sans-serif !important;
 }
 
 .question-paper-container.is-english,
