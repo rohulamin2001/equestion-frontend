@@ -174,7 +174,8 @@ export default function Questions() {
 
                 {/* Instructions Text Bar */}
                 <div className="mt-3 text-center border-t border-slate-100 pt-2 text-[10px] text-slate-500 font-bold">
-                  প্রশ্নপত্রে কোনো প্রকার দাগ/চিহ্ন দেওয়া যাবে না।
+                  {set.instructionsText ||
+                    "প্রশ্নপত্রে কোনো প্রকার দাগ/চিহ্ন দেওয়া যাবে না।"}
                 </div>
               </div>
 

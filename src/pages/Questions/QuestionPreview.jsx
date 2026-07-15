@@ -390,7 +390,7 @@ export default function QuestionPreview() {
 
               {/* Time and Marks Row */}
               <div
-                className="flex justify-between items-center text-slate-800 font-normal px-1 py-1  mt-2 mb-1"
+                className="flex justify-between items-center text-slate-800 font-normal   mt-2"
                 style={{ fontSize: "16px", fontWeight: 400 }}
               >
                 <div className="flex items-center gap-1">
@@ -428,7 +428,7 @@ export default function QuestionPreview() {
               {/* Student Info Row */}
               {layoutSettings.attachments.studentInfo && (
                 <div
-                  className="flex justify-between items-center text-xs font-normal pt-2 pb-1 text-slate-800 select-none "
+                  className="flex justify-between items-center text-xs font-normal pb-2 text-slate-800 select-none "
                   style={{ fontSize: "16px", fontWeight: 400 }}
                 >
                   <div className="flex-1 max-w-[50%] flex items-center gap-1">
@@ -446,10 +446,28 @@ export default function QuestionPreview() {
                 </div>
               )}
 
+              {/* Separator Line */}
+              <hr className="border-t border-slate-200" style={{ margin: 0 }} />
+
               {/* Instructions Row */}
               {layoutSettings.metadata.instructions && (
-                <div className="text-center text-xs text-slate-850 font-normal border-t border-b border-dotted border-slate-400 py-1.5 mt-2 select-none">
-                  প্রশ্নপত্রে কোনো প্রকার দাগ/চিহ্ন দেয়া যাবে না।
+                <div className="text-center select-none">
+                  <InlineEditable
+                    value={
+                      activeSet.instructionsText ||
+                      "প্রশ্নপত্রে কোনো প্রকার দাগ/চিহ্ন দেয়া যাবে না।"
+                    }
+                    onSave={(val) =>
+                      handleSaveSetField("instructionsText", val)
+                    }
+                    onActivate={handleEditorActivate}
+                    onDeactivate={handleEditorDeactivate}
+                    renderRichText={false}
+                    className="font-bold text-center block"
+                    style={{ fontSize: "14px", fontWeight: 700 }}
+                    placeholder="নির্দেশনা"
+                    inline={false}
+                  />
                 </div>
               )}
             </div>
@@ -754,8 +772,8 @@ export default function QuestionPreview() {
                       label: "গুরুত্বপূর্ণ প্রশ্ন চিহ্নিতকরণ",
                     },
                     { field: "questionInfo", label: "প্রশ্নের তথ্য প্রদর্শন" },
-                    { field: "studentInfo", label: "শিক্ষার্থীর তথ্য ঘর" },
-                    { field: "marksGrid", label: "প্রাপ্ত নম্বর ঘর" },
+                    { field: "studentInfo", label: "শিক্ষার্থীর তথ্য" },
+                    { field: "marksGrid", label: "প্রাপ্ত নম্বর" },
                     { field: "subjectCode", label: "বিষয় কোড" },
                   ].map((opt) => (
                     <div
