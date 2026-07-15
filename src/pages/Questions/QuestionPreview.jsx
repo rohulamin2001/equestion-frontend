@@ -432,9 +432,17 @@ export default function QuestionPreview() {
                   style={{ fontSize: "16px", fontWeight: 400, margin: "0" }}
                 >
                   <div className="flex-1 max-w-[55%] flex items-baseline gap-0">
-                    <span className="shrink-0 font-normal">
-                      শিক্ষার্থীর নাম:
-                    </span>
+                    <InlineEditable
+                      value={activeSet.studentNameLabel || "শিক্ষার্থীর নাম:"}
+                      onSave={(val) => handleSaveSetField("studentNameLabel", val)}
+                      onActivate={handleEditorActivate}
+                      onDeactivate={handleEditorDeactivate}
+                      renderRichText={false}
+                      className="shrink-0 font-normal !border-none !bg-transparent !shadow-none !px-0 !mx-0 h-5 leading-5"
+                      style={{ fontSize: "16px", fontWeight: 400 }}
+                      placeholder="শিক্ষার্থীর নাম:"
+                      inline={false}
+                    />
                     <div className="flex-grow border-b border-dotted border-slate-400 pb-0 min-w-[120px]">
                       <InlineEditable
                         value={activeSet.studentNameValue || ""}
@@ -452,7 +460,17 @@ export default function QuestionPreview() {
                     </div>
                   </div>
                   <div className="w-[22%] flex items-baseline justify-center gap-0">
-                    <span className="shrink-0 font-normal">শাখা:</span>
+                    <InlineEditable
+                      value={activeSet.sectionLabel || "শাখা:"}
+                      onSave={(val) => handleSaveSetField("sectionLabel", val)}
+                      onActivate={handleEditorActivate}
+                      onDeactivate={handleEditorDeactivate}
+                      renderRichText={false}
+                      className="shrink-0 font-normal !border-none !bg-transparent !shadow-none !px-0 !mx-0 h-5 leading-5"
+                      style={{ fontSize: "16px", fontWeight: 400 }}
+                      placeholder="শাখা:"
+                      inline={false}
+                    />
                     <div className="flex-grow max-w-[120px] border-b border-dotted border-slate-400 pb-0">
                       <InlineEditable
                         value={activeSet.sectionValue || ""}
@@ -470,7 +488,17 @@ export default function QuestionPreview() {
                     </div>
                   </div>
                   <div className="w-[20%] flex items-baseline justify-end gap-0">
-                    <span className="shrink-0 font-normal">রোল:</span>
+                    <InlineEditable
+                      value={activeSet.rollLabel || "রোল:"}
+                      onSave={(val) => handleSaveSetField("rollLabel", val)}
+                      onActivate={handleEditorActivate}
+                      onDeactivate={handleEditorDeactivate}
+                      renderRichText={false}
+                      className="shrink-0 font-normal !border-none !bg-transparent !shadow-none !px-0 !mx-0 h-5 leading-5"
+                      style={{ fontSize: "16px", fontWeight: 400 }}
+                      placeholder="রোল:"
+                      inline={false}
+                    />
                     <div className="w-[60%] border-b border-dotted border-slate-400 pb-0">
                       <InlineEditable
                         value={activeSet.rollValue || ""}
