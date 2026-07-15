@@ -428,20 +428,62 @@ export default function QuestionPreview() {
               {/* Student Info Row */}
               {layoutSettings.attachments.studentInfo && (
                 <div
-                  className="flex justify-between items-center text-xs font-normal pb-2 text-slate-800 select-none "
-                  style={{ fontSize: "16px", fontWeight: 400 }}
+                  className="flex justify-between items-baseline text-xs font-normal pb-2 text-slate-800"
+                  style={{ fontSize: "16px", fontWeight: 400, margin: "0" }}
                 >
-                  <div className="flex-1 max-w-[50%] flex items-center gap-1">
-                    <span>শিক্ষার্থীর নাম: </span>
-                    <span className="flex-1 border-b border-dotted border-slate-400 h-4"></span>
+                  <div className="flex-1 max-w-[55%] flex items-baseline gap-0">
+                    <span className="shrink-0 font-normal">
+                      শিক্ষার্থীর নাম:
+                    </span>
+                    <div className="flex-grow border-b border-dotted border-slate-400 pb-0 min-w-[120px]">
+                      <InlineEditable
+                        value={activeSet.studentNameValue || ""}
+                        onSave={(val) =>
+                          handleSaveSetField("studentNameValue", val)
+                        }
+                        onActivate={handleEditorActivate}
+                        onDeactivate={handleEditorDeactivate}
+                        renderRichText={false}
+                        className="font-normal w-full block !border-none !bg-transparent !shadow-none !px-0 !mx-0 h-5 leading-5"
+                        style={{ fontSize: "16px", fontWeight: 400 }}
+                        placeholder=""
+                        inline={false}
+                      />
+                    </div>
                   </div>
-                  <div className="w-[20%] flex items-center justify-center gap-1">
-                    <span>শাখা: </span>
-                    <span className="w-[60%] border-b border-dotted border-slate-400 h-4"></span>
+                  <div className="w-[22%] flex items-baseline justify-center gap-0">
+                    <span className="shrink-0 font-normal">শাখা:</span>
+                    <div className="flex-grow max-w-[120px] border-b border-dotted border-slate-400 pb-0">
+                      <InlineEditable
+                        value={activeSet.sectionValue || ""}
+                        onSave={(val) =>
+                          handleSaveSetField("sectionValue", val)
+                        }
+                        onActivate={handleEditorActivate}
+                        onDeactivate={handleEditorDeactivate}
+                        renderRichText={false}
+                        className="font-normal w-full block !border-none !bg-transparent !shadow-none !px-0 !mx-0 h-5 leading-5"
+                        style={{ fontSize: "16px", fontWeight: 400 }}
+                        placeholder=""
+                        inline={false}
+                      />
+                    </div>
                   </div>
-                  <div className="w-[20%] flex items-center justify-end gap-1">
-                    <span>রোল: </span>
-                    <span className="w-[60%] border-b border-dotted border-slate-400 h-4"></span>
+                  <div className="w-[20%] flex items-baseline justify-end gap-0">
+                    <span className="shrink-0 font-normal">রোল:</span>
+                    <div className="w-[60%] border-b border-dotted border-slate-400 pb-0">
+                      <InlineEditable
+                        value={activeSet.rollValue || ""}
+                        onSave={(val) => handleSaveSetField("rollValue", val)}
+                        onActivate={handleEditorActivate}
+                        onDeactivate={handleEditorDeactivate}
+                        renderRichText={false}
+                        className="font-normal w-full block !border-none !bg-transparent !shadow-none !px-0 !mx-0 h-5 leading-5"
+                        style={{ fontSize: "16px", fontWeight: 400 }}
+                        placeholder=""
+                        inline={false}
+                      />
+                    </div>
                   </div>
                 </div>
               )}

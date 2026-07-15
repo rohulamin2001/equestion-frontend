@@ -128,7 +128,7 @@ export default function InlineEditable({
           )
         ) : (
           <span className="text-slate-400 italic print:hidden">
-            {placeholder}
+            {placeholder || "\u200B"}
           </span>
         )}
       </span>
