@@ -1,4 +1,5 @@
 import {
+  ChevronDown,
   ChevronLeft,
   Download,
   FileText,
@@ -13,6 +14,12 @@ import {
 } from "lucide-react";
 import FloatingFormatToolbar from "../../components/FloatingFormatToolbar.jsx";
 import InlineEditable from "../../components/InlineEditable.jsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu.jsx";
 import { translateSubscriptionKey } from "../../constants/subscriptions.js";
 import { useQuestionPreview } from "./hook/useQuestionPreview";
 
@@ -31,6 +38,28 @@ const parseBanglaNumber = (val) => {
 
   const parsed = Number(englishStr);
   return isNaN(parsed) ? 0 : parsed;
+};
+
+const getChapterNames = (set, syllabusList) => {
+  if (!set.chapters || set.chapters.length === 0) return "";
+  const targetSubjectId = set.subjectId?._id || set.subjectId;
+  const matchingSyllabus = syllabusList?.find(
+    (s) =>
+      s.className === set.className &&
+      (s.subjectId?._id === targetSubjectId || s.subjectId === targetSubjectId),
+  );
+  if (!matchingSyllabus || !matchingSyllabus.chapters) {
+    return `অধ্যায়: ${set.chapters.join(", ")}`;
+  }
+  const names = set.chapters.map((chapNum) => {
+    const chap = matchingSyllabus.chapters.find(
+      (c) =>
+        c.chapterNumber === chapNum ||
+        String(c.chapterNumber) === String(chapNum)
+    );
+    return chap ? chap.chapterName : `অধ্যায় ${chapNum}`;
+  });
+  return names.join(", ");
 };
 
 export default function QuestionPreview() {
@@ -53,6 +82,7 @@ export default function QuestionPreview() {
     handleSaveAll,
     handleGoBackToSelect,
     userProfile,
+    syllabusList,
   } = useQuestionPreview();
 
   const handleSaveSubjectCodeDigit = (index, char) => {
@@ -65,16 +95,20 @@ export default function QuestionPreview() {
     handleSaveSetField("subjectCode", newCode);
   };
 
-  const activeFont = [
-    "Purno",
-    "SutonnyMJ",
-    "Kalpurush",
-    "SolaimanLipi",
-    "Nikosh",
-    "TiroBangla",
-  ].includes(layoutSettings.fontFamily)
+  const FONT_OPTIONS = [
+    { value: "SolaimanLipi", label: "সোলাইমান লিপি (SolaimanLipi)" },
+    { value: "Nikosh", label: "নিকোষ (Nikosh)" },
+    { value: "SutonnyMJ", label: "সুতন্বী এমজে (SutonnyMJ)" },
+    { value: "Kalpurush", label: "কালপুরুষ (Kalpurush)" },
+    { value: "TiroBangla", label: "তিরো বাংলা (TiroBangla)" },
+    { value: "Purno", label: "পূর্ণ (Purno)" },
+  ];
+
+  const activeFont = FONT_OPTIONS.some(
+    (f) => f.value === layoutSettings.fontFamily,
+  )
     ? layoutSettings.fontFamily
-    : "Purno";
+    : "SolaimanLipi";
 
   if (loadingSets || !activeSet) {
     return (
@@ -300,7 +334,7 @@ export default function QuestionPreview() {
                       <InlineEditable
                         value={
                           activeSet.chapters && activeSet.chapters.length > 0
-                            ? activeSet.chapters.join(", ")
+                            ? getChapterNames(activeSet, syllabusList)
                             : "গদ্য ১ - সততার পুরস্কার"
                         }
                         onSave={(val) =>
@@ -314,7 +348,8 @@ export default function QuestionPreview() {
                         }
                         onActivate={handleEditorActivate}
                         onDeactivate={handleEditorDeactivate}
-                        className="text-[11px] text-slate-500 font-normal block text-center"
+                        className="text-slate-800 font-normal block text-center"
+                        style={{ fontSize: "16px" }}
                         placeholder="অধ্যায় নম্বর"
                         renderRichText={false}
                         inline={false}
@@ -806,8 +841,8 @@ export default function QuestionPreview() {
         </div>
 
         {/* Right Pane: Layout Settings Sidebar */}
-        <div className="w-full lg:w-[360px] lg:shrink-0 space-y-6 print:hidden lg:sticky lg:top-6">
-          <div className="flex gap-1.5 p-1 bg-black/[0.02] border border-black/[0.04] rounded-2xl backdrop-blur-sm">
+        <div className="w-full lg:w-[360px] lg:shrink-0 print:hidden lg:sticky lg:top-6 lg:h-[calc(100vh-48px)] lg:flex lg:flex-col gap-4">
+          <div className="flex gap-1.5 p-1 bg-black/[0.02] border border-black/[0.04] rounded-2xl backdrop-blur-sm shrink-0">
             {[
               { id: "settings", label: "সেটিংস", icon: Settings },
               { id: "download", label: "ডাউনলোড", icon: Download },
@@ -831,220 +866,264 @@ export default function QuestionPreview() {
             })}
           </div>
 
-          {activeTab === "settings" && (
-            <div className="space-y-6">
-              {/* Attachment settings card */}
-              <div className="bg-glass-elevated border border-slate-200/50 p-5 rounded-2xl space-y-4">
-                <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                  <Grid className="size-3.5" />
-                  প্রশ্নে সংযুক্তি
-                </h3>
-                <div className="space-y-3">
-                  {[
-                    { field: "answerSheet", label: "উত্তরপত্র সংযুক্তি" },
-                    { field: "omr", label: "OMR সংযুক্তি" },
-                    {
-                      field: "important",
-                      label: "গুরুত্বপূর্ণ প্রশ্ন চিহ্নিতকরণ",
-                    },
-                    { field: "questionInfo", label: "প্রশ্নের তথ্য প্রদর্শন" },
-                    { field: "studentInfo", label: "শিক্ষার্থীর তথ্য" },
-                    { field: "marksGrid", label: "প্রাপ্ত নম্বর" },
-                    { field: "subjectCode", label: "বিষয় কোড" },
-                  ].map((opt) => (
-                    <div
-                      key={opt.field}
-                      className="flex items-center justify-between"
-                    >
-                      <span className="text-xs font-bold text-slate-700">
-                        {opt.label}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateSettingField(
-                            "attachments",
-                            opt.field,
-                            !layoutSettings.attachments[opt.field],
-                          )
-                        }
-                        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-                          layoutSettings.attachments[opt.field]
-                            ? "bg-emerald-600"
-                            : "bg-slate-200"
-                        }`}
-                      >
-                        <span
-                          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
-                            layoutSettings.attachments[opt.field]
-                              ? "translate-x-4"
-                              : "translate-x-0"
-                          }`}
-                        />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Metadata header toggles */}
-              <div className="bg-glass-elevated border border-slate-200/50 p-5 rounded-2xl space-y-4">
-                <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                  <FileText className="size-3.5" />
-                  প্রশ্নের মেটাডাটা (হেডার)
-                </h3>
-                <div className="space-y-3">
-                  {[
-                    { field: "className", label: "শ্রেণির নাম" },
-                    { field: "subjectName", label: "বিষয়ের নাম" },
-                    { field: "chapterName", label: "অধ্যায়ের নাম" },
-                    { field: "setCode", label: "সেট কোড" },
-                    { field: "programName", label: "প্রোগ্রাম/পরীক্ষার নাম" },
-                    { field: "instructions", label: "নির্দেশনাবলি" },
-                  ].map((opt) => (
-                    <div
-                      key={opt.field}
-                      className="flex items-center justify-between"
-                    >
-                      <span className="text-xs font-bold text-slate-700">
-                        {opt.label}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateSettingField(
-                            "metadata",
-                            opt.field,
-                            !layoutSettings.metadata[opt.field],
-                          )
-                        }
-                        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-                          layoutSettings.metadata[opt.field]
-                            ? "bg-emerald-600"
-                            : "bg-slate-200"
-                        }`}
-                      >
-                        <span
-                          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
-                            layoutSettings.metadata[opt.field]
-                              ? "translate-x-4"
-                              : "translate-x-0"
-                          }`}
-                        />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Layout controls */}
-              <div className="bg-glass-elevated border border-slate-200/50 p-5 rounded-2xl space-y-4">
-                <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                  <Sliders className="size-3.5" />
-                  ডকুমেন্ট কাস্টমাইজেশন
-                </h3>
+          <div className="flex-1 lg:overflow-y-auto lg:pr-2 lg:-mr-2 no-scrollbar min-h-0">
+            {activeTab === "settings" && (
+              <div className="bg-glass-elevated border border-slate-200/50 p-5 rounded-2xl divide-y divide-slate-200/60 space-y-5">
+                {/* Attachment settings card */}
                 <div className="space-y-4">
-                  {/* Paper size */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-500 block">
-                      কাগজের সাইজ
-                    </label>
-                    <div className="grid grid-cols-4 gap-1">
-                      {["A4", "Letter", "Legal", "A5"].map((size) => (
+                  <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                    <Grid className="size-3.5" />
+                    প্রশ্নে সংযুক্তি
+                  </h3>
+                  <div className="space-y-3">
+                    {[
+                      { field: "answerSheet", label: "উত্তরপত্র সংযুক্তি" },
+                      { field: "omr", label: "OMR সংযুক্তি" },
+                      {
+                        field: "important",
+                        label: "গুরুত্বপূর্ণ প্রশ্ন চিহ্নিতকরণ",
+                      },
+                      {
+                        field: "questionInfo",
+                        label: "প্রশ্নের তথ্য প্রদর্শন",
+                      },
+                      { field: "studentInfo", label: "শিক্ষার্থীর তথ্য" },
+                      { field: "marksGrid", label: "প্রাপ্ত নম্বর" },
+                      { field: "subjectCode", label: "বিষয় কোড" },
+                    ].map((opt) => (
+                      <div
+                        key={opt.field}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="text-xs font-bold text-slate-700">
+                          {opt.label}
+                        </span>
                         <button
-                          key={size}
+                          type="button"
                           onClick={() =>
-                            updateSettingField(null, "paperSize", size)
+                            updateSettingField(
+                              "attachments",
+                              opt.field,
+                              !layoutSettings.attachments[opt.field],
+                            )
                           }
-                          className={`py-1.5 border rounded-lg text-xs font-bold transition ${
-                            layoutSettings.paperSize === size
-                              ? "bg-indigo-50 border-indigo-300 text-indigo-700 font-extrabold"
-                              : "bg-white border-slate-200 text-slate-600"
+                          className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
+                            layoutSettings.attachments[opt.field]
+                              ? "bg-emerald-600"
+                              : "bg-slate-200"
                           }`}
                         >
-                          {size}
+                          <span
+                            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
+                              layoutSettings.attachments[opt.field]
+                                ? "translate-x-4"
+                                : "translate-x-0"
+                            }`}
+                          />
                         </button>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
+                </div>
 
-                  {/* Columns */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-500 block">
-                      কলাম বিন্যাস
-                    </label>
-                    <div className="grid grid-cols-3 gap-1">
-                      {[1, 2, 3].map((col) => (
+                {/* Metadata header toggles */}
+                <div className="space-y-4 pt-5">
+                  <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                    <FileText className="size-3.5" />
+                    প্রশ্নের মেটাডাটা (হেডার)
+                  </h3>
+                  <div className="space-y-3">
+                    {[
+                      { field: "className", label: "শ্রেণির নাম" },
+                      { field: "subjectName", label: "বিষয়ের নাম" },
+                      { field: "chapterName", label: "অধ্যায়ের নাম" },
+                      { field: "setCode", label: "সেট কোড" },
+                      { field: "programName", label: "প্রোগ্রাম/পরীক্ষার নাম" },
+                      { field: "instructions", label: "নির্দেশনাবলি" },
+                    ].map((opt) => (
+                      <div
+                        key={opt.field}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="text-xs font-bold text-slate-700">
+                          {opt.label}
+                        </span>
                         <button
-                          key={col}
+                          type="button"
                           onClick={() =>
-                            updateSettingField(null, "columns", col)
+                            updateSettingField(
+                              "metadata",
+                              opt.field,
+                              !layoutSettings.metadata[opt.field],
+                            )
                           }
-                          className={`py-1.5 border rounded-lg text-xs font-bold transition ${
-                            layoutSettings.columns === col
-                              ? "bg-indigo-50 border-indigo-300 text-indigo-700 font-extrabold"
-                              : "bg-white border-slate-200 text-slate-600"
+                          className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
+                            layoutSettings.metadata[opt.field]
+                              ? "bg-emerald-600"
+                              : "bg-slate-200"
                           }`}
                         >
-                          {col} কলাম
+                          <span
+                            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
+                              layoutSettings.metadata[opt.field]
+                                ? "translate-x-4"
+                                : "translate-x-0"
+                            }`}
+                          />
                         </button>
-                      ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Layout controls */}
+                <div className="space-y-4 pt-5">
+                  <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                    <Sliders className="size-3.5" />
+                    ডকুমেন্ট কাস্টমাইজেশন
+                  </h3>
+                  <div className="space-y-4">
+                    {/* Paper size */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-500 block">
+                        কাগজের সাইজ
+                      </label>
+                      <div className="grid grid-cols-4 gap-1">
+                        {["A4", "Letter", "Legal", "A5"].map((size) => (
+                          <button
+                            key={size}
+                            onClick={() =>
+                              updateSettingField(null, "paperSize", size)
+                            }
+                            className={`py-1.5 border rounded-lg text-xs font-bold transition ${
+                              layoutSettings.paperSize === size
+                                ? "bg-indigo-50 border-indigo-300 text-indigo-700 font-extrabold"
+                                : "bg-white border-slate-200 text-slate-600"
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Font Selection */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-500 block">
-                      বাংলা ফন্ট
-                    </label>
-                    <select
-                      value={activeFont}
-                      onChange={(e) =>
-                        updateSettingField(null, "fontFamily", e.target.value)
-                      }
-                      className="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    >
-                      <option value="Purno">পূর্ণ (Purno)</option>
-                      <option value="SutonnyMJ">
-                        সুতন্বী এমজে (SutonnyMJ)
-                      </option>
-                      <option value="Kalpurush">কালপুরুষ (Kalpurush)</option>
-                      <option value="SolaimanLipi">
-                        সোলাইমান লিপি (SolaimanLipi)
-                      </option>
-                      <option value="Nikosh">নিকোষ (Nikosh)</option>
-                      <option value="TiroBangla">
-                        তিরো বাংলা (TiroBangla)
-                      </option>
-                    </select>
-                  </div>
-
-                  {/* Prefix Prefix style */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-500 block">
-                      MCQ অপশন স্টাইল
-                    </label>
-                    <div className="grid grid-cols-4 gap-1">
-                      {["●", "()", ".", ")"].map((style) => (
-                        <button
-                          key={style}
-                          onClick={() =>
-                            updateSettingField(null, "optionStyle", style)
-                          }
-                          className={`py-1.5 border rounded-lg text-[10px] font-black transition ${
-                            layoutSettings.optionStyle === style
-                              ? "bg-indigo-50 border-indigo-300 text-indigo-700 font-extrabold"
-                              : "bg-white border-slate-200 text-slate-600"
-                          }`}
-                        >
-                          {style === "●" ? "ডট ডেকোরেশন" : `ক${style}`}
-                        </button>
-                      ))}
+                    {/* Columns */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-500 block">
+                        কলাম বিন্যাস
+                      </label>
+                      <div className="grid grid-cols-3 gap-1">
+                        {[1, 2, 3].map((col) => (
+                          <button
+                            key={col}
+                            onClick={() =>
+                              updateSettingField(null, "columns", col)
+                            }
+                            className={`py-1.5 border rounded-lg text-xs font-bold transition ${
+                              layoutSettings.columns === col
+                                ? "bg-indigo-50 border-indigo-300 text-indigo-700 font-extrabold"
+                                : "bg-white border-slate-200 text-slate-600"
+                            }`}
+                          >
+                            {col} কলাম
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Range sliders */}
-                  <div className="space-y-2 pt-2">
+                    {/* Font Selection */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-500 block">
+                        বাংলা ফন্ট
+                      </label>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="w-full h-9 px-3 border border-slate-200 bg-white hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-bold text-slate-700 flex justify-between items-center shadow-sm cursor-pointer select-none">
+                            <span>
+                              {FONT_OPTIONS.find((f) => f.value === activeFont)
+                                ?.label || activeFont}
+                            </span>
+                            <ChevronDown className="size-3.5 text-slate-400" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                          {FONT_OPTIONS.map((font) => {
+                            const isSelected = activeFont === font.value;
+                            return (
+                              <DropdownMenuItem
+                                key={font.value}
+                                onSelect={() =>
+                                  updateSettingField(
+                                    null,
+                                    "fontFamily",
+                                    font.value,
+                                  )
+                                }
+                                className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                                  isSelected
+                                    ? "bg-indigo-50 text-indigo-600"
+                                    : "text-slate-700"
+                                }`}
+                              >
+                                <span>{font.label}</span>
+                                {isSelected && (
+                                  <span className="size-1.5 rounded-full bg-indigo-500" />
+                                )}
+                              </DropdownMenuItem>
+                            );
+                          })}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+
+                    {/* Prefix Prefix style */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-500 block">
+                        MCQ অপশন স্টাইল
+                      </label>
+                      <div className="grid grid-cols-4 gap-1">
+                        {["●", "()", ".", ")"].map((style) => (
+                          <button
+                            key={style}
+                            onClick={() =>
+                              updateSettingField(null, "optionStyle", style)
+                            }
+                            className={`py-1.5 border rounded-lg text-[10px] font-black transition ${
+                              layoutSettings.optionStyle === style
+                                ? "bg-indigo-50 border-indigo-300 text-indigo-700"
+                                : "bg-white border-slate-200 text-slate-600"
+                            }`}
+                          >
+                            {style}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Font sizes */}
+                    <div>
+                      <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                        <span>ফন্ট সাইজ</span>
+                        <span className="font-sans">
+                          {layoutSettings.fontSize}px
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="12"
+                        max="24"
+                        value={layoutSettings.fontSize}
+                        onChange={(e) =>
+                          updateSettingField(
+                            null,
+                            "fontSize",
+                            parseInt(e.target.value),
+                          )
+                        }
+                        className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1"
+                      />
+                    </div>
+
                     <div>
                       <div className="flex justify-between text-[10px] font-bold text-slate-500">
                         <span>লাইনের মধ্যকার ফাক</span>
@@ -1093,31 +1172,31 @@ export default function QuestionPreview() {
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {activeTab === "download" && (
-            <div className="bg-glass-elevated border border-slate-200/50 p-6 rounded-2xl space-y-4 text-center">
-              <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-full w-fit mx-auto text-indigo-600">
-                <Printer className="size-8" />
+            {activeTab === "download" && (
+              <div className="bg-glass-elevated border border-slate-200/50 p-6 rounded-2xl space-y-4 text-center">
+                <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-full w-fit mx-auto text-indigo-600">
+                  <Printer className="size-8" />
+                </div>
+                <h3 className="text-sm font-bold text-slate-800">
+                  প্রশ্নপত্র প্রিন্ট অথবা ডাউনলোড করুন
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed font-semibold">
+                  আপনার নির্বাচিত সেটিংস অনুযায়ী প্রশ্নপত্রটি ডাউনলোড করতে নিচের
+                  বাটনে ক্লিক করুন। প্রিন্ট লেআউটে সাইডবার ও সেটিংস অংশ
+                  স্বয়ংক্রিয়ভাবে বাদ পড়বে।
+                </p>
+                <button
+                  onClick={handlePrint}
+                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-black shadow shadow-indigo-500/10 flex items-center justify-center gap-1.5 cursor-pointer mt-4"
+                >
+                  <Printer className="size-4" />
+                  প্রিন্ট / PDF ডাউনলোড
+                </button>
               </div>
-              <h3 className="text-sm font-bold text-slate-800">
-                প্রশ্নপত্র প্রিন্ট অথবা ডাউনলোড করুন
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-semibold">
-                আপনার নির্বাচিত সেটিংস অনুযায়ী প্রশ্নপত্রটি ডাউনলোড করতে নিচের
-                বাটনে ক্লিক করুন। প্রিন্ট লেআউটে সাইডবার ও সেটিংস অংশ
-                স্বয়ংক্রিয়ভাবে বাদ পড়বে।
-              </p>
-              <button
-                onClick={handlePrint}
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-black shadow shadow-indigo-500/10 flex items-center justify-center gap-1.5 cursor-pointer mt-4"
-              >
-                <Printer className="size-4" />
-                প্রিন্ট / PDF ডাউনলোড
-              </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
       <FloatingFormatToolbar

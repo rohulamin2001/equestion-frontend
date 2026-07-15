@@ -54,6 +54,7 @@ export function useQuestionPreview() {
     activeSetId,
     setActiveSetId,
     activeSet: dbActiveSet,
+    syllabusList,
   } = useQuestions();
 
   const [layoutSettings, setLayoutSettings] = useState({
@@ -63,7 +64,7 @@ export function useQuestionPreview() {
     lineSpacing: 0,
     columnGap: 15,
     fontSize: 14,
-    fontFamily: "Bangla",
+    fontFamily: "SolaimanLipi",
     optionStyle: "●",
     attachments: {
       answerSheet: false,
@@ -280,5 +281,6 @@ export function useQuestionPreview() {
     handleSaveAll,
     handleGoBackToSelect,
     userProfile,
+    syllabusList,
   };
 }
