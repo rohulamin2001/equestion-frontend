@@ -332,18 +332,18 @@ export default function QuestionPreview() {
                       style={{ fontSize: "16px", fontWeight: 400 }}
                     >
                       <span>সেট কোড:</span>
-                      <span className="w-8 h-6 border border-black flex items-center justify-center bg-white font-normal font-sans">
-                        <InlineEditable
-                          value={activeSet.setCode || "ক"}
-                          onSave={(val) => handleSaveSetField("setCode", val)}
-                          onActivate={handleEditorActivate}
-                          onDeactivate={handleEditorDeactivate}
-                          renderRichText={false}
-                          className="text-center font-normal"
-                          style={{ fontSize: "16px", fontWeight: 400 }}
-                          placeholder="কোড"
-                        />
-                      </span>
+                      <InlineEditable
+                        value={activeSet.setCode || "ক"}
+                        onSave={(val) => handleSaveSetField("setCode", val)}
+                        onActivate={handleEditorActivate}
+                        onDeactivate={handleEditorDeactivate}
+                        renderRichText={false}
+                        className="w-6 h-6 border-2 border-black flex items-center justify-center bg-white text-base font-bold text-center !px-0 !mx-0 !border-black !bg-white !rounded-none select-text"
+                        style={{ fontSize: "16px", fontWeight: 700 }}
+                        placeholder="ক"
+                        inline={false}
+                        singleLine={true}
+                      />
                     </div>
                   ) : (
                     <div className="h-5"></div>
