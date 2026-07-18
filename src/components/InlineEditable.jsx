@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo } from "react";
 import RichTextRender from "./RichTextRender.jsx";
 
 function stripOuterP(html) {
@@ -16,7 +16,7 @@ function stripOuterP(html) {
   return trimmed;
 }
 
-export default function InlineEditable({
+function InlineEditable({
   value = "",
   onSave,
   className = "",
@@ -150,3 +150,17 @@ export default function InlineEditable({
     />
   );
 }
+
+const arePropsEqual = (prevProps, nextProps) => {
+  return (
+    prevProps.value === nextProps.value &&
+    prevProps.className === nextProps.className &&
+    prevProps.placeholder === nextProps.placeholder &&
+    prevProps.singleLine === nextProps.singleLine &&
+    prevProps.renderRichText === nextProps.renderRichText &&
+    prevProps.inline === nextProps.inline &&
+    JSON.stringify(prevProps.style) === JSON.stringify(nextProps.style)
+  );
+};
+
+export default memo(InlineEditable, arePropsEqual);

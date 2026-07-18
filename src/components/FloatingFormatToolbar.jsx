@@ -45,7 +45,22 @@ export default function FloatingFormatToolbar({
         // Ignored
       }
 
-      // 2. Update computed font size of the active element
+      // 2. Update computed font size of the active element or selection
+      const selection = window.getSelection();
+      if (selection && selection.anchorNode) {
+        const parentEl = selection.anchorNode.nodeType === 3
+          ? selection.anchorNode.parentElement
+          : selection.anchorNode;
+        if (parentEl) {
+          const style = window.getComputedStyle(parentEl);
+          const sizePx = parseFloat(style.fontSize);
+          if (sizePx) {
+            setCurrentFontSize(Math.round(sizePx));
+            return;
+          }
+        }
+      }
+
       const activeEl = document.activeElement;
       if (activeEl && activeEl.getAttribute("contenteditable") === "true") {
         const style = window.getComputedStyle(activeEl);

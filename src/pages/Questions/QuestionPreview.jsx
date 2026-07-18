@@ -1217,10 +1217,27 @@ export default function QuestionPreview() {
       <FloatingFormatToolbar
         visible={toolbarVisible}
         position={toolbarPos}
-        fontSize={layoutSettings.fontSize}
-        onChangeFontSize={(newSize) =>
-          updateSettingField(null, "fontSize", newSize)
-        }
+        onChangeFontSize={(newSize) => {
+          const activeEl = document.activeElement;
+          if (activeEl && activeEl.getAttribute("contenteditable") === "true") {
+            const selection = window.getSelection();
+            if (!selection || selection.isCollapsed) {
+              const range = document.createRange();
+              range.selectNodeContents(activeEl);
+              selection.removeAllRanges();
+              selection.addRange(range);
+            }
+            document.execCommand("fontSize", false, "7");
+            const fontElements = activeEl.getElementsByTagName("font");
+            for (let i = fontElements.length - 1; i >= 0; i--) {
+              const fontEl = fontElements[i];
+              if (fontEl.getAttribute("size") === "7") {
+                fontEl.removeAttribute("size");
+                fontEl.style.fontSize = `${newSize}px`;
+              }
+            }
+          }
+        }}
       />
       {/* Embedded print styles */}
       <style>{`
