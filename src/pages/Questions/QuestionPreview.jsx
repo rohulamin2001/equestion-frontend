@@ -10,10 +10,17 @@ import {
   Printer,
   Settings,
   Sliders,
-  Trash2,
 } from "lucide-react";
+import { useState } from "react";
 import FloatingFormatToolbar from "../../components/FloatingFormatToolbar.jsx";
 import InlineEditable from "../../components/InlineEditable.jsx";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../../components/ui/dialog.jsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +29,13 @@ import {
 } from "../../components/ui/dropdown-menu.jsx";
 import { translateSubscriptionKey } from "../../constants/subscriptions.js";
 import { useQuestionPreview } from "./hook/useQuestionPreview";
+
+const PAPER_SIZES_META = [
+  { id: "A4", label: "A4", w: 34, h: 48 },
+  { id: "Letter", label: "Letter", w: 37, h: 48 },
+  { id: "Legal", label: "Legal", w: 29, h: 48 },
+  { id: "A5", label: "A5", w: 27, h: 38 },
+];
 
 // Helper to parse Bengali numerals as standard numbers
 const parseBanglaNumber = (val) => {
@@ -66,7 +80,33 @@ const getChapterNames = (set, syllabusList) => {
   return names.join(", ");
 };
 
+const getCategoryMarkLabel = (category, count) => {
+  const toBengaliNumber = (num) => {
+    const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+    return String(num)
+      .split("")
+      .map((d) => (d >= "0" && d <= "9" ? banglaDigits[Number(d)] : d))
+      .join("");
+  };
+
+  if (category === "MCQ") {
+    return `${toBengaliNumber(count)} × ১ = ${toBengaliNumber(count)}`;
+  }
+  if (category === "ShortAnswer") {
+    return `${toBengaliNumber(count)} × ২ = ${toBengaliNumber(count * 2)}`;
+  }
+  if (category === "Creative") {
+    return `${toBengaliNumber(count)} × ১০ = ${toBengaliNumber(count * 10)}`;
+  }
+  return "";
+};
+
 export default function QuestionPreview() {
+  const [customGroupLabels, setCustomGroupLabels] = useState({});
+  const [customGroupMarks, setCustomGroupMarks] = useState({});
+  const [customSubMarks, setCustomSubMarks] = useState({});
+  const [isPageSetupOpen, setIsPageSetupOpen] = useState(false);
+
   const {
     loadingSets,
     activeSet,
@@ -81,7 +121,6 @@ export default function QuestionPreview() {
     handleSaveSetField,
     handleSaveQuestionEdit,
     updateSettingField,
-    handleRemoveQuestion,
     handlePrint,
     handleSaveAll,
     handleGoBackToSelect,
@@ -212,13 +251,17 @@ export default function QuestionPreview() {
           </div>
 
           <div
-            className={`question-paper-container ${layoutSettings.fontFamily === "English" ? "is-english" : `font-family-${activeFont}`} bg-white border border-slate-200/60 p-8 shadow-sm print:border-none print:shadow-none print:p-0 select-none print:select-text`}
+            className={`question-paper-container ${layoutSettings.fontFamily === "English" ? "is-english" : `font-family-${activeFont}`} bg-white text-black border border-slate-200/60 p-8 shadow-sm print:border-none print:shadow-none print:p-0 select-none print:select-text`}
             style={{
               fontFamily:
                 layoutSettings.fontFamily === "English"
                   ? "Outfit, sans-serif"
                   : `'${activeFont}', 'Purno', 'SutonnyMJ', 'SutonnyMJ-Regular', 'Kalpurush', 'SolaimanLipi', sans-serif`,
               fontSize: `${layoutSettings.fontSize}px`,
+              paddingTop: `${layoutSettings.pagePaddingTop !== undefined ? layoutSettings.pagePaddingTop : 32}px`,
+              paddingBottom: `${layoutSettings.pagePaddingBottom !== undefined ? layoutSettings.pagePaddingBottom : 32}px`,
+              paddingLeft: `${layoutSettings.pagePaddingLeft !== undefined ? layoutSettings.pagePaddingLeft : 32}px`,
+              paddingRight: `${layoutSettings.pagePaddingRight !== undefined ? layoutSettings.pagePaddingRight : 32}px`,
             }}
           >
             <div className="space-y-3 mb-6 select-none">
@@ -269,7 +312,7 @@ export default function QuestionPreview() {
                       }
                       onActivate={handleEditorActivate}
                       onDeactivate={handleEditorDeactivate}
-                      className="text-slate-900 tracking-wide uppercase block text-center"
+                      className="text-black tracking-wide uppercase block text-center"
                       style={{ fontSize: "20px", fontWeight: 700 }}
                       placeholder="প্রতিষ্ঠানের নাম লিখুন"
                       renderRichText={false}
@@ -285,7 +328,7 @@ export default function QuestionPreview() {
                         onSave={(val) => handleSaveSetField("examName", val)}
                         onActivate={handleEditorActivate}
                         onDeactivate={handleEditorDeactivate}
-                        className="text-slate-850 tracking-wide block text-center"
+                        className="text-black tracking-wide block text-center"
                         style={{ fontSize: "18px", fontWeight: 700 }}
                         placeholder="পরীক্ষার নাম লিখুন"
                         renderRichText={false}
@@ -306,8 +349,8 @@ export default function QuestionPreview() {
                         onSave={(val) => handleSaveSetField("className", val)}
                         onActivate={handleEditorActivate}
                         onDeactivate={handleEditorDeactivate}
-                        className="text-slate-700 block text-center"
-                        style={{ fontSize: "16px", fontWeight: 400 }}
+                        className="text-black block text-center"
+                        style={{ fontSize: "18px", fontWeight: 400 }}
                         placeholder="শ্রেণী লিখুন"
                         renderRichText={false}
                         inline={false}
@@ -323,7 +366,7 @@ export default function QuestionPreview() {
                         onSave={(val) => handleSaveSetField("subjectName", val)}
                         onActivate={handleEditorActivate}
                         onDeactivate={handleEditorDeactivate}
-                        className="text-slate-850 block text-center"
+                        className="text-black block text-center"
                         style={{ fontSize: "16px", fontWeight: 400 }}
                         placeholder="বিষয় লিখুন"
                         renderRichText={false}
@@ -352,7 +395,7 @@ export default function QuestionPreview() {
                         }
                         onActivate={handleEditorActivate}
                         onDeactivate={handleEditorDeactivate}
-                        className="text-slate-800 font-normal block text-center"
+                        className="text-black font-normal block text-center"
                         style={{ fontSize: "16px" }}
                         placeholder="অধ্যায় নম্বর"
                         renderRichText={false}
@@ -367,7 +410,7 @@ export default function QuestionPreview() {
                   {/* Set Code */}
                   {layoutSettings.metadata.setCode ? (
                     <div
-                      className="flex items-center gap-1.5 font-normal text-slate-800"
+                      className="flex items-center gap-1.5 font-normal text-black"
                       style={{ fontSize: "16px", fontWeight: 400 }}
                     >
                       <span>সেট কোড:</span>
@@ -391,7 +434,7 @@ export default function QuestionPreview() {
                   {/* Subject Code */}
                   {layoutSettings.attachments.subjectCode ? (
                     <div
-                      className="flex items-center gap-1.5 font-normal text-slate-800"
+                      className="flex items-center gap-1.5 font-normal text-black"
                       style={{ fontSize: "16px", fontWeight: 400 }}
                     >
                       <span>বিষয় কোড :</span>
@@ -433,16 +476,16 @@ export default function QuestionPreview() {
 
               {/* Time and Marks Row */}
               <div
-                className="flex justify-between items-center text-slate-800 font-normal   mt-2"
+                className="flex justify-between items-center text-black font-normal   mt-2"
                 style={{ fontSize: "16px", fontWeight: 400 }}
               >
                 <div className="flex items-center gap-1">
                   <InlineEditable
                     value={
                       layoutSettings.examTime
-                        ? (layoutSettings.examTime.startsWith("সময়")
-                            ? layoutSettings.examTime
-                            : `সময়— ${layoutSettings.examTime}`)
+                        ? layoutSettings.examTime.startsWith("সময়")
+                          ? layoutSettings.examTime
+                          : `সময়— ${layoutSettings.examTime}`
                         : "সময়— ১ ঘণ্টা ৫০ মিনিট"
                     }
                     onSave={(val) => updateSettingField(null, "examTime", val)}
@@ -461,7 +504,9 @@ export default function QuestionPreview() {
                         ? layoutSettings.totalMarksLabel
                         : `পূর্ণমান— ${
                             activeSet.totalMarks
-                              ? Number(activeSet.totalMarks).toLocaleString("bn-BD")
+                              ? Number(activeSet.totalMarks).toLocaleString(
+                                  "bn-BD",
+                                )
                               : "৭৯"
                           }`
                     }
@@ -482,7 +527,7 @@ export default function QuestionPreview() {
               {/* Student Info Row */}
               {layoutSettings.attachments.studentInfo && (
                 <div
-                  className="flex justify-between items-baseline text-xs font-normal pb-2 text-slate-800"
+                  className="flex justify-between items-baseline text-xs font-normal pb-2 text-black"
                   style={{ fontSize: "16px", fontWeight: 400, margin: "0" }}
                 >
                   <div className="flex-1 max-w-[55%] flex items-baseline gap-0">
@@ -499,7 +544,7 @@ export default function QuestionPreview() {
                       placeholder="শিক্ষার্থীর নাম:"
                       inline={false}
                     />
-                    <div className="flex-grow border-b border-dotted border-slate-400 pb-0 min-w-[120px]">
+                    <div className="flex-grow border-b border-dotted border-black pb-0 min-w-[120px]">
                       <InlineEditable
                         value={activeSet.studentNameValue || ""}
                         onSave={(val) =>
@@ -527,7 +572,7 @@ export default function QuestionPreview() {
                       placeholder="শাখা:"
                       inline={false}
                     />
-                    <div className="flex-grow max-w-[120px] border-b border-dotted border-slate-400 pb-0">
+                    <div className="flex-grow max-w-[120px] border-b border-dotted border-black pb-0">
                       <InlineEditable
                         value={activeSet.sectionValue || ""}
                         onSave={(val) =>
@@ -555,7 +600,7 @@ export default function QuestionPreview() {
                       placeholder="রোল:"
                       inline={false}
                     />
-                    <div className="w-[60%] border-b border-dotted border-slate-400 pb-0">
+                    <div className="w-[60%] border-b border-dotted border-black pb-0">
                       <InlineEditable
                         value={activeSet.rollValue || ""}
                         onSave={(val) => handleSaveSetField("rollValue", val)}
@@ -573,7 +618,7 @@ export default function QuestionPreview() {
               )}
 
               {/* Separator Line */}
-              <hr className="border-t border-slate-200" style={{ margin: 0 }} />
+              <hr className="border-t border-black" style={{ margin: 0 }} />
 
               {/* Instructions Row */}
               {layoutSettings.metadata.instructions && (
@@ -602,43 +647,117 @@ export default function QuestionPreview() {
             {groupedQuestions && groupedQuestions.length > 0 ? (
               <div className="space-y-8">
                 {groupedQuestions.map((group) => (
-                  <div key={group.category} className="space-y-4">
+                  <div key={group.category} className="">
                     {/* Section Header */}
-                    <div className="text-center font-normal text-sm text-slate-800 pt-1 print:pt-0">
-                      {group.label}
+                    <div className="flex justify-between items-baseline font-bold text-sm text-black pt-1 print:pt-0 font-bengali select-text print:select-text">
+                      <span>
+                        <InlineEditable
+                          value={
+                            customGroupLabels[group.category] !== undefined
+                              ? customGroupLabels[group.category]
+                              : group.label === "সৃজনশীল প্রশ্ন"
+                                ? "সৃজনশীল অংশ:"
+                                : group.label === "বহু নির্বাচনী প্রশ্ন"
+                                  ? "বহুনির্বাচনি অংশ:"
+                                  : group.label === "সংক্ষিপ্ত উত্তর প্রশ্ন"
+                                    ? "সংক্ষিপ্ত প্রশ্ন গুলোর উত্তর লিখ:"
+                                    : group.label
+                          }
+                          onSave={(val) => {
+                            setCustomGroupLabels((prev) => ({
+                              ...prev,
+                              [group.category]: val,
+                            }));
+                          }}
+                          onActivate={handleEditorActivate}
+                          onDeactivate={handleEditorDeactivate}
+                          renderRichText={false}
+                          className="font-bold text-sm text-black"
+                          inline={true}
+                          placeholder="শিরোনাম"
+                        />
+                      </span>
+                      {getCategoryMarkLabel(
+                        group.category,
+                        group.questions.length,
+                      ) && (
+                        <span>
+                          <InlineEditable
+                            value={
+                              customGroupMarks[group.category] !== undefined
+                                ? customGroupMarks[group.category]
+                                : getCategoryMarkLabel(
+                                    group.category,
+                                    group.questions.length,
+                                  )
+                            }
+                            onSave={(val) => {
+                              setCustomGroupMarks((prev) => ({
+                                ...prev,
+                                [group.category]: val,
+                              }));
+                            }}
+                            onActivate={handleEditorActivate}
+                            onDeactivate={handleEditorDeactivate}
+                            renderRichText={false}
+                            className="font-semibold text-xs text-black font-sans print:font-sans"
+                            inline={true}
+                            placeholder="মান বণ্টন"
+                          />
+                        </span>
+                      )}
                     </div>
 
                     <div
-                      className="grid gap-6 print:gap-4"
+                      className="block"
                       style={{
-                        gridTemplateColumns: `repeat(${layoutSettings.columns}, minmax(0, 1fr))`,
-                        columnGap: `${layoutSettings.columnGap}px`,
+                        columnCount: layoutSettings.columns,
+                        columnGap: `${layoutSettings.columnGap || 15}px`,
+                        columnRule:
+                          layoutSettings.columns > 1 &&
+                          layoutSettings.columnDivider
+                            ? "1px solid black"
+                            : "none",
                       }}
                     >
                       {group.questions.map((q) => {
-                        const serialNum = (q.serialNumber || 1).toLocaleString(
-                          "bn-BD",
-                        );
+                        const serialNum = (() => {
+                          const num = q.serialNumber || 1;
+                          const padded = num < 10 ? `0${num}` : String(num);
+                          const banglaDigits = [
+                            "০",
+                            "১",
+                            "২",
+                            "৩",
+                            "৪",
+                            "৫",
+                            "৬",
+                            "৭",
+                            "৮",
+                            "৯",
+                          ];
+                          return padded
+                            .split("")
+                            .map((char) =>
+                              char >= "0" && char <= "9"
+                                ? banglaDigits[Number(char)]
+                                : char,
+                            )
+                            .join("");
+                        })();
                         return (
                           <div
                             key={q._id}
-                            className="relative group border border-transparent hover:border-indigo-100 hover:bg-indigo-50/10 p-2.5 rounded-xl transition print:border-none print:hover:border-none print:hover:bg-transparent print:p-0"
+                            className="relative group border border-transparent hover:border-indigo-100 hover:bg-indigo-50/10 py-0.5 px-2 rounded-xl transition print:border-none print:hover:border-none print:hover:bg-transparent print:p-0"
                             style={{
                               marginBottom: `${layoutSettings.lineSpacing}px`,
+                              breakInside: "avoid",
+                              pageBreakInside: "avoid",
                             }}
                           >
-                            {/* Remove button (Hover only) */}
-                            <button
-                              onClick={() => handleRemoveQuestion(q._id)}
-                              className="absolute right-2 top-2 p-1.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-100 opacity-0 group-hover:opacity-100 transition print:hidden cursor-pointer"
-                              title="বাদ দিন"
-                            >
-                              <Trash2 className="size-3.5" />
-                            </button>
-
-                            <div className="flex items-start gap-2.5 text-inherit text-slate-800">
-                              <span className="font-normal text-slate-500 min-w-[20px]">
-                                {serialNum}।
+                            <div className="flex items-start gap-2.5 text-inherit text-black">
+                              <span className="font-normal text-black min-w-[20px]">
+                                {serialNum}.
                               </span>
                               <div className="flex-1 space-y-2">
                                 {/* MCQ format */}
@@ -660,7 +779,7 @@ export default function QuestionPreview() {
                                       />
                                     </div>
                                     {q.mcqData.options && (
-                                      <div className="grid grid-cols-2 gap-2 text-slate-600/90 text-inherit">
+                                      <div className="grid grid-cols-2 gap-2 text-black text-inherit">
                                         {q.mcqData.options.map((opt, oIdx) => {
                                           const prefix = ["ক", "খ", "গ", "ঘ"][
                                             oIdx
@@ -670,7 +789,7 @@ export default function QuestionPreview() {
                                               key={oIdx}
                                               className="flex items-start gap-1"
                                             >
-                                              <span className="font-normal text-slate-400">
+                                              <span className="font-normal text-black">
                                                 {layoutSettings.optionStyle ===
                                                 "()"
                                                   ? `(${prefix})`
@@ -711,7 +830,7 @@ export default function QuestionPreview() {
                                 {q.category === "Creative" &&
                                   q.creativeData && (
                                     <div className="space-y-2">
-                                      <div className="font-medium text-slate-600 bg-slate-50 border p-2 rounded-lg italic">
+                                      <div className="font-medium text-black bg-slate-50 border p-2 rounded-lg italic">
                                         <InlineEditable
                                           value={q.creativeData.stem}
                                           onSave={(val) =>
@@ -727,7 +846,7 @@ export default function QuestionPreview() {
                                         />
                                       </div>
                                       {q.creativeData.subQuestions && (
-                                        <div className="space-y-1 text-slate-700 pl-2 text-inherit">
+                                        <div className="space-y-1 text-black pl-2 text-inherit">
                                           {Object.entries(
                                             q.creativeData.subQuestions,
                                           ).map(([key, sq], sqIdx) => {
@@ -774,8 +893,39 @@ export default function QuestionPreview() {
                                                     />
                                                   </div>
                                                 </div>
-                                                <span className="text-[10px] text-slate-400 font-normal shrink-0 font-sans">
-                                                  {[1, 2, 3, 4][sqIdx]}
+                                                <span>
+                                                  <InlineEditable
+                                                    value={
+                                                      customSubMarks[
+                                                        `${q._id}-${sqIdx}`
+                                                      ] !== undefined
+                                                        ? customSubMarks[
+                                                            `${q._id}-${sqIdx}`
+                                                          ]
+                                                        : ["১", "২", "৩", "৪"][
+                                                            sqIdx
+                                                          ]
+                                                    }
+                                                    onSave={(val) => {
+                                                      setCustomSubMarks(
+                                                        (prev) => ({
+                                                          ...prev,
+                                                          [`${q._id}-${sqIdx}`]:
+                                                            val,
+                                                        }),
+                                                      );
+                                                    }}
+                                                    onActivate={
+                                                      handleEditorActivate
+                                                    }
+                                                    onDeactivate={
+                                                      handleEditorDeactivate
+                                                    }
+                                                    renderRichText={false}
+                                                    className="text-[10px] text-black font-normal shrink-0 font-sans print:font-sans"
+                                                    inline={true}
+                                                    placeholder="নম্বর"
+                                                  />
                                                 </span>
                                               </div>
                                             );
@@ -808,7 +958,7 @@ export default function QuestionPreview() {
                                         />
                                       </div>
                                       {q.generalData.stem && (
-                                        <div className="text-[11px] text-slate-500 italic bg-slate-50 p-1.5 border rounded-lg">
+                                        <div className="text-[11px] text-black italic bg-slate-50 p-1.5 border rounded-lg">
                                           <InlineEditable
                                             value={q.generalData.stem}
                                             onSave={(val) =>
@@ -885,12 +1035,12 @@ export default function QuestionPreview() {
             {activeTab === "settings" && (
               <div className="bg-glass-elevated border border-slate-200/50 p-5 rounded-2xl divide-y divide-slate-200/60 space-y-5">
                 {/* Attachment settings card */}
-                <div className="space-y-4">
-                  <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                    <Grid className="size-3.5" />
-                    প্রশ্নে সংযুক্তি
+                <div className="space-y-3.5">
+                  <h3 className="text-[13px] font-extrabold text-white uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 px-3.5 py-2.5 rounded-xl shadow-md font-bengali">
+                    <Grid className="size-4 text-white" />
+                    <span>প্রশ্নে সংযুক্তি</span>
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {[
                       { field: "answerSheet", label: "উত্তরপত্র সংযুক্তি" },
                       { field: "omr", label: "OMR সংযুক্তি" },
@@ -908,9 +1058,9 @@ export default function QuestionPreview() {
                     ].map((opt) => (
                       <div
                         key={opt.field}
-                        className="flex items-center justify-between"
+                        className="flex items-center justify-between p-2.5 bg-slate-50/50 hover:bg-slate-50 border border-slate-200/40 rounded-xl transition shadow-sm"
                       >
-                        <span className="text-xs font-bold text-slate-700">
+                        <span className="text-[14px] font-semibold text-slate-700 font-sans tracking-tight">
                           {opt.label}
                         </span>
                         <button
@@ -942,12 +1092,12 @@ export default function QuestionPreview() {
                 </div>
 
                 {/* Metadata header toggles */}
-                <div className="space-y-4 pt-5">
-                  <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                    <FileText className="size-3.5" />
-                    প্রশ্নের মেটাডাটা (হেডার)
+                <div className="space-y-3.5 pt-5">
+                  <h3 className="text-[13px] font-extrabold text-white uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-violet-500 to-indigo-600 px-3.5 py-2.5 rounded-xl shadow-md font-bengali">
+                    <FileText className="size-4 text-white" />
+                    <span>প্রশ্নের মেটাডাটা (হেডার)</span>
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {[
                       { field: "className", label: "শ্রেণির নাম" },
                       { field: "subjectName", label: "বিষয়ের নাম" },
@@ -958,9 +1108,9 @@ export default function QuestionPreview() {
                     ].map((opt) => (
                       <div
                         key={opt.field}
-                        className="flex items-center justify-between"
+                        className="flex items-center justify-between p-2.5 bg-slate-50/50 hover:bg-slate-50 border border-slate-200/40 rounded-xl transition shadow-sm"
                       >
-                        <span className="text-xs font-bold text-slate-700">
+                        <span className="text-[14px] font-semibold text-slate-700 font-sans tracking-tight">
                           {opt.label}
                         </span>
                         <button
@@ -992,62 +1142,162 @@ export default function QuestionPreview() {
                 </div>
 
                 {/* Layout controls */}
-                <div className="space-y-4 pt-5">
-                  <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                    <Sliders className="size-3.5" />
-                    ডকুমেন্ট কাস্টমাইজেশন
+                <div className="space-y-3.5 pt-5">
+                  <h3 className="text-[13px] font-extrabold text-white uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-600 px-3.5 py-2.5 rounded-xl shadow-md font-bengali">
+                    <Sliders className="size-4 text-white" />
+                    <span>ডকুমেন্ট কাস্টমাইজেশন</span>
                   </h3>
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {/* Paper size */}
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-slate-500 block">
+                    <div className="space-y-1.5 p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl shadow-sm">
+                      <label className="text-[12px] font-extrabold text-slate-600 block font-bengali">
                         কাগজের সাইজ
                       </label>
-                      <div className="grid grid-cols-4 gap-1">
-                        {["A4", "Letter", "Legal", "A5"].map((size) => (
-                          <button
-                            key={size}
-                            onClick={() =>
-                              updateSettingField(null, "paperSize", size)
-                            }
-                            className={`py-1.5 border rounded-lg text-xs font-bold transition ${
-                              layoutSettings.paperSize === size
-                                ? "bg-indigo-50 border-indigo-300 text-indigo-700 font-extrabold"
-                                : "bg-white border-slate-200 text-slate-600"
-                            }`}
-                          >
-                            {size}
-                          </button>
-                        ))}
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {PAPER_SIZES_META.map((paper) => {
+                          const isSelected =
+                            layoutSettings.paperSize === paper.id;
+                          return (
+                            <button
+                              key={paper.id}
+                              onClick={() =>
+                                updateSettingField(null, "paperSize", paper.id)
+                              }
+                              className={`flex flex-col items-center justify-center p-2 border rounded-xl transition cursor-pointer select-none ${
+                                isSelected
+                                  ? "bg-emerald-50/60 border-emerald-500 text-emerald-700 font-extrabold shadow-sm"
+                                  : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+                              }`}
+                            >
+                              <div className="h-14 w-full flex items-center justify-center bg-slate-50/50 rounded-lg mb-1.5 border border-slate-100 shadow-sm relative overflow-hidden">
+                                <div
+                                  className={`bg-white border border-slate-300 rounded shadow-sm transition-all ${
+                                    isSelected
+                                      ? "border-emerald-300 bg-emerald-50/10"
+                                      : ""
+                                  }`}
+                                  style={{
+                                    width: `${paper.w}px`,
+                                    height: `${paper.h}px`,
+                                  }}
+                                />
+                              </div>
+                              <span className="text-[11px] font-bold">
+                                {paper.label}
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
 
-                    {/* Columns */}
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-slate-500 block">
+                    {/* Page Setup trigger button */}
+                    <button
+                      type="button"
+                      onClick={() => setIsPageSetupOpen(true)}
+                      className="w-full flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/50 rounded-xl hover:bg-slate-100 transition shadow-sm cursor-pointer select-none"
+                    >
+                      <div className="">
+                        <span className="text-xs font-semibold text-slate-700 font-sans tracking-tight">
+                          Page Setup
+                        </span>
+                      </div>
+                      <Sliders className="size-4 text-slate-700" />
+                    </button>
+
+                    {/* Columns layout cards */}
+                    <div className="space-y-1.5 p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl shadow-sm">
+                      <label className="text-[12px] font-extrabold text-slate-600 block font-bengali">
                         কলাম বিন্যাস
                       </label>
-                      <div className="grid grid-cols-3 gap-1">
-                        {[1, 2, 3].map((col) => (
-                          <button
-                            key={col}
-                            onClick={() =>
-                              updateSettingField(null, "columns", col)
-                            }
-                            className={`py-1.5 border rounded-lg text-xs font-bold transition ${
-                              layoutSettings.columns === col
-                                ? "bg-indigo-50 border-indigo-300 text-indigo-700 font-extrabold"
-                                : "bg-white border-slate-200 text-slate-600"
-                            }`}
-                          >
-                            {col} কলাম
-                          </button>
-                        ))}
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {[
+                          {
+                            id: 1,
+                            label: "১ কলাম",
+                            content: (
+                              <div className="h-8 w-6 bg-slate-300 rounded-sm shadow-sm" />
+                            ),
+                          },
+                          {
+                            id: 2,
+                            label: "২ কলাম",
+                            content: (
+                              <div className="flex gap-1.5">
+                                <div className="h-8 w-2.5 bg-slate-300 rounded-sm shadow-sm" />
+                                <div className="h-8 w-2.5 bg-slate-300 rounded-sm shadow-sm" />
+                              </div>
+                            ),
+                          },
+                          {
+                            id: 3,
+                            label: "৩ কলাম",
+                            content: (
+                              <div className="flex gap-1">
+                                <div className="h-8 w-1.5 bg-slate-300 rounded-sm shadow-sm" />
+                                <div className="h-8 w-1.5 bg-slate-300 rounded-sm shadow-sm" />
+                                <div className="h-8 w-1.5 bg-slate-300 rounded-sm shadow-sm" />
+                              </div>
+                            ),
+                          },
+                        ].map((col) => {
+                          const isSelected = layoutSettings.columns === col.id;
+                          return (
+                            <button
+                              key={col.id}
+                              onClick={() =>
+                                updateSettingField(null, "columns", col.id)
+                              }
+                              className={`flex flex-col items-center justify-center p-2 border rounded-xl transition cursor-pointer select-none ${
+                                isSelected
+                                  ? "bg-emerald-50/60 border-emerald-500 text-emerald-700 font-extrabold shadow-sm"
+                                  : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+                              }`}
+                            >
+                              <div className="h-14 w-full flex items-center justify-center bg-slate-50/50 rounded-lg mb-1.5 border border-slate-100 shadow-sm relative overflow-hidden">
+                                {col.content}
+                              </div>
+                              <span className="text-[11px] font-bold">
+                                {col.label}
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
+                    </div>
+
+                    {/* Column Divider switch toggle */}
+                    <div className="flex items-center justify-between p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl shadow-sm">
+                      <span className="text-[14px] font-semibold text-slate-700 font-sans tracking-tight">
+                        কলাম ডিভাইডার
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateSettingField(
+                            null,
+                            "columnDivider",
+                            !layoutSettings.columnDivider,
+                          )
+                        }
+                        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
+                          layoutSettings.columnDivider
+                            ? "bg-emerald-600"
+                            : "bg-slate-200"
+                        }`}
+                      >
+                        <span
+                          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
+                            layoutSettings.columnDivider
+                              ? "translate-x-4"
+                              : "translate-x-0"
+                          }`}
+                        />
+                      </button>
                     </div>
 
                     {/* Font Selection */}
-                    <div className="space-y-1">
+                    <div className="space-y-1.5 p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl shadow-sm">
                       <label className="text-[10px] font-bold text-slate-500 block">
                         বাংলা ফন্ট
                       </label>
@@ -1092,7 +1342,7 @@ export default function QuestionPreview() {
                     </div>
 
                     {/* Prefix Prefix style */}
-                    <div className="space-y-1">
+                    <div className="space-y-1.5 p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl shadow-sm">
                       <label className="text-[10px] font-bold text-slate-500 block">
                         MCQ অপশন স্টাইল
                       </label>
@@ -1116,8 +1366,8 @@ export default function QuestionPreview() {
                     </div>
 
                     {/* Font sizes */}
-                    <div>
-                      <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                    <div className="space-y-1.5 p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl shadow-sm">
+                      <div className="flex justify-between text-[12px] font-bold text-slate-600 font-bengali">
                         <span>ফন্ট সাইজ</span>
                         <span className="font-sans">
                           {layoutSettings.fontSize}px
@@ -1139,8 +1389,8 @@ export default function QuestionPreview() {
                       />
                     </div>
 
-                    <div>
-                      <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                    <div className="space-y-1.5 p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl shadow-sm">
+                      <div className="flex justify-between text-[12px] font-bold text-slate-600 font-bengali">
                         <span>লাইনের মধ্যকার ফাক</span>
                         <span className="font-sans">
                           {layoutSettings.lineSpacing}px
@@ -1162,8 +1412,8 @@ export default function QuestionPreview() {
                       />
                     </div>
 
-                    <div>
-                      <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                    <div className="space-y-1.5 p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl shadow-sm">
+                      <div className="flex justify-between text-[12px] font-bold text-slate-600 font-bengali">
                         <span>কলামের মধ্যকার গ্যাপ</span>
                         <span className="font-sans">
                           {layoutSettings.columnGap}px
@@ -1239,6 +1489,162 @@ export default function QuestionPreview() {
           }
         }}
       />
+      <Dialog
+        open={isPageSetupOpen}
+        onOpenChange={setIsPageSetupOpen}
+        overlayClassName="backdrop-blur-[1px] bg-black/10"
+      >
+        <DialogContent className="max-w-md p-6 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative text-black">
+          <DialogHeader className="text-left mb-4">
+            <DialogTitle className="text-[17px] font-bold text-slate-800 font-bengali">
+              Page Setup
+            </DialogTitle>
+            <DialogDescription className="text-slate-500 text-[12px] font-semibold leading-relaxed font-bengali mt-1">
+              প্রশ্নপত্রের ডানে, বামে, উপরে, নিচের স্পেস কমানো বাড়ানো যাবে।
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-5">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
+                  <span>উপরে</span>
+                  <span className="font-sans text-slate-500">
+                    {layoutSettings.pagePaddingTop ?? 32}px
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={layoutSettings.pagePaddingTop ?? 32}
+                  onChange={(e) =>
+                    updateSettingField(
+                      null,
+                      "pagePaddingTop",
+                      parseInt(e.target.value),
+                    )
+                  }
+                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500 mt-1"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
+                  <span>নিচে</span>
+                  <span className="font-sans text-slate-500">
+                    {layoutSettings.pagePaddingBottom ?? 32}px
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={layoutSettings.pagePaddingBottom ?? 32}
+                  onChange={(e) =>
+                    updateSettingField(
+                      null,
+                      "pagePaddingBottom",
+                      parseInt(e.target.value),
+                    )
+                  }
+                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500 mt-1"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
+                  <span>বামে</span>
+                  <span className="font-sans text-slate-500">
+                    {layoutSettings.pagePaddingLeft ?? 32}px
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={layoutSettings.pagePaddingLeft ?? 32}
+                  onChange={(e) =>
+                    updateSettingField(
+                      null,
+                      "pagePaddingLeft",
+                      parseInt(e.target.value),
+                    )
+                  }
+                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500 mt-1"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
+                  <span>ডানে</span>
+                  <span className="font-sans text-slate-500">
+                    {layoutSettings.pagePaddingRight ?? 32}px
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={layoutSettings.pagePaddingRight ?? 32}
+                  onChange={(e) =>
+                    updateSettingField(
+                      null,
+                      "pagePaddingRight",
+                      parseInt(e.target.value),
+                    )
+                  }
+                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500 mt-1"
+                />
+              </div>
+            </div>
+
+            <hr className="border-slate-200/60" />
+
+            <div className="space-y-3">
+              <label className="text-[12px] font-bold text-slate-600 block font-bengali">
+                পেপার সাইজ
+              </label>
+              <div className="grid grid-cols-4 gap-2">
+                {PAPER_SIZES_META.map((paper) => {
+                  const isSelected = layoutSettings.paperSize === paper.id;
+                  return (
+                    <button
+                      key={paper.id}
+                      onClick={() =>
+                        updateSettingField(null, "paperSize", paper.id)
+                      }
+                      className={`flex flex-col items-center justify-center p-2 border rounded-xl transition cursor-pointer select-none ${
+                        isSelected
+                          ? "bg-emerald-50/60 border-emerald-500 text-emerald-700 font-extrabold shadow-sm"
+                          : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+                      }`}
+                    >
+                      <div className="h-14 w-full flex items-center justify-center bg-slate-50/50 rounded-lg mb-1.5 border border-slate-100 shadow-sm relative overflow-hidden">
+                        <div
+                          className={`bg-white border border-slate-300 rounded shadow-sm transition-all ${
+                            isSelected
+                              ? "border-emerald-300 bg-emerald-50/10"
+                              : ""
+                          }`}
+                          style={{
+                            width: `${paper.w}px`,
+                            height: `${paper.h}px`,
+                          }}
+                        />
+                      </div>
+                      <span className="text-[11px] font-bold">
+                        {paper.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Embedded print styles */}
       <style>{`
         @media print {

@@ -66,6 +66,10 @@ export function useQuestionPreview() {
     fontSize: 14,
     fontFamily: "SolaimanLipi",
     optionStyle: "●",
+    pagePaddingTop: 32,
+    pagePaddingBottom: 32,
+    pagePaddingLeft: 32,
+    pagePaddingRight: 32,
     attachments: {
       answerSheet: false,
       omr: false,
@@ -132,14 +136,28 @@ export function useQuestionPreview() {
       groups[cat].push(q);
     });
 
-    const orderedGroups = [];
-    let currentSerial = 1;
+    const isCombinedMode = activeSet?.category === "Combined";
+    const targetClasses = ["Class 6", "Class 7", "Class 8", "Class 9", "Class 10", "Class 11", "Class 12"];
+    const isTargetClass = targetClasses.includes(activeSet?.className);
 
-    CATEGORY_ORDER.forEach((cat) => {
+    let finalOrder = CATEGORY_ORDER;
+    if (isCombinedMode && isTargetClass) {
+      finalOrder = [
+        "MCQ",
+        "ShortAnswer",
+        "Creative",
+        ...CATEGORY_ORDER.filter(cat => cat !== "MCQ" && cat !== "ShortAnswer" && cat !== "Creative")
+      ];
+    }
+
+    const orderedGroups = [];
+
+    finalOrder.forEach((cat) => {
       if (groups[cat] && groups[cat].length > 0) {
+        let groupSerial = 1;
         const qsWithSerial = groups[cat].map((q) => ({
           ...q,
-          serialNumber: currentSerial++,
+          serialNumber: groupSerial++,
         }));
         orderedGroups.push({
           category: cat,
@@ -151,9 +169,10 @@ export function useQuestionPreview() {
     });
 
     Object.keys(groups).forEach((cat) => {
+      let groupSerial = 1;
       const qsWithSerial = groups[cat].map((q) => ({
         ...q,
-        serialNumber: currentSerial++,
+        serialNumber: groupSerial++,
       }));
       orderedGroups.push({
         category: cat,
@@ -163,7 +182,7 @@ export function useQuestionPreview() {
     });
 
     return orderedGroups;
-  }, [questions]);
+  }, [questions, activeSet?.category, activeSet?.className]);
 
   const handleSaveSetField = (field, value) => {
     if (!activeSet) return;

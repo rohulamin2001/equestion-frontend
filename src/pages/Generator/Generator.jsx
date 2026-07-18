@@ -16,6 +16,25 @@ import {
 import { CATEGORIES_MAP } from "../../constants/categories";
 import { useGenerator } from "./hook/useGenerator";
 
+const SHORT_CATEGORY_LABELS = {
+  MCQ: "বহু",
+  Creative: "সৃজনশীল",
+  ShortAnswer: "সংক্ষিপ্ত",
+  BroadQuestion: "রচনামূলক",
+  FillInBlanks: "শূন্যস্থান",
+  Matching: "মিলকরণ",
+  Poem: "কবিতা",
+  SentenceFormation: "বাক্য গঠন",
+  ConjunctLetters: "যুক্তবর্ণ",
+  WordMeaning: "শব্দার্থ",
+  Punctuation: "বিরামচিহ্ন",
+  GenderChange: "লিঙ্গান্তর",
+  Antonym: "বিপরীত শব্দ",
+  FormFilling: "ফরম পূরণ",
+  Paragraph: "অনুচ্ছেদ",
+  Essay: "রচনা",
+};
+
 export default function Generator() {
   const navigate = useNavigate();
 
@@ -55,6 +74,28 @@ export default function Generator() {
     handleOpenSubjectModal,
     handleGenerate,
   } = useGenerator();
+
+  const getCombinedLabel = () => {
+    if (!activeCategories || activeCategories.length === 0) return "সমন্বিত";
+    const shortNames = activeCategories
+      .map((cat) => SHORT_CATEGORY_LABELS[cat] || cat)
+      .filter(Boolean);
+    return `সমন্বিত (${shortNames.join(", ")})`;
+  };
+
+  const getSelectedTypeLabel = () => {
+    if (activeCategories.length === 0) {
+      return "প্রথমে বিষয় সিলেক্ট করুন";
+    }
+    if (!questionType) {
+      return "টাইপ নির্বাচন করুন";
+    }
+    if (questionType === "Combined") {
+      return getCombinedLabel();
+    }
+    const catObj = CATEGORIES_MAP.find((c) => c.value === questionType);
+    return catObj ? catObj.label : questionType;
+  };
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto pb-12 font-bengali relative">
@@ -304,30 +345,60 @@ export default function Generator() {
                   টাইপ
                 </label>
                 <div className="relative">
-                  <select
-                    value={questionType}
-                    onChange={(e) => setQuestionType(e.target.value)}
-                    className="w-full h-11 px-4 pr-10 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm appearance-none bg-white font-sans font-medium text-slate-800 cursor-pointer"
-                  >
-                    {activeCategories.length === 0 ? (
-                      <option value="">প্রথমে বিষয় সিলেক্ট করুন</option>
-                    ) : (
-                      <>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      asChild
+                      disabled={activeCategories.length === 0}
+                    >
+                      <button
+                        disabled={activeCategories.length === 0}
+                        type="button"
+                        className="w-full h-11 px-4 border border-slate-200 bg-white hover:border-indigo-500 disabled:bg-slate-50 disabled:border-slate-200 disabled:text-slate-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-800 flex justify-between items-center shadow-sm cursor-pointer select-none"
+                      >
+                        <span>{getSelectedTypeLabel()}</span>
+                        <ChevronDown className="size-4 text-slate-400 pointer-events-none" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    {activeCategories.length > 0 && (
+                      <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                         {activeCategories.map((catValue) => {
                           const catObj = CATEGORIES_MAP.find(
                             (c) => c.value === catValue,
                           );
+                          const isSelected = questionType === catValue;
                           return (
-                            <option key={catValue} value={catValue}>
-                              {catObj ? catObj.label : catValue}
-                            </option>
+                            <DropdownMenuItem
+                              key={catValue}
+                              onSelect={() => setQuestionType(catValue)}
+                              className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                                isSelected
+                                  ? "bg-indigo-50 text-indigo-600"
+                                  : "text-slate-700"
+                              }`}
+                            >
+                              <span>{catObj ? catObj.label : catValue}</span>
+                              {isSelected && (
+                                <span className="size-1 rounded-full bg-indigo-500" />
+                              )}
+                            </DropdownMenuItem>
                           );
                         })}
-                        <option value="Combined">সমন্বিত</option>
-                      </>
+                        <DropdownMenuItem
+                          onSelect={() => setQuestionType("Combined")}
+                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                            questionType === "Combined"
+                              ? "bg-indigo-50 text-indigo-600"
+                              : "text-slate-700"
+                          }`}
+                        >
+                          <span>{getCombinedLabel()}</span>
+                          {questionType === "Combined" && (
+                            <span className="size-1 rounded-full bg-indigo-500" />
+                          )}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
                     )}
-                  </select>
-                  <ChevronDown className="absolute right-4 top-3.5 h-4 w-4 text-slate-400 pointer-events-none" />
+                  </DropdownMenu>
                 </div>
               </div>
 

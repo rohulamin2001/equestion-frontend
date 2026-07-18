@@ -4,16 +4,16 @@ import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 
-const DialogContext = React.createContext({ open: false, setOpen: () => {} });
+const DialogContext = React.createContext({ open: false, setOpen: () => {}, overlayClassName: "" });
 
-const Dialog = ({ open, onOpenChange, children, ...props }) => {
+const Dialog = ({ open, onOpenChange, overlayClassName, children, ...props }) => {
   const [internalOpen, setInternalOpen] = React.useState(false);
   const isOpen = open !== undefined ? open : internalOpen;
   const setIsOpen = onOpenChange !== undefined ? onOpenChange : setInternalOpen;
 
   return (
     <DialogPrimitive.Root open={isOpen} onOpenChange={setIsOpen} {...props}>
-      <DialogContext.Provider value={{ open: isOpen, setOpen: setIsOpen }}>
+      <DialogContext.Provider value={{ open: isOpen, setOpen: setIsOpen, overlayClassName }}>
         {children}
       </DialogContext.Provider>
     </DialogPrimitive.Root>
@@ -85,11 +85,12 @@ const DialogContent = React.forwardRef(
       },
     };
 
+    const { overlayClassName } = React.useContext(DialogContext);
     const directionVariants = animationVariants[from] || animationVariants.top;
 
     return (
       <DialogPortal>
-        <DialogOverlay key="dialog-overlay" />
+        <DialogOverlay key="dialog-overlay" className={overlayClassName} />
         <DialogPrimitive.Content
           key="dialog-content"
           asChild

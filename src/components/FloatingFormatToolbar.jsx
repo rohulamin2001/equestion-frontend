@@ -48,9 +48,10 @@ export default function FloatingFormatToolbar({
       // 2. Update computed font size of the active element or selection
       const selection = window.getSelection();
       if (selection && selection.anchorNode) {
-        const parentEl = selection.anchorNode.nodeType === 3
-          ? selection.anchorNode.parentElement
-          : selection.anchorNode;
+        const parentEl =
+          selection.anchorNode.nodeType === 3
+            ? selection.anchorNode.parentElement
+            : selection.anchorNode;
         if (parentEl) {
           const style = window.getComputedStyle(parentEl);
           const sizePx = parseFloat(style.fontSize);
@@ -138,7 +139,7 @@ export default function FloatingFormatToolbar({
             type="button"
             onMouseDown={(e) => {
               e.preventDefault();
-              const newSize = Math.min(32, currentFontSize + 1);
+              const newSize = Math.min(26, currentFontSize + 1);
               setCurrentFontSize(newSize);
               onChangeFontSize(newSize);
             }}
