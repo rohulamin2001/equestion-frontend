@@ -360,3 +360,18 @@
 [contenteditable="true"] p {
   margin: 0 !important;
 }
+
+/* Custom Settings Sidebar Scrollbar */
+.custom-sidebar-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.25);
+  border-radius: 10px;
+}
+.custom-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.45);
+}

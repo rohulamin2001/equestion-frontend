@@ -1031,7 +1031,7 @@ export default function QuestionPreview() {
             })}
           </div>
 
-          <div className="flex-1 lg:overflow-y-auto lg:pr-2 lg:-mr-2 no-scrollbar min-h-0">
+          <div className="flex-1 lg:overflow-y-auto pr-1 min-h-0 custom-sidebar-scrollbar">
             {activeTab === "settings" && (
               <div className="bg-glass-elevated border border-slate-200/50 p-5 rounded-2xl divide-y divide-slate-200/60 space-y-5">
                 {/* Attachment settings card */}
@@ -1266,34 +1266,87 @@ export default function QuestionPreview() {
                       </div>
                     </div>
 
-                    {/* Column Divider switch toggle */}
-                    <div className="flex items-center justify-between p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl shadow-sm">
-                      <span className="text-[14px] font-semibold text-slate-700 font-sans tracking-tight">
-                        কলাম ডিভাইডার
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateSettingField(
-                            null,
-                            "columnDivider",
-                            !layoutSettings.columnDivider,
-                          )
-                        }
-                        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-                          layoutSettings.columnDivider
-                            ? "bg-emerald-600"
-                            : "bg-slate-200"
-                        }`}
-                      >
-                        <span
-                          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
+                    {/* Column Divider card with sliders */}
+                    <div className="p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl shadow-sm space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[14px] font-semibold text-slate-700 font-sans tracking-tight">
+                          কলাম ডিভাইডার
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateSettingField(
+                              null,
+                              "columnDivider",
+                              !layoutSettings.columnDivider,
+                            )
+                          }
+                          className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
                             layoutSettings.columnDivider
-                              ? "translate-x-4"
-                              : "translate-x-0"
+                              ? "bg-emerald-600"
+                              : "bg-slate-200"
                           }`}
-                        />
-                      </button>
+                        >
+                          <span
+                            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
+                              layoutSettings.columnDivider
+                                ? "translate-x-4"
+                                : "translate-x-0"
+                            }`}
+                          />
+                        </button>
+                      </div>
+
+                      {/* Gaps box */}
+                      <div className="border border-slate-200/60 bg-white rounded-xl p-3 space-y-3">
+                        {/* Question Bottom Gap slider */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
+                            <span>প্রশ্নের নিচের গ্যাপ</span>
+                            <span className="font-sans text-[11px] text-slate-500">
+                              {layoutSettings.lineSpacing}px
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min="0"
+                            max="50"
+                            value={layoutSettings.lineSpacing}
+                            onChange={(e) =>
+                              updateSettingField(
+                                null,
+                                "lineSpacing",
+                                parseInt(e.target.value),
+                              )
+                            }
+                            className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500 mt-1"
+                          />
+                        </div>
+
+                        {/* Column Gap slider */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
+                            <span>কলামের গ্যাপ</span>
+                            <span className="font-sans text-[11px] text-slate-500">
+                              {layoutSettings.columnGap}px
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min="5"
+                            max="40"
+                            value={layoutSettings.columnGap}
+                            onChange={(e) =>
+                              updateSettingField(
+                                null,
+                                "columnGap",
+                                parseInt(e.target.value),
+                              )
+                            }
+                            className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500 mt-1"
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     {/* Font Selection */}
@@ -1382,52 +1435,6 @@ export default function QuestionPreview() {
                           updateSettingField(
                             null,
                             "fontSize",
-                            parseInt(e.target.value),
-                          )
-                        }
-                        className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5 p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl shadow-sm">
-                      <div className="flex justify-between text-[12px] font-bold text-slate-600 font-bengali">
-                        <span>লাইনের মধ্যকার ফাক</span>
-                        <span className="font-sans">
-                          {layoutSettings.lineSpacing}px
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="20"
-                        value={layoutSettings.lineSpacing}
-                        onChange={(e) =>
-                          updateSettingField(
-                            null,
-                            "lineSpacing",
-                            parseInt(e.target.value),
-                          )
-                        }
-                        className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5 p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl shadow-sm">
-                      <div className="flex justify-between text-[12px] font-bold text-slate-600 font-bengali">
-                        <span>কলামের মধ্যকার গ্যাপ</span>
-                        <span className="font-sans">
-                          {layoutSettings.columnGap}px
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="10"
-                        max="40"
-                        value={layoutSettings.columnGap}
-                        onChange={(e) =>
-                          updateSettingField(
-                            null,
-                            "columnGap",
                             parseInt(e.target.value),
                           )
                         }
