@@ -78,7 +78,7 @@ export function useQuestionPreview() {
     metadata: {
       className: true,
       subjectName: true,
-      chapterName: true,
+      chapterName: false,
       setCode: true,
       programName: true,
       instructions: true,
