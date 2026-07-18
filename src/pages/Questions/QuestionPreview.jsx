@@ -31,8 +31,12 @@ const parseBanglaNumber = (val) => {
     .replace(/&nbsp;/g, " ")
     .trim();
 
+  const digitsOnly = cleanStr.match(/[০-৯0-9]/g);
+  if (!digitsOnly) return 0;
+  const digitsStr = digitsOnly.join("");
+
   const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
-  const englishStr = cleanStr.replace(/[০-৯]/g, (d) =>
+  const englishStr = digitsStr.replace(/[০-৯]/g, (d) =>
     String(banglaDigits.indexOf(d)),
   );
 
@@ -55,7 +59,7 @@ const getChapterNames = (set, syllabusList) => {
     const chap = matchingSyllabus.chapters.find(
       (c) =>
         c.chapterNumber === chapNum ||
-        String(c.chapterNumber) === String(chapNum)
+        String(c.chapterNumber) === String(chapNum),
     );
     return chap ? chap.chapterName : `অধ্যায় ${chapNum}`;
   });
@@ -433,33 +437,44 @@ export default function QuestionPreview() {
                 style={{ fontSize: "16px", fontWeight: 400 }}
               >
                 <div className="flex items-center gap-1">
-                  <span>সময় : </span>
                   <InlineEditable
-                    value={layoutSettings.examTime || "১ ঘণ্টা ৫০ মিনিট"}
+                    value={
+                      layoutSettings.examTime
+                        ? (layoutSettings.examTime.startsWith("সময়")
+                            ? layoutSettings.examTime
+                            : `সময়— ${layoutSettings.examTime}`)
+                        : "সময়— ১ ঘণ্টা ৫০ মিনিট"
+                    }
                     onSave={(val) => updateSettingField(null, "examTime", val)}
                     onActivate={handleEditorActivate}
                     onDeactivate={handleEditorDeactivate}
                     renderRichText={false}
                     className="font-normal"
                     style={{ fontSize: "16px", fontWeight: 400 }}
+                    placeholder="সময়— ১ ঘণ্টা ৫০ মিনিট"
                   />
                 </div>
                 <div className="flex items-center gap-1">
-                  <span>পূর্ণমান :</span>
                   <InlineEditable
                     value={
-                      activeSet.totalMarks
-                        ? Number(activeSet.totalMarks).toLocaleString("bn-BD")
-                        : "৭৯"
+                      layoutSettings.totalMarksLabel !== undefined
+                        ? layoutSettings.totalMarksLabel
+                        : `পূর্ণমান— ${
+                            activeSet.totalMarks
+                              ? Number(activeSet.totalMarks).toLocaleString("bn-BD")
+                              : "৭৯"
+                          }`
                     }
-                    onSave={(val) =>
-                      handleSaveSetField("totalMarks", parseBanglaNumber(val))
-                    }
+                    onSave={(val) => {
+                      updateSettingField(null, "totalMarksLabel", val);
+                      handleSaveSetField("totalMarks", parseBanglaNumber(val));
+                    }}
                     onActivate={handleEditorActivate}
                     onDeactivate={handleEditorDeactivate}
                     renderRichText={false}
                     className="font-normal"
                     style={{ fontSize: "16px", fontWeight: 400 }}
+                    placeholder="পূর্ণমান— ১০০"
                   />
                 </div>
               </div>
