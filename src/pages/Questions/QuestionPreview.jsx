@@ -3,8 +3,8 @@ import {
   ChevronLeft,
   Download,
   FileText,
-  Grid,
   Info,
+  LayoutGrid,
   Loader2,
   Plus,
   Printer,
@@ -1036,8 +1036,8 @@ export default function QuestionPreview() {
               <div className="bg-glass-elevated border border-slate-200/50 p-5 rounded-2xl divide-y divide-slate-200/60 space-y-5">
                 {/* Attachment settings card */}
                 <div className="space-y-3.5">
-                  <h3 className="text-[13px] font-extrabold text-white uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 px-3.5 py-2.5 rounded-xl shadow-md font-bengali">
-                    <Grid className="size-4 text-white" />
+                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-purple-700 to-indigo-600 px-3.5 py-2.5 rounded-xl shadow-md font-sans font-semibold">
+                    <LayoutGrid className="size-4 text-white" />
                     <span>প্রশ্নে সংযুক্তি</span>
                   </h3>
                   <div className="space-y-2">
@@ -1093,7 +1093,7 @@ export default function QuestionPreview() {
 
                 {/* Metadata header toggles */}
                 <div className="space-y-3.5 pt-5">
-                  <h3 className="text-[13px] font-extrabold text-white uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-violet-500 to-indigo-600 px-3.5 py-2.5 rounded-xl shadow-md font-bengali">
+                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-purple-700 to-indigo-600 px-3.5 py-2.5 rounded-xl shadow-md font-sans font-semibold">
                     <FileText className="size-4 text-white" />
                     <span>প্রশ্নের মেটাডাটা (হেডার)</span>
                   </h3>
@@ -1143,7 +1143,7 @@ export default function QuestionPreview() {
 
                 {/* Layout controls */}
                 <div className="space-y-3.5 pt-5">
-                  <h3 className="text-[13px] font-extrabold text-white uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-600 px-3.5 py-2.5 rounded-xl shadow-md font-bengali">
+                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-purple-700 to-indigo-600 px-3.5 py-2.5 rounded-xl shadow-md font-sans font-semibold">
                     <Sliders className="size-4 text-white" />
                     <span>ডকুমেন্ট কাস্টমাইজেশন</span>
                   </h3>
