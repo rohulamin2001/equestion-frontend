@@ -1845,7 +1845,7 @@ export default function QuestionPreview() {
                       <h3 className="text-[16px] font-bold text-white leading-tight font-bengali tracking-tight">
                         পেজ সেটাপ
                       </h3>
-                      <p className="text-white/70 text-[11px] font-medium leading-tight font-bengali mt-0.5">
+                      <p className="text-white/70 text-[11px] font-medium leading-tight font-sans">
                         প্রশ্নপত্রের মার্জিন ও কাগজের সাইজ নির্ধারণ করুন
                       </p>
                     </div>
