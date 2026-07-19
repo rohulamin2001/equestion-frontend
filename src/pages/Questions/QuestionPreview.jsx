@@ -2,6 +2,10 @@ import {
   AlignCenter,
   AlignLeft,
   AlignRight,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
   Award,
   ChevronDown,
   ChevronLeft,
@@ -22,9 +26,9 @@ import {
   Upload,
   X,
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion } from "motion/react";
 import FloatingFormatToolbar from "../../components/FloatingFormatToolbar.jsx";
 import InlineEditable from "../../components/InlineEditable.jsx";
 import {
@@ -143,7 +147,7 @@ export default function QuestionPreview() {
     const container = document.getElementById("logo-drag-container");
     if (!container) return;
     const rect = container.getBoundingClientRect();
-    
+
     let clientX, clientY;
     if (e.touches && e.touches.length > 0) {
       clientX = e.touches[0].clientX;
@@ -153,8 +157,14 @@ export default function QuestionPreview() {
       clientY = e.clientY;
     }
 
-    const x = Math.max(0, Math.min(100, Math.round(((clientX - rect.left) / rect.width) * 100)));
-    const y = Math.max(0, Math.min(100, Math.round(((clientY - rect.top) / rect.height) * 100)));
+    const x = Math.max(
+      0,
+      Math.min(100, Math.round(((clientX - rect.left) / rect.width) * 100)),
+    );
+    const y = Math.max(
+      0,
+      Math.min(100, Math.round(((clientY - rect.top) / rect.height) * 100)),
+    );
 
     updateSettingField("logoSettings", "x", x);
     updateSettingField("logoSettings", "y", y);
@@ -1191,7 +1201,18 @@ export default function QuestionPreview() {
               <div className="bg-glass-elevated border border-slate-200/50 p-5 rounded-2xl divide-y divide-slate-200/60 space-y-5">
                 {/* Attachment settings card */}
                 <div className="space-y-3.5">
-                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", boxShadow: "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)", border: "1px solid rgba(167,139,250,0.4)" }}>
+                  <h3
+                    className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)",
+                      backdropFilter: "blur(20px) saturate(180%)",
+                      WebkitBackdropFilter: "blur(20px) saturate(180%)",
+                      boxShadow:
+                        "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)",
+                      border: "1px solid rgba(167,139,250,0.4)",
+                    }}
+                  >
                     <LayoutGrid className="size-4 text-white" />
                     <span>প্রশ্নে সংযুক্তি</span>
                   </h3>
@@ -1248,7 +1269,18 @@ export default function QuestionPreview() {
 
                 {/* Metadata header toggles */}
                 <div className="space-y-3.5 pt-5">
-                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", boxShadow: "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)", border: "1px solid rgba(167,139,250,0.4)" }}>
+                  <h3
+                    className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)",
+                      backdropFilter: "blur(20px) saturate(180%)",
+                      WebkitBackdropFilter: "blur(20px) saturate(180%)",
+                      boxShadow:
+                        "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)",
+                      border: "1px solid rgba(167,139,250,0.4)",
+                    }}
+                  >
                     <FileText className="size-4 text-white" />
                     <span>প্রশ্নের মেটাডাটা (হেডার)</span>
                   </h3>
@@ -1298,7 +1330,18 @@ export default function QuestionPreview() {
 
                 {/* Layout controls */}
                 <div className="space-y-3.5 pt-5">
-                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", boxShadow: "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)", border: "1px solid rgba(167,139,250,0.4)" }}>
+                  <h3
+                    className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)",
+                      backdropFilter: "blur(20px) saturate(180%)",
+                      WebkitBackdropFilter: "blur(20px) saturate(180%)",
+                      boxShadow:
+                        "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)",
+                      border: "1px solid rgba(167,139,250,0.4)",
+                    }}
+                  >
                     <Sliders className="size-4 text-white" />
                     <span>ডকুমেন্ট কাস্টমাইজেশন</span>
                   </h3>
@@ -1601,7 +1644,18 @@ export default function QuestionPreview() {
 
                 {/* Branding controls */}
                 <div className="space-y-3.5 pt-5">
-                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", boxShadow: "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)", border: "1px solid rgba(167,139,250,0.4)" }}>
+                  <h3
+                    className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)",
+                      backdropFilter: "blur(20px) saturate(180%)",
+                      WebkitBackdropFilter: "blur(20px) saturate(180%)",
+                      boxShadow:
+                        "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)",
+                      border: "1px solid rgba(167,139,250,0.4)",
+                    }}
+                  >
                     <Award className="size-4 text-white" />
                     <span>ব্র্যান্ডিং</span>
                   </h3>
@@ -1716,356 +1770,266 @@ export default function QuestionPreview() {
         }}
       />
 
-      {/* Bottom Sheet Drawer for Page Setup with spring slide-up transition */}
-      <AnimatePresence>
-        {isPageSetupOpen && (
-          <>
-            {/* Backdrop overlay - completely transparent and clear (no blur or dark overlay) */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsPageSetupOpen(false)}
-              className="fixed inset-0 z-[150] bg-transparent print:hidden cursor-default"
-            />
-
-            {/* Bottom Drawer panel with smooth sliding transition */}
-            <motion.div
-              initial={{ y: "100%", x: "-50%" }}
-              animate={{ y: 0, x: "-50%" }}
-              exit={{ y: "100%", x: "-50%" }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 18,
-                mass: 0.8,
-              }}
-              className="fixed bottom-0 left-1/2 w-full max-w-lg z-[200] bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-t-3xl shadow-2xl p-6 print:hidden text-black"
-              style={{
-                maxHeight: "85vh",
-                boxShadow: "0 -10px 25px -5px rgba(0, 0, 0, 0.1), 0 -8px 10px -6px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              {/* Header */}
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-[17px] font-bold text-slate-800 font-bengali">
-                    Page Setup
-                  </h3>
-                  <p className="text-slate-500 text-[12px] font-semibold leading-relaxed font-bengali mt-0.5">
-                    প্রশ্নপত্রের ডানে, বামে, উপরে, নিচের স্পেস কমানো বাড়ানো যাবে।
-                  </p>
-                </div>
-                <button
-                  onClick={() => setIsPageSetupOpen(false)}
-                  className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-colors focus:outline-none cursor-pointer"
-                >
-                  <X className="size-4" />
-                </button>
-              </div>
-
-              {/* Body */}
-              <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-1 no-scrollbar">
-                <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
-                      <span>উপরে</span>
-                      <span className="font-sans text-slate-500">
-                        {layoutSettings.pagePaddingTop ?? 32}px
-                      </span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={layoutSettings.pagePaddingTop ?? 32}
-                      onChange={(e) =>
-                        updateSettingField(
-                          null,
-                          "pagePaddingTop",
-                          parseInt(e.target.value),
-                        )
-                      }
-                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500 mt-1"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
-                      <span>নিচে</span>
-                      <span className="font-sans text-slate-500">
-                        {layoutSettings.pagePaddingBottom ?? 32}px
-                      </span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={layoutSettings.pagePaddingBottom ?? 32}
-                      onChange={(e) =>
-                        updateSettingField(
-                          null,
-                          "pagePaddingBottom",
-                          parseInt(e.target.value),
-                        )
-                      }
-                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500 mt-1"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
-                      <span>বামে</span>
-                      <span className="font-sans text-slate-500">
-                        {layoutSettings.pagePaddingLeft ?? 32}px
-                      </span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={layoutSettings.pagePaddingLeft ?? 32}
-                      onChange={(e) =>
-                        updateSettingField(
-                          null,
-                          "pagePaddingLeft",
-                          parseInt(e.target.value),
-                        )
-                      }
-                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500 mt-1"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
-                      <span>ডানে</span>
-                      <span className="font-sans text-slate-500">
-                        {layoutSettings.pagePaddingRight ?? 32}px
-                      </span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={layoutSettings.pagePaddingRight ?? 32}
-                      onChange={(e) =>
-                        updateSettingField(
-                          null,
-                          "pagePaddingRight",
-                          parseInt(e.target.value),
-                        )
-                      }
-                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500 mt-1"
-                    />
-                  </div>
-                </div>
-
-                <hr className="border-slate-200/60" />
-
-                <div className="space-y-3">
-                  <label className="text-[12px] font-bold text-slate-600 block font-bengali">
-                    পেপার সাইজ
-                  </label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {PAPER_SIZES_META.map((paper) => {
-                      const isSelected = layoutSettings.paperSize === paper.id;
-                      return (
-                        <button
-                          key={paper.id}
-                          onClick={() =>
-                            updateSettingField(null, "paperSize", paper.id)
-                          }
-                          className={`flex flex-col items-center justify-center p-2 border rounded-xl transition cursor-pointer select-none ${
-                            isSelected
-                              ? "bg-emerald-50/60 border-emerald-500 text-emerald-700 font-extrabold shadow-sm"
-                              : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
-                          }`}
-                        >
-                          <div className="h-14 w-full flex items-center justify-center bg-slate-50/50 rounded-lg mb-1.5 border border-slate-100 shadow-sm relative overflow-hidden">
-                            <div
-                              className={`bg-white border border-slate-300 rounded shadow-sm transition-all ${
-                                isSelected
-                                  ? "border-emerald-300 bg-emerald-50/10"
-                                  : ""
-                              }`}
-                              style={{
-                                width: `${paper.w}px`,
-                                height: `${paper.h}px`,
-                              }}
-                            />
-                          </div>
-                          <span className="text-[11px] font-bold">
-                            {paper.label}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Bottom Sheet Drawer for Logo Settings — rendered via Portal to escape z-index stacking */}
+      {/* Bottom Sheet Drawer for Page Setup — Glassmorphic Design via Portal */}
       {createPortal(
         <AnimatePresence>
-        {isLogoSettingsOpen && (
-          <>
-            {/* Backdrop overlay with subtle dim */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={() => setIsLogoSettingsOpen(false)}
-              className="fixed inset-0 z-[150] print:hidden"
-              style={{ background: "rgba(15,10,40,0.45)" }}
-            />
-
-            {/* Bottom Drawer — glassmorphic premium panel */}
-            <motion.div
-              initial={{ y: "100%", x: "-50%" }}
-              animate={{ y: 0, x: "-50%" }}
-              exit={{ y: "100%", x: "-50%" }}
-              transition={{ type: "spring", stiffness: 320, damping: 22, mass: 0.75 }}
-              className="fixed bottom-0 left-1/2 w-full max-w-lg z-[200] rounded-t-3xl print:hidden overflow-hidden"
-              style={{
-                maxHeight: "88vh",
-                background: "rgba(255,255,255,0.72)",
-                backdropFilter: "blur(32px) saturate(180%)",
-                WebkitBackdropFilter: "blur(32px) saturate(180%)",
-                border: "1px solid rgba(255,255,255,0.6)",
-                borderBottom: "none",
-                boxShadow: "0 -20px 60px -10px rgba(109,40,217,0.22), 0 -4px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
-              }}
-            >
-              {/* Gradient header strip */}
-              <div
-                className="relative flex items-center justify-between px-6 pt-5 pb-4"
+          {isPageSetupOpen && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setIsPageSetupOpen(false)}
+                className="fixed inset-0 z-[150] print:hidden"
+                style={{ background: "rgba(15,10,40,0.45)" }}
+              />
+              {/* Drawer panel */}
+              <motion.div
+                initial={{ y: "100%", x: "-50%" }}
+                animate={{ y: 0, x: "-50%" }}
+                exit={{ y: "100%", x: "-50%" }}
+                transition={{
+                  type: "spring",
+                  stiffness: 320,
+                  damping: 22,
+                  mass: 0.75,
+                }}
+                className="fixed bottom-0 left-1/2 w-full max-w-lg z-[200] rounded-t-3xl print:hidden overflow-hidden"
                 style={{
-                  background: "linear-gradient(135deg, rgba(109,40,217,0.90) 0%, rgba(79,70,229,0.90) 55%, rgba(124,58,237,0.85) 100%)",
-                  backdropFilter: "blur(20px)",
+                  maxHeight: "88vh",
+                  background: "rgba(255,255,255,0.72)",
+                  backdropFilter: "blur(32px) saturate(180%)",
+                  WebkitBackdropFilter: "blur(32px) saturate(180%)",
+                  border: "1px solid rgba(255,255,255,0.6)",
+                  borderBottom: "none",
+                  boxShadow:
+                    "0 -20px 60px -10px rgba(109,40,217,0.22), 0 -4px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
                 }}
               >
-                {/* Decorative glow circles */}
-                <div className="absolute -top-6 -left-6 w-24 h-24 rounded-full opacity-30 pointer-events-none" style={{ background: "radial-gradient(circle, rgba(167,139,250,0.8), transparent)" }} />
-                <div className="absolute -bottom-4 right-8 w-16 h-16 rounded-full opacity-20 pointer-events-none" style={{ background: "radial-gradient(circle, rgba(192,132,252,0.9), transparent)" }} />
-
-                <div className="flex items-center gap-3 relative z-10">
-                  {/* Logo icon badge */}
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.3)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35)" }}>
-                    <Image className="size-4 text-white" />
+                {/* Gradient header */}
+                <div
+                  className="relative flex items-center justify-between px-6 pt-5 pb-4"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, rgba(109,40,217,0.90) 0%, rgba(79,70,229,0.90) 55%, rgba(124,58,237,0.85) 100%)",
+                  }}
+                >
+                  <div
+                    className="absolute -top-6 -left-6 w-24 h-24 rounded-full opacity-30 pointer-events-none"
+                    style={{
+                      background:
+                        "radial-gradient(circle, rgba(167,139,250,0.8), transparent)",
+                    }}
+                  />
+                  <div
+                    className="absolute -bottom-4 right-8 w-16 h-16 rounded-full opacity-20 pointer-events-none"
+                    style={{
+                      background:
+                        "radial-gradient(circle, rgba(192,132,252,0.9), transparent)",
+                    }}
+                  />
+                  <div className="flex items-center gap-3 relative z-10">
+                    <div
+                      className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                      style={{
+                        background: "rgba(255,255,255,0.2)",
+                        border: "1px solid rgba(255,255,255,0.3)",
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35)",
+                      }}
+                    >
+                      <Sliders className="size-4 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-[16px] font-bold text-white leading-tight font-bengali tracking-tight">
+                        পেজ সেটাপ
+                      </h3>
+                      <p className="text-white/70 text-[11px] font-medium leading-tight font-bengali mt-0.5">
+                        প্রশ্নপত্রের মার্জিন ও কাগজের সাইজ নির্ধারণ করুন
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-[16px] font-bold text-white leading-tight font-bengali tracking-tight">
-                      লোগো সেটিংস
-                    </h3>
-                    <p className="text-white/70 text-[11px] font-medium leading-tight font-bengali mt-0.5">
-                      প্রশ্নপত্রে লোগো কাস্টমাইজ করুন
+                  <button
+                    onClick={() => setIsPageSetupOpen(false)}
+                    className="relative z-10 w-8 h-8 rounded-xl flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all cursor-pointer focus:outline-none"
+                  >
+                    <X className="size-4" />
+                  </button>
+                </div>
+
+                {/* Drag handle */}
+                <div className="flex justify-center pt-3 pb-1">
+                  <div className="w-10 h-1 rounded-full bg-slate-300/70" />
+                </div>
+
+                {/* Scrollable body */}
+                <div
+                  className="overflow-y-auto px-5 pb-6 space-y-5 no-scrollbar"
+                  style={{ maxHeight: "calc(88vh - 120px)" }}
+                >
+                  {/* Live margin diagram */}
+                  <div
+                    className="relative w-full rounded-2xl p-4 flex items-center justify-center"
+                    style={{
+                      background: "rgba(248,246,255,0.85)",
+                      border: "1px solid rgba(167,139,250,0.2)",
+                      minHeight: "128px",
+                    }}
+                  >
+                    <div
+                      className="relative bg-white rounded-sm shadow-md"
+                      style={{
+                        width: "72px",
+                        height: "100px",
+                        border: "1.5px solid rgba(167,139,250,0.4)",
+                      }}
+                    >
+                      <div
+                        className="absolute rounded-sm"
+                        style={{
+                          top: `${Math.round(((layoutSettings.pagePaddingTop ?? 32) / 100) * 20)}px`,
+                          bottom: `${Math.round(((layoutSettings.pagePaddingBottom ?? 32) / 100) * 20)}px`,
+                          left: `${Math.round(((layoutSettings.pagePaddingLeft ?? 32) / 100) * 20)}px`,
+                          right: `${Math.round(((layoutSettings.pagePaddingRight ?? 32) / 100) * 20)}px`,
+                          background:
+                            "linear-gradient(135deg, rgba(109,40,217,0.08) 0%, rgba(79,70,229,0.08) 100%)",
+                          border: "1px dashed rgba(109,40,217,0.3)",
+                        }}
+                      />
+                      <span
+                        className="absolute -top-4 left-1/2 -translate-x-1/2 text-[8px] font-bold font-sans"
+                        style={{ color: "rgb(109,40,217)" }}
+                      >
+                        {layoutSettings.pagePaddingTop ?? 32}
+                      </span>
+                      <span
+                        className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-bold font-sans"
+                        style={{ color: "rgb(109,40,217)" }}
+                      >
+                        {layoutSettings.pagePaddingBottom ?? 32}
+                      </span>
+                      <span
+                        className="absolute top-1/2 -left-5 -translate-y-1/2 text-[8px] font-bold font-sans"
+                        style={{ color: "rgb(109,40,217)" }}
+                      >
+                        {layoutSettings.pagePaddingLeft ?? 32}
+                      </span>
+                      <span
+                        className="absolute top-1/2 -right-5 -translate-y-1/2 text-[8px] font-bold font-sans"
+                        style={{ color: "rgb(109,40,217)" }}
+                      >
+                        {layoutSettings.pagePaddingRight ?? 32}
+                      </span>
+                    </div>
+                    <p
+                      className="absolute bottom-2 right-3 text-[9px] font-bold font-bengali"
+                      style={{ color: "rgba(109,40,217,0.5)" }}
+                    >
+                      লাইভ প্রিভিউ
                     </p>
                   </div>
-                </div>
 
-                {/* Close button */}
-                <button
-                  onClick={() => setIsLogoSettingsOpen(false)}
-                  className="relative z-10 w-8 h-8 rounded-xl flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all cursor-pointer focus:outline-none"
-                >
-                  <X className="size-4" />
-                </button>
-              </div>
-
-              {/* Drag handle pill */}
-              <div className="flex justify-center pt-3 pb-1">
-                <div className="w-10 h-1 rounded-full bg-slate-300/70" />
-              </div>
-
-              {/* ── Mode Tab Switcher — Always visible, outside scroll ── */}
-              <div className="px-5 pb-3">
-                <div
-                  className="flex p-1 rounded-2xl gap-1"
-                  style={{ background: "rgba(109,40,217,0.12)", border: "1.5px solid rgba(109,40,217,0.2)" }}
-                >
-                  {/* Tab: সহজ মোড */}
-                  <button
-                    type="button"
-                    onClick={() => updateSettingField("logoSettings", "positionType", "simple")}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-200 cursor-pointer"
-                    style={
-                      layoutSettings.logoSettings.positionType === "simple"
-                        ? {
-                            background: "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
-                            color: "#fff",
-                            boxShadow: "0 4px 16px rgba(109,40,217,0.35), inset 0 1px 0 rgba(255,255,255,0.2)",
+                  {/* Margin sliders */}
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { label: "উপরে", Icon: ArrowUp, field: "pagePaddingTop" },
+                      {
+                        label: "নিচে",
+                        Icon: ArrowDown,
+                        field: "pagePaddingBottom",
+                      },
+                      {
+                        label: "বামে",
+                        Icon: ArrowLeft,
+                        field: "pagePaddingLeft",
+                      },
+                      {
+                        label: "ডানে",
+                        Icon: ArrowRight,
+                        field: "pagePaddingRight",
+                      },
+                    ].map(({ label, Icon, field }) => (
+                      <div
+                        key={field}
+                        className="space-y-2.5 p-3.5 rounded-2xl"
+                        style={{
+                          background: "rgba(248,246,255,0.85)",
+                          border: "1px solid rgba(167,139,250,0.2)",
+                        }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <Icon
+                              className="size-3.5"
+                              style={{ color: "rgb(109,40,217)" }}
+                              strokeWidth={2.5}
+                            />
+                            <span className="text-[12px] font-bold text-slate-700 font-bengali">
+                              {label}
+                            </span>
+                          </div>
+                          <span
+                            className="text-[11px] font-black font-sans px-2 py-0.5 rounded-lg"
+                            style={{
+                              background: "rgba(109,40,217,0.12)",
+                              color: "rgb(109,40,217)",
+                            }}
+                          >
+                            {layoutSettings[field] ?? 32}px
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={layoutSettings[field] ?? 32}
+                          onChange={(e) =>
+                            updateSettingField(
+                              null,
+                              field,
+                              parseInt(e.target.value),
+                            )
                           }
-                        : { color: "rgba(109,40,217,0.7)", background: "transparent" }
-                    }
-                  >
-                    <LayoutGrid className="size-3.5" />
-                    <span className="font-bengali">সহজ মোড</span>
-                  </button>
+                          className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                          style={{ accentColor: "rgb(109,40,217)" }}
+                        />
+                        <div className="flex justify-between text-[9px] font-bold text-slate-400 font-sans">
+                          <span>0px</span>
+                          <span>100px</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-                  {/* Tab: ড্র্যাগ মোড */}
-                  <button
-                    type="button"
-                    onClick={() => updateSettingField("logoSettings", "positionType", "drag")}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-200 cursor-pointer"
-                    style={
-                      layoutSettings.logoSettings.positionType === "drag"
-                        ? {
-                            background: "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
-                            color: "#fff",
-                            boxShadow: "0 4px 16px rgba(109,40,217,0.35), inset 0 1px 0 rgba(255,255,255,0.2)",
-                          }
-                        : { color: "rgba(109,40,217,0.7)", background: "transparent" }
-                    }
-                  >
-                    <Move className="size-3.5" />
-                    <span className="font-bengali">ড্র্যাগ মোড</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Scrollable body */}
-              <div className="overflow-y-auto px-5 pb-6 space-y-5 no-scrollbar" style={{ maxHeight: "calc(88vh - 180px)" }}>
-
-
-                {/* ── Simple Mode: Position Selector ── */}
-                {layoutSettings.logoSettings.positionType === "simple" && (
-                  <motion.div
-                    key="simple-panel"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    transition={{ duration: 0.18 }}
-                    className="space-y-3"
-                  >
+                  {/* Paper size */}
+                  <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      <AlignCenter className="size-3.5 text-violet-600" />
-                      <span className="text-[12px] font-bold text-slate-700 font-bengali">লোগোর অবস্থান</span>
+                      <FileText className="size-3.5 text-violet-600" />
+                      <span className="text-[13px] font-bold text-slate-700 font-bengali">
+                        কাগজের সাইজ
+                      </span>
                     </div>
-                    <div className="grid grid-cols-3 gap-2.5">
-                      {[
-                        { pos: "left", label: "বামে", icon: AlignLeft },
-                        { pos: "center", label: "মাঝে", icon: AlignCenter },
-                        { pos: "right", label: "ডানে", icon: AlignRight },
-                      ].map(({ pos, label, icon: Icon }) => {
-                        const isActive = layoutSettings.logoSettings.position === pos;
+                    <div className="grid grid-cols-4 gap-2">
+                      {PAPER_SIZES_META.map((paper) => {
+                        const isSelected =
+                          layoutSettings.paperSize === paper.id;
                         return (
                           <button
-                            key={pos}
-                            type="button"
-                            onClick={() => updateSettingField("logoSettings", "position", pos)}
-                            className="flex flex-col items-center gap-1.5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer"
+                            key={paper.id}
+                            onClick={() =>
+                              updateSettingField(null, "paperSize", paper.id)
+                            }
+                            className="flex flex-col items-center justify-center p-2 rounded-2xl transition cursor-pointer select-none"
                             style={
-                              isActive
+                              isSelected
                                 ? {
-                                    background: "linear-gradient(135deg, rgba(109,40,217,0.12) 0%, rgba(79,70,229,0.12) 100%)",
+                                    background:
+                                      "linear-gradient(135deg, rgba(109,40,217,0.10) 0%, rgba(79,70,229,0.10) 100%)",
                                     border: "1.5px solid rgba(109,40,217,0.45)",
                                     color: "rgb(109,40,217)",
-                                    boxShadow: "0 2px 12px rgba(109,40,217,0.15)",
+                                    boxShadow:
+                                      "0 2px 12px rgba(109,40,217,0.15)",
                                   }
                                 : {
                                     background: "rgba(248,248,255,0.8)",
@@ -2074,218 +2038,561 @@ export default function QuestionPreview() {
                                   }
                             }
                           >
-                            <Icon className="size-4" />
-                            <span className="font-bengali">{label}</span>
+                            <div
+                              className="h-12 w-full flex items-center justify-center rounded-xl mb-1.5 overflow-hidden"
+                              style={{
+                                background: isSelected
+                                  ? "linear-gradient(135deg, rgba(109,40,217,0.06) 0%, rgba(79,70,229,0.06) 100%)"
+                                  : "rgba(241,245,249,0.8)",
+                              }}
+                            >
+                              <div
+                                className="rounded-sm shadow-sm"
+                                style={{
+                                  width: `${paper.w}px`,
+                                  height: `${paper.h}px`,
+                                  background: "white",
+                                  border: isSelected
+                                    ? "1.5px solid rgba(109,40,217,0.4)"
+                                    : "1px solid rgba(203,213,225,0.8)",
+                                }}
+                              />
+                            </div>
+                            <span className="text-[11px] font-bold">
+                              {paper.label}
+                            </span>
                           </button>
                         );
                       })}
                     </div>
-                  </motion.div>
-                )}
-
-                {/* ── Drag Mode: Canvas ── */}
-                {layoutSettings.logoSettings.positionType === "drag" && (
-                  <motion.div
-                    key="drag-panel"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    transition={{ duration: 0.18 }}
-                    className="space-y-2.5"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Move className="size-3.5 text-violet-600" />
-                      <span className="text-[12px] font-bold text-slate-700 font-bengali">অবস্থান ড্র্যাগ করুন</span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 font-bengali font-medium">
-                      নিচের বক্সে <span className="text-violet-600 font-bold">LOGO</span> ট্যাগটি ড্র্যাগ করে যেকোনো জায়গায় রাখুন।
-                    </p>
-                    <div
-                      id="logo-drag-container"
-                      className="relative w-full h-40 rounded-2xl overflow-hidden cursor-crosshair select-none"
-                      style={{
-                        background: "linear-gradient(135deg, rgba(240,237,255,0.9) 0%, rgba(232,240,255,0.9) 100%)",
-                        border: "1.5px solid rgba(167,139,250,0.35)",
-                        boxShadow: "inset 0 2px 12px rgba(109,40,217,0.06)",
-                      }}
-                      onMouseMove={handleDragMove}
-                      onTouchMove={handleDragTouchMove}
-                      onMouseUp={handleDragEnd}
-                      onMouseLeave={handleDragEnd}
-                      onTouchEnd={handleDragEnd}
-                    >
-                      {/* Dot grid */}
-                      <div
-                        className="absolute inset-0 opacity-30"
-                        style={{ backgroundImage: "radial-gradient(circle, rgba(109,40,217,0.4) 1px, transparent 1px)", backgroundSize: "18px 18px" }}
-                      />
-                      {/* Corner labels */}
-                      <span className="absolute top-2 left-2.5 text-[9px] font-bold text-violet-400/60 font-sans select-none">↖ TL</span>
-                      <span className="absolute top-2 right-2.5 text-[9px] font-bold text-violet-400/60 font-sans select-none">TR ↗</span>
-                      <span className="absolute bottom-2 left-2.5 text-[9px] font-bold text-violet-400/60 font-sans select-none">↙ BL</span>
-                      <span className="absolute bottom-2 right-2.5 text-[9px] font-bold text-violet-400/60 font-sans select-none">BR ↘</span>
-                      {/* Draggable badge */}
-                      <div
-                        style={{
-                          left: `${layoutSettings.logoSettings.x}%`,
-                          top: `${layoutSettings.logoSettings.y}%`,
-                          transform: "translate(-50%, -50%)",
-                          background: "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
-                          border: "1px solid rgba(255,255,255,0.3)",
-                          boxShadow: "0 4px 16px rgba(109,40,217,0.45)",
-                        }}
-                        className="absolute flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-move shadow-lg active:scale-95 transition-transform select-none"
-                        onMouseDown={handleDragStart}
-                        onTouchStart={handleDragStart}
-                      >
-                        <Image className="size-3 text-white" />
-                        <span className="text-white font-black text-[10px] font-sans">LOGO</span>
-                      </div>
-                    </div>
-                    {/* Coordinates chip */}
-                    <div className="flex justify-center">
-                      <span
-                        className="text-[11px] font-bold font-sans px-3 py-1 rounded-lg"
-                        style={{ background: "rgba(109,40,217,0.1)", color: "rgb(109,40,217)", border: "1px solid rgba(109,40,217,0.2)" }}
-                      >
-                        X: {layoutSettings.logoSettings.x}% &nbsp;|&nbsp; Y: {layoutSettings.logoSettings.y}%
-                      </span>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* ── Size Slider ── */}
-                <div
-                  className="space-y-3 p-4 rounded-2xl"
-                  style={{ background: "rgba(248,246,255,0.85)", border: "1px solid rgba(167,139,250,0.2)" }}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Maximize2 className="size-3.5 text-violet-600" />
-                      <span className="text-[13px] font-bold text-slate-700 font-bengali">সাইজ</span>
-                    </div>
-                    <span
-                      className="text-[12px] font-black font-sans px-2.5 py-0.5 rounded-lg"
-                      style={{ background: "rgba(109,40,217,0.12)", color: "rgb(109,40,217)" }}
-                    >
-                      {layoutSettings.logoSettings.size}px
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="20"
-                    max="150"
-                    value={layoutSettings.logoSettings.size}
-                    onChange={(e) => updateSettingField("logoSettings", "size", parseInt(e.target.value))}
-                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                    style={{ accentColor: "rgb(109,40,217)" }}
-                  />
-                  <div className="flex justify-between text-[10px] font-bold text-slate-400 font-sans">
-                    <span>20px</span><span>150px</span>
                   </div>
                 </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
 
-                {/* ── Opacity Slider ── */}
+      {/* Bottom Sheet Drawer for Logo Settings — rendered via Portal to escape z-index stacking */}
+      {createPortal(
+        <AnimatePresence>
+          {isLogoSettingsOpen && (
+            <>
+              {/* Backdrop overlay with subtle dim */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setIsLogoSettingsOpen(false)}
+                className="fixed inset-0 z-[150] print:hidden"
+                style={{ background: "rgba(15,10,40,0.45)" }}
+              />
+
+              {/* Bottom Drawer — glassmorphic premium panel */}
+              <motion.div
+                initial={{ y: "100%", x: "-50%" }}
+                animate={{ y: 0, x: "-50%" }}
+                exit={{ y: "100%", x: "-50%" }}
+                transition={{
+                  type: "spring",
+                  stiffness: 320,
+                  damping: 22,
+                  mass: 0.75,
+                }}
+                className="fixed bottom-0 left-1/2 w-full max-w-lg z-[200] rounded-t-3xl print:hidden overflow-hidden"
+                style={{
+                  maxHeight: "88vh",
+                  background: "rgba(255,255,255,0.72)",
+                  backdropFilter: "blur(32px) saturate(180%)",
+                  WebkitBackdropFilter: "blur(32px) saturate(180%)",
+                  border: "1px solid rgba(255,255,255,0.6)",
+                  borderBottom: "none",
+                  boxShadow:
+                    "0 -20px 60px -10px rgba(109,40,217,0.22), 0 -4px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+                }}
+              >
+                {/* Gradient header strip */}
                 <div
-                  className="space-y-3 p-4 rounded-2xl"
-                  style={{ background: "rgba(248,246,255,0.85)", border: "1px solid rgba(167,139,250,0.2)" }}
+                  className="relative flex items-center justify-between px-6 pt-5 pb-4"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, rgba(109,40,217,0.90) 0%, rgba(79,70,229,0.90) 55%, rgba(124,58,237,0.85) 100%)",
+                    backdropFilter: "blur(20px)",
+                  }}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Eye className="size-3.5 text-violet-600" />
-                      <span className="text-[13px] font-bold text-slate-700 font-bengali">স্বচ্ছতা</span>
-                    </div>
-                    <span
-                      className="text-[12px] font-black font-sans px-2.5 py-0.5 rounded-lg"
-                      style={{ background: "rgba(109,40,217,0.12)", color: "rgb(109,40,217)" }}
-                    >
-                      {layoutSettings.logoSettings.opacity}%
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="10"
-                    max="100"
-                    value={layoutSettings.logoSettings.opacity}
-                    onChange={(e) => updateSettingField("logoSettings", "opacity", parseInt(e.target.value))}
-                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                    style={{ accentColor: "rgb(109,40,217)" }}
-                  />
-                  <div className="flex justify-between text-[10px] font-bold text-slate-400 font-sans">
-                    <span>10%</span><span>100%</span>
-                  </div>
-                </div>
-
-                {/* ── Logo Image Uploader ── */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Upload className="size-3.5 text-violet-600" />
-                    <span className="text-[13px] font-bold text-slate-700 font-bengali">লোগো ইমেজ</span>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id="logo-image-upload"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (uploadEvent) => {
-                          updateSettingField("logoSettings", "logoUrl", uploadEvent.target.result);
-                        };
-                        reader.readAsDataURL(file);
-                      }
+                  {/* Decorative glow circles */}
+                  <div
+                    className="absolute -top-6 -left-6 w-24 h-24 rounded-full opacity-30 pointer-events-none"
+                    style={{
+                      background:
+                        "radial-gradient(circle, rgba(167,139,250,0.8), transparent)",
                     }}
                   />
-                  <div className="flex items-center gap-3">
-                    {/* Upload button */}
-                    <label
-                      htmlFor="logo-image-upload"
-                      className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-[13px] font-bold transition-all cursor-pointer"
-                      style={{
-                        background: "linear-gradient(135deg, rgba(109,40,217,0.10) 0%, rgba(79,70,229,0.10) 100%)",
-                        border: "1.5px dashed rgba(109,40,217,0.4)",
-                        color: "rgb(109,40,217)",
-                      }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = "linear-gradient(135deg, rgba(109,40,217,0.16) 0%, rgba(79,70,229,0.16) 100%)"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = "linear-gradient(135deg, rgba(109,40,217,0.10) 0%, rgba(79,70,229,0.10) 100%)"; }}
-                    >
-                      <Upload className="size-4" />
-                      <span className="font-bengali">ইমেজ আপলোড করুন</span>
-                    </label>
+                  <div
+                    className="absolute -bottom-4 right-8 w-16 h-16 rounded-full opacity-20 pointer-events-none"
+                    style={{
+                      background:
+                        "radial-gradient(circle, rgba(192,132,252,0.9), transparent)",
+                    }}
+                  />
 
-                    {/* Logo preview + remove */}
-                    {layoutSettings.logoSettings.logoUrl && (
-                      <div className="flex items-center gap-2 shrink-0">
-                        <div
-                          className="w-10 h-10 rounded-xl overflow-hidden border"
-                          style={{ border: "1.5px solid rgba(109,40,217,0.3)", boxShadow: "0 2px 8px rgba(109,40,217,0.15)" }}
-                        >
-                          <img
-                            src={layoutSettings.logoSettings.logoUrl}
-                            alt="Logo preview"
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => updateSettingField("logoSettings", "logoUrl", null)}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-all cursor-pointer"
-                        >
-                          <Trash2 className="size-3.5" />
-                        </button>
-                      </div>
-                    )}
+                  <div className="flex items-center gap-3 relative z-10">
+                    {/* Logo icon badge */}
+                    <div
+                      className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                      style={{
+                        background: "rgba(255,255,255,0.2)",
+                        border: "1px solid rgba(255,255,255,0.3)",
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35)",
+                      }}
+                    >
+                      <Image className="size-4 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-[16px] font-bold text-white leading-tight font-bengali tracking-tight">
+                        লোগো সেটিংস
+                      </h3>
+                      <p className="text-white/70 text-[11px] font-medium leading-tight font-bengali mt-0.5">
+                        প্রশ্নপত্রে লোগো কাস্টমাইজ করুন
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Close button */}
+                  <button
+                    onClick={() => setIsLogoSettingsOpen(false)}
+                    className="relative z-10 w-8 h-8 rounded-xl flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all cursor-pointer focus:outline-none"
+                  >
+                    <X className="size-4" />
+                  </button>
+                </div>
+
+                {/* Drag handle pill */}
+                <div className="flex justify-center pt-3 pb-1">
+                  <div className="w-10 h-1 rounded-full bg-slate-300/70" />
+                </div>
+
+                {/* ── Mode Tab Switcher — Always visible, outside scroll ── */}
+                <div className="px-5 pb-3">
+                  <div
+                    className="flex p-1 rounded-2xl gap-1"
+                    style={{
+                      background: "rgba(109,40,217,0.12)",
+                      border: "1.5px solid rgba(109,40,217,0.2)",
+                    }}
+                  >
+                    {/* Tab: সহজ মোড */}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateSettingField(
+                          "logoSettings",
+                          "positionType",
+                          "simple",
+                        )
+                      }
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-200 cursor-pointer"
+                      style={
+                        layoutSettings.logoSettings.positionType === "simple"
+                          ? {
+                              background:
+                                "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
+                              color: "#fff",
+                              boxShadow:
+                                "0 4px 16px rgba(109,40,217,0.35), inset 0 1px 0 rgba(255,255,255,0.2)",
+                            }
+                          : {
+                              color: "rgba(109,40,217,0.7)",
+                              background: "transparent",
+                            }
+                      }
+                    >
+                      <LayoutGrid className="size-3.5" />
+                      <span className="font-bengali">সহজ মোড</span>
+                    </button>
+
+                    {/* Tab: ড্র্যাগ মোড */}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateSettingField(
+                          "logoSettings",
+                          "positionType",
+                          "drag",
+                        )
+                      }
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-200 cursor-pointer"
+                      style={
+                        layoutSettings.logoSettings.positionType === "drag"
+                          ? {
+                              background:
+                                "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
+                              color: "#fff",
+                              boxShadow:
+                                "0 4px 16px rgba(109,40,217,0.35), inset 0 1px 0 rgba(255,255,255,0.2)",
+                            }
+                          : {
+                              color: "rgba(109,40,217,0.7)",
+                              background: "transparent",
+                            }
+                      }
+                    >
+                      <Move className="size-3.5" />
+                      <span className="font-bengali">ড্র্যাগ মোড</span>
+                    </button>
                   </div>
                 </div>
 
-              </div>
-            </motion.div>
-          </>
-        )}
+                {/* Scrollable body */}
+                <div
+                  className="overflow-y-auto px-5 pb-6 space-y-5 no-scrollbar"
+                  style={{ maxHeight: "calc(88vh - 180px)" }}
+                >
+                  {/* ── Simple Mode: Position Selector ── */}
+                  {layoutSettings.logoSettings.positionType === "simple" && (
+                    <motion.div
+                      key="simple-panel"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      transition={{ duration: 0.18 }}
+                      className="space-y-3"
+                    >
+                      <div className="flex items-center gap-2">
+                        <AlignCenter className="size-3.5 text-violet-600" />
+                        <span className="text-[12px] font-bold text-slate-700 font-bengali">
+                          লোগোর অবস্থান
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2.5">
+                        {[
+                          { pos: "left", label: "বামে", icon: AlignLeft },
+                          { pos: "center", label: "মাঝে", icon: AlignCenter },
+                          { pos: "right", label: "ডানে", icon: AlignRight },
+                        ].map(({ pos, label, icon: Icon }) => {
+                          const isActive =
+                            layoutSettings.logoSettings.position === pos;
+                          return (
+                            <button
+                              key={pos}
+                              type="button"
+                              onClick={() =>
+                                updateSettingField(
+                                  "logoSettings",
+                                  "position",
+                                  pos,
+                                )
+                              }
+                              className="flex flex-col items-center gap-1.5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer"
+                              style={
+                                isActive
+                                  ? {
+                                      background:
+                                        "linear-gradient(135deg, rgba(109,40,217,0.12) 0%, rgba(79,70,229,0.12) 100%)",
+                                      border:
+                                        "1.5px solid rgba(109,40,217,0.45)",
+                                      color: "rgb(109,40,217)",
+                                      boxShadow:
+                                        "0 2px 12px rgba(109,40,217,0.15)",
+                                    }
+                                  : {
+                                      background: "rgba(248,248,255,0.8)",
+                                      border:
+                                        "1.5px solid rgba(226,232,240,0.8)",
+                                      color: "#64748b",
+                                    }
+                              }
+                            >
+                              <Icon className="size-4" />
+                              <span className="font-bengali">{label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* ── Drag Mode: Canvas ── */}
+                  {layoutSettings.logoSettings.positionType === "drag" && (
+                    <motion.div
+                      key="drag-panel"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      transition={{ duration: 0.18 }}
+                      className="space-y-2.5"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Move className="size-3.5 text-violet-600" />
+                        <span className="text-[12px] font-bold text-slate-700 font-bengali">
+                          অবস্থান ড্র্যাগ করুন
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 font-bengali font-medium">
+                        নিচের বক্সে{" "}
+                        <span className="text-violet-600 font-bold">LOGO</span>{" "}
+                        ট্যাগটি ড্র্যাগ করে যেকোনো জায়গায় রাখুন।
+                      </p>
+                      <div
+                        id="logo-drag-container"
+                        className="relative w-full h-40 rounded-2xl overflow-hidden cursor-crosshair select-none"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, rgba(240,237,255,0.9) 0%, rgba(232,240,255,0.9) 100%)",
+                          border: "1.5px solid rgba(167,139,250,0.35)",
+                          boxShadow: "inset 0 2px 12px rgba(109,40,217,0.06)",
+                        }}
+                        onMouseMove={handleDragMove}
+                        onTouchMove={handleDragTouchMove}
+                        onMouseUp={handleDragEnd}
+                        onMouseLeave={handleDragEnd}
+                        onTouchEnd={handleDragEnd}
+                      >
+                        {/* Dot grid */}
+                        <div
+                          className="absolute inset-0 opacity-30"
+                          style={{
+                            backgroundImage:
+                              "radial-gradient(circle, rgba(109,40,217,0.4) 1px, transparent 1px)",
+                            backgroundSize: "18px 18px",
+                          }}
+                        />
+                        {/* Corner labels */}
+                        <span className="absolute top-2 left-2.5 text-[9px] font-bold text-violet-400/60 font-sans select-none">
+                          ↖ TL
+                        </span>
+                        <span className="absolute top-2 right-2.5 text-[9px] font-bold text-violet-400/60 font-sans select-none">
+                          TR ↗
+                        </span>
+                        <span className="absolute bottom-2 left-2.5 text-[9px] font-bold text-violet-400/60 font-sans select-none">
+                          ↙ BL
+                        </span>
+                        <span className="absolute bottom-2 right-2.5 text-[9px] font-bold text-violet-400/60 font-sans select-none">
+                          BR ↘
+                        </span>
+                        {/* Draggable badge */}
+                        <div
+                          style={{
+                            left: `${layoutSettings.logoSettings.x}%`,
+                            top: `${layoutSettings.logoSettings.y}%`,
+                            transform: "translate(-50%, -50%)",
+                            background:
+                              "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
+                            border: "1px solid rgba(255,255,255,0.3)",
+                            boxShadow: "0 4px 16px rgba(109,40,217,0.45)",
+                          }}
+                          className="absolute flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-move shadow-lg active:scale-95 transition-transform select-none"
+                          onMouseDown={handleDragStart}
+                          onTouchStart={handleDragStart}
+                        >
+                          <Image className="size-3 text-white" />
+                          <span className="text-white font-black text-[10px] font-sans">
+                            LOGO
+                          </span>
+                        </div>
+                      </div>
+                      {/* Coordinates chip */}
+                      <div className="flex justify-center">
+                        <span
+                          className="text-[11px] font-bold font-sans px-3 py-1 rounded-lg"
+                          style={{
+                            background: "rgba(109,40,217,0.1)",
+                            color: "rgb(109,40,217)",
+                            border: "1px solid rgba(109,40,217,0.2)",
+                          }}
+                        >
+                          X: {layoutSettings.logoSettings.x}% &nbsp;|&nbsp; Y:{" "}
+                          {layoutSettings.logoSettings.y}%
+                        </span>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* ── Size Slider ── */}
+                  <div
+                    className="space-y-3 p-4 rounded-2xl"
+                    style={{
+                      background: "rgba(248,246,255,0.85)",
+                      border: "1px solid rgba(167,139,250,0.2)",
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Maximize2 className="size-3.5 text-violet-600" />
+                        <span className="text-[13px] font-bold text-slate-700 font-bengali">
+                          সাইজ
+                        </span>
+                      </div>
+                      <span
+                        className="text-[12px] font-black font-sans px-2.5 py-0.5 rounded-lg"
+                        style={{
+                          background: "rgba(109,40,217,0.12)",
+                          color: "rgb(109,40,217)",
+                        }}
+                      >
+                        {layoutSettings.logoSettings.size}px
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="20"
+                      max="150"
+                      value={layoutSettings.logoSettings.size}
+                      onChange={(e) =>
+                        updateSettingField(
+                          "logoSettings",
+                          "size",
+                          parseInt(e.target.value),
+                        )
+                      }
+                      className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                      style={{ accentColor: "rgb(109,40,217)" }}
+                    />
+                    <div className="flex justify-between text-[10px] font-bold text-slate-400 font-sans">
+                      <span>20px</span>
+                      <span>150px</span>
+                    </div>
+                  </div>
+
+                  {/* ── Opacity Slider ── */}
+                  <div
+                    className="space-y-3 p-4 rounded-2xl"
+                    style={{
+                      background: "rgba(248,246,255,0.85)",
+                      border: "1px solid rgba(167,139,250,0.2)",
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Eye className="size-3.5 text-violet-600" />
+                        <span className="text-[13px] font-bold text-slate-700 font-bengali">
+                          স্বচ্ছতা
+                        </span>
+                      </div>
+                      <span
+                        className="text-[12px] font-black font-sans px-2.5 py-0.5 rounded-lg"
+                        style={{
+                          background: "rgba(109,40,217,0.12)",
+                          color: "rgb(109,40,217)",
+                        }}
+                      >
+                        {layoutSettings.logoSettings.opacity}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="10"
+                      max="100"
+                      value={layoutSettings.logoSettings.opacity}
+                      onChange={(e) =>
+                        updateSettingField(
+                          "logoSettings",
+                          "opacity",
+                          parseInt(e.target.value),
+                        )
+                      }
+                      className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                      style={{ accentColor: "rgb(109,40,217)" }}
+                    />
+                    <div className="flex justify-between text-[10px] font-bold text-slate-400 font-sans">
+                      <span>10%</span>
+                      <span>100%</span>
+                    </div>
+                  </div>
+
+                  {/* ── Logo Image Uploader ── */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Upload className="size-3.5 text-violet-600" />
+                      <span className="text-[13px] font-bold text-slate-700 font-bengali">
+                        লোগো ইমেজ
+                      </span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="logo-image-upload"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (uploadEvent) => {
+                            updateSettingField(
+                              "logoSettings",
+                              "logoUrl",
+                              uploadEvent.target.result,
+                            );
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <div className="flex items-center gap-3">
+                      {/* Upload button */}
+                      <label
+                        htmlFor="logo-image-upload"
+                        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-[13px] font-bold transition-all cursor-pointer"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, rgba(109,40,217,0.10) 0%, rgba(79,70,229,0.10) 100%)",
+                          border: "1.5px dashed rgba(109,40,217,0.4)",
+                          color: "rgb(109,40,217)",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background =
+                            "linear-gradient(135deg, rgba(109,40,217,0.16) 0%, rgba(79,70,229,0.16) 100%)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background =
+                            "linear-gradient(135deg, rgba(109,40,217,0.10) 0%, rgba(79,70,229,0.10) 100%)";
+                        }}
+                      >
+                        <Upload className="size-4" />
+                        <span className="font-bengali">ইমেজ আপলোড করুন</span>
+                      </label>
+
+                      {/* Logo preview + remove */}
+                      {layoutSettings.logoSettings.logoUrl && (
+                        <div className="flex items-center gap-2 shrink-0">
+                          <div
+                            className="w-10 h-10 rounded-xl overflow-hidden border"
+                            style={{
+                              border: "1.5px solid rgba(109,40,217,0.3)",
+                              boxShadow: "0 2px 8px rgba(109,40,217,0.15)",
+                            }}
+                          >
+                            <img
+                              src={layoutSettings.logoSettings.logoUrl}
+                              alt="Logo preview"
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateSettingField(
+                                "logoSettings",
+                                "logoUrl",
+                                null,
+                              )
+                            }
+                            className="w-7 h-7 flex items-center justify-center rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-all cursor-pointer"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
         </AnimatePresence>,
-        document.body
+        document.body,
       )}
 
       {/* Embedded print styles */}

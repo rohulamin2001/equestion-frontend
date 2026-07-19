@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { useQuestions } from "./useQuestions";
 import { useUserContext } from "../../../context/UserContext.jsx";
+import { useQuestions } from "./useQuestions";
 
 const CATEGORY_ORDER = [
   "Creative",
@@ -95,7 +95,8 @@ export function useQuestionPreview() {
   const [searchParams] = useSearchParams();
 
   const targetId = searchParams.get("setId") || "";
-  const idsParam = searchParams.get("setId") || searchParams.get("setIds") || "";
+  const idsParam =
+    searchParams.get("setId") || searchParams.get("setIds") || "";
 
   const {
     loadingSets,
@@ -168,7 +169,15 @@ export function useQuestionPreview() {
     });
 
     const isCombinedMode = activeSet?.category === "Combined";
-    const targetClasses = ["Class 6", "Class 7", "Class 8", "Class 9", "Class 10", "Class 11", "Class 12"];
+    const targetClasses = [
+      "Class 6",
+      "Class 7",
+      "Class 8",
+      "Class 9",
+      "Class 10",
+      "Class 11",
+      "Class 12",
+    ];
     const isTargetClass = targetClasses.includes(activeSet?.className);
 
     let finalOrder = CATEGORY_ORDER;
@@ -177,7 +186,9 @@ export function useQuestionPreview() {
         "MCQ",
         "ShortAnswer",
         "Creative",
-        ...CATEGORY_ORDER.filter(cat => cat !== "MCQ" && cat !== "ShortAnswer" && cat !== "Creative")
+        ...CATEGORY_ORDER.filter(
+          (cat) => cat !== "MCQ" && cat !== "ShortAnswer" && cat !== "Creative",
+        ),
       ];
     }
 
@@ -307,7 +318,9 @@ export function useQuestionPreview() {
   };
 
   const handleGoBackToSelect = () => {
-    navigate(`/dashboard/questions/select?setId=${activeSetId}&setIds=${idsParam}`);
+    navigate(
+      `/dashboard/questions/select?setId=${activeSetId}&setIds=${idsParam}`,
+    );
   };
 
   return {
