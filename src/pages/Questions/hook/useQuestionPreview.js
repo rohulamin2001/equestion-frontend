@@ -42,6 +42,54 @@ const CATEGORY_LABELS = {
   Essay: "রচনা",
 };
 
+const DEFAULT_SETTINGS = {
+  paperSize: "A4",
+  columns: 1,
+  columnDivider: true,
+  lineSpacing: 0,
+  columnGap: 15,
+  fontSize: 14,
+  fontFamily: "SolaimanLipi",
+  optionStyle: "●",
+  pagePaddingTop: 32,
+  pagePaddingBottom: 32,
+  pagePaddingLeft: 32,
+  pagePaddingRight: 32,
+  attachments: {
+    answerSheet: false,
+    omr: false,
+    important: false,
+    questionInfo: false,
+    studentInfo: false,
+    marksGrid: false,
+    subjectCode: false,
+  },
+  metadata: {
+    className: true,
+    subjectName: true,
+    chapterName: false,
+    setCode: true,
+    programName: true,
+    instructions: true,
+  },
+  branding: {
+    logo: false,
+    header: false,
+    footer: false,
+    watermark: false,
+    address: false,
+  },
+  logoSettings: {
+    positionType: "simple",
+    size: 60,
+    opacity: 100,
+    position: "left",
+    x: 10,
+    y: 18,
+    logoUrl: null,
+  },
+};
+
 export function useQuestionPreview() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -57,44 +105,7 @@ export function useQuestionPreview() {
     syllabusList,
   } = useQuestions();
 
-  const [layoutSettings, setLayoutSettings] = useState({
-    paperSize: "A4",
-    columns: 1,
-    columnDivider: true,
-    lineSpacing: 0,
-    columnGap: 15,
-    fontSize: 14,
-    fontFamily: "SolaimanLipi",
-    optionStyle: "●",
-    pagePaddingTop: 32,
-    pagePaddingBottom: 32,
-    pagePaddingLeft: 32,
-    pagePaddingRight: 32,
-    attachments: {
-      answerSheet: false,
-      omr: false,
-      important: false,
-      questionInfo: false,
-      studentInfo: false,
-      marksGrid: false,
-      subjectCode: false,
-    },
-    metadata: {
-      className: true,
-      subjectName: true,
-      chapterName: false,
-      setCode: true,
-      programName: true,
-      instructions: true,
-    },
-    branding: {
-      logo: false,
-      header: false,
-      footer: false,
-      watermark: false,
-      address: false,
-    },
-  });
+  const [layoutSettings, setLayoutSettings] = useState(DEFAULT_SETTINGS);
 
   const { userProfile } = useUserContext();
   const [activeTab, setActiveTab] = useState("settings");
@@ -109,7 +120,27 @@ export function useQuestionPreview() {
     setInitializedSetId(dbActiveSet._id);
     setActiveSet(dbActiveSet);
     if (dbActiveSet.settings) {
-      setLayoutSettings(dbActiveSet.settings);
+      const mergedSettings = {
+        ...DEFAULT_SETTINGS,
+        ...dbActiveSet.settings,
+        attachments: {
+          ...DEFAULT_SETTINGS.attachments,
+          ...(dbActiveSet.settings.attachments || {}),
+        },
+        metadata: {
+          ...DEFAULT_SETTINGS.metadata,
+          ...(dbActiveSet.settings.metadata || {}),
+        },
+        branding: {
+          ...DEFAULT_SETTINGS.branding,
+          ...(dbActiveSet.settings.branding || {}),
+        },
+        logoSettings: {
+          ...DEFAULT_SETTINGS.logoSettings,
+          ...(dbActiveSet.settings.logoSettings || {}),
+        },
+      };
+      setLayoutSettings(mergedSettings);
     }
   }
 

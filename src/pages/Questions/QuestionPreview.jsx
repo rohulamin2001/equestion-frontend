@@ -1,4 +1,5 @@
 import {
+  Award,
   ChevronDown,
   ChevronLeft,
   Download,
@@ -10,17 +11,12 @@ import {
   Printer,
   Settings,
   Sliders,
+  X,
 } from "lucide-react";
 import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import FloatingFormatToolbar from "../../components/FloatingFormatToolbar.jsx";
 import InlineEditable from "../../components/InlineEditable.jsx";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../../components/ui/dialog.jsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -101,11 +97,69 @@ const getCategoryMarkLabel = (category, count) => {
   return "";
 };
 
+const DefaultLogo = () => (
+  <svg
+    className="w-full h-full text-slate-700"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+    <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+  </svg>
+);
+
 export default function QuestionPreview() {
   const [customGroupLabels, setCustomGroupLabels] = useState({});
   const [customGroupMarks, setCustomGroupMarks] = useState({});
   const [customSubMarks, setCustomSubMarks] = useState({});
   const [isPageSetupOpen, setIsPageSetupOpen] = useState(false);
+  const [isLogoSettingsOpen, setIsLogoSettingsOpen] = useState(false);
+  const [isDraggingLogo, setIsDraggingLogo] = useState(false);
+
+  const handleDragStart = (e) => {
+    setIsDraggingLogo(true);
+    updateDragPosition(e);
+  };
+
+  const handleDragEnd = () => {
+    setIsDraggingLogo(false);
+  };
+
+  const updateDragPosition = (e) => {
+    const container = document.getElementById("logo-drag-container");
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    
+    let clientX, clientY;
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    const x = Math.max(0, Math.min(100, Math.round(((clientX - rect.left) / rect.width) * 100)));
+    const y = Math.max(0, Math.min(100, Math.round(((clientY - rect.top) / rect.height) * 100)));
+
+    updateSettingField("logoSettings", "x", x);
+    updateSettingField("logoSettings", "y", y);
+  };
+
+  const handleDragMove = (e) => {
+    if (!isDraggingLogo) return;
+    updateDragPosition(e);
+  };
+
+  const handleDragTouchMove = (e) => {
+    if (!isDraggingLogo) return;
+    if (e.cancelable) e.preventDefault();
+    updateDragPosition(e);
+  };
 
   const {
     loadingSets,
@@ -266,9 +320,56 @@ export default function QuestionPreview() {
           >
             <div className="space-y-3 mb-6 select-none">
               {/* Three-column Top Layout */}
-              <div className="grid grid-cols-12 items-center gap-2">
+              <div className="grid grid-cols-12 items-center gap-2 relative">
+                {layoutSettings.branding.logo &&
+                  layoutSettings.logoSettings.positionType === "drag" && (
+                    <div
+                      className="absolute print:absolute select-none pointer-events-none"
+                      style={{
+                        left: `${layoutSettings.logoSettings.x}%`,
+                        top: `${layoutSettings.logoSettings.y}%`,
+                        width: `${layoutSettings.logoSettings.size}px`,
+                        height: `${layoutSettings.logoSettings.size}px`,
+                        opacity: layoutSettings.logoSettings.opacity / 100,
+                        transform: "translate(-50%, -50%)",
+                        zIndex: 10,
+                      }}
+                    >
+                      {layoutSettings.logoSettings.logoUrl ? (
+                        <img
+                          src={layoutSettings.logoSettings.logoUrl}
+                          className="w-full h-full object-contain"
+                          alt="Logo"
+                        />
+                      ) : (
+                        <DefaultLogo />
+                      )}
+                    </div>
+                  )}
                 {/* Left Column: Obtained Marks */}
-                <div className="col-span-3 flex justify-start items-center">
+                <div className="col-span-3 flex flex-col justify-start items-start">
+                  {layoutSettings.branding.logo &&
+                    layoutSettings.logoSettings.positionType === "simple" &&
+                    layoutSettings.logoSettings.position === "left" && (
+                      <div
+                        className="mb-1.5"
+                        style={{
+                          width: `${layoutSettings.logoSettings.size}px`,
+                          height: `${layoutSettings.logoSettings.size}px`,
+                          opacity: layoutSettings.logoSettings.opacity / 100,
+                        }}
+                      >
+                        {layoutSettings.logoSettings.logoUrl ? (
+                          <img
+                            src={layoutSettings.logoSettings.logoUrl}
+                            className="w-full h-full object-contain"
+                            alt="Logo"
+                          />
+                        ) : (
+                          <DefaultLogo />
+                        )}
+                      </div>
+                    )}
                   {layoutSettings.attachments.marksGrid ? (
                     <div
                       className="flex items-stretch border border-black overflow-hidden h-7 select-none"
@@ -296,9 +397,31 @@ export default function QuestionPreview() {
 
                 {/* Center Column: School, Exam, Class, Subject, Chapters */}
                 <div
-                  className="col-span-6 text-center space-y-0.5"
+                  className="col-span-6 text-center space-y-0.5 flex flex-col items-center justify-center"
                   style={{ lineHeight: "1.25" }}
                 >
+                  {layoutSettings.branding.logo &&
+                    layoutSettings.logoSettings.positionType === "simple" &&
+                    layoutSettings.logoSettings.position === "center" && (
+                      <div
+                        className="mb-1.5"
+                        style={{
+                          width: `${layoutSettings.logoSettings.size}px`,
+                          height: `${layoutSettings.logoSettings.size}px`,
+                          opacity: layoutSettings.logoSettings.opacity / 100,
+                        }}
+                      >
+                        {layoutSettings.logoSettings.logoUrl ? (
+                          <img
+                            src={layoutSettings.logoSettings.logoUrl}
+                            className="w-full h-full object-contain"
+                            alt="Logo"
+                          />
+                        ) : (
+                          <DefaultLogo />
+                        )}
+                      </div>
+                    )}
                   {/* School Name */}
                   <div className="block">
                     <InlineEditable
@@ -407,6 +530,28 @@ export default function QuestionPreview() {
 
                 {/* Right Column: Set Code and Subject Code Stacked */}
                 <div className="col-span-3 flex flex-col items-end gap-1.5">
+                  {layoutSettings.branding.logo &&
+                    layoutSettings.logoSettings.positionType === "simple" &&
+                    layoutSettings.logoSettings.position === "right" && (
+                      <div
+                        className="mb-1.5"
+                        style={{
+                          width: `${layoutSettings.logoSettings.size}px`,
+                          height: `${layoutSettings.logoSettings.size}px`,
+                          opacity: layoutSettings.logoSettings.opacity / 100,
+                        }}
+                      >
+                        {layoutSettings.logoSettings.logoUrl ? (
+                          <img
+                            src={layoutSettings.logoSettings.logoUrl}
+                            className="w-full h-full object-contain"
+                            alt="Logo"
+                          />
+                        ) : (
+                          <DefaultLogo />
+                        )}
+                      </div>
+                    )}
                   {/* Set Code */}
                   {layoutSettings.metadata.setCode ? (
                     <div
@@ -1036,7 +1181,7 @@ export default function QuestionPreview() {
               <div className="bg-glass-elevated border border-slate-200/50 p-5 rounded-2xl divide-y divide-slate-200/60 space-y-5">
                 {/* Attachment settings card */}
                 <div className="space-y-3.5">
-                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-purple-700 to-indigo-600 px-3.5 py-2.5 rounded-xl shadow-md font-sans font-semibold">
+                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", boxShadow: "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)", border: "1px solid rgba(167,139,250,0.4)" }}>
                     <LayoutGrid className="size-4 text-white" />
                     <span>প্রশ্নে সংযুক্তি</span>
                   </h3>
@@ -1093,7 +1238,7 @@ export default function QuestionPreview() {
 
                 {/* Metadata header toggles */}
                 <div className="space-y-3.5 pt-5">
-                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-purple-700 to-indigo-600 px-3.5 py-2.5 rounded-xl shadow-md font-sans font-semibold">
+                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", boxShadow: "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)", border: "1px solid rgba(167,139,250,0.4)" }}>
                     <FileText className="size-4 text-white" />
                     <span>প্রশ্নের মেটাডাটা (হেডার)</span>
                   </h3>
@@ -1143,7 +1288,7 @@ export default function QuestionPreview() {
 
                 {/* Layout controls */}
                 <div className="space-y-3.5 pt-5">
-                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-purple-700 to-indigo-600 px-3.5 py-2.5 rounded-xl shadow-md font-sans font-semibold">
+                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", boxShadow: "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)", border: "1px solid rgba(167,139,250,0.4)" }}>
                     <Sliders className="size-4 text-white" />
                     <span>ডকুমেন্ট কাস্টমাইজেশন</span>
                   </h3>
@@ -1443,6 +1588,70 @@ export default function QuestionPreview() {
                     </div>
                   </div>
                 </div>
+
+                {/* Branding controls */}
+                <div className="space-y-3.5 pt-5">
+                  <h3 className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", boxShadow: "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)", border: "1px solid rgba(167,139,250,0.4)" }}>
+                    <Award className="size-4 text-white" />
+                    <span>ব্র্যান্ডিং</span>
+                  </h3>
+                  <div className="space-y-2">
+                    {[
+                      { field: "logo", label: "লোগো", hasConfig: true },
+                      { field: "header", label: "হেডার", hasConfig: true },
+                      { field: "footer", label: "ফুটার", hasConfig: true },
+                      { field: "watermark", label: "জলছাপ", hasConfig: true },
+                      { field: "address", label: "ঠিকানা", hasConfig: false },
+                    ].map((opt) => (
+                      <div
+                        key={opt.field}
+                        className="flex items-center justify-between p-2.5 bg-slate-50/50 hover:bg-slate-50 border border-slate-200/40 rounded-xl transition shadow-sm"
+                      >
+                        <span className="text-[13px] font-semibold text-slate-700 font-sans tracking-tight">
+                          {opt.label}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateSettingField(
+                                "branding",
+                                opt.field,
+                                !layoutSettings.branding[opt.field],
+                              )
+                            }
+                            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
+                              layoutSettings.branding[opt.field]
+                                ? "bg-emerald-600"
+                                : "bg-slate-200"
+                            }`}
+                          >
+                            <span
+                              className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
+                                layoutSettings.branding[opt.field]
+                                  ? "translate-x-4"
+                                  : "translate-x-0"
+                              }`}
+                            />
+                          </button>
+                          {opt.hasConfig && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (opt.field === "logo") {
+                                  setIsLogoSettingsOpen(true);
+                                }
+                              }}
+                              className="p-1 hover:bg-slate-100 rounded-lg transition text-slate-500 hover:text-slate-700 cursor-pointer"
+                            >
+                              <Sliders className="size-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
 
@@ -1496,161 +1705,444 @@ export default function QuestionPreview() {
           }
         }}
       />
-      <Dialog
-        open={isPageSetupOpen}
-        onOpenChange={setIsPageSetupOpen}
-        overlayClassName="backdrop-blur-[1px] bg-black/10"
-      >
-        <DialogContent className="max-w-md p-6 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative text-black">
-          <DialogHeader className="text-left mb-4">
-            <DialogTitle className="text-[17px] font-bold text-slate-800 font-bengali">
-              Page Setup
-            </DialogTitle>
-            <DialogDescription className="text-slate-500 text-[12px] font-semibold leading-relaxed font-bengali mt-1">
-              প্রশ্নপত্রের ডানে, বামে, উপরে, নিচের স্পেস কমানো বাড়ানো যাবে।
-            </DialogDescription>
-          </DialogHeader>
 
-          <div className="space-y-5">
-            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
-                  <span>উপরে</span>
-                  <span className="font-sans text-slate-500">
-                    {layoutSettings.pagePaddingTop ?? 32}px
-                  </span>
+      {/* Bottom Sheet Drawer for Page Setup with spring slide-up transition */}
+      <AnimatePresence>
+        {isPageSetupOpen && (
+          <>
+            {/* Backdrop overlay - completely transparent and clear (no blur or dark overlay) */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsPageSetupOpen(false)}
+              className="fixed inset-0 z-[150] bg-transparent print:hidden cursor-default"
+            />
+
+            {/* Bottom Drawer panel with smooth sliding transition */}
+            <motion.div
+              initial={{ y: "100%", x: "-50%" }}
+              animate={{ y: 0, x: "-50%" }}
+              exit={{ y: "100%", x: "-50%" }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 18,
+                mass: 0.8,
+              }}
+              className="fixed bottom-0 left-1/2 w-full max-w-lg z-[200] bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-t-3xl shadow-2xl p-6 print:hidden text-black"
+              style={{
+                maxHeight: "85vh",
+                boxShadow: "0 -10px 25px -5px rgba(0, 0, 0, 0.1), 0 -8px 10px -6px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              {/* Header */}
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-[17px] font-bold text-slate-800 font-bengali">
+                    Page Setup
+                  </h3>
+                  <p className="text-slate-500 text-[12px] font-semibold leading-relaxed font-bengali mt-0.5">
+                    প্রশ্নপত্রের ডানে, বামে, উপরে, নিচের স্পেস কমানো বাড়ানো যাবে।
+                  </p>
                 </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={layoutSettings.pagePaddingTop ?? 32}
-                  onChange={(e) =>
-                    updateSettingField(
-                      null,
-                      "pagePaddingTop",
-                      parseInt(e.target.value),
-                    )
-                  }
-                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500 mt-1"
-                />
+                <button
+                  onClick={() => setIsPageSetupOpen(false)}
+                  className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-colors focus:outline-none cursor-pointer"
+                >
+                  <X className="size-4" />
+                </button>
               </div>
 
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
-                  <span>নিচে</span>
-                  <span className="font-sans text-slate-500">
-                    {layoutSettings.pagePaddingBottom ?? 32}px
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={layoutSettings.pagePaddingBottom ?? 32}
-                  onChange={(e) =>
-                    updateSettingField(
-                      null,
-                      "pagePaddingBottom",
-                      parseInt(e.target.value),
-                    )
-                  }
-                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500 mt-1"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
-                  <span>বামে</span>
-                  <span className="font-sans text-slate-500">
-                    {layoutSettings.pagePaddingLeft ?? 32}px
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={layoutSettings.pagePaddingLeft ?? 32}
-                  onChange={(e) =>
-                    updateSettingField(
-                      null,
-                      "pagePaddingLeft",
-                      parseInt(e.target.value),
-                    )
-                  }
-                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500 mt-1"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
-                  <span>ডানে</span>
-                  <span className="font-sans text-slate-500">
-                    {layoutSettings.pagePaddingRight ?? 32}px
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={layoutSettings.pagePaddingRight ?? 32}
-                  onChange={(e) =>
-                    updateSettingField(
-                      null,
-                      "pagePaddingRight",
-                      parseInt(e.target.value),
-                    )
-                  }
-                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500 mt-1"
-                />
-              </div>
-            </div>
-
-            <hr className="border-slate-200/60" />
-
-            <div className="space-y-3">
-              <label className="text-[12px] font-bold text-slate-600 block font-bengali">
-                পেপার সাইজ
-              </label>
-              <div className="grid grid-cols-4 gap-2">
-                {PAPER_SIZES_META.map((paper) => {
-                  const isSelected = layoutSettings.paperSize === paper.id;
-                  return (
-                    <button
-                      key={paper.id}
-                      onClick={() =>
-                        updateSettingField(null, "paperSize", paper.id)
+              {/* Body */}
+              <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-1 no-scrollbar">
+                <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
+                      <span>উপরে</span>
+                      <span className="font-sans text-slate-500">
+                        {layoutSettings.pagePaddingTop ?? 32}px
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={layoutSettings.pagePaddingTop ?? 32}
+                      onChange={(e) =>
+                        updateSettingField(
+                          null,
+                          "pagePaddingTop",
+                          parseInt(e.target.value),
+                        )
                       }
-                      className={`flex flex-col items-center justify-center p-2 border rounded-xl transition cursor-pointer select-none ${
-                        isSelected
-                          ? "bg-emerald-50/60 border-emerald-500 text-emerald-700 font-extrabold shadow-sm"
-                          : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500 mt-1"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
+                      <span>নিচে</span>
+                      <span className="font-sans text-slate-500">
+                        {layoutSettings.pagePaddingBottom ?? 32}px
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={layoutSettings.pagePaddingBottom ?? 32}
+                      onChange={(e) =>
+                        updateSettingField(
+                          null,
+                          "pagePaddingBottom",
+                          parseInt(e.target.value),
+                        )
+                      }
+                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500 mt-1"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
+                      <span>বামে</span>
+                      <span className="font-sans text-slate-500">
+                        {layoutSettings.pagePaddingLeft ?? 32}px
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={layoutSettings.pagePaddingLeft ?? 32}
+                      onChange={(e) =>
+                        updateSettingField(
+                          null,
+                          "pagePaddingLeft",
+                          parseInt(e.target.value),
+                        )
+                      }
+                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500 mt-1"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-[12.5px] font-bold text-slate-700 font-bengali">
+                      <span>ডানে</span>
+                      <span className="font-sans text-slate-500">
+                        {layoutSettings.pagePaddingRight ?? 32}px
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={layoutSettings.pagePaddingRight ?? 32}
+                      onChange={(e) =>
+                        updateSettingField(
+                          null,
+                          "pagePaddingRight",
+                          parseInt(e.target.value),
+                        )
+                      }
+                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500 mt-1"
+                    />
+                  </div>
+                </div>
+
+                <hr className="border-slate-200/60" />
+
+                <div className="space-y-3">
+                  <label className="text-[12px] font-bold text-slate-600 block font-bengali">
+                    পেপার সাইজ
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {PAPER_SIZES_META.map((paper) => {
+                      const isSelected = layoutSettings.paperSize === paper.id;
+                      return (
+                        <button
+                          key={paper.id}
+                          onClick={() =>
+                            updateSettingField(null, "paperSize", paper.id)
+                          }
+                          className={`flex flex-col items-center justify-center p-2 border rounded-xl transition cursor-pointer select-none ${
+                            isSelected
+                              ? "bg-emerald-50/60 border-emerald-500 text-emerald-700 font-extrabold shadow-sm"
+                              : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+                          }`}
+                        >
+                          <div className="h-14 w-full flex items-center justify-center bg-slate-50/50 rounded-lg mb-1.5 border border-slate-100 shadow-sm relative overflow-hidden">
+                            <div
+                              className={`bg-white border border-slate-300 rounded shadow-sm transition-all ${
+                                isSelected
+                                  ? "border-emerald-300 bg-emerald-50/10"
+                                  : ""
+                              }`}
+                              style={{
+                                width: `${paper.w}px`,
+                                height: `${paper.h}px`,
+                              }}
+                            />
+                          </div>
+                          <span className="text-[11px] font-bold">
+                            {paper.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Bottom Sheet Drawer for Logo Settings with spring slide-up transition */}
+      <AnimatePresence>
+        {isLogoSettingsOpen && (
+          <>
+            {/* Backdrop overlay - completely transparent and clear (no blur or dark overlay) */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsLogoSettingsOpen(false)}
+              className="fixed inset-0 z-[150] bg-transparent print:hidden cursor-default"
+            />
+
+            {/* Bottom Drawer panel with smooth sliding transition */}
+            <motion.div
+              initial={{ y: "100%", x: "-50%" }}
+              animate={{ y: 0, x: "-50%" }}
+              exit={{ y: "100%", x: "-50%" }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 18,
+                mass: 0.8,
+              }}
+              className="fixed bottom-0 left-1/2 w-full max-w-lg z-[200] bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-t-3xl shadow-2xl p-6 print:hidden text-black"
+              style={{
+                maxHeight: "85vh",
+                boxShadow: "0 -10px 25px -5px rgba(0, 0, 0, 0.1), 0 -8px 10px -6px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              {/* Header */}
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-[17px] font-bold text-slate-800 font-bengali">
+                    Logo Settings
+                  </h3>
+                  <p className="text-slate-500 text-[12px] font-semibold leading-relaxed font-bengali mt-0.5">
+                    লোগোর পজিশন টাইপ, সাইজ, স্বচ্ছতা এবং ইমেজ কাস্টমাইজ করুন।
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsLogoSettingsOpen(false)}
+                  className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-colors focus:outline-none cursor-pointer"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-1 no-scrollbar">
+                {/* Position Type */}
+                <div className="space-y-1.5">
+                  <label className="text-[12px] font-bold text-slate-700 font-bengali block">
+                    পজিশন টাইপ
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => updateSettingField("logoSettings", "positionType", "simple")}
+                      className={`py-2 text-center rounded-xl text-xs font-black transition cursor-pointer ${
+                        layoutSettings.logoSettings.positionType === "simple"
+                          ? "bg-emerald-600 text-white shadow-sm"
+                          : "bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold"
                       }`}
                     >
-                      <div className="h-14 w-full flex items-center justify-center bg-slate-50/50 rounded-lg mb-1.5 border border-slate-100 shadow-sm relative overflow-hidden">
-                        <div
-                          className={`bg-white border border-slate-300 rounded shadow-sm transition-all ${
-                            isSelected
-                              ? "border-emerald-300 bg-emerald-50/10"
-                              : ""
-                          }`}
-                          style={{
-                            width: `${paper.w}px`,
-                            height: `${paper.h}px`,
-                          }}
-                        />
-                      </div>
-                      <span className="text-[11px] font-bold">
-                        {paper.label}
-                      </span>
+                      সহজ
                     </button>
-                  );
-                })}
+                    <button
+                      type="button"
+                      onClick={() => updateSettingField("logoSettings", "positionType", "drag")}
+                      className={`py-2 text-center rounded-xl text-xs font-black transition cursor-pointer ${
+                        layoutSettings.logoSettings.positionType === "drag"
+                          ? "bg-emerald-600 text-white shadow-sm"
+                          : "bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold"
+                      }`}
+                    >
+                      Drag Mode
+                    </button>
+                  </div>
+                </div>
+
+                {/* Simple Position: visible only if positionType === 'simple' */}
+                {layoutSettings.logoSettings.positionType === "simple" && (
+                  <div className="space-y-1.5">
+                    <label className="text-[12px] font-bold text-slate-700 font-bengali block">
+                      অবস্থান
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {["left", "center", "right"].map((pos) => (
+                        <button
+                          key={pos}
+                          type="button"
+                          onClick={() => updateSettingField("logoSettings", "position", pos)}
+                          className={`py-2 text-center rounded-xl text-xs font-black transition cursor-pointer capitalize ${
+                            layoutSettings.logoSettings.position === pos
+                              ? "bg-emerald-600 text-white shadow-sm"
+                              : "bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold"
+                          }`}
+                        >
+                          {pos}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Drag Mode Canvas: visible only if positionType === 'drag' */}
+                {layoutSettings.logoSettings.positionType === "drag" && (
+                  <div className="space-y-1.5">
+                    <label className="text-[12px] font-bold text-slate-700 font-bengali block">
+                      অবস্থান নির্ধারণ করুন
+                    </label>
+                    <p className="text-[11px] text-slate-500 font-medium font-bengali">
+                      নিচের "LOGO" বাটনটি ড্র্যাগ করে লোগোর অবস্থান নির্ধারণ করুন।
+                    </p>
+                    <div
+                      id="logo-drag-container"
+                      className="relative border border-slate-200 bg-slate-50/50 w-full h-36 rounded-xl overflow-hidden cursor-crosshair select-none"
+                      onMouseMove={handleDragMove}
+                      onTouchMove={handleDragTouchMove}
+                      onMouseUp={handleDragEnd}
+                      onMouseLeave={handleDragEnd}
+                      onTouchEnd={handleDragEnd}
+                    >
+                      {/* Draw a grid background */}
+                      <div
+                        className="absolute inset-0 opacity-20"
+                        style={{
+                          backgroundImage: "radial-gradient(circle, #000 1px, transparent 1px)",
+                          backgroundSize: "16px 16px",
+                        }}
+                      />
+                      
+                      {/* Draggable LOGO badge */}
+                      <div
+                        style={{
+                          left: `${layoutSettings.logoSettings.x}%`,
+                          top: `${layoutSettings.logoSettings.y}%`,
+                          transform: "translate(-50%, -50%)",
+                        }}
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-[10px] px-2.5 py-1.5 rounded-lg cursor-move absolute shadow-md active:scale-95 transition-transform"
+                        onMouseDown={handleDragStart}
+                        onTouchStart={handleDragStart}
+                      >
+                        LOGO
+                      </div>
+                    </div>
+                    <div className="flex justify-between text-[11px] font-bold text-slate-500 font-sans mt-1">
+                      <span>X: {layoutSettings.logoSettings.x}% | Y: {layoutSettings.logoSettings.y}%</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Size Slider */}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-[12px] font-bold text-slate-700 font-bengali">
+                    <span>সাইজ</span>
+                    <span className="font-sans text-slate-500">
+                      {layoutSettings.logoSettings.size}px
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="20"
+                    max="150"
+                    value={layoutSettings.logoSettings.size}
+                    onChange={(e) =>
+                      updateSettingField(
+                        "logoSettings",
+                        "size",
+                        parseInt(e.target.value),
+                      )
+                    }
+                    className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500 mt-1"
+                  />
+                </div>
+
+                {/* Opacity Slider */}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-[12px] font-bold text-slate-700 font-bengali">
+                    <span>স্বচ্ছতা</span>
+                    <span className="font-sans text-slate-500">
+                      {layoutSettings.logoSettings.opacity}%
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="10"
+                    max="100"
+                    value={layoutSettings.logoSettings.opacity}
+                    onChange={(e) =>
+                      updateSettingField(
+                        "logoSettings",
+                        "opacity",
+                        parseInt(e.target.value),
+                      )
+                    }
+                    className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500 mt-1"
+                  />
+                </div>
+
+                {/* Logo Image Uploader */}
+                <div className="space-y-1.5">
+                  <label className="text-[12px] font-bold text-slate-700 font-bengali block">
+                    লোগো ইমেজ
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="logo-image-upload"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (uploadEvent) => {
+                            updateSettingField("logoSettings", "logoUrl", uploadEvent.target.result);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <label
+                      htmlFor="logo-image-upload"
+                      className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+                    >
+                      ইমেজ আপলোড করুন
+                    </label>
+                    {layoutSettings.logoSettings.logoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => updateSettingField("logoSettings", "logoUrl", null)}
+                        className="text-xs text-red-500 hover:text-red-700 font-bold hover:underline cursor-pointer"
+                      >
+                        মুছে ফেলুন
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Embedded print styles */}
       <style>{`
