@@ -88,6 +88,18 @@ const DEFAULT_SETTINGS = {
     y: 18,
     logoUrl: null,
   },
+  headerSettings: {
+    text: "বুস্টার সাজেশন প্যাক",
+    fontSize: 22,
+    height: 70,
+    borderRadius: 8,
+    bgColor: "rgba(109,40,217,0.92)",
+    textColor: "#ffffff",
+    align: "center",
+    bold: true,
+    italic: false,
+    fontFamily: "Ekush",
+  },
 };
 
 export function useQuestionPreview() {
@@ -139,6 +151,10 @@ export function useQuestionPreview() {
         logoSettings: {
           ...DEFAULT_SETTINGS.logoSettings,
           ...(dbActiveSet.settings.logoSettings || {}),
+        },
+        headerSettings: {
+          ...DEFAULT_SETTINGS.headerSettings,
+          ...(dbActiveSet.settings.headerSettings || {}),
         },
       };
       setLayoutSettings(mergedSettings);
