@@ -312,11 +312,6 @@ export function useQuestionPreview() {
     window.print();
   };
 
-  const handleSaveAll = () => {
-    toast.success("প্রশ্নপত্র সেটিংস সংরক্ষণ করা হয়েছে!");
-    navigate(`/dashboard/questions?setId=${idsParam}`);
-  };
-
   const handleGoBackToSelect = () => {
     navigate(
       `/dashboard/questions/select?setId=${activeSetId}&setIds=${idsParam}`,
@@ -341,7 +336,6 @@ export function useQuestionPreview() {
     updateSettingField,
     handleRemoveQuestion,
     handlePrint,
-    handleSaveAll,
     handleGoBackToSelect,
     userProfile,
     syllabusList,

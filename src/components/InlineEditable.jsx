@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, memo } from "react";
+import { memo, useEffect, useRef, useState } from "react";
+import { cn } from "../lib/utils.js";
 import RichTextRender from "./RichTextRender.jsx";
 
 function stripOuterP(html) {
@@ -111,9 +112,11 @@ function InlineEditable({
         key="viewer"
         onClick={handleStartEdit}
         style={style}
-        className={`cursor-text rounded px-1 -mx-1 border border-transparent hover:border-dashed hover:border-indigo-400/50 hover:bg-indigo-50/10 transition print:border-none print:p-0 print:m-0 ${
-          inline ? "inline" : "block"
-        } ${className}`}
+        className={cn(
+          "cursor-text rounded px-1 -mx-1 border border-transparent hover:border-dashed hover:border-indigo-400/50 hover:bg-indigo-50/10 transition print:border-none print:p-0 print:m-0",
+          inline ? "inline" : "block",
+          className,
+        )}
         title="এডিট করতে ক্লিক করুন"
       >
         {value ? (
@@ -144,9 +147,11 @@ function InlineEditable({
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
       style={style}
-      className={`outline-none border border-indigo-500 rounded px-1 -mx-1 bg-white text-slate-800 ${
-        inline ? "inline" : "block min-h-[1.2em]"
-      } ${className}`}
+      className={cn(
+        "outline-none border border-indigo-500 rounded px-1 -mx-1 bg-white text-slate-800",
+        inline ? "inline" : "block min-h-[1.2em]",
+        className,
+      )}
     />
   );
 }
