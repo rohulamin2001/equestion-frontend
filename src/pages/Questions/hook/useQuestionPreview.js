@@ -100,6 +100,18 @@ const DEFAULT_SETTINGS = {
     italic: false,
     fontFamily: "Ekush",
   },
+  footerSettings: {
+    text: "সকল প্রশ্নের উত্তর দেওয়া বাধ্যতামূলক | শুভকামনা রইল",
+    fontSize: 16,
+    height: 50,
+    borderRadius: 8,
+    bgColor: "rgba(109,40,217,0.92)",
+    textColor: "#ffffff",
+    align: "center",
+    bold: false,
+    italic: false,
+    fontFamily: "Ekush",
+  },
 };
 
 export function useQuestionPreview() {
@@ -155,6 +167,10 @@ export function useQuestionPreview() {
         headerSettings: {
           ...DEFAULT_SETTINGS.headerSettings,
           ...(dbActiveSet.settings.headerSettings || {}),
+        },
+        footerSettings: {
+          ...DEFAULT_SETTINGS.footerSettings,
+          ...(dbActiveSet.settings.footerSettings || {}),
         },
       };
       setLayoutSettings(mergedSettings);

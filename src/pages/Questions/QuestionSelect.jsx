@@ -256,7 +256,7 @@ export default function QuestionSelect() {
                         {/* CQ Stem/Questions */}
                         {q.category === "Creative" && q.creativeData && (
                           <div className="space-y-1.5">
-                            <div className="font-bold italic text-slate-500 bg-slate-50 p-2 border rounded-lg">
+                            <div className="font-bold text-slate-700 leading-relaxed">
                               <RichTextRender html={q.creativeData.stem} />
                             </div>
                             {q.creativeData.subQuestions && (
@@ -500,7 +500,7 @@ export default function QuestionSelect() {
                     )}
                     {q.category === "Creative" && q.creativeData && (
                       <div className="space-y-1">
-                        <div className="font-bold bg-slate-50 p-1.5 border rounded">
+                        <div className="font-bold text-slate-700 leading-relaxed">
                           <RichTextRender html={q.creativeData.stem} />
                         </div>
                         {q.creativeData.subQuestions && (
