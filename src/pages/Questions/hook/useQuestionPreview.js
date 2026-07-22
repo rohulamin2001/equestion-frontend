@@ -50,6 +50,7 @@ const DEFAULT_SETTINGS = {
   columnDividerHeight: 100,
   columnDividerColor: "#000000",
   lineSpacing: 0,
+  lineHeight: 1.5,
   columnGap: 15,
   fontSize: 14,
   fontFamily: "SolaimanLipi",

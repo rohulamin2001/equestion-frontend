@@ -601,7 +601,10 @@ export default function QuestionPaperPreview({
 
         {/* Questions List Render (Grouped by Category) */}
         {groupedQuestions && groupedQuestions.length > 0 ? (
-          <div className="relative">
+          <div
+            className="relative"
+            style={{ lineHeight: layoutSettings.lineHeight ?? 1.5 }}
+          >
             <div
               className="block"
               style={{
@@ -827,7 +830,7 @@ export default function QuestionPaperPreview({
                               {/* CQ format */}
                               {q.category === "Creative" && q.creativeData && (
                                 <div className="space-y-2">
-                                  <div className="font-medium text-black leading-relaxed">
+                                  <div className="font-medium text-black">
                                     <InlineEditable
                                       value={q.creativeData.stem}
                                       onSave={(val) =>
@@ -976,7 +979,7 @@ export default function QuestionPaperPreview({
                                       />
                                     </div>
                                     {q.generalData.stem && (
-                                      <div className="text-black leading-relaxed">
+                                      <div className="text-black">
                                         <InlineEditable
                                           value={q.generalData.stem}
                                           onSave={(val) =>

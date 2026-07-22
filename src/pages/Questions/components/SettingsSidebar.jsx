@@ -484,6 +484,31 @@ export default function SettingsSidebar({
                         />
                       </div>
 
+                      {/* Line Height slider */}
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
+                          <span>লাইন হাইট</span>
+                          <span className="font-sans text-[11px] text-slate-500">
+                            {layoutSettings.lineHeight ?? 1.5}
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0.8"
+                          max="3.0"
+                          step="0.05"
+                          value={layoutSettings.lineHeight ?? 1.5}
+                          onChange={(e) =>
+                            updateSettingField(
+                              null,
+                              "lineHeight",
+                              parseFloat(e.target.value),
+                            )
+                          }
+                          className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600 mt-1"
+                        />
+                      </div>
+
                       {/* Column Gap slider */}
                       <div className="space-y-1">
                         <div className="flex justify-between text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
