@@ -82,6 +82,41 @@ export default function FloatingFormatToolbar({
     };
   }, [visible, fontSize]);
 
+  const applyFontSize = (sizeInPx) => {
+    const targetSize = Math.max(8, Math.min(72, sizeInPx));
+    setCurrentFontSize(targetSize);
+
+    if (onChangeFontSize) {
+      onChangeFontSize(targetSize);
+    }
+
+    const selection = window.getSelection();
+    const activeEl = document.activeElement;
+
+    // Apply font size to highlighted selection if text is selected
+    if (selection && !selection.isCollapsed && selection.rangeCount > 0) {
+      try {
+        document.execCommand("fontSize", false, "7");
+        const fontElements = document.getElementsByTagName("font");
+        for (let i = fontElements.length - 1; i >= 0; i--) {
+          const fontEl = fontElements[i];
+          if (fontEl.getAttribute("size") === "7") {
+            fontEl.removeAttribute("size");
+            fontEl.style.fontSize = `${targetSize}px`;
+          }
+        }
+      } catch {
+        // Ignored
+      }
+    } else if (activeEl && activeEl.getAttribute("contenteditable") === "true") {
+      // If no text selection, apply font size to the active contenteditable block
+      activeEl.style.fontSize = `${targetSize}px`;
+    }
+
+    const event = new Event("selectionchange");
+    document.dispatchEvent(event);
+  };
+
   if (!visible) return null;
 
   const handleCommand = (e, command, value = null) => {
@@ -117,39 +152,49 @@ export default function FloatingFormatToolbar({
       </span>
 
       {/* Font Size controls */}
-      {onChangeFontSize && (
-        <div className="flex items-center gap-1 border-r border-slate-700/60 pr-2 mr-1">
-          <button
-            type="button"
-            onMouseDown={(e) => {
-              e.preventDefault();
-              const newSize = Math.max(10, currentFontSize - 1);
-              setCurrentFontSize(newSize);
-              onChangeFontSize(newSize);
-            }}
-            className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-350 hover:text-white transition cursor-pointer"
-            title="ফন্ট ছোট করুন"
-          >
-            <Minus className="size-3.5" />
-          </button>
-          <span className="text-xs font-black min-w-[24px] text-center font-sans text-white select-none">
-            {currentFontSize}
-          </span>
-          <button
-            type="button"
-            onMouseDown={(e) => {
-              e.preventDefault();
-              const newSize = Math.min(26, currentFontSize + 1);
-              setCurrentFontSize(newSize);
-              onChangeFontSize(newSize);
-            }}
-            className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-350 hover:text-white transition cursor-pointer"
-            title="ফন্ট বড় করুন"
-          >
-            <Plus className="size-3.5" />
-          </button>
-        </div>
-      )}
+      <div className="flex items-center gap-1 border-r border-slate-700/60 pr-2 mr-1">
+        <button
+          type="button"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            applyFontSize(currentFontSize - 1);
+          }}
+          className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-350 hover:text-white transition cursor-pointer"
+          title="ফন্ট ছোট করুন"
+        >
+          <Minus className="size-3.5" />
+        </button>
+
+        <select
+          value={currentFontSize}
+          onMouseDown={(e) => e.stopPropagation()}
+          onChange={(e) => {
+            applyFontSize(Number(e.target.value));
+          }}
+          className="bg-slate-800 text-white text-[11px] font-bold font-sans rounded px-1.5 py-1 border border-slate-700 outline-none cursor-pointer text-center appearance-none hover:border-slate-500 transition"
+          title="ফন্ট সাইজ নির্বাচন করুন"
+        >
+          {[10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 26, 28, 32, 36, 40, 48].map(
+            (size) => (
+              <option key={size} value={size} className="bg-slate-900 text-white">
+                {size}px
+              </option>
+            ),
+          )}
+        </select>
+
+        <button
+          type="button"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            applyFontSize(currentFontSize + 1);
+          }}
+          className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-350 hover:text-white transition cursor-pointer"
+          title="ফন্ট বড় করুন"
+        >
+          <Plus className="size-3.5" />
+        </button>
+      </div>
 
       {/* Basic formatting */}
       <div className="flex items-center gap-0.5 border-r border-slate-700/60 pr-2 mr-1">

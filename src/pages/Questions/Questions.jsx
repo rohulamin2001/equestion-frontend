@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { translateSubscriptionKey } from "../../constants/subscriptions";
 import { useUserContext } from "../../context/UserContext";
 import { useQuestions } from "./hook/useQuestions";
+import { getChapterNames } from "./utils/questionUtils.js";
 
 const toBanglaNumber = (num) => {
   const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
@@ -39,31 +40,6 @@ const getExamTime = (category, totalMarks) => {
     return `${toBanglaNumber(hours)} ঘণ্টা`;
   }
   return `${toBanglaNumber(hours)} ঘণ্টা ${toBanglaNumber(minutes)} মিনিট`;
-};
-
-const getChapterNames = (set, syllabusList) => {
-  if (!set.chapters || set.chapters.length === 0) return "";
-
-  const targetSubjectId = set.subjectId?._id || set.subjectId;
-
-  const matchingSyllabus = syllabusList?.find(
-    (s) =>
-      s.className === set.className &&
-      (s.subjectId?._id === targetSubjectId || s.subjectId === targetSubjectId),
-  );
-
-  if (!matchingSyllabus || !matchingSyllabus.chapters) {
-    return `অধ্যায়: ${set.chapters.join(", ")}`;
-  }
-
-  const names = set.chapters.map((chapNum) => {
-    const chap = matchingSyllabus.chapters.find(
-      (c) => c.chapterNumber === chapNum,
-    );
-    return chap ? chap.chapterName : `অধ্যায় ${chapNum}`;
-  });
-
-  return names.join(", ");
 };
 
 export default function Questions() {
