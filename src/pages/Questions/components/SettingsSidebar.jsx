@@ -598,7 +598,7 @@ export default function SettingsSidebar({
                                       item.color,
                                     )
                                   }
-                                  className={`h-4.5 w-4.5 rounded-full border transition-all ${
+                                  className={`h-4 w-4 rounded-full border transition-all ${
                                     (layoutSettings.columnDividerColor ||
                                       "#000000") === item.color
                                       ? "ring-2 ring-violet-500 ring-offset-1 scale-110"
