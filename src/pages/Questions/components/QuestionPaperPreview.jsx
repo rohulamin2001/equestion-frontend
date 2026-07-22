@@ -1,4 +1,4 @@
-import { Info, Monitor, Plus } from "lucide-react";
+import { Info, Monitor, Plus, Settings } from "lucide-react";
 import { useState } from "react";
 import InlineEditable from "../../../components/InlineEditable.jsx";
 import { translateSubscriptionKey } from "../../../constants/subscriptions.js";
@@ -43,6 +43,7 @@ export default function QuestionPaperPreview({
   handleEditorDeactivate,
   handleGoBackToSelect,
   updateSettingField,
+  onOpenMobileSettings,
 }) {
   const baseFontSize = layoutSettings.fontSize || 14;
   const [customSerials, setCustomSerials] = useState({});
@@ -68,19 +69,37 @@ export default function QuestionPaperPreview({
           </span>
         </div>
 
-        <button
-          onClick={handleGoBackToSelect}
-          className="px-4 py-2 text-white rounded text-[13px]  transition flex items-center gap-1.5 shadow cursor-pointer font-bengali select-none hover:opacity-95"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
-            boxShadow:
-              "0 4px 16px rgba(109,40,217,0.3), inset 0 1px 0 rgba(255,255,255,0.2)",
-          }}
-        >
-          <Plus className="size-4" />
-          আরও প্রশ্ন যুক্ত করুন
-        </button>
+        <div className="flex items-center gap-2">
+          {onOpenMobileSettings && (
+            <button
+              onClick={onOpenMobileSettings}
+              className="lg:hidden px-3.5 py-2 text-white rounded text-[13px] transition flex items-center gap-1.5 shadow cursor-pointer font-bengali select-none hover:opacity-95"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(147,51,234,0.92) 0%, rgba(124,58,237,0.92) 100%)",
+                boxShadow:
+                  "0 4px 16px rgba(124,58,237,0.3), inset 0 1px 0 rgba(255,255,255,0.2)",
+              }}
+            >
+              <Settings className="size-4" />
+              সেটিংস
+            </button>
+          )}
+
+          <button
+            onClick={handleGoBackToSelect}
+            className="px-4 py-2 text-white rounded text-[13px] transition flex items-center gap-1.5 shadow cursor-pointer font-bengali select-none hover:opacity-95"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
+              boxShadow:
+                "0 4px 16px rgba(109,40,217,0.3), inset 0 1px 0 rgba(255,255,255,0.2)",
+            }}
+          >
+            <Plus className="size-4" />
+            আরও প্রশ্ন যুক্ত করুন
+          </button>
+        </div>
       </div>
 
       <div

@@ -28,9 +28,16 @@ export default function SettingsSidebar({
   onOpenFooterSettings,
   handlePrint,
   activeFont,
+  isMobileDrawer = false,
 }) {
   return (
-    <div className="w-full lg:w-[360px] lg:shrink-0 print:hidden lg:sticky lg:top-0 lg:h-[calc(100vh-48px)] lg:flex lg:flex-col gap-4">
+    <div
+      className={
+        isMobileDrawer
+          ? "flex flex-col gap-4 w-full"
+          : "hidden lg:flex w-full lg:w-[360px] lg:shrink-0 print:hidden lg:sticky lg:top-0 lg:h-[calc(100vh-48px)] lg:flex-col gap-4"
+      }
+    >
       {/* Tab Switcher */}
       <div
         className="flex p-1 rounded gap-1 shrink-0"
@@ -79,7 +86,11 @@ export default function SettingsSidebar({
         })}
       </div>
 
-      <div className="flex-1 lg:overflow-y-auto pr-1 min-h-0 custom-sidebar-scrollbar">
+      <div
+        className={`flex-1 lg:overflow-y-auto min-h-0 custom-sidebar-scrollbar ${
+          isMobileDrawer ? "" : "pr-1"
+        }`}
+      >
         <AnimatePresence mode="wait">
           {activeTab === "settings" && (
             <motion.div
@@ -88,7 +99,9 @@ export default function SettingsSidebar({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="p-5 pb-40 rounded divide-y divide-violet-100/70 space-y-5"
+              className={`p-5 rounded divide-y divide-violet-100/70 space-y-5 ${
+                isMobileDrawer ? "pb-8" : "pb-40"
+              }`}
               style={{
                 background: "rgba(255,255,255,0.82)",
                 backdropFilter: "blur(24px) saturate(160%)",

@@ -4,6 +4,7 @@ import FloatingFormatToolbar from "../../components/FloatingFormatToolbar.jsx";
 import FooterSettingsDrawer from "./components/FooterSettingsDrawer.jsx";
 import HeaderSettingsDrawer from "./components/HeaderSettingsDrawer.jsx";
 import LogoSettingsDrawer from "./components/LogoSettingsDrawer.jsx";
+import MobileSettingsDrawer from "./components/MobileSettingsDrawer.jsx";
 import PageSetupDrawer from "./components/PageSetupDrawer.jsx";
 import QuestionPaperPreview from "./components/QuestionPaperPreview.jsx";
 import SettingsSidebar from "./components/SettingsSidebar.jsx";
@@ -18,6 +19,7 @@ export default function QuestionPreview() {
   const [isLogoSettingsOpen, setIsLogoSettingsOpen] = useState(false);
   const [isHeaderSettingsOpen, setIsHeaderSettingsOpen] = useState(false);
   const [isFooterSettingsOpen, setIsFooterSettingsOpen] = useState(false);
+  const [isMobileSettingsOpen, setIsMobileSettingsOpen] = useState(false);
   const [isDraggingLogo, setIsDraggingLogo] = useState(false);
 
   const {
@@ -140,6 +142,7 @@ export default function QuestionPreview() {
           handleEditorDeactivate={handleEditorDeactivate}
           handleGoBackToSelect={handleGoBackToSelect}
           updateSettingField={updateSettingField}
+          onOpenMobileSettings={() => setIsMobileSettingsOpen(true)}
         />
 
         {/* Right Pane: Layout Settings Sidebar */}
@@ -156,6 +159,22 @@ export default function QuestionPreview() {
           activeFont={activeFont}
         />
       </div>
+
+      {/* Mobile Settings Drawer */}
+      <MobileSettingsDrawer
+        isOpen={isMobileSettingsOpen}
+        onClose={() => setIsMobileSettingsOpen(false)}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        layoutSettings={layoutSettings}
+        updateSettingField={updateSettingField}
+        onOpenPageSetup={() => setIsPageSetupOpen(true)}
+        onOpenLogoSettings={() => setIsLogoSettingsOpen(true)}
+        onOpenHeaderSettings={() => setIsHeaderSettingsOpen(true)}
+        onOpenFooterSettings={() => setIsFooterSettingsOpen(true)}
+        handlePrint={handlePrint}
+        activeFont={activeFont}
+      />
 
       {/* Floating Toolbar for Inline Rich-Text Editing */}
       <FloatingFormatToolbar visible={toolbarVisible} position={toolbarPos} />
