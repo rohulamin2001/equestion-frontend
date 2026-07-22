@@ -703,30 +703,39 @@ export default function SettingsSidebar({
                       অপশন স্টাইল
                     </label>
                     <div className="grid grid-cols-4 gap-1">
-                      {["●", "()", ".", ")"].map((style) => (
-                        <button
-                          key={style}
-                          onClick={() =>
-                            updateSettingField(null, "optionStyle", style)
-                          }
-                          className="py-1.5 border rounded-lg text-[10px] font-black transition"
-                          style={
-                            layoutSettings.optionStyle === style
-                              ? {
-                                  background: "rgba(109,40,217,0.09)",
-                                  border: "1.5px solid rgb(124,58,237)",
-                                  color: "rgb(109,40,217)",
-                                }
-                              : {
-                                  background: "white",
-                                  borderColor: "rgba(203,213,225,0.8)",
-                                  color: "#64748b",
-                                }
-                          }
-                        >
-                          {style}
-                        </button>
-                      ))}
+                      {["◯", "()", ".", ")"].map((style) => {
+                        const isSelected =
+                          (layoutSettings.optionStyle || "()") === style;
+                        return (
+                          <button
+                            key={style}
+                            type="button"
+                            onClick={() =>
+                              updateSettingField(null, "optionStyle", style)
+                            }
+                            className="py-1.5 border rounded-lg text-xs font-bold transition flex items-center justify-center cursor-pointer select-none"
+                            style={
+                              isSelected
+                                ? {
+                                    background: "rgba(109,40,217,0.12)",
+                                    border: "1.5px solid rgb(109,40,217)",
+                                    color: "rgb(109,40,217)",
+                                  }
+                                : {
+                                    background: "white",
+                                    borderColor: "rgba(203,213,225,0.8)",
+                                    color: "#64748b",
+                                  }
+                            }
+                          >
+                            {style === "◯" ? (
+                              <span className="inline-block size-3.5 rounded-full border-2 border-current" />
+                            ) : (
+                              style
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 

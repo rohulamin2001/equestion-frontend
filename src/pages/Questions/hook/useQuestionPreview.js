@@ -54,7 +54,7 @@ const DEFAULT_SETTINGS = {
   columnGap: 15,
   fontSize: 14,
   fontFamily: "SolaimanLipi",
-  optionStyle: "●",
+  optionStyle: "()",
   pagePaddingTop: 32,
   pagePaddingBottom: 32,
   pagePaddingLeft: 32,
@@ -152,6 +152,10 @@ export function useQuestionPreview() {
       const mergedSettings = {
         ...DEFAULT_SETTINGS,
         ...dbActiveSet.settings,
+        optionStyle:
+          dbActiveSet.settings?.optionStyle === "●"
+            ? "()"
+            : dbActiveSet.settings?.optionStyle || "()",
         attachments: {
           ...DEFAULT_SETTINGS.attachments,
           ...(dbActiveSet.settings.attachments || {}),

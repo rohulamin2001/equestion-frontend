@@ -716,7 +716,7 @@ export default function QuestionPaperPreview({
                             pageBreakInside: "avoid",
                           }}
                         >
-                          <div className="flex items-start gap-2.5 text-inherit text-black">
+                          <div className="flex items-start gap-2 text-inherit text-black">
                             <InlineEditable
                               value={
                                 customSerials[q._id] !== undefined
@@ -764,38 +764,84 @@ export default function QuestionPaperPreview({
                                         return (
                                           <div
                                             key={oIdx}
-                                            className="flex items-start gap-1"
+                                            className="flex items-start gap-2"
                                           >
-                                            <InlineEditable
-                                              value={
-                                                customOptionLabels[
-                                                  `${q._id}-${oIdx}`
-                                                ] !== undefined
-                                                  ? customOptionLabels[
+                                            {layoutSettings.optionStyle ===
+                                              "◯" ||
+                                            layoutSettings.optionStyle ===
+                                              "●" ? (
+                                              <span className="inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full border border-black text-black font-normal leading-none shrink-0 align-middle select-none">
+                                                <InlineEditable
+                                                  value={
+                                                    customOptionLabels[
                                                       `${q._id}-${oIdx}`
-                                                    ]
-                                                  : layoutSettings.optionStyle ===
-                                                      "()"
-                                                    ? `(${prefix})`
-                                                    : `${prefix}${layoutSettings.optionStyle}`
-                                              }
-                                              onSave={(val) =>
-                                                setCustomOptionLabels(
-                                                  (prev) => ({
-                                                    ...prev,
-                                                    [`${q._id}-${oIdx}`]: val,
-                                                  }),
-                                                )
-                                              }
-                                              onActivate={handleEditorActivate}
-                                              onDeactivate={
-                                                handleEditorDeactivate
-                                              }
-                                              renderRichText={false}
-                                              className="font-normal text-black shrink-0"
-                                              inline={true}
-                                              placeholder="অপশন"
-                                            />
+                                                    ] !== undefined
+                                                      ? customOptionLabels[
+                                                          `${q._id}-${oIdx}`
+                                                        ]
+                                                      : prefix
+                                                  }
+                                                  onSave={(val) =>
+                                                    setCustomOptionLabels(
+                                                      (prev) => ({
+                                                        ...prev,
+                                                        [`${q._id}-${oIdx}`]:
+                                                          val,
+                                                      }),
+                                                    )
+                                                  }
+                                                  onActivate={
+                                                    handleEditorActivate
+                                                  }
+                                                  onDeactivate={
+                                                    handleEditorDeactivate
+                                                  }
+                                                  renderRichText={false}
+                                                  className="font-normal text-black text-center shrink-0"
+                                                  inline={true}
+                                                  placeholder="অপশন"
+                                                />
+                                              </span>
+                                            ) : (
+                                              <InlineEditable
+                                                value={
+                                                  customOptionLabels[
+                                                    `${q._id}-${oIdx}`
+                                                  ] !== undefined
+                                                    ? customOptionLabels[
+                                                        `${q._id}-${oIdx}`
+                                                      ]
+                                                    : layoutSettings.optionStyle ===
+                                                        "()"
+                                                      ? `(${prefix})`
+                                                      : layoutSettings.optionStyle ===
+                                                          "."
+                                                        ? `${prefix}.`
+                                                        : layoutSettings.optionStyle ===
+                                                            ")"
+                                                          ? `${prefix})`
+                                                          : `${prefix}${layoutSettings.optionStyle}`
+                                                }
+                                                onSave={(val) =>
+                                                  setCustomOptionLabels(
+                                                    (prev) => ({
+                                                      ...prev,
+                                                      [`${q._id}-${oIdx}`]: val,
+                                                    }),
+                                                  )
+                                                }
+                                                onActivate={
+                                                  handleEditorActivate
+                                                }
+                                                onDeactivate={
+                                                  handleEditorDeactivate
+                                                }
+                                                renderRichText={false}
+                                                className="font-normal text-black shrink-0"
+                                                inline={true}
+                                                placeholder="অপশন"
+                                              />
+                                            )}
                                             <div className="flex-1">
                                               <InlineEditable
                                                 value={opt}
@@ -859,36 +905,83 @@ export default function QuestionPaperPreview({
                                             className="flex justify-between items-baseline gap-2"
                                           >
                                             <div className="flex items-start gap-1.5 flex-1">
-                                              <InlineEditable
-                                                value={
-                                                  customSubLabels[
-                                                    `${q._id}-${sqIdx}`
-                                                  ] !== undefined
-                                                    ? customSubLabels[
+                                              {layoutSettings.optionStyle ===
+                                                "◯" ||
+                                              layoutSettings.optionStyle ===
+                                                "●" ? (
+                                                <span className="inline-flex items-center justify-center w-[18px] h-[18px] px-1 rounded-full border border-black text-black font-normal leading-none shrink-0 align-middle select-none">
+                                                  <InlineEditable
+                                                    value={
+                                                      customSubLabels[
                                                         `${q._id}-${sqIdx}`
-                                                      ]
-                                                    : `${letter})`
-                                                }
-                                                onSave={(val) =>
-                                                  setCustomSubLabels(
-                                                    (prev) => ({
-                                                      ...prev,
-                                                      [`${q._id}-${sqIdx}`]:
-                                                        val,
-                                                    }),
-                                                  )
-                                                }
-                                                onActivate={
-                                                  handleEditorActivate
-                                                }
-                                                onDeactivate={
-                                                  handleEditorDeactivate
-                                                }
-                                                renderRichText={false}
-                                                className="font-normal shrink-0"
-                                                inline={true}
-                                                placeholder="অপশন"
-                                              />
+                                                      ] !== undefined
+                                                        ? customSubLabels[
+                                                            `${q._id}-${sqIdx}`
+                                                          ]
+                                                        : letter
+                                                    }
+                                                    onSave={(val) =>
+                                                      setCustomSubLabels(
+                                                        (prev) => ({
+                                                          ...prev,
+                                                          [`${q._id}-${sqIdx}`]:
+                                                            val,
+                                                        }),
+                                                      )
+                                                    }
+                                                    onActivate={
+                                                      handleEditorActivate
+                                                    }
+                                                    onDeactivate={
+                                                      handleEditorDeactivate
+                                                    }
+                                                    renderRichText={false}
+                                                    className="font-normal text-black text-center shrink-0"
+                                                    inline={true}
+                                                    placeholder="অপশন"
+                                                  />
+                                                </span>
+                                              ) : (
+                                                <InlineEditable
+                                                  value={
+                                                    customSubLabels[
+                                                      `${q._id}-${sqIdx}`
+                                                    ] !== undefined
+                                                      ? customSubLabels[
+                                                          `${q._id}-${sqIdx}`
+                                                        ]
+                                                      : layoutSettings.optionStyle ===
+                                                          "()"
+                                                        ? `(${letter})`
+                                                        : layoutSettings.optionStyle ===
+                                                            "."
+                                                          ? `${letter}.`
+                                                          : layoutSettings.optionStyle ===
+                                                              ")"
+                                                            ? `${letter})`
+                                                            : `${letter}${layoutSettings.optionStyle}`
+                                                  }
+                                                  onSave={(val) =>
+                                                    setCustomSubLabels(
+                                                      (prev) => ({
+                                                        ...prev,
+                                                        [`${q._id}-${sqIdx}`]:
+                                                          val,
+                                                      }),
+                                                    )
+                                                  }
+                                                  onActivate={
+                                                    handleEditorActivate
+                                                  }
+                                                  onDeactivate={
+                                                    handleEditorDeactivate
+                                                  }
+                                                  renderRichText={false}
+                                                  className="font-normal shrink-0"
+                                                  inline={true}
+                                                  placeholder="অপশন"
+                                                />
+                                              )}
                                               <div className="flex-1 text-inherit">
                                                 <InlineEditable
                                                   value={sq.text}
