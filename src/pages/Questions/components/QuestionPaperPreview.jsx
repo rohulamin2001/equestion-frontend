@@ -1,4 +1,5 @@
 import { Info, Monitor, Plus } from "lucide-react";
+import { useState } from "react";
 import InlineEditable from "../../../components/InlineEditable.jsx";
 import { translateSubscriptionKey } from "../../../constants/subscriptions.js";
 import {
@@ -44,6 +45,9 @@ export default function QuestionPaperPreview({
   updateSettingField,
 }) {
   const baseFontSize = layoutSettings.fontSize || 14;
+  const [customSerials, setCustomSerials] = useState({});
+  const [customOptionLabels, setCustomOptionLabels] = useState({});
+  const [customSubLabels, setCustomSubLabels] = useState({});
 
   return (
     <div className="flex-1 lg:col-span-8 flex flex-col items-center">
@@ -702,7 +706,7 @@ export default function QuestionPaperPreview({
                       return (
                         <div
                           key={q._id}
-                          className="relative group border border-transparent hover:border-indigo-100 hover:bg-indigo-50/10   rounded-xl transition print:border-none print:hover:border-none print:hover:bg-transparent print:p-0"
+                          className="relative transition print:border-none print:hover:border-none print:hover:bg-transparent print:p-0"
                           style={{
                             marginBottom: `${layoutSettings.lineSpacing}px`,
                             breakInside: "avoid",
@@ -710,9 +714,25 @@ export default function QuestionPaperPreview({
                           }}
                         >
                           <div className="flex items-start gap-2.5 text-inherit text-black">
-                            <span className="font-normal text-black min-w-[20px]">
-                              {serialNum}.
-                            </span>
+                            <InlineEditable
+                              value={
+                                customSerials[q._id] !== undefined
+                                  ? customSerials[q._id]
+                                  : `${serialNum}.`
+                              }
+                              onSave={(val) =>
+                                setCustomSerials((prev) => ({
+                                  ...prev,
+                                  [q._id]: val,
+                                }))
+                              }
+                              onActivate={handleEditorActivate}
+                              onDeactivate={handleEditorDeactivate}
+                              renderRichText={false}
+                              className="font-normal text-black shrink-0"
+                              inline={true}
+                              placeholder="সিরিয়াল"
+                            />
                             <div className="flex-1 space-y-2">
                               {/* MCQ format */}
                               {q.category === "MCQ" && q.mcqData && (
@@ -735,23 +755,44 @@ export default function QuestionPaperPreview({
                                   {q.mcqData.options && (
                                     <div className="grid grid-cols-2 gap-2 text-black text-inherit">
                                       {q.mcqData.options.map((opt, oIdx) => {
-                                        const prefix = [
-                                          "ক",
-                                          "খ",
-                                          "গ",
-                                          "ঘ",
-                                        ][oIdx];
+                                        const prefix = ["ক", "খ", "গ", "ঘ"][
+                                          oIdx
+                                        ];
                                         return (
                                           <div
                                             key={oIdx}
                                             className="flex items-start gap-1"
                                           >
-                                            <span className="font-normal text-black">
-                                              {layoutSettings.optionStyle ===
-                                              "()"
-                                                ? `(${prefix})`
-                                                : `${prefix}${layoutSettings.optionStyle}`}
-                                            </span>
+                                            <InlineEditable
+                                              value={
+                                                customOptionLabels[
+                                                  `${q._id}-${oIdx}`
+                                                ] !== undefined
+                                                  ? customOptionLabels[
+                                                      `${q._id}-${oIdx}`
+                                                    ]
+                                                  : layoutSettings.optionStyle ===
+                                                      "()"
+                                                    ? `(${prefix})`
+                                                    : `${prefix}${layoutSettings.optionStyle}`
+                                              }
+                                              onSave={(val) =>
+                                                setCustomOptionLabels(
+                                                  (prev) => ({
+                                                    ...prev,
+                                                    [`${q._id}-${oIdx}`]: val,
+                                                  }),
+                                                )
+                                              }
+                                              onActivate={handleEditorActivate}
+                                              onDeactivate={
+                                                handleEditorDeactivate
+                                              }
+                                              renderRichText={false}
+                                              className="font-normal text-black shrink-0"
+                                              inline={true}
+                                              placeholder="অপশন"
+                                            />
                                             <div className="flex-1">
                                               <InlineEditable
                                                 value={opt}
@@ -784,98 +825,84 @@ export default function QuestionPaperPreview({
                               )}
 
                               {/* CQ format */}
-                              {q.category === "Creative" &&
-                                q.creativeData && (
-                                  <div className="space-y-2">
-                                    <div className="font-medium text-black leading-relaxed">
-                                      <InlineEditable
-                                        value={q.creativeData.stem}
-                                        onSave={(val) =>
-                                          handleSaveQuestionEdit(q, {
-                                            creativeData: {
-                                              ...q.creativeData,
-                                              stem: val,
-                                            },
-                                          })
-                                        }
-                                        onActivate={handleEditorActivate}
-                                        onDeactivate={handleEditorDeactivate}
-                                      />
-                                    </div>
-                                    {q.creativeData.subQuestions && (
-                                      <div className="space-y-1 text-black text-inherit">
-                                        {Object.entries(
-                                          q.creativeData.subQuestions,
-                                        ).map(([key, sq], sqIdx) => {
-                                          const letter = [
-                                            "ক",
-                                            "খ",
-                                            "গ",
-                                            "ঘ",
-                                          ][sqIdx];
-                                          return (
-                                            <div
-                                              key={key}
-                                              className="flex justify-between items-baseline gap-2"
-                                            >
-                                              <div className="flex items-start gap-1.5 flex-1">
-                                                <span className="font-normal">
-                                                  {letter})
-                                                </span>
-                                                <div className="flex-1 text-inherit">
-                                                  <InlineEditable
-                                                    value={sq.text}
-                                                    onSave={(val) => {
-                                                      handleSaveQuestionEdit(
-                                                        q,
-                                                        {
-                                                          creativeData: {
-                                                            ...q.creativeData,
-                                                            subQuestions: {
-                                                              ...q.creativeData
-                                                                .subQuestions,
-                                                              [key]: {
-                                                                ...sq,
-                                                                text: val,
-                                                              },
-                                                            },
+                              {q.category === "Creative" && q.creativeData && (
+                                <div className="space-y-2">
+                                  <div className="font-medium text-black leading-relaxed">
+                                    <InlineEditable
+                                      value={q.creativeData.stem}
+                                      onSave={(val) =>
+                                        handleSaveQuestionEdit(q, {
+                                          creativeData: {
+                                            ...q.creativeData,
+                                            stem: val,
+                                          },
+                                        })
+                                      }
+                                      onActivate={handleEditorActivate}
+                                      onDeactivate={handleEditorDeactivate}
+                                    />
+                                  </div>
+                                  {q.creativeData.subQuestions && (
+                                    <div className="space-y-1 text-black text-inherit">
+                                      {Object.entries(
+                                        q.creativeData.subQuestions,
+                                      ).map(([key, sq], sqIdx) => {
+                                        const letter = ["ক", "খ", "গ", "ঘ"][
+                                          sqIdx
+                                        ];
+                                        return (
+                                          <div
+                                            key={key}
+                                            className="flex justify-between items-baseline gap-2"
+                                          >
+                                            <div className="flex items-start gap-1.5 flex-1">
+                                              <InlineEditable
+                                                value={
+                                                  customSubLabels[
+                                                    `${q._id}-${sqIdx}`
+                                                  ] !== undefined
+                                                    ? customSubLabels[
+                                                        `${q._id}-${sqIdx}`
+                                                      ]
+                                                    : `${letter})`
+                                                }
+                                                onSave={(val) =>
+                                                  setCustomSubLabels(
+                                                    (prev) => ({
+                                                      ...prev,
+                                                      [`${q._id}-${sqIdx}`]:
+                                                        val,
+                                                    }),
+                                                  )
+                                                }
+                                                onActivate={
+                                                  handleEditorActivate
+                                                }
+                                                onDeactivate={
+                                                  handleEditorDeactivate
+                                                }
+                                                renderRichText={false}
+                                                className="font-normal shrink-0"
+                                                inline={true}
+                                                placeholder="অপশন"
+                                              />
+                                              <div className="flex-1 text-inherit">
+                                                <InlineEditable
+                                                  value={sq.text}
+                                                  onSave={(val) => {
+                                                    handleSaveQuestionEdit(q, {
+                                                      creativeData: {
+                                                        ...q.creativeData,
+                                                        subQuestions: {
+                                                          ...q.creativeData
+                                                            .subQuestions,
+                                                          [key]: {
+                                                            ...sq,
+                                                            text: val,
                                                           },
                                                         },
-                                                      );
-                                                    }}
-                                                    onActivate={
-                                                      handleEditorActivate
-                                                    }
-                                                    onDeactivate={
-                                                      handleEditorDeactivate
-                                                    }
-                                                  />
-                                                </div>
-                                              </div>
-                                              <span>
-                                                <InlineEditable
-                                                  value={
-                                                    customSubMarks[
-                                                      `${q._id}-${sqIdx}`
-                                                    ] !== undefined
-                                                      ? customSubMarks[
-                                                          `${q._id}-${sqIdx}`
-                                                        ]
-                                                      : [
-                                                          "১",
-                                                          "২",
-                                                          "৩",
-                                                          "৪",
-                                                        ][sqIdx]
-                                                  }
-                                                  onSave={(val) => {
-                                                    setCustomSubMarks(
-                                                      (prev) => ({
-                                                        ...prev,
-                                                        [`${q._id}-${sqIdx}`]:
-                                                          val,
-                                                      }),
-                                                    );
+                                                      },
+                                                    });
                                                   }}
                                                   onActivate={
                                                     handleEditorActivate
@@ -883,22 +910,50 @@ export default function QuestionPaperPreview({
                                                   onDeactivate={
                                                     handleEditorDeactivate
                                                   }
-                                                  renderRichText={false}
-                                                  className="text-black font-normal shrink-0 font-sans print:font-sans"
-                                                  style={{
-                                                    fontSize: `${baseFontSize}px`,
-                                                  }}
-                                                  inline={true}
-                                                  placeholder="নম্বর"
                                                 />
-                                              </span>
+                                              </div>
                                             </div>
-                                          );
-                                        })}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+                                            <span>
+                                              <InlineEditable
+                                                value={
+                                                  customSubMarks[
+                                                    `${q._id}-${sqIdx}`
+                                                  ] !== undefined
+                                                    ? customSubMarks[
+                                                        `${q._id}-${sqIdx}`
+                                                      ]
+                                                    : ["১", "২", "৩", "৪"][
+                                                        sqIdx
+                                                      ]
+                                                }
+                                                onSave={(val) => {
+                                                  setCustomSubMarks((prev) => ({
+                                                    ...prev,
+                                                    [`${q._id}-${sqIdx}`]: val,
+                                                  }));
+                                                }}
+                                                onActivate={
+                                                  handleEditorActivate
+                                                }
+                                                onDeactivate={
+                                                  handleEditorDeactivate
+                                                }
+                                                renderRichText={false}
+                                                className="text-black font-normal shrink-0 font-sans print:font-sans"
+                                                style={{
+                                                  fontSize: `${baseFontSize}px`,
+                                                }}
+                                                inline={true}
+                                                placeholder="নম্বর"
+                                              />
+                                            </span>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
 
                               {/* General format */}
                               {q.category !== "MCQ" &&
@@ -907,9 +962,7 @@ export default function QuestionPaperPreview({
                                   <div className="space-y-1">
                                     <div className="font-normal">
                                       <InlineEditable
-                                        value={
-                                          q.generalData.questionText || ""
-                                        }
+                                        value={q.generalData.questionText || ""}
                                         onSave={(val) =>
                                           handleSaveQuestionEdit(q, {
                                             generalData: {
@@ -935,9 +988,7 @@ export default function QuestionPaperPreview({
                                             })
                                           }
                                           onActivate={handleEditorActivate}
-                                          onDeactivate={
-                                            handleEditorDeactivate
-                                          }
+                                          onDeactivate={handleEditorDeactivate}
                                         />
                                       </div>
                                     )}
