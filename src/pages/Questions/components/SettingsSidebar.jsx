@@ -30,7 +30,7 @@ export default function SettingsSidebar({
   activeFont,
 }) {
   return (
-    <div className="w-full lg:w-[360px] lg:shrink-0 print:hidden lg:sticky lg:top-2 lg:h-[calc(100vh-48px)] lg:flex lg:flex-col gap-4">
+    <div className="w-full lg:w-[360px] lg:shrink-0 print:hidden lg:sticky lg:top-1 lg:h-[calc(100vh-48px)] lg:flex lg:flex-col gap-4">
       {/* Tab Switcher */}
       <div
         className="flex p-1 rounded gap-1 shrink-0"
@@ -507,6 +507,111 @@ export default function SettingsSidebar({
                           className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600 mt-1"
                         />
                       </div>
+
+                      {/* Column Divider Controls (Height, Thickness & Color) */}
+                      {layoutSettings.columnDivider && (
+                        <>
+                          {/* Height / Length Slider */}
+                          <div className="space-y-1 pt-1.5 border-t border-slate-100">
+                            <div className="flex justify-between text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
+                              <span>ডিভাইডারের দৈর্ঘ্য / হাইট</span>
+                              <span className="font-sans text-[11px] text-slate-500">
+                                {layoutSettings.columnDividerHeight ?? 100}%
+                              </span>
+                            </div>
+                            <input
+                              type="range"
+                              min="1"
+                              max="100"
+                              step="1"
+                              value={layoutSettings.columnDividerHeight ?? 100}
+                              onChange={(e) =>
+                                updateSettingField(
+                                  null,
+                                  "columnDividerHeight",
+                                  parseInt(e.target.value),
+                                )
+                              }
+                              className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600 mt-1"
+                            />
+                          </div>
+
+                          {/* Thickness Slider */}
+                          <div className="space-y-1 pt-1.5 border-t border-slate-100">
+                            <div className="flex justify-between text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
+                              <span>ডিভাইডার থিকনেস (সাইজ)</span>
+                              <span className="font-sans text-[11px] text-slate-500">
+                                {layoutSettings.columnDividerWidth || 1}px
+                              </span>
+                            </div>
+                            <input
+                              type="range"
+                              min="0.25"
+                              max="8"
+                              step="0.25"
+                              value={layoutSettings.columnDividerWidth || 1}
+                              onChange={(e) =>
+                                updateSettingField(
+                                  null,
+                                  "columnDividerWidth",
+                                  parseFloat(e.target.value),
+                                )
+                              }
+                              className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600 mt-1"
+                            />
+                          </div>
+
+                          {/* Color & Opacity Picker */}
+                          <div className="space-y-1.5 pt-1.5 border-t border-slate-100">
+                            <div className="flex justify-between items-center text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
+                              <span>ডিভাইডার কালার</span>
+                              <input
+                                type="color"
+                                value={
+                                  layoutSettings.columnDividerColor || "#000000"
+                                }
+                                onChange={(e) =>
+                                  updateSettingField(
+                                    null,
+                                    "columnDividerColor",
+                                    e.target.value,
+                                  )
+                                }
+                                className="size-5 rounded border border-slate-200 cursor-pointer p-0 bg-transparent"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1.5 pt-0.5">
+                              {[
+                                { label: "কালো", color: "#000000" },
+                                { label: "ডার্ক গ্রে", color: "#334155" },
+                                { label: "মিডিয়াম গ্রে", color: "#64748b" },
+                                { label: "লাইট গ্রে", color: "#cbd5e1" },
+                                { label: "ভায়োলেট", color: "#6d28d9" },
+                              ].map((item) => (
+                                <button
+                                  key={item.color}
+                                  type="button"
+                                  onClick={() =>
+                                    updateSettingField(
+                                      null,
+                                      "columnDividerColor",
+                                      item.color,
+                                    )
+                                  }
+                                  className={`h-4.5 w-4.5 rounded-full border transition-all ${
+                                    (layoutSettings.columnDividerColor ||
+                                      "#000000") === item.color
+                                      ? "ring-2 ring-violet-500 ring-offset-1 scale-110"
+                                      : "border-slate-200 hover:scale-105"
+                                  }`}
+                                  style={{ backgroundColor: item.color }}
+                                  title={item.label}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -570,7 +675,7 @@ export default function SettingsSidebar({
                     }}
                   >
                     <label className="text-[10px] font-bold text-slate-500 block">
-                      MCQ অপশন স্টাইল
+                      অপশন স্টাইল
                     </label>
                     <div className="grid grid-cols-4 gap-1">
                       {["●", "()", ".", ")"].map((style) => (

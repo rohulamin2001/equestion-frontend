@@ -43,6 +43,8 @@ export default function QuestionPaperPreview({
   handleGoBackToSelect,
   updateSettingField,
 }) {
+  const baseFontSize = layoutSettings.fontSize || 14;
+
   return (
     <div className="flex-1 lg:col-span-8 flex flex-col items-center">
       <div
@@ -595,64 +597,37 @@ export default function QuestionPaperPreview({
 
         {/* Questions List Render (Grouped by Category) */}
         {groupedQuestions && groupedQuestions.length > 0 ? (
-          <div
-            className="block"
-            style={{
-              columnCount: layoutSettings.columns,
-              columnGap: `${layoutSettings.columnGap || 15}px`,
-              columnRule:
-                layoutSettings.columns > 1 && layoutSettings.columnDivider
-                  ? "1px solid black"
-                  : "none",
-            }}
-          >
-            {groupedQuestions.map((group) => (
-              <div key={group.category} className=" break-inside-auto">
-                {/* Section Header */}
-                <div className="flex justify-between items-baseline font-bold text-sm text-black pt-1 print:pt-0 font-bengali select-text print:select-text">
-                  <span>
-                    <InlineEditable
-                      value={
-                        customGroupLabels[group.category] !== undefined
-                          ? customGroupLabels[group.category]
-                          : group.label === "সৃজনশীল প্রশ্ন"
-                            ? "সৃজনশীল অংশ:"
-                            : group.label === "বহু নির্বাচনী প্রশ্ন"
-                              ? "বহুনির্বাচনি অংশ:"
-                              : group.label === "সংক্ষিপ্ত উত্তর প্রশ্ন"
-                                ? "সংক্ষিপ্ত প্রশ্ন গুলোর উত্তর লিখ:"
-                                : group.label
-                      }
-                      onSave={(val) => {
-                        setCustomGroupLabels((prev) => ({
-                          ...prev,
-                          [group.category]: val,
-                        }));
-                      }}
-                      onActivate={handleEditorActivate}
-                      onDeactivate={handleEditorDeactivate}
-                      renderRichText={false}
-                      className="font-bold text-sm text-black"
-                      inline={true}
-                      placeholder="শিরোনাম"
-                    />
-                  </span>
-                  {getCategoryMarkLabel(
-                    group.category,
-                    group.questions.length,
-                  ) && (
+          <div className="relative">
+            <div
+              className="block"
+              style={{
+                columnCount: layoutSettings.columns,
+                columnGap: `${layoutSettings.columnGap || 15}px`,
+                columnRule: "none",
+              }}
+            >
+              {groupedQuestions.map((group) => (
+                <div key={group.category} className=" break-inside-auto">
+                  {/* Section Header */}
+                  <div
+                    className="flex justify-between items-baseline font-bold text-black pt-1 print:pt-0 font-bengali select-text print:select-text"
+                    style={{ fontSize: `${baseFontSize}px` }}
+                  >
                     <span>
                       <InlineEditable
                         value={
-                          customGroupMarks[group.category] !== undefined
-                            ? customGroupMarks[group.category]
-                            : getCategoryMarkLabel(
-                                group.category,
-                                group.questions.length,
-                              )
+                          customGroupLabels[group.category] !== undefined
+                            ? customGroupLabels[group.category]
+                            : group.label === "সৃজনশীল প্রশ্ন"
+                              ? "সৃজনশীল অংশ:"
+                              : group.label === "বহু নির্বাচনী প্রশ্ন"
+                                ? "বহুনির্বাচনি অংশ:"
+                                : group.label === "সংক্ষিপ্ত উত্তর প্রশ্ন"
+                                  ? "সংক্ষিপ্ত প্রশ্ন গুলোর উত্তর লিখ:"
+                                  : group.label
                         }
                         onSave={(val) => {
-                          setCustomGroupMarks((prev) => ({
+                          setCustomGroupLabels((prev) => ({
                             ...prev,
                             [group.category]: val,
                           }));
@@ -660,166 +635,135 @@ export default function QuestionPaperPreview({
                         onActivate={handleEditorActivate}
                         onDeactivate={handleEditorDeactivate}
                         renderRichText={false}
-                        className="font-normal text-[14px] text-black font-sans print:font-sans"
+                        className="font-bold text-black"
+                        style={{ fontSize: `${baseFontSize}px` }}
                         inline={true}
-                        placeholder="মান বণ্টন"
+                        placeholder="শিরোনাম"
                       />
                     </span>
-                  )}
-                </div>
+                    {getCategoryMarkLabel(
+                      group.category,
+                      group.questions.length,
+                    ) && (
+                      <span>
+                        <InlineEditable
+                          value={
+                            customGroupMarks[group.category] !== undefined
+                              ? customGroupMarks[group.category]
+                              : getCategoryMarkLabel(
+                                  group.category,
+                                  group.questions.length,
+                                )
+                          }
+                          onSave={(val) => {
+                            setCustomGroupMarks((prev) => ({
+                              ...prev,
+                              [group.category]: val,
+                            }));
+                          }}
+                          onActivate={handleEditorActivate}
+                          onDeactivate={handleEditorDeactivate}
+                          renderRichText={false}
+                          className="font-normal text-black font-sans print:font-sans"
+                          style={{ fontSize: `${baseFontSize}px` }}
+                          inline={true}
+                          placeholder="মান বণ্টন"
+                        />
+                      </span>
+                    )}
+                  </div>
 
-                <div className="block">
-                  {group.questions.map((q) => {
-                    const serialNum = (() => {
-                      const num = q.serialNumber || 1;
-                      const padded = num < 10 ? `0${num}` : String(num);
-                      const banglaDigits = [
-                        "০",
-                        "১",
-                        "২",
-                        "৩",
-                        "৪",
-                        "৫",
-                        "৬",
-                        "৭",
-                        "৮",
-                        "৯",
-                      ];
-                      return padded
-                        .split("")
-                        .map((char) =>
-                          char >= "0" && char <= "9"
-                            ? banglaDigits[Number(char)]
-                            : char,
-                        )
-                        .join("");
-                    })();
-                    return (
-                      <div
-                        key={q._id}
-                        className="relative group border border-transparent hover:border-indigo-100 hover:bg-indigo-50/10   rounded-xl transition print:border-none print:hover:border-none print:hover:bg-transparent print:p-0"
-                        style={{
-                          marginBottom: `${layoutSettings.lineSpacing}px`,
-                          breakInside: "avoid",
-                          pageBreakInside: "avoid",
-                        }}
-                      >
-                        <div className="flex items-start gap-2.5 text-inherit text-black">
-                          <span className="font-normal text-black min-w-[20px]">
-                            {serialNum}.
-                          </span>
-                          <div className="flex-1 space-y-2">
-                            {/* MCQ format */}
-                            {q.category === "MCQ" && q.mcqData && (
-                              <div className="space-y-2">
-                                <div className="font-normal">
-                                  <InlineEditable
-                                    value={q.mcqData.questionText}
-                                    onSave={(val) =>
-                                      handleSaveQuestionEdit(q, {
-                                        mcqData: {
-                                          ...q.mcqData,
-                                          questionText: val,
-                                        },
-                                      })
-                                    }
-                                    onActivate={handleEditorActivate}
-                                    onDeactivate={handleEditorDeactivate}
-                                  />
-                                </div>
-                                {q.mcqData.options && (
-                                  <div className="grid grid-cols-2 gap-2 text-black text-inherit">
-                                    {q.mcqData.options.map((opt, oIdx) => {
-                                      const prefix = ["ক", "খ", "গ", "ঘ"][oIdx];
-                                      return (
-                                        <div
-                                          key={oIdx}
-                                          className="flex items-start gap-1"
-                                        >
-                                          <span className="font-normal text-black">
-                                            {layoutSettings.optionStyle === "()"
-                                              ? `(${prefix})`
-                                              : `${prefix}${layoutSettings.optionStyle}`}
-                                          </span>
-                                          <div className="flex-1">
-                                            <InlineEditable
-                                              value={opt}
-                                              onSave={(val) => {
-                                                const newOpts = [
-                                                  ...q.mcqData.options,
-                                                ];
-                                                newOpts[oIdx] = val;
-                                                handleSaveQuestionEdit(q, {
-                                                  mcqData: {
-                                                    ...q.mcqData,
-                                                    options: newOpts,
-                                                  },
-                                                });
-                                              }}
-                                              onActivate={handleEditorActivate}
-                                              onDeactivate={
-                                                handleEditorDeactivate
-                                              }
-                                            />
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
+                  <div className="block">
+                    {group.questions.map((q) => {
+                      const serialNum = (() => {
+                        const num = q.serialNumber || 1;
+                        const padded = num < 10 ? `0${num}` : String(num);
+                        const banglaDigits = [
+                          "০",
+                          "১",
+                          "২",
+                          "৩",
+                          "৪",
+                          "৫",
+                          "৬",
+                          "৭",
+                          "৮",
+                          "৯",
+                        ];
+                        return padded
+                          .split("")
+                          .map((char) =>
+                            char >= "0" && char <= "9"
+                              ? banglaDigits[Number(char)]
+                              : char,
+                          )
+                          .join("");
+                      })();
+                      return (
+                        <div
+                          key={q._id}
+                          className="relative group border border-transparent hover:border-indigo-100 hover:bg-indigo-50/10   rounded-xl transition print:border-none print:hover:border-none print:hover:bg-transparent print:p-0"
+                          style={{
+                            marginBottom: `${layoutSettings.lineSpacing}px`,
+                            breakInside: "avoid",
+                            pageBreakInside: "avoid",
+                          }}
+                        >
+                          <div className="flex items-start gap-2.5 text-inherit text-black">
+                            <span className="font-normal text-black min-w-[20px]">
+                              {serialNum}.
+                            </span>
+                            <div className="flex-1 space-y-2">
+                              {/* MCQ format */}
+                              {q.category === "MCQ" && q.mcqData && (
+                                <div className="space-y-2">
+                                  <div className="font-normal">
+                                    <InlineEditable
+                                      value={q.mcqData.questionText}
+                                      onSave={(val) =>
+                                        handleSaveQuestionEdit(q, {
+                                          mcqData: {
+                                            ...q.mcqData,
+                                            questionText: val,
+                                          },
+                                        })
+                                      }
+                                      onActivate={handleEditorActivate}
+                                      onDeactivate={handleEditorDeactivate}
+                                    />
                                   </div>
-                                )}
-                              </div>
-                            )}
-
-                            {/* CQ format */}
-                            {q.category === "Creative" && q.creativeData && (
-                              <div className="space-y-2">
-                                <div className="font-medium text-black leading-relaxed">
-                                  <InlineEditable
-                                    value={q.creativeData.stem}
-                                    onSave={(val) =>
-                                      handleSaveQuestionEdit(q, {
-                                        creativeData: {
-                                          ...q.creativeData,
-                                          stem: val,
-                                        },
-                                      })
-                                    }
-                                    onActivate={handleEditorActivate}
-                                    onDeactivate={handleEditorDeactivate}
-                                  />
-                                </div>
-                                {q.creativeData.subQuestions && (
-                                  <div className="space-y-1 text-black text-inherit">
-                                    {Object.entries(
-                                      q.creativeData.subQuestions,
-                                    ).map(([key, sq], sqIdx) => {
-                                      const letter = ["ক", "খ", "গ", "ঘ"][
-                                        sqIdx
-                                      ];
-                                      return (
-                                        <div
-                                          key={key}
-                                          className="flex justify-between items-baseline gap-2"
-                                        >
-                                          <div className="flex items-start gap-1.5 flex-1">
-                                            <span className="font-normal">
-                                              {letter})
+                                  {q.mcqData.options && (
+                                    <div className="grid grid-cols-2 gap-2 text-black text-inherit">
+                                      {q.mcqData.options.map((opt, oIdx) => {
+                                        const prefix = [
+                                          "ক",
+                                          "খ",
+                                          "গ",
+                                          "ঘ",
+                                        ][oIdx];
+                                        return (
+                                          <div
+                                            key={oIdx}
+                                            className="flex items-start gap-1"
+                                          >
+                                            <span className="font-normal text-black">
+                                              {layoutSettings.optionStyle ===
+                                              "()"
+                                                ? `(${prefix})`
+                                                : `${prefix}${layoutSettings.optionStyle}`}
                                             </span>
-                                            <div className="flex-1 text-inherit">
+                                            <div className="flex-1">
                                               <InlineEditable
-                                                value={sq.text}
+                                                value={opt}
                                                 onSave={(val) => {
+                                                  const newOpts = [
+                                                    ...q.mcqData.options,
+                                                  ];
+                                                  newOpts[oIdx] = val;
                                                   handleSaveQuestionEdit(q, {
-                                                    creativeData: {
-                                                      ...q.creativeData,
-                                                      subQuestions: {
-                                                        ...q.creativeData
-                                                          .subQuestions,
-                                                        [key]: {
-                                                          ...sq,
-                                                          text: val,
-                                                        },
-                                                      },
+                                                    mcqData: {
+                                                      ...q.mcqData,
+                                                      options: newOpts,
                                                     },
                                                   });
                                                 }}
@@ -832,69 +776,24 @@ export default function QuestionPaperPreview({
                                               />
                                             </div>
                                           </div>
-                                          <span>
-                                            <InlineEditable
-                                              value={
-                                                customSubMarks[
-                                                  `${q._id}-${sqIdx}`
-                                                ] !== undefined
-                                                  ? customSubMarks[
-                                                      `${q._id}-${sqIdx}`
-                                                    ]
-                                                  : ["১", "২", "৩", "৪"][sqIdx]
-                                              }
-                                              onSave={(val) => {
-                                                setCustomSubMarks((prev) => ({
-                                                  ...prev,
-                                                  [`${q._id}-${sqIdx}`]: val,
-                                                }));
-                                              }}
-                                              onActivate={handleEditorActivate}
-                                              onDeactivate={
-                                                handleEditorDeactivate
-                                              }
-                                              renderRichText={false}
-                                              className="text-[14px] text-black font-normal shrink-0 font-sans print:font-sans"
-                                              inline={true}
-                                              placeholder="নম্বর"
-                                            />
-                                          </span>
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
 
-                            {/* General format */}
-                            {q.category !== "MCQ" &&
-                              q.category !== "Creative" &&
-                              q.generalData && (
-                                <div className="space-y-1">
-                                  <div className="font-normal">
-                                    <InlineEditable
-                                      value={q.generalData.questionText || ""}
-                                      onSave={(val) =>
-                                        handleSaveQuestionEdit(q, {
-                                          generalData: {
-                                            ...q.generalData,
-                                            questionText: val,
-                                          },
-                                        })
-                                      }
-                                      onActivate={handleEditorActivate}
-                                      onDeactivate={handleEditorDeactivate}
-                                    />
-                                  </div>
-                                  {q.generalData.stem && (
-                                    <div className="text-black leading-relaxed">
+                              {/* CQ format */}
+                              {q.category === "Creative" &&
+                                q.creativeData && (
+                                  <div className="space-y-2">
+                                    <div className="font-medium text-black leading-relaxed">
                                       <InlineEditable
-                                        value={q.generalData.stem}
+                                        value={q.creativeData.stem}
                                         onSave={(val) =>
                                           handleSaveQuestionEdit(q, {
-                                            generalData: {
-                                              ...q.generalData,
+                                            creativeData: {
+                                              ...q.creativeData,
                                               stem: val,
                                             },
                                           })
@@ -903,17 +802,181 @@ export default function QuestionPaperPreview({
                                         onDeactivate={handleEditorDeactivate}
                                       />
                                     </div>
-                                  )}
-                                </div>
-                              )}
+                                    {q.creativeData.subQuestions && (
+                                      <div className="space-y-1 text-black text-inherit">
+                                        {Object.entries(
+                                          q.creativeData.subQuestions,
+                                        ).map(([key, sq], sqIdx) => {
+                                          const letter = [
+                                            "ক",
+                                            "খ",
+                                            "গ",
+                                            "ঘ",
+                                          ][sqIdx];
+                                          return (
+                                            <div
+                                              key={key}
+                                              className="flex justify-between items-baseline gap-2"
+                                            >
+                                              <div className="flex items-start gap-1.5 flex-1">
+                                                <span className="font-normal">
+                                                  {letter})
+                                                </span>
+                                                <div className="flex-1 text-inherit">
+                                                  <InlineEditable
+                                                    value={sq.text}
+                                                    onSave={(val) => {
+                                                      handleSaveQuestionEdit(
+                                                        q,
+                                                        {
+                                                          creativeData: {
+                                                            ...q.creativeData,
+                                                            subQuestions: {
+                                                              ...q.creativeData
+                                                                .subQuestions,
+                                                              [key]: {
+                                                                ...sq,
+                                                                text: val,
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      );
+                                                    }}
+                                                    onActivate={
+                                                      handleEditorActivate
+                                                    }
+                                                    onDeactivate={
+                                                      handleEditorDeactivate
+                                                    }
+                                                  />
+                                                </div>
+                                              </div>
+                                              <span>
+                                                <InlineEditable
+                                                  value={
+                                                    customSubMarks[
+                                                      `${q._id}-${sqIdx}`
+                                                    ] !== undefined
+                                                      ? customSubMarks[
+                                                          `${q._id}-${sqIdx}`
+                                                        ]
+                                                      : [
+                                                          "১",
+                                                          "২",
+                                                          "৩",
+                                                          "৪",
+                                                        ][sqIdx]
+                                                  }
+                                                  onSave={(val) => {
+                                                    setCustomSubMarks(
+                                                      (prev) => ({
+                                                        ...prev,
+                                                        [`${q._id}-${sqIdx}`]:
+                                                          val,
+                                                      }),
+                                                    );
+                                                  }}
+                                                  onActivate={
+                                                    handleEditorActivate
+                                                  }
+                                                  onDeactivate={
+                                                    handleEditorDeactivate
+                                                  }
+                                                  renderRichText={false}
+                                                  className="text-black font-normal shrink-0 font-sans print:font-sans"
+                                                  style={{
+                                                    fontSize: `${baseFontSize}px`,
+                                                  }}
+                                                  inline={true}
+                                                  placeholder="নম্বর"
+                                                />
+                                              </span>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                              {/* General format */}
+                              {q.category !== "MCQ" &&
+                                q.category !== "Creative" &&
+                                q.generalData && (
+                                  <div className="space-y-1">
+                                    <div className="font-normal">
+                                      <InlineEditable
+                                        value={
+                                          q.generalData.questionText || ""
+                                        }
+                                        onSave={(val) =>
+                                          handleSaveQuestionEdit(q, {
+                                            generalData: {
+                                              ...q.generalData,
+                                              questionText: val,
+                                            },
+                                          })
+                                        }
+                                        onActivate={handleEditorActivate}
+                                        onDeactivate={handleEditorDeactivate}
+                                      />
+                                    </div>
+                                    {q.generalData.stem && (
+                                      <div className="text-black leading-relaxed">
+                                        <InlineEditable
+                                          value={q.generalData.stem}
+                                          onSave={(val) =>
+                                            handleSaveQuestionEdit(q, {
+                                              generalData: {
+                                                ...q.generalData,
+                                                stem: val,
+                                              },
+                                            })
+                                          }
+                                          onActivate={handleEditorActivate}
+                                          onDeactivate={
+                                            handleEditorDeactivate
+                                          }
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Custom Height-Controlled Column Divider Lines */}
+            {layoutSettings.columns > 1 &&
+              layoutSettings.columnDivider &&
+              Array.from({ length: layoutSettings.columns - 1 }).map(
+                (_, idx) => {
+                  const leftPercent =
+                    ((idx + 1) / layoutSettings.columns) * 100;
+                  return (
+                    <div
+                      key={idx}
+                      className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 pointer-events-none print:block"
+                      style={{
+                        left: `${leftPercent}%`,
+                        height: `${layoutSettings.columnDividerHeight ?? 100}%`,
+                        width: `${layoutSettings.columnDividerWidth || 1}px`,
+                        backgroundColor:
+                          layoutSettings.columnDividerColor || "#000000",
+                        WebkitPrintColorAdjust: "exact",
+                        printColorAdjust: "exact",
+                      }}
+                    />
+                  );
+                },
+              )}
           </div>
         ) : (
           <div className="border border-dashed border-slate-200 bg-slate-50/20 p-8 rounded-2xl text-center py-12">

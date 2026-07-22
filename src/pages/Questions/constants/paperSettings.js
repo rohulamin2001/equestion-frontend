@@ -7,9 +7,9 @@ export const PAPER_SIZES_META = [
 
 export const FONT_OPTIONS = [
   { value: "SolaimanLipi", label: "সোলাইমান লিপি (SolaimanLipi)" },
-  { value: "Nikosh", label: "নিকোষ (Nikosh)" },
   { value: "SutonnyMJ", label: "সুতন্বী এমজে (SutonnyMJ)" },
   { value: "Kalpurush", label: "কালপুরুষ (Kalpurush)" },
+  { value: "Nikosh", label: "নিকোষ (Nikosh)" },
   { value: "TiroBangla", label: "তিরো বাংলা (TiroBangla)" },
   { value: "Purno", label: "পূর্ণ (Purno)" },
 ];
