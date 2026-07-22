@@ -853,7 +853,7 @@ export default function QuestionPreview() {
                 }}
               >
                 {groupedQuestions.map((group) => (
-                  <div key={group.category} className="mb-6 break-inside-auto">
+                  <div key={group.category} className=" break-inside-auto">
                     {/* Section Header */}
                     <div className="flex justify-between items-baseline font-bold text-sm text-black pt-1 print:pt-0 font-bengali select-text print:select-text">
                       <span>
