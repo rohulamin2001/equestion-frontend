@@ -30,7 +30,7 @@ export default function SettingsSidebar({
   activeFont,
 }) {
   return (
-    <div className="w-full lg:w-[360px] lg:shrink-0 print:hidden lg:sticky lg:top-1 lg:h-[calc(100vh-48px)] lg:flex lg:flex-col gap-4">
+    <div className="w-full lg:w-[360px] lg:shrink-0 print:hidden lg:sticky lg:top-0 lg:h-[calc(100vh-48px)] lg:flex lg:flex-col gap-4">
       {/* Tab Switcher */}
       <div
         className="flex p-1 rounded gap-1 shrink-0"
@@ -49,7 +49,7 @@ export default function SettingsSidebar({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-[13px] font-bold transition-all duration-200 cursor-pointer select-none relative"
+              className="flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-[13px]  transition-all duration-200 cursor-pointer select-none relative"
               style={{
                 color: isActive ? "#fff" : "rgba(109,40,217,0.7)",
                 background: "transparent",
@@ -101,7 +101,7 @@ export default function SettingsSidebar({
               {/* Attachment settings card */}
               <div className="space-y-3.5">
                 <h3
-                  className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden"
+                  className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans  relative overflow-hidden"
                   style={{
                     background:
                       "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)",
@@ -174,7 +174,7 @@ export default function SettingsSidebar({
               {/* Metadata header toggles */}
               <div className="space-y-3.5 pt-5">
                 <h3
-                  className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden"
+                  className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans  relative overflow-hidden"
                   style={{
                     background:
                       "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)",
@@ -243,7 +243,7 @@ export default function SettingsSidebar({
               {/* Layout controls */}
               <div className="space-y-3.5 pt-5">
                 <h3
-                  className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden"
+                  className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans relative overflow-hidden"
                   style={{
                     background:
                       "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)",

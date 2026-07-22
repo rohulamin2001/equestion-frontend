@@ -813,13 +813,13 @@ export default function QuestionPaperPreview({
                                                       ]
                                                     : layoutSettings.optionStyle ===
                                                         "()"
-                                                      ? `(${prefix})`
+                                                      ? `(\u200A${prefix}\u200A)`
                                                       : layoutSettings.optionStyle ===
                                                           "."
                                                         ? `${prefix}.`
                                                         : layoutSettings.optionStyle ===
                                                             ")"
-                                                          ? `${prefix})`
+                                                          ? `${prefix}\u200A)`
                                                           : `${prefix}${layoutSettings.optionStyle}`
                                                 }
                                                 onSave={(val) =>
@@ -952,13 +952,13 @@ export default function QuestionPaperPreview({
                                                         ]
                                                       : layoutSettings.optionStyle ===
                                                           "()"
-                                                        ? `(${letter})`
+                                                        ? `(\u200A${letter}\u200A)`
                                                         : layoutSettings.optionStyle ===
                                                             "."
                                                           ? `${letter}.`
                                                           : layoutSettings.optionStyle ===
                                                               ")"
-                                                            ? `${letter})`
+                                                            ? `${letter}\u200A)`
                                                             : `${letter}${layoutSettings.optionStyle}`
                                                   }
                                                   onSave={(val) =>
