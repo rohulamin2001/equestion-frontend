@@ -474,7 +474,7 @@ export default function SettingsSidebar({
                         border: "1px solid rgba(167,139,250,0.15)",
                       }}
                     >
-                      {/* Question Bottom Gap slider */}
+                      {/* Question Bottom Gap slider (Always Visible) */}
                       <div className="space-y-1">
                         <div className="flex justify-between text-[12px] tracking-wide font-semibold text-slate-700 font-sans ">
                           <span>প্রশ্নের নিচের গ্যাপ</span>
@@ -498,7 +498,7 @@ export default function SettingsSidebar({
                         />
                       </div>
 
-                      {/* Line Height slider */}
+                      {/* Line Height slider (Always Visible) */}
                       <div className="space-y-1">
                         <div className="flex justify-between text-[12px] font-semibold text-slate-700 font-sans tracking-wide">
                           <span>লাইন হাইট</span>
@@ -523,33 +523,33 @@ export default function SettingsSidebar({
                         />
                       </div>
 
-                      {/* Column Gap slider */}
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-[12px] font-semibold text-slate-700 font-sans tracking-wide">
-                          <span>কলামের গ্যাপ</span>
-                          <span className="font-sans text-[11px] text-slate-500">
-                            {layoutSettings.columnGap}px
-                          </span>
-                        </div>
-                        <input
-                          type="range"
-                          min="5"
-                          max="40"
-                          value={layoutSettings.columnGap}
-                          onChange={(e) =>
-                            updateSettingField(
-                              null,
-                              "columnGap",
-                              parseInt(e.target.value),
-                            )
-                          }
-                          className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600 mt-1"
-                        />
-                      </div>
-
-                      {/* Column Divider Controls (Height, Thickness & Color) */}
+                      {/* Column Divider Controls (Only Visible when Column Divider is ON) */}
                       {layoutSettings.columnDivider && (
                         <>
+                          {/* Column Gap slider */}
+                          <div className="space-y-1 pt-1.5 border-t border-slate-100">
+                            <div className="flex justify-between text-[12px] font-semibold text-slate-700 font-sans tracking-wide">
+                              <span>কলামের গ্যাপ</span>
+                              <span className="font-sans text-[11px] text-slate-500">
+                                {layoutSettings.columnGap}px
+                              </span>
+                            </div>
+                            <input
+                              type="range"
+                              min="5"
+                              max="40"
+                              value={layoutSettings.columnGap}
+                              onChange={(e) =>
+                                updateSettingField(
+                                  null,
+                                  "columnGap",
+                                  parseInt(e.target.value),
+                                )
+                              }
+                              className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600 mt-1"
+                            />
+                          </div>
+
                           {/* Height / Length Slider */}
                           <div className="space-y-1 pt-1.5 border-t border-slate-100">
                             <div className="flex justify-between text-[12px] font-semibold text-slate-700 font-sans tracking-wide">

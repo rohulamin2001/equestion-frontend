@@ -934,7 +934,7 @@ export default function QuestionPaperPreview({
 
                               {/* CQ format */}
                               {q.category === "Creative" && q.creativeData && (
-                                <div className="space-y-2">
+                                <div className="space-y-1">
                                   <div className="font-medium text-black">
                                     <InlineEditable
                                       value={q.creativeData.stem}
@@ -952,7 +952,7 @@ export default function QuestionPaperPreview({
                                     />
                                   </div>
                                   {q.creativeData.subQuestions && (
-                                    <div className="space-y-1 text-black text-inherit">
+                                    <div className="space-y-0.5 text-black text-inherit">
                                       {Object.entries(
                                         q.creativeData.subQuestions,
                                       ).map(([key, sq], sqIdx) => {
