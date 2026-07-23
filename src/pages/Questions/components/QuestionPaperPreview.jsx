@@ -635,7 +635,7 @@ export default function QuestionPaperPreview({
           )}
 
           {/* Separator Line */}
-          <hr className="border-t border-black" style={{ margin: 0 }} />
+          <hr className="border-t border-slate-300" style={{ margin: 0 }} />
 
           {/* Instructions Row */}
           {layoutSettings.metadata.instructions && (
@@ -676,7 +676,7 @@ export default function QuestionPaperPreview({
                 <div key={group.category} className=" break-inside-auto">
                   {/* Section Header */}
                   <div
-                    className="flex justify-between items-baseline font-bold text-black pt-1 print:pt-0 font-bengali select-text print:select-text"
+                    className="flex justify-between items-baseline font-bold text-black  print:pt-0 font-bengali select-text print:select-text"
                     style={{ fontSize: `${baseFontSize}px` }}
                   >
                     <span>
