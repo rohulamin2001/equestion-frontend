@@ -904,6 +904,7 @@ export default function QuestionPaperPreview({
                                             <div className="flex-1">
                                               <InlineEditable
                                                 value={opt}
+                                                inline={false}
                                                 onSave={(val) => {
                                                   const newOpts = [
                                                     ...q.mcqData.options,
@@ -1045,6 +1046,7 @@ export default function QuestionPaperPreview({
                                               <div className="flex-1 text-inherit">
                                                 <InlineEditable
                                                   value={sq.text}
+                                                  inline={false}
                                                   onSave={(val) => {
                                                     handleSaveQuestionEdit(q, {
                                                       creativeData: {
@@ -1119,6 +1121,7 @@ export default function QuestionPaperPreview({
                                     <div className="font-normal">
                                       <InlineEditable
                                         value={q.generalData.questionText || ""}
+                                        inline={false}
                                         onSave={(val) =>
                                           handleSaveQuestionEdit(q, {
                                             generalData: {
@@ -1135,6 +1138,7 @@ export default function QuestionPaperPreview({
                                       <div className="text-black">
                                         <InlineEditable
                                           value={q.generalData.stem}
+                                          inline={false}
                                           onSave={(val) =>
                                             handleSaveQuestionEdit(q, {
                                               generalData: {
