@@ -580,7 +580,7 @@ export default function SettingsSidebar({
                             <div className="flex justify-between text-[12px] font-semibold text-slate-700 font-sans tracking-wide">
                               <span>ডিভাইডার থিকনেস (সাইজ)</span>
                               <span className="font-sans text-[11px] text-slate-500">
-                                {layoutSettings.columnDividerWidth || 1}px
+                                {layoutSettings.columnDividerWidth ?? 0.25}px
                               </span>
                             </div>
                             <input
@@ -588,7 +588,7 @@ export default function SettingsSidebar({
                               min="0.25"
                               max="8"
                               step="0.25"
-                              value={layoutSettings.columnDividerWidth || 1}
+                              value={layoutSettings.columnDividerWidth ?? 0.25}
                               onChange={(e) =>
                                 updateSettingField(
                                   null,
@@ -607,7 +607,7 @@ export default function SettingsSidebar({
                               <input
                                 type="color"
                                 value={
-                                  layoutSettings.columnDividerColor || "#000000"
+                                  layoutSettings.columnDividerColor || "#cbd5e1"
                                 }
                                 onChange={(e) =>
                                   updateSettingField(
@@ -639,7 +639,7 @@ export default function SettingsSidebar({
                                   }
                                   className={`h-4 w-4 rounded-full border transition-all ${
                                     (layoutSettings.columnDividerColor ||
-                                      "#000000") === item.color
+                                      "#cbd5e1") === item.color
                                       ? "ring-2 ring-violet-500 ring-offset-1 scale-110"
                                       : "border-slate-200 hover:scale-105"
                                   }`}

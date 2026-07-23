@@ -1174,9 +1174,9 @@ export default function QuestionPaperPreview({
                       style={{
                         left: `${leftPercent}%`,
                         height: `${layoutSettings.columnDividerHeight ?? 100}%`,
-                        width: `${layoutSettings.columnDividerWidth || 1}px`,
+                        width: `${layoutSettings.columnDividerWidth ?? 0.25}px`,
                         backgroundColor:
-                          layoutSettings.columnDividerColor || "#000000",
+                          layoutSettings.columnDividerColor || "#cbd5e1",
                         WebkitPrintColorAdjust: "exact",
                         printColorAdjust: "exact",
                       }}
