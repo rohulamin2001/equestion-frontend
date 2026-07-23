@@ -14,6 +14,7 @@ export default function MobileSettingsDrawer({
   onOpenLogoSettings,
   onOpenHeaderSettings,
   onOpenFooterSettings,
+  onOpenWatermarkSettings,
   handlePrint,
   activeFont,
 }) {
@@ -30,8 +31,7 @@ export default function MobileSettingsDrawer({
             onClick={onClose}
             className="fixed inset-0 z-[160] print:hidden lg:hidden"
             style={{
-              background: "rgba(15,10,40,0.5)",
-              backdropFilter: "blur(4px)",
+              background: "rgba(15,10,40,0.45)",
             }}
           />
 
@@ -46,7 +46,10 @@ export default function MobileSettingsDrawer({
               damping: 26,
               mass: 0.8,
             }}
-            className="fixed top-0 right-0 h-full w-full sm:w-[380px] z-[170] print:hidden flex flex-col bg-slate-50 text-slate-800 backdrop-blur-2xl shadow-2xl overflow-hidden border-l border-slate-200 lg:hidden"
+            className="fixed top-0 right-0 h-full w-[88vw] max-w-[380px] z-[170] print:hidden flex flex-col bg-slate-50 text-slate-800 shadow-2xl overflow-hidden lg:hidden"
+            style={{
+              boxShadow: "-12px 0 35px -5px rgba(0,0,0,0.18)",
+            }}
           >
             {/* Header Bar */}
             <div
@@ -95,6 +98,10 @@ export default function MobileSettingsDrawer({
                 onOpenFooterSettings={() => {
                   onClose();
                   onOpenFooterSettings();
+                }}
+                onOpenWatermarkSettings={() => {
+                  onClose();
+                  onOpenWatermarkSettings();
                 }}
                 handlePrint={() => {
                   onClose();

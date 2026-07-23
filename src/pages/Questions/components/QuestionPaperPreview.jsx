@@ -103,7 +103,7 @@ export default function QuestionPaperPreview({
       </div>
 
       <div
-        className={`question-paper-container ${layoutSettings.fontFamily === "English" ? "is-english" : `font-family-${activeFont}`} bg-white text-black border border-slate-200/60 p-8 shadow-sm print:border-none print:shadow-none print:p-0 select-none print:select-text`}
+        className={`question-paper-container relative ${layoutSettings.fontFamily === "English" ? "is-english" : `font-family-${activeFont}`} bg-white text-black border border-slate-200/60 p-8 shadow-sm print:border-none print:shadow-none print:p-0 select-none print:select-text`}
         style={{
           fontFamily:
             layoutSettings.fontFamily === "English"
@@ -116,6 +116,46 @@ export default function QuestionPaperPreview({
           paddingRight: `${layoutSettings.pagePaddingRight !== undefined ? layoutSettings.pagePaddingRight : 32}px`,
         }}
       >
+        {/* Watermark Overlay */}
+        {layoutSettings.branding?.watermark && (
+          <div
+            className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden z-0 select-none"
+            aria-hidden="true"
+          >
+            {layoutSettings.watermarkSettings?.type === "image" &&
+            layoutSettings.watermarkSettings?.imageUrl ? (
+              <img
+                src={layoutSettings.watermarkSettings.imageUrl}
+                alt="Watermark"
+                className="max-w-none transition-all duration-200"
+                style={{
+                  width: `${layoutSettings.watermarkSettings?.imageWidth || 200}px`,
+                  opacity:
+                    (layoutSettings.watermarkSettings?.opacity ?? 15) / 100,
+                  transform: `rotate(${layoutSettings.watermarkSettings?.rotation ?? -30}deg)`,
+                }}
+              />
+            ) : (
+              <div
+                className="whitespace-nowrap font-bold tracking-wider text-center transition-all duration-200"
+                style={{
+                  fontSize: `${layoutSettings.watermarkSettings?.fontSize || 48}px`,
+                  color: layoutSettings.watermarkSettings?.color || "#94a3b8",
+                  opacity:
+                    (layoutSettings.watermarkSettings?.opacity ?? 15) / 100,
+                  transform: `rotate(${layoutSettings.watermarkSettings?.rotation ?? -30}deg)`,
+                  fontFamily:
+                    layoutSettings.fontFamily === "English"
+                      ? "Outfit, sans-serif"
+                      : `'${activeFont}', 'SolaimanLipi', sans-serif`,
+                }}
+              >
+                {layoutSettings.watermarkSettings?.text ||
+                  "গভর্নমেন্ট হাই স্কুল"}
+              </div>
+            )}
+          </div>
+        )}
         {layoutSettings.branding.header && (
           <div
             className="w-full flex items-center mb-6 overflow-hidden select-none print:select-text"
@@ -895,9 +935,10 @@ export default function QuestionPaperPreview({
                               {/* CQ format */}
                               {q.category === "Creative" && q.creativeData && (
                                 <div className="space-y-2">
-                                  <div className="font-medium text-black">
+                                  <div className="font-medium text-black leading-relaxed">
                                     <InlineEditable
                                       value={q.creativeData.stem}
+                                      inline={false}
                                       onSave={(val) =>
                                         handleSaveQuestionEdit(q, {
                                           creativeData: {

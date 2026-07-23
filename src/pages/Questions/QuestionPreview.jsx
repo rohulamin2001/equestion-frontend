@@ -8,6 +8,7 @@ import MobileSettingsDrawer from "./components/MobileSettingsDrawer.jsx";
 import PageSetupDrawer from "./components/PageSetupDrawer.jsx";
 import QuestionPaperPreview from "./components/QuestionPaperPreview.jsx";
 import SettingsSidebar from "./components/SettingsSidebar.jsx";
+import WatermarkSettingsDrawer from "./components/WatermarkSettingsDrawer.jsx";
 import { FONT_OPTIONS } from "./constants/paperSettings.js";
 import { useQuestionPreview } from "./hook/useQuestionPreview";
 
@@ -19,6 +20,7 @@ export default function QuestionPreview() {
   const [isLogoSettingsOpen, setIsLogoSettingsOpen] = useState(false);
   const [isHeaderSettingsOpen, setIsHeaderSettingsOpen] = useState(false);
   const [isFooterSettingsOpen, setIsFooterSettingsOpen] = useState(false);
+  const [isWatermarkSettingsOpen, setIsWatermarkSettingsOpen] = useState(false);
   const [isMobileSettingsOpen, setIsMobileSettingsOpen] = useState(false);
   const [isDraggingLogo, setIsDraggingLogo] = useState(false);
 
@@ -155,6 +157,7 @@ export default function QuestionPreview() {
           onOpenLogoSettings={() => setIsLogoSettingsOpen(true)}
           onOpenHeaderSettings={() => setIsHeaderSettingsOpen(true)}
           onOpenFooterSettings={() => setIsFooterSettingsOpen(true)}
+          onOpenWatermarkSettings={() => setIsWatermarkSettingsOpen(true)}
           handlePrint={handlePrint}
           activeFont={activeFont}
         />
@@ -172,6 +175,7 @@ export default function QuestionPreview() {
         onOpenLogoSettings={() => setIsLogoSettingsOpen(true)}
         onOpenHeaderSettings={() => setIsHeaderSettingsOpen(true)}
         onOpenFooterSettings={() => setIsFooterSettingsOpen(true)}
+        onOpenWatermarkSettings={() => setIsWatermarkSettingsOpen(true)}
         handlePrint={handlePrint}
         activeFont={activeFont}
       />
@@ -215,6 +219,14 @@ export default function QuestionPreview() {
         layoutSettings={layoutSettings}
         updateSettingField={updateSettingField}
         activeFont={activeFont}
+      />
+
+      {/* Watermark Settings Drawer */}
+      <WatermarkSettingsDrawer
+        isOpen={isWatermarkSettingsOpen}
+        onClose={() => setIsWatermarkSettingsOpen(false)}
+        layoutSettings={layoutSettings}
+        updateSettingField={updateSettingField}
       />
     </div>
   );

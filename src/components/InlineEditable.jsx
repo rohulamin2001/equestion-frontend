@@ -148,7 +148,7 @@ function InlineEditable({
       onKeyDown={handleKeyDown}
       style={style}
       className={cn(
-        "outline-none border border-indigo-500 rounded px-1 -mx-1 bg-white text-slate-800",
+        "outline-none border border-indigo-500 rounded px-1 -mx-1 bg-white text-slate-800 [&_*]:inline [&_p]:inline [&_p]:m-0 [&_p]:p-0 break-words",
         inline ? "inline" : "block min-h-[1.2em]",
         className,
       )}

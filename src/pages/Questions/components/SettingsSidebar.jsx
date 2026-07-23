@@ -26,6 +26,7 @@ export default function SettingsSidebar({
   onOpenLogoSettings,
   onOpenHeaderSettings,
   onOpenFooterSettings,
+  onOpenWatermarkSettings,
   handlePrint,
   activeFont,
   isMobileDrawer = false,
@@ -152,7 +153,7 @@ export default function SettingsSidebar({
                         border: "1px solid rgba(167,139,250,0.18)",
                       }}
                     >
-                      <span className="text-[14px] font-semibold text-slate-700 font-sans tracking-tight">
+                      <span className="text-[14px]  text-slate-700 font-sans tracking-tight">
                         {opt.label}
                       </span>
                       <button
@@ -221,7 +222,7 @@ export default function SettingsSidebar({
                         border: "1px solid rgba(167,139,250,0.18)",
                       }}
                     >
-                      <span className="text-[14px] font-semibold text-slate-700 font-sans tracking-tight">
+                      <span className="text-[14px]  text-slate-700 font-sans tracking-tight">
                         {opt.label}
                       </span>
                       <button
@@ -279,7 +280,7 @@ export default function SettingsSidebar({
                       border: "1px solid rgba(167,139,250,0.2)",
                     }}
                   >
-                    <label className="text-[12px] font-extrabold text-slate-600 block font-bengali">
+                    <label className="text-[12px] font-extrabold text-slate-700 block font-bengali">
                       কাগজের সাইজ
                     </label>
                     <div className="grid grid-cols-4 gap-1.5">
@@ -359,7 +360,7 @@ export default function SettingsSidebar({
                       border: "1px solid rgba(167,139,250,0.2)",
                     }}
                   >
-                    <label className="text-[12px] font-extrabold text-slate-600 block font-bengali">
+                    <label className="text-[12px] font-extrabold text-slate-700 block font-bengali">
                       কলাম বিন্যাস
                     </label>
                     <div className="grid grid-cols-3 gap-1.5">
@@ -436,7 +437,7 @@ export default function SettingsSidebar({
                     }}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[13px] font-bold text-slate-700 font-bengali">
+                      <span className="text-[12px] font-bold text-slate-700 font-bengali">
                         কলাম ডিভাইডার
                       </span>
                       <button
@@ -475,7 +476,7 @@ export default function SettingsSidebar({
                     >
                       {/* Question Bottom Gap slider */}
                       <div className="space-y-1">
-                        <div className="flex justify-between text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
+                        <div className="flex justify-between text-[12px] tracking-wide font-semibold text-slate-700 font-sans ">
                           <span>প্রশ্নের নিচের গ্যাপ</span>
                           <span className="font-sans text-[11px] text-slate-500">
                             {layoutSettings.lineSpacing}px
@@ -499,7 +500,7 @@ export default function SettingsSidebar({
 
                       {/* Line Height slider */}
                       <div className="space-y-1">
-                        <div className="flex justify-between text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
+                        <div className="flex justify-between text-[12px] font-semibold text-slate-700 font-sans tracking-wide">
                           <span>লাইন হাইট</span>
                           <span className="font-sans text-[11px] text-slate-500">
                             {layoutSettings.lineHeight ?? 1.5}
@@ -524,7 +525,7 @@ export default function SettingsSidebar({
 
                       {/* Column Gap slider */}
                       <div className="space-y-1">
-                        <div className="flex justify-between text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
+                        <div className="flex justify-between text-[12px] font-semibold text-slate-700 font-sans tracking-wide">
                           <span>কলামের গ্যাপ</span>
                           <span className="font-sans text-[11px] text-slate-500">
                             {layoutSettings.columnGap}px
@@ -551,7 +552,7 @@ export default function SettingsSidebar({
                         <>
                           {/* Height / Length Slider */}
                           <div className="space-y-1 pt-1.5 border-t border-slate-100">
-                            <div className="flex justify-between text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
+                            <div className="flex justify-between text-[12px] font-semibold text-slate-700 font-sans tracking-wide">
                               <span>ডিভাইডারের দৈর্ঘ্য / হাইট</span>
                               <span className="font-sans text-[11px] text-slate-500">
                                 {layoutSettings.columnDividerHeight ?? 100}%
@@ -576,7 +577,7 @@ export default function SettingsSidebar({
 
                           {/* Thickness Slider */}
                           <div className="space-y-1 pt-1.5 border-t border-slate-100">
-                            <div className="flex justify-between text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
+                            <div className="flex justify-between text-[12px] font-semibold text-slate-700 font-sans tracking-wide">
                               <span>ডিভাইডার থিকনেস (সাইজ)</span>
                               <span className="font-sans text-[11px] text-slate-500">
                                 {layoutSettings.columnDividerWidth || 1}px
@@ -601,7 +602,7 @@ export default function SettingsSidebar({
 
                           {/* Color & Opacity Picker */}
                           <div className="space-y-1.5 pt-1.5 border-t border-slate-100">
-                            <div className="flex justify-between items-center text-[11.5px] font-semibold text-slate-600 font-sans tracking-tight">
+                            <div className="flex justify-between items-center text-[12px] font-semibold text-slate-700 font-sans tracking-wide">
                               <span>ডিভাইডার কালার</span>
                               <input
                                 type="color"
@@ -661,7 +662,7 @@ export default function SettingsSidebar({
                       border: "1px solid rgba(167,139,250,0.2)",
                     }}
                   >
-                    <label className="text-[10px] font-bold text-slate-500 block">
+                    <label className="text-[12px] font-semibold text-slate-700 block">
                       বাংলা ফন্ট
                     </label>
                     <DropdownMenu>
@@ -712,7 +713,7 @@ export default function SettingsSidebar({
                       border: "1px solid rgba(167,139,250,0.2)",
                     }}
                   >
-                    <label className="text-[10px] font-bold text-slate-500 block">
+                    <label className="text-[12px] font-semibold text-slate-700 block">
                       অপশন স্টাইল
                     </label>
                     <div className="grid grid-cols-4 gap-1">
@@ -760,7 +761,7 @@ export default function SettingsSidebar({
                       border: "1px solid rgba(167,139,250,0.2)",
                     }}
                   >
-                    <div className="flex justify-between text-[12px] font-bold text-slate-600 font-bengali">
+                    <div className="flex justify-between text-[12px] font-semibold text-slate-700 font-bengali">
                       <span>ফন্ট সাইজ</span>
                       <span className="font-sans">
                         {layoutSettings.fontSize}px
@@ -855,6 +856,8 @@ export default function SettingsSidebar({
                                 onOpenHeaderSettings();
                               } else if (opt.field === "footer") {
                                 onOpenFooterSettings();
+                              } else if (opt.field === "watermark") {
+                                onOpenWatermarkSettings();
                               }
                             }}
                             className="p-1.5 rounded-lg transition-all duration-200 hover:bg-violet-600/10 active:scale-95 cursor-pointer text-violet-600/70 hover:text-violet-700"

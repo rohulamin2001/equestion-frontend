@@ -116,6 +116,16 @@ const DEFAULT_SETTINGS = {
     italic: false,
     fontFamily: "Ekush",
   },
+  watermarkSettings: {
+    type: "text",
+    text: "গভর্নমেন্ট হাই স্কুল",
+    imageUrl: null,
+    opacity: 15,
+    fontSize: 48,
+    imageWidth: 200,
+    rotation: -30,
+    color: "#94a3b8",
+  },
 };
 
 export function useQuestionPreview() {
@@ -179,6 +189,10 @@ export function useQuestionPreview() {
         footerSettings: {
           ...DEFAULT_SETTINGS.footerSettings,
           ...(dbActiveSet.settings.footerSettings || {}),
+        },
+        watermarkSettings: {
+          ...DEFAULT_SETTINGS.watermarkSettings,
+          ...(dbActiveSet.settings.watermarkSettings || {}),
         },
       };
       setLayoutSettings(mergedSettings);
