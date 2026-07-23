@@ -935,7 +935,7 @@ export default function QuestionPaperPreview({
                               {/* CQ format */}
                               {q.category === "Creative" && q.creativeData && (
                                 <div className="space-y-2">
-                                  <div className="font-medium text-black leading-relaxed">
+                                  <div className="font-medium text-black">
                                     <InlineEditable
                                       value={q.creativeData.stem}
                                       inline={false}

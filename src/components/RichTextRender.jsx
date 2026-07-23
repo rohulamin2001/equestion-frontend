@@ -89,7 +89,7 @@ export default function RichTextRender({
   if (inline) {
     return (
       <span
-        className={`inline [&_*]:inline [&_p]:inline [&_p]:m-0 [&_p]:p-0 leading-relaxed text-inherit select-text break-words jodit-rendered-content ${className}`}
+        className={`inline [&_*]:inline [&_p]:inline [&_p]:m-0 [&_p]:p-0 text-inherit select-text break-words jodit-rendered-content ${className}`}
         dangerouslySetInnerHTML={{ __html: renderedContent }}
         {...props}
       />
@@ -98,7 +98,7 @@ export default function RichTextRender({
 
   return (
     <div
-      className={`prose max-w-none dark:prose-invert leading-relaxed text-inherit select-text break-words jodit-rendered-content ${className}`}
+      className={`prose max-w-none dark:prose-invert text-inherit select-text break-words jodit-rendered-content ${className}`}
       dangerouslySetInnerHTML={{ __html: renderedContent }}
       {...props}
     />
