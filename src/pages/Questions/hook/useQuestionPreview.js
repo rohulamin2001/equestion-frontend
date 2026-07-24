@@ -71,9 +71,9 @@ const DEFAULT_SETTINGS = {
   metadata: {
     className: true,
     subjectName: true,
-    chapterName: false,
-    setCode: true,
-    programName: true,
+    chapterName: true,
+    setCode: false,
+    programName: false,
     instructions: true,
   },
   branding: {

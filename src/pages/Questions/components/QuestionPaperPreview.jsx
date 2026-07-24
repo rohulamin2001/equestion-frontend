@@ -1156,6 +1156,101 @@ export default function QuestionPaperPreview({
                                 )}
                             </div>
                           </div>
+                          {/* CQ Answer Sheet Attachment (Outer Left Margin Alignment) */}
+                          {layoutSettings.attachments.answerSheet &&
+                            q.category === "Creative" &&
+                            q.creativeData?.subQuestions && (
+                              <div className="mt-2.5 pt-1.5 space-y-1.5 border-t border-dashed border-slate-300">
+                                <div className="font-bold text-black text-xs sm:text-sm">
+                                  উত্তরপত্র (
+                                  {customSerials[q._id] || `${serialNum}নং`}{" "}
+                                  প্রশ্ন)
+                                </div>
+                                <div className="space-y-1 text-black text-inherit">
+                                  {Object.entries(
+                                    q.creativeData.subQuestions,
+                                  ).map(([key, sq], sqIdx) => {
+                                    const letter = ["ক", "খ", "গ", "ঘ"][sqIdx];
+                                    const ansText =
+                                      sq.answer || sq.suggestedAnswer || "";
+                                    return (
+                                      <div
+                                        key={key}
+                                        className="flex items-start gap-2"
+                                      >
+                                        <span className="bg-slate-800 text-white text-[11px] font-bold px-2 py-1 rounded-tl-[4px] rounded-br-[4px] rounded-tr-none rounded-bl-none leading-none shrink-0 mt-0.5 select-none font-sans min-w-[20px] text-center inline-flex items-center justify-center">
+                                          {letter}
+                                        </span>
+                                        <div className="flex-1 text-inherit">
+                                          <InlineEditable
+                                            value={ansText}
+                                            inline={false}
+                                            placeholder={`${letter} এর উত্তর লিখুন...`}
+                                            onSave={(val) => {
+                                              handleSaveQuestionEdit(q, {
+                                                creativeData: {
+                                                  ...q.creativeData,
+                                                  subQuestions: {
+                                                    ...q.creativeData
+                                                      .subQuestions,
+                                                    [key]: {
+                                                      ...sq,
+                                                      answer: val,
+                                                    },
+                                                  },
+                                                },
+                                              });
+                                            }}
+                                            onActivate={handleEditorActivate}
+                                            onDeactivate={
+                                              handleEditorDeactivate
+                                            }
+                                          />
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+
+                          {/* General Answer Sheet Attachment (Outer Left Margin Alignment) */}
+                          {layoutSettings.attachments.answerSheet &&
+                            q.category !== "MCQ" &&
+                            q.category !== "Creative" && (
+                              <div className=" text-black font-normal flex items-start gap-2">
+                                <span className="font-bold shrink-0 min-w-[20px]">
+                                  উত্তর:
+                                </span>
+                                <div className="flex-1">
+                                  <InlineEditable
+                                    value={
+                                      q.generalData?.suggestedAnswer ||
+                                      q.generalData?.answer ||
+                                      q.suggestedAnswer ||
+                                      q.answer ||
+                                      q.explanation ||
+                                      ""
+                                    }
+                                    inline={false}
+                                    placeholder="উত্তর লিখুন..."
+                                    onSave={(val) =>
+                                      handleSaveQuestionEdit(q, {
+                                        generalData: {
+                                          ...(q.generalData || {}),
+                                          suggestedAnswer: val,
+                                          answer: val,
+                                        },
+                                        suggestedAnswer: val,
+                                        answer: val,
+                                      })
+                                    }
+                                    onActivate={handleEditorActivate}
+                                    onDeactivate={handleEditorDeactivate}
+                                  />
+                                </div>
+                              </div>
+                            )}
                         </div>
                       );
                     })}
