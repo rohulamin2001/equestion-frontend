@@ -1,6 +1,7 @@
 import { useAuth, useClerk, useReverification, useUser } from "@clerk/react";
 import { useQuery } from "@tanstack/react-query";
 import {
+  Calendar,
   Camera,
   CheckCircle2,
   ChevronDown,
@@ -665,52 +666,52 @@ export default function Profile() {
     <div className="space-y-6 w-full max-w-6xl mx-auto">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight font-sans">
+        <h1 className="text-base sm:text-2xl font-bold text-slate-900 tracking-tight font-sans">
           প্রোফাইল সেটিংস
         </h1>
-        <p className="text-sm text-slate-500 font-bengali">
+        <p className="text-[11px] sm:text-sm text-slate-500 font-bengali mt-0.5">
           আপনার ব্যক্তিগত ও প্রাতিষ্ঠানিক তথ্য এবং অ্যাকাউন্ট নিরাপত্তা পরিচালনা
           করুন
         </p>
       </div>
 
       {/* Tab Selector */}
-      <div className="flex border-b border-slate-200 gap-6">
+      <div className="flex border-b border-slate-200 gap-2 sm:gap-6 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveTab("info")}
-          className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all font-bengali ${
+          className={`pb-2.5 sm:pb-3 text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 border-b-2 transition-all font-bengali whitespace-nowrap shrink-0 ${
             activeTab === "info"
               ? "border-indigo-600 text-indigo-600"
               : "border-transparent text-slate-500 hover:text-slate-900"
           }`}
         >
           {!isSubscriber || isTeacher ? (
-            <GraduationCap className="h-4 w-4" />
+            <GraduationCap className="size-3.5 sm:size-4" />
           ) : (
-            <Landmark className="h-4 w-4" />
+            <Landmark className="size-3.5 sm:size-4" />
           )}
           প্রোফাইল তথ্য
         </button>
         <button
           onClick={() => setActiveTab("security")}
-          className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all font-bengali ${
+          className={`pb-2.5 sm:pb-3 text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 border-b-2 transition-all font-bengali whitespace-nowrap shrink-0 ${
             activeTab === "security"
               ? "border-indigo-600 text-indigo-600"
               : "border-transparent text-slate-500 hover:text-slate-900"
           }`}
         >
-          <KeyRound className="h-4 w-4" />
+          <KeyRound className="size-3.5 sm:size-4" />
           নিরাপত্তা ও অ্যাকাউন্ট
         </button>
         <button
           onClick={() => setActiveTab("subscriptions")}
-          className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all font-bengali ${
+          className={`pb-2.5 sm:pb-3 text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 border-b-2 transition-all font-bengali whitespace-nowrap shrink-0 ${
             activeTab === "subscriptions"
               ? "border-indigo-600 text-indigo-600"
               : "border-transparent text-slate-500 hover:text-slate-900"
           }`}
         >
-          <ShieldCheck className="h-4 w-4" />
+          <ShieldCheck className="size-3.5 sm:size-4" />
           সাবস্ক্রিপশন
         </button>
       </div>
@@ -1332,15 +1333,15 @@ export default function Profile() {
               )}
 
               {/* Form Save Button */}
-              <div className="flex justify-end pt-4">
+              <div className="flex justify-center pt-4 w-full">
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white shadow-lg transition-all duration-300 ${
+                  className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white shadow-lg transition-all duration-300 ${
                     isTeacher
                       ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/25"
                       : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/25"
-                  } disabled:opacity-50`}
+                  } disabled:opacity-50 cursor-pointer`}
                 >
                   {loading ? (
                     <>
@@ -1369,18 +1370,18 @@ export default function Profile() {
             className="space-y-6"
           >
             {/* Custom Password Update Card */}
-            <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-              <div className="flex items-center justify-between border-b pb-2">
-                <h3 className="text-base font-bold text-slate-800 flex items-center gap-2 font-bengali">
-                  <KeyRound className="h-5 w-5 text-indigo-500" />
+            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b pb-2 gap-2">
+                <h3 className="text-xs sm:text-base font-bold text-slate-800 flex items-center gap-1.5 sm:gap-2 font-bengali">
+                  <KeyRound className="size-4 sm:size-5 text-indigo-500 shrink-0" />
                   পাসওয়ার্ড পরিবর্তন করুন
                 </h3>
                 <button
                   type="button"
                   onClick={() => setShowPasswordForm(!showPasswordForm)}
-                  className="text-xs font-bold text-indigo-600 hover:text-indigo-850 px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-all duration-200"
+                  className="text-[11px] sm:text-xs font-bold text-indigo-600 hover:text-indigo-850 px-2 sm:px-3 py-1 rounded-lg hover:bg-indigo-50 transition-all duration-200 shrink-0"
                 >
-                  {showPasswordForm ? "বাতিল করুন" : "পাসওয়ার্ড আপডেট করুন"}
+                  {showPasswordForm ? "বাতিল করুন" : "আপডেট করুন"}
                 </button>
               </div>
 
@@ -1498,52 +1499,54 @@ export default function Profile() {
                     </div>
                   </div>
 
-                  <button
-                    type="submit"
-                    disabled={passwordLoading}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-500/20 transition-all duration-200 disabled:opacity-50"
-                  >
-                    {passwordLoading ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        আপডেট হচ্ছে...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="h-4 w-4" />
-                        পাসওয়ার্ড আপডেট করুন
-                      </>
-                    )}
-                  </button>
+                  <div className="flex justify-center pt-2 w-full">
+                    <button
+                      type="submit"
+                      disabled={passwordLoading}
+                      className="flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-500/20 transition-all duration-200 disabled:opacity-50 cursor-pointer"
+                    >
+                      {passwordLoading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          আপডেট হচ্ছে...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-4 w-4" />
+                          পাসওয়ার্ড আপডেট করুন
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </form>
               )}
             </div>
 
             {/* Custom 2-Factor Authentication Card */}
-            <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-              <h3 className="text-base font-bold text-slate-800 flex items-center gap-2 border-b pb-2 font-bengali">
-                <ShieldCheck className="h-5 w-5 text-indigo-500" />
+            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+              <h3 className="text-xs sm:text-base font-bold text-slate-800 flex items-center gap-1.5 sm:gap-2 border-b pb-2 font-bengali">
+                <ShieldCheck className="size-4 sm:size-5 text-indigo-500 shrink-0" />
                 ২-ফ্যাক্টর অথেনটিকেশন (2FA)
               </h3>
 
               <div className="space-y-4 font-bengali">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <div>
-                    <p className="text-sm font-bold text-slate-800">
+                    <p className="text-xs sm:text-sm font-bold text-slate-800">
                       অথেনটিকেটর অ্যাপস (Authenticator Apps)
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-[10px] sm:text-xs text-slate-500">
                       গুগল অথেনটিকেটর বা অনুরূপ অ্যাপ ব্যবহার করে বাড়তি
                       নিরাপত্তা যোগ করুন
                     </p>
                   </div>
                   {totpEnabled ? (
-                    <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-indigo-50 text-indigo-600 border border-indigo-100 whitespace-nowrap shrink-0">
+                      <CheckCircle2 className="size-3 sm:size-3.5" />
                       সক্রিয় রয়েছে
                     </span>
                   ) : (
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500">
+                    <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-slate-100 text-slate-500 whitespace-nowrap shrink-0">
                       নিষ্ক্রিয় রয়েছে
                     </span>
                   )}
@@ -1553,12 +1556,12 @@ export default function Profile() {
                   <button
                     onClick={handleEnable2FA}
                     disabled={totpLoading}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition"
+                    className="flex items-center gap-1.5 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition cursor-pointer"
                   >
                     {totpLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="size-3.5 sm:size-4 animate-spin" />
                     ) : (
-                      <QrCode className="h-4 w-4" />
+                      <QrCode className="size-3.5 sm:size-4" />
                     )}
                     ২-ফ্যাক্টর অথেনটিকেশন চালু করুন
                   </button>
@@ -1681,16 +1684,16 @@ export default function Profile() {
             </div>
 
             {/* Custom Active Sessions / Devices Card */}
-            <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-              <h3 className="text-base font-bold text-slate-800 flex items-center gap-2 border-b pb-2 font-bengali">
-                <Laptop className="h-5 w-5 text-indigo-500" />
+            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+              <h3 className="text-xs sm:text-base font-bold text-slate-800 flex items-center gap-1.5 sm:gap-2 border-b pb-2 font-bengali">
+                <Laptop className="size-4 sm:size-5 text-indigo-500 shrink-0" />
                 সক্রিয় সেশন ও ডিভাইস ট্র্যাকিং
               </h3>
 
               <div className="space-y-3 font-bengali">
                 {sessionsLoading ? (
                   <div className="flex justify-center py-6">
-                    <Loader2 className="h-6 w-6 text-indigo-600 animate-spin" />
+                    <Loader2 className="size-5 sm:size-6 text-indigo-600 animate-spin" />
                   </div>
                 ) : (
                   activeSessions.map((session) => {
@@ -1706,34 +1709,34 @@ export default function Profile() {
                     return (
                       <div
                         key={session.id}
-                        className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border transition-all ${
+                        className={`flex items-center justify-between p-3 sm:p-4 rounded-2xl border transition-all gap-2 ${
                           isCurrent
                             ? "border-indigo-100 bg-indigo-50/20"
                             : "border-slate-100 bg-slate-50/30"
                         }`}
                       >
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-start gap-2 sm:gap-3 min-w-0 flex-1">
                           <div
-                            className={`p-2.5 rounded-xl ${isCurrent ? "bg-indigo-50 text-indigo-600" : "bg-slate-100 text-slate-500"}`}
+                            className={`p-2 sm:p-2.5 rounded-xl shrink-0 ${isCurrent ? "bg-indigo-50 text-indigo-600" : "bg-slate-100 text-slate-500"}`}
                           >
-                            <IconComponent className="h-5 w-5" />
+                            <IconComponent className="size-4 sm:size-5" />
                           </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h5 className="text-sm font-bold text-slate-800 font-sans tracking-tight">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                              <h5 className="text-xs sm:text-sm font-bold text-slate-800 font-sans tracking-tight truncate">
                                 {os}
                               </h5>
                               {isCurrent && (
-                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-100">
+                                <span className="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-100 whitespace-nowrap shrink-0">
                                   বর্তমানে সক্রিয়
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-slate-500 font-sans font-medium mt-0.5">
+                            <p className="text-[11px] sm:text-xs text-slate-500 font-sans font-medium mt-0.5 truncate">
                               {browser}
                             </p>
-                            <p className="text-xs text-slate-400 mt-1">
-                              আইপি অ্যাড্রেস:{" "}
+                            <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 truncate">
+                              আইপি:{" "}
                               <span className="font-sans font-semibold text-slate-500">
                                 {session.latestActivity?.ipAddress ||
                                   "অজানা আইপি"}
@@ -1745,7 +1748,7 @@ export default function Profile() {
                                 </span>
                               )}
                             </p>
-                            <p className="text-[11px] text-slate-400 mt-0.5">
+                            <p className="text-[9.5px] sm:text-[11px] text-slate-400 mt-0.5">
                               সর্বশেষ সক্রিয়:{" "}
                               <span className="font-sans text-slate-500">
                                 {formatSessionDate(
@@ -1757,23 +1760,25 @@ export default function Profile() {
                           </div>
                         </div>
 
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition focus:outline-none cursor-pointer">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => setSessionToRevoke(session)}
-                              variant="destructive"
-                              className="text-red-600 hover:bg-red-50 focus:bg-red-50 focus:text-red-700 font-sans cursor-pointer text-xs flex items-center gap-1.5"
-                            >
-                              <LogOut className="h-3.5 w-3.5" />
-                              লগআউট করুন
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="shrink-0 flex items-center justify-end">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button className="h-7 w-7 sm:h-8 sm:w-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition focus:outline-none cursor-pointer">
+                                <MoreHorizontal className="size-4" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => setSessionToRevoke(session)}
+                                variant="destructive"
+                                className="text-red-600 hover:bg-red-50 focus:bg-red-50 focus:text-red-700 font-sans cursor-pointer text-xs flex items-center gap-1.5"
+                              >
+                                <LogOut className="size-3.5" />
+                                লগআউট করুন
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </div>
                     );
                   })
@@ -1814,22 +1819,22 @@ export default function Profile() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.15, ease: "easeInOut" }}
-            className="bg-white p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6"
+            className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm space-y-4 sm:space-y-6"
           >
             <div>
-              <h3 className="text-base font-bold text-slate-800 flex items-center gap-2 mb-1 text-left font-bengali">
-                <Sparkles className="h-5 w-5 text-indigo-500 animate-pulse" />
+              <h3 className="text-xs sm:text-base font-bold text-slate-800 flex items-center gap-1.5 sm:gap-2 mb-1 text-left font-bengali">
+                <Sparkles className="size-4 sm:size-5 text-indigo-500 animate-pulse shrink-0" />
                 আপনার সক্রিয় লাইসেন্স সমূহ
               </h3>
-              <p className="text-xs text-slate-400 text-left mb-6 font-bengali">
+              <p className="text-[11px] sm:text-xs text-slate-400 text-left mb-4 sm:mb-6 font-bengali">
                 আপনার অ্যাকাউন্টে সক্রিয় সাবস্ক্রিপশন এবং বিষয়ভিত্তিক
                 লাইসেন্সসমূহের তালিকা
               </p>
             </div>
 
             {mySubsLoading ? (
-              <div className="flex justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+              <div className="flex justify-center py-10">
+                <Loader2 className="size-6 sm:size-8 animate-spin text-indigo-600" />
               </div>
             ) : (
               (() => {
@@ -1841,13 +1846,13 @@ export default function Profile() {
                 );
                 if (activeSubs.length === 0) {
                   return (
-                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex items-start gap-3 text-left font-bengali">
-                      <ShieldCheck className="h-6 w-6 text-slate-400 shrink-0" />
+                    <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100 flex items-start gap-2.5 sm:gap-3 text-left font-bengali">
+                      <ShieldCheck className="size-5 sm:size-6 text-slate-400 shrink-0" />
                       <div>
-                        <p className="text-sm font-bold text-slate-700">
+                        <p className="text-xs sm:text-sm font-bold text-slate-700">
                           কোনো সক্রিয় লাইসেন্স পাওয়া যায়নি
                         </p>
-                        <p className="text-xs text-slate-400 mt-1">
+                        <p className="text-[11px] sm:text-xs text-slate-400 mt-1 leading-relaxed">
                           প্রশ্নপত্র তৈরির সম্পূর্ণ অ্যাক্সেস পেতে দয়া করে
                           সাবস্ক্রিপশন প্যানেল থেকে কোনো প্যাকেজ বা বিষয় ক্রয়
                           করুন।
@@ -1857,22 +1862,22 @@ export default function Profile() {
                   );
                 }
                 return (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left font-bengali">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 text-left font-bengali">
                     {activeSubs.map((sub, idx) => (
                       <div
                         key={idx}
-                        className="border border-indigo-50 bg-indigo-50/10 p-5 rounded-2xl flex items-center justify-between hover:shadow-sm transition"
+                        className="border border-indigo-50 bg-indigo-50/10 p-3.5 sm:p-5 rounded-2xl flex items-center justify-between gap-2 sm:gap-4 hover:shadow-sm transition"
                       >
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-md">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                            <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[9.5px] sm:text-[10px] font-bold rounded-md whitespace-nowrap shrink-0">
                               {sub.purchaseType === "Package"
                                 ? "গ্রুপ প্যাক"
                                 : sub.purchaseType === "Class"
                                   ? "শ্রেণি প্যাক"
                                   : "বিষয় প্যাক"}
                             </span>
-                            <span className="text-xs font-bold text-slate-700">
+                            <span className="text-xs sm:text-sm font-bold text-slate-700 truncate">
                               {sub.purchaseType === "Package"
                                 ? packagesList.find(
                                     (p) => p.id === sub.packageId,
@@ -1886,7 +1891,7 @@ export default function Profile() {
                             </span>
                           </div>
                           {sub.purchaseType === "Subject" && sub.subjectIds && (
-                            <p className="text-xs text-slate-500 mt-2">
+                            <p className="text-[11px] sm:text-xs text-slate-500 mt-1 sm:mt-2 truncate">
                               বিষয়:{" "}
                               <span className="font-bold text-slate-700">
                                 {sub.subjectIds
@@ -1895,13 +1900,13 @@ export default function Profile() {
                               </span>
                             </p>
                           )}
-                          <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mt-3 font-sans">
-                            <Camera className="h-3.5 w-3.5" />
+                          <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-400 mt-2 sm:mt-3 font-sans">
+                            <Calendar className="size-3 sm:size-3.5 shrink-0 text-slate-400" />
                             <span>মেয়াদ শেষ: {formatDate(sub.endDate)}</span>
                           </div>
                         </div>
-                        <div className="h-10 w-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm border border-emerald-100">
-                          <CheckCircle2 className="h-5 w-5" />
+                        <div className="size-8 sm:size-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm border border-emerald-100">
+                          <CheckCircle2 className="size-4 sm:size-5" />
                         </div>
                       </div>
                     ))}
