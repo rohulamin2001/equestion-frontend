@@ -829,7 +829,12 @@ export default function QuestionPaperPreview({
                                               "◯" ||
                                             layoutSettings.optionStyle ===
                                               "●" ? (
-                                              <span className="inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full border border-black text-black font-normal leading-none shrink-0 align-middle select-none">
+                                              <span
+                                                className="inline-flex items-center justify-center w-[1.25em] h-[1.25em] min-w-[1.25em] px-0.5 rounded-full border border-black text-black font-normal leading-none shrink-0 select-none"
+                                                style={{
+                                                  marginTop: `calc((${layoutSettings.lineHeight ?? 1.5}em - 1.25em) / 2)`,
+                                                }}
+                                              >
                                                 <InlineEditable
                                                   value={
                                                     customOptionLabels[
@@ -970,7 +975,12 @@ export default function QuestionPaperPreview({
                                                 "◯" ||
                                               layoutSettings.optionStyle ===
                                                 "●" ? (
-                                                <span className="inline-flex items-center justify-center w-[18px] h-[18px] px-1 rounded-full border border-black text-black font-normal leading-none shrink-0 align-middle select-none">
+                                                <span
+                                                  className="inline-flex items-center justify-center w-[1.25em] h-[1.25em] min-w-[1.25em] px-0.5 rounded-full border border-black text-black font-normal leading-none shrink-0 select-none"
+                                                  style={{
+                                                    marginTop: `calc((${layoutSettings.lineHeight ?? 1.5}em - 1.25em) / 2)`,
+                                                  }}
+                                                >
                                                   <InlineEditable
                                                     value={
                                                       customSubLabels[
