@@ -82,46 +82,46 @@ export default function AddQuestion() {
   return (
     <div className="space-y-6 pb-12 w-full font-bengali">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 bg-glass p-3.5 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">
+          <h1 className="text-base sm:text-2xl font-bold text-slate-800 tracking-tight font-sans">
             নতুন প্রশ্ন যোগ করুন
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-slate-500 text-[11px] sm:text-sm mt-0.5 sm:mt-1 leading-snug">
             NCTB কারিকুলাম ও স্তর অনুযায়ী নতুন MCQ বা সৃজনশীল প্রশ্ন তৈরি করুন।
           </p>
         </div>
         <Button
           variant="outline"
           onClick={qm.resetForm}
-          className="border-black/[0.08] text-slate-600 hover:bg-black/[0.03] rounded-xl bg-white/[0.45] backdrop-blur-sm shadow-sm"
+          className="border-black/[0.08] text-slate-600 hover:bg-black/[0.03] rounded-xl bg-white/[0.45] backdrop-blur-sm shadow-sm h-8 sm:h-9 text-xs font-semibold px-3 sm:px-4 shrink-0"
         >
           রিসেট ফর্ম
         </Button>
       </div>
 
       {/* Wizard Step Progress Bar */}
-      <div className="bg-glass px-8 pt-8 pb-14 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm overflow-hidden">
+      <div className="bg-glass p-3.5 sm:px-8 sm:pt-8 sm:pb-14 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm overflow-hidden">
         {/* Step labels row */}
         <div className="flex items-start justify-between max-w-5xl mx-auto relative">
           {/* Background track line — from right edge of circle 1 to left edge of circle 3 */}
           <div
-            className="absolute top-[30px] h-[3px] bg-slate-200/80 rounded-full"
+            className="absolute top-[18px] sm:top-[30px] h-[2px] sm:h-[3px] bg-slate-200/80 rounded-full transition-all duration-300"
             style={{
-              left: "calc(16.667% + 30px)",
-              right: "calc(16.667% + 30px)",
+              left: "calc(16.667% + 18px)",
+              right: "calc(16.667% + 18px)",
             }}
           />
 
           {/* Animated progress fill */}
           <motion.div
-            className="absolute top-[30px] h-[3px] bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full origin-left"
+            className="absolute top-[18px] sm:top-[30px] h-[2px] sm:h-[3px] bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full origin-left"
             initial={false}
             animate={{ scaleX: (qm.activeStep - 1) / 2 }}
             transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
             style={{
-              left: "calc(16.667% + 30px)",
-              right: "calc(16.667% + 30px)",
+              left: "calc(16.667% + 18px)",
+              right: "calc(16.667% + 18px)",
               transformOrigin: "left",
             }}
           />
@@ -130,10 +130,18 @@ export default function AddQuestion() {
             {
               step: 1,
               label: "ক্যাটাগরি ও মেটাডাটা",
-              icon: <Database size={20} />,
+              icon: <Database className="size-4 sm:size-5" />,
             },
-            { step: 2, label: "প্রশ্ন এডিটর", icon: <FileText size={20} /> },
-            { step: 3, label: "প্রিভিউ ও সংরক্ষণ", icon: <Save size={20} /> },
+            {
+              step: 2,
+              label: "প্রশ্ন এডিটর",
+              icon: <FileText className="size-4 sm:size-5" />,
+            },
+            {
+              step: 3,
+              label: "প্রিভিউ ও সংরক্ষণ",
+              icon: <Save className="size-4 sm:size-5" />,
+            },
           ].map((item) => {
             const isCompleted = qm.activeStep > item.step;
             const isActive = qm.activeStep === item.step;
@@ -141,7 +149,7 @@ export default function AddQuestion() {
             return (
               <div
                 key={item.step}
-                className="flex flex-col items-center relative z-10 gap-3"
+                className="flex flex-col items-center relative z-10 gap-1.5 sm:gap-3"
                 style={{ flex: "1 1 0", maxWidth: "33.33%" }}
               >
                 <motion.button
@@ -153,7 +161,7 @@ export default function AddQuestion() {
                     isActive
                       ? {
                           scale: 1.1,
-                          boxShadow: "0 8px 30px rgba(79,70,229,0.35)",
+                          boxShadow: "0 8px 25px rgba(79,70,229,0.35)",
                         }
                       : isCompleted
                         ? {
@@ -163,11 +171,11 @@ export default function AddQuestion() {
                         : { scale: 1, boxShadow: "none" }
                   }
                   transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                  className={`w-[60px] h-[60px] rounded-full flex items-center justify-center transition-colors duration-300 cursor-pointer outline-none ${
+                  className={`w-9 h-9 sm:w-[60px] sm:h-[60px] rounded-full flex items-center justify-center transition-colors duration-300 cursor-pointer outline-none ${
                     isCompleted
                       ? "bg-gradient-to-br from-indigo-500 to-violet-600 text-white border-0"
                       : isActive
-                        ? "bg-white border-[3px] border-indigo-500 text-indigo-600"
+                        ? "bg-white border-[2.5px] sm:border-[3px] border-indigo-500 text-indigo-600"
                         : "bg-white/60 border-2 border-slate-200 text-slate-400"
                   }`}
                 >
@@ -181,8 +189,7 @@ export default function AddQuestion() {
                         transition={{ duration: 0.3, ease: "backOut" }}
                       >
                         <CheckCircle2
-                          size={26}
-                          className="text-white"
+                          className="size-4 sm:size-[26px] text-white"
                           strokeWidth={2.5}
                         />
                       </motion.span>
@@ -201,7 +208,7 @@ export default function AddQuestion() {
                   </AnimatePresence>
                 </motion.button>
 
-                <div className="flex flex-col items-center gap-1 text-center">
+                <div className="flex flex-col items-center gap-0.5 sm:gap-1 text-center px-0.5">
                   <motion.span
                     animate={{
                       color: isActive
@@ -212,14 +219,14 @@ export default function AddQuestion() {
                       fontWeight: isActive ? 700 : 600,
                     }}
                     transition={{ duration: 0.3 }}
-                    className="text-[13px] font-sans leading-tight whitespace-nowrap"
+                    className="text-[10px] sm:text-[13px] font-sans leading-tight text-center break-words max-w-[85px] sm:max-w-none sm:whitespace-nowrap"
                   >
                     {item.label}
                   </motion.span>
                   <motion.span
                     animate={{ opacity: isActive ? 1 : 0 }}
                     transition={{ duration: 0.3 }}
-                    className="text-[10px] font-sans text-indigo-400 font-medium"
+                    className="text-[9px] sm:text-[10px] font-sans text-indigo-400 font-medium"
                   >
                     চলমান
                   </motion.span>
@@ -240,13 +247,13 @@ export default function AddQuestion() {
               initial={{ opacity: 0, x: -15 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 15 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6"
+              className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 relative z-10"
             >
               {/* Left Column: Syllabus Fields */}
-              <div className="md:col-span-2 bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-5">
-                <div className="border-b border-black/[0.05] pb-2 flex items-center justify-between gap-3">
-                  <h3 className="font-bold text-slate-800 text-[16px] flex items-center gap-2 shrink-0">
-                    <BookOpen className="size-4 text-[#4F46E5]" />
+              <div className="md:col-span-2 bg-glass p-3.5 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4 sm:space-y-5 relative z-20">
+                <div className="border-b border-black/[0.05] pb-2 flex items-center justify-between gap-2">
+                  <h3 className="font-bold text-slate-800 text-xs sm:text-[16px] flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <BookOpen className="size-3.5 sm:size-4 text-[#4F46E5]" />
                     সিলেবাস ও অধ্যায় লিঙ্ক করুন
                   </h3>
                   {(() => {
@@ -255,13 +262,13 @@ export default function AddQuestion() {
                     );
                     if (!selectedSub) return null;
                     return (
-                      <div className="flex items-center gap-2 flex-wrap justify-end">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold">
+                      <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-[10px] sm:text-xs font-bold">
                           <span className="text-indigo-400">পূর্ণমান:</span>
                           {selectedSub?.subjectId?.totalMarks || "—"}
                         </span>
 
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200/80 text-amber-700 text-[10px] sm:text-xs font-bold">
                           <span className="text-amber-500">সাল:</span>
                           {new Date().getFullYear()}
                         </span>
@@ -276,7 +283,9 @@ export default function AddQuestion() {
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                       প্রতিষ্ঠান এর ধরণ
                     </label>
-                    <div className="relative">
+                    <div
+                      className={`relative ${activeDropdown === "type" ? "z-30" : "z-10"}`}
+                    >
                       <button
                         type="button"
                         onClick={() =>
@@ -298,7 +307,7 @@ export default function AddQuestion() {
                             className="fixed inset-0 z-10"
                             onClick={() => setActiveDropdown(null)}
                           />
-                          <div className="absolute left-0 right-0 mt-1 bg-white/[0.90] border border-black/[0.08] backdrop-blur-xl rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                          <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 shadow-2xl rounded-xl z-40 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
                             {formActiveTypes.map((type) => (
                               <button
                                 key={type}
@@ -327,7 +336,9 @@ export default function AddQuestion() {
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                       শিক্ষার স্তর
                     </label>
-                    <div className="relative">
+                    <div
+                      className={`relative ${activeDropdown === "level" ? "z-30" : "z-10"}`}
+                    >
                       <button
                         type="button"
                         onClick={() =>
@@ -349,7 +360,7 @@ export default function AddQuestion() {
                             className="fixed inset-0 z-10"
                             onClick={() => setActiveDropdown(null)}
                           />
-                          <div className="absolute left-0 right-0 mt-1 bg-white/[0.90] border border-black/[0.08] backdrop-blur-xl rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                          <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 shadow-2xl rounded-xl z-40 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
                             {formActiveLevels.map((level) => (
                               <button
                                 key={level}
@@ -378,7 +389,9 @@ export default function AddQuestion() {
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                       শ্রেণী
                     </label>
-                    <div className="relative">
+                    <div
+                      className={`relative ${activeDropdown === "class" ? "z-30" : "z-10"}`}
+                    >
                       <button
                         type="button"
                         onClick={() =>
@@ -401,7 +414,7 @@ export default function AddQuestion() {
                             className="fixed inset-0 z-10"
                             onClick={() => setActiveDropdown(null)}
                           />
-                          <div className="absolute left-0 right-0 mt-1 bg-white/[0.90] border border-black/[0.08] backdrop-blur-xl rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                          <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 shadow-2xl rounded-xl z-40 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
                             {formActiveClasses.map((cls) => (
                               <button
                                 key={cls.value}
@@ -445,7 +458,7 @@ export default function AddQuestion() {
                           return (
                             <label
                               key={ver.value}
-                              className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border text-xs font-bold select-none transition-all duration-200 h-11 ${
+                              className={`flex items-center justify-center gap-1 py-2 px-1.5 sm:px-2.5 rounded-xl border text-xs font-bold select-none transition-all duration-200 h-11 ${
                                 qm.formLoading
                                   ? "pointer-events-none"
                                   : "cursor-pointer"
@@ -479,7 +492,9 @@ export default function AddQuestion() {
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                         গ্রুপ / বিভাগ
                       </label>
-                      <div className="relative">
+                      <div
+                        className={`relative ${activeDropdown === "group" ? "z-30" : "z-10"}`}
+                      >
                         <button
                           type="button"
                           onClick={() =>
@@ -507,7 +522,7 @@ export default function AddQuestion() {
                               className="fixed inset-0 z-10"
                               onClick={() => setActiveDropdown(null)}
                             />
-                            <div className="absolute left-0 right-0 mt-1 bg-white/[0.90] border border-black/[0.08] backdrop-blur-xl rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                            <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 shadow-2xl rounded-xl z-40 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
                               {[
                                 { value: "General", label: "সাধারণ (General)" },
                                 {
@@ -554,7 +569,9 @@ export default function AddQuestion() {
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                       বিষয় (Subject)
                     </label>
-                    <div className="relative">
+                    <div
+                      className={`relative ${activeDropdown === "subject" ? "z-30" : "z-10"}`}
+                    >
                       <button
                         type="button"
                         onClick={() =>
@@ -578,7 +595,7 @@ export default function AddQuestion() {
                             className="fixed inset-0 z-10"
                             onClick={() => setActiveDropdown(null)}
                           />
-                          <div className="absolute left-0 right-0 mt-1 bg-white/[0.90] border border-black/[0.08] backdrop-blur-xl rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                          <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 shadow-2xl rounded-xl z-40 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
                             {qm.formSubjects.map((sub) => (
                               <button
                                 key={sub._id}
@@ -607,7 +624,7 @@ export default function AddQuestion() {
               </div>
 
               {/* Right Column: Question Category Select */}
-              <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4">
+              <div className="bg-glass p-4 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4 relative z-10">
                 <h3 className="font-bold text-slate-800 text-[16px] border-b border-black/[0.05] pb-2 flex items-center gap-2">
                   <FileText className="size-4 text-[#4F46E5]" />
                   প্রশ্ন ক্যাটাগরি
@@ -735,7 +752,9 @@ export default function AddQuestion() {
                       </span>
                     )}
                   </div>
-                  <div className="relative">
+                  <div
+                    className={`relative ${activeDropdown === "chapter" ? "z-30" : "z-10"}`}
+                  >
                     <button
                       type="button"
                       onClick={() =>
@@ -770,7 +789,7 @@ export default function AddQuestion() {
                           className="fixed inset-0 z-10"
                           onClick={() => setActiveDropdown(null)}
                         />
-                        <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                        <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-2xl z-40 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
                           {qm.formChapters.map((chap) => (
                             <button
                               key={chap.chapterNumber}
@@ -924,7 +943,10 @@ export default function AddQuestion() {
                   {/* Question Text */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      প্রশ্ন (Question) <span className="normal-case tracking-normal">(নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)</span>
+                      প্রশ্ন (Question){" "}
+                      <span className="normal-case tracking-normal">
+                        (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                      </span>
                     </label>
                     <Editor
                       value={qm.mcqQuestionText}
@@ -1018,7 +1040,10 @@ export default function AddQuestion() {
                   {/* Explanation Input */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      উত্তর বিশ্লেষণ / ব্যাখ্যা (ঐচ্ছিক) <span className="normal-case tracking-normal">(নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)</span>
+                      উত্তর বিশ্লেষণ / ব্যাখ্যা (ঐচ্ছিক){" "}
+                      <span className="normal-case tracking-normal">
+                        (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                      </span>
                     </label>
                     <Editor
                       value={qm.mcqExplanation}
@@ -1120,7 +1145,10 @@ export default function AddQuestion() {
                                 : item.id === "C"
                                   ? "গ"
                                   : "ঘ"}{" "}
-                            নং প্রশ্নের উত্তর <span className="normal-case tracking-normal">(নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)</span>
+                            নং প্রশ্নের উত্তর{" "}
+                            <span className="normal-case tracking-normal">
+                              (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                            </span>
                           </label>
                           <Editor
                             value={item.answerValue}
@@ -1140,7 +1168,10 @@ export default function AddQuestion() {
                   {/* Main Question Text */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      প্রশ্ন (Question) <span className="normal-case tracking-normal">(নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)</span>
+                      প্রশ্ন (Question){" "}
+                      <span className="normal-case tracking-normal">
+                        (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                      </span>
                     </label>
                     <Editor
                       value={qm.generalQuestionText}
@@ -1153,7 +1184,10 @@ export default function AddQuestion() {
                   {/* Suggested Answer */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      উত্তর (Answer) - ঐচ্ছিক <span className="normal-case tracking-normal">(নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)</span>
+                      উত্তর (Answer) - ঐচ্ছিক{" "}
+                      <span className="normal-case tracking-normal">
+                        (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                      </span>
                     </label>
                     <Editor
                       value={qm.generalSuggestedAnswer}

@@ -1,8 +1,11 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useUserContext } from '../context/UserContext';
+import { Navigate } from "react-router-dom";
+import { useUserContext } from "../context/UserContext";
 
-export default function RoleRouteGuard({ allowedRoles, children }) {
+export default function RoleRouteGuard({
+  allowedRoles,
+  children,
+  strict = false,
+}) {
   const { role, loading } = useUserContext();
 
   if (loading) {
@@ -13,7 +16,11 @@ export default function RoleRouteGuard({ allowedRoles, children }) {
     );
   }
 
-  if (role !== 'Super Admin' && !allowedRoles.includes(role)) {
+  const isAllowed = strict
+    ? allowedRoles.includes(role)
+    : role === "Super Admin" || allowedRoles.includes(role);
+
+  if (!isAllowed) {
     return <Navigate to="/dashboard" replace />;
   }
 

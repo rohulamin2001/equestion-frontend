@@ -231,7 +231,14 @@ export default function App() {
             }
           />
 
-          <Route path="profile" element={<Profile />} />
+          <Route
+            path="profile"
+            element={
+              <RoleRouteGuard allowedRoles={["Subscriber"]} strict>
+                <Profile />
+              </RoleRouteGuard>
+            }
+          />
 
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
