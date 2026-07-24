@@ -82,22 +82,22 @@ export default function AddQuestion() {
   return (
     <div className="space-y-6 pb-12 w-full font-bengali">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 bg-glass p-3.5 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
-        <div>
+      <div className="bg-glass p-3.5 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-1 sm:space-y-1.5">
+        <div className="flex items-center justify-between gap-3 w-full">
           <h1 className="text-base sm:text-2xl font-bold text-slate-800 tracking-tight font-sans">
             নতুন প্রশ্ন যোগ করুন
           </h1>
-          <p className="text-slate-500 text-[11px] sm:text-sm mt-0.5 sm:mt-1 leading-snug">
-            NCTB কারিকুলাম ও স্তর অনুযায়ী নতুন MCQ বা সৃজনশীল প্রশ্ন তৈরি করুন।
-          </p>
+          <Button
+            variant="outline"
+            onClick={qm.resetForm}
+            className="border-black/[0.08] text-slate-600 hover:bg-black/[0.03] rounded-xl bg-white/[0.45] backdrop-blur-sm shadow-sm h-7 sm:h-9 text-[11px] sm:text-xs font-semibold px-2.5 sm:px-4 shrink-0"
+          >
+            রিসেট ফর্ম
+          </Button>
         </div>
-        <Button
-          variant="outline"
-          onClick={qm.resetForm}
-          className="border-black/[0.08] text-slate-600 hover:bg-black/[0.03] rounded-xl bg-white/[0.45] backdrop-blur-sm shadow-sm h-8 sm:h-9 text-xs font-semibold px-3 sm:px-4 shrink-0"
-        >
-          রিসেট ফর্ম
-        </Button>
+        <p className="text-slate-500 text-[11px] sm:text-sm leading-snug">
+          NCTB কারিকুলাম ও স্তর অনুযায়ী নতুন MCQ বা সৃজনশীল প্রশ্ন তৈরি করুন।
+        </p>
       </div>
 
       {/* Wizard Step Progress Bar */}
@@ -582,10 +582,13 @@ export default function AddQuestion() {
                         className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm disabled:bg-slate-50/50 disabled:text-slate-400"
                         disabled={qm.formSubjects.length === 0}
                       >
-                        {qm.formSubjects.find((s) => s._id === qm.formSubjectId)
-                          ?.subjectName || "বিষয় নির্বাচন করুন"}
+                        <span className="truncate pr-2 text-left">
+                          {qm.formSubjects.find(
+                            (s) => s._id === qm.formSubjectId,
+                          )?.subjectName || "বিষয় নির্বাচন করুন"}
+                        </span>
                         <ChevronRight
-                          className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "subject" ? "rotate-90" : ""}`}
+                          className={`size-4 shrink-0 text-slate-400 transition-transform duration-200 ${activeDropdown === "subject" ? "rotate-90" : ""}`}
                         />
                       </button>
 
@@ -768,14 +771,16 @@ export default function AddQuestion() {
                           : "border-black/[0.08] bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
                       }`}
                     >
-                      {qm.formChapters.find(
-                        (c) =>
-                          c.chapterNumber.toString() === qm.formChapterNumber,
-                      )
-                        ? `অধ্যায় ${qm.formChapterNumber}: ${qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber).chapterName}`
-                        : "অধ্যায় নির্বাচন করুন"}
+                      <span className="truncate pr-2 text-left">
+                        {qm.formChapters.find(
+                          (c) =>
+                            c.chapterNumber.toString() === qm.formChapterNumber,
+                        )
+                          ? `অধ্যায় ${qm.formChapterNumber}: ${qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber).chapterName}`
+                          : "অধ্যায় নির্বাচন করুন"}
+                      </span>
                       <ChevronRight
-                        className={`size-4 transition-transform duration-200 ${
+                        className={`size-4 shrink-0 transition-transform duration-200 ${
                           showStep2Error && !qm.formChapterNumber
                             ? "text-red-500"
                             : "text-slate-400"
@@ -895,7 +900,7 @@ export default function AddQuestion() {
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                       MCQ ধরণ
                     </label>
-                    <div className="flex gap-4">
+                    <div className="flex flex-col lg:flex-row gap-2.5 lg:gap-6">
                       {[
                         { value: "Simple", label: "সাধারণ বহুনির্বাচনি" },
                         {
@@ -909,7 +914,7 @@ export default function AddQuestion() {
                       ].map((item) => (
                         <label
                           key={item.value}
-                          className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700"
+                          className="flex items-center gap-2.5 cursor-pointer text-xs sm:text-sm font-semibold text-slate-700 hover:text-[#4F46E5] transition-colors w-fit"
                         >
                           <input
                             type="radio"
@@ -917,9 +922,9 @@ export default function AddQuestion() {
                             value={item.value}
                             checked={qm.mcqType === item.value}
                             onChange={(e) => qm.setMcqType(e.target.value)}
-                            className="accent-[#4F46E5] size-4"
+                            className="accent-[#4F46E5] size-4 shrink-0 cursor-pointer"
                           />
-                          {item.label}
+                          <span>{item.label}</span>
                         </label>
                       ))}
                     </div>
@@ -928,7 +933,7 @@ export default function AddQuestion() {
                   {/* Stem input (only for Contextual MCQs) */}
                   {qm.mcqType === "Contextual" && (
                     <div className="space-y-2 animate-in fade-in duration-200">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
                         উদ্দীপক (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
                       </label>
                       <Editor
@@ -942,7 +947,7 @@ export default function AddQuestion() {
 
                   {/* Question Text */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
                       প্রশ্ন (Question){" "}
                       <span className="normal-case tracking-normal">
                         (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
@@ -1039,7 +1044,7 @@ export default function AddQuestion() {
 
                   {/* Explanation Input */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
                       উত্তর বিশ্লেষণ / ব্যাখ্যা (ঐচ্ছিক){" "}
                       <span className="normal-case tracking-normal">
                         (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
@@ -1059,7 +1064,7 @@ export default function AddQuestion() {
                 <div className="space-y-6">
                   {/* Stem input */}
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
                       উদ্দীপক (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
                     </label>
                     <Editor
@@ -1137,7 +1142,7 @@ export default function AddQuestion() {
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <label className="text-[12px] font-bold text-slate-600 block">
+                          <label className="text-[10px] font-bold text-slate-600 block">
                             {item.id === "A"
                               ? "ক"
                               : item.id === "B"
@@ -1167,7 +1172,7 @@ export default function AddQuestion() {
                 <div className="space-y-5">
                   {/* Main Question Text */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
                       প্রশ্ন (Question){" "}
                       <span className="normal-case tracking-normal">
                         (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
@@ -1183,7 +1188,7 @@ export default function AddQuestion() {
 
                   {/* Suggested Answer */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
                       উত্তর (Answer) - ঐচ্ছিক{" "}
                       <span className="normal-case tracking-normal">
                         (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)

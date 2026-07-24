@@ -397,13 +397,31 @@ export const RadixSidebar = () => {
                   </>
                 )}
                 <DropdownMenuGroup>
-                  {currentRole === "Subscriber" && (
+                  <DropdownMenuItem
+                    asChild
+                    className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
+                  >
+                    <Link
+                      to="/dashboard/profile"
+                      className="flex items-center gap-2 w-full"
+                      onClick={() => {
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                    >
+                      <Users className="size-4" />
+                      আমার প্রোফাইল
+                    </Link>
+                  </DropdownMenuItem>
+
+                  {userProfile?.userType === "Institution" && (
                     <DropdownMenuItem
                       asChild
                       className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
                     >
                       <Link
-                        to="/dashboard/profile"
+                        to="/dashboard/institution"
                         className="flex items-center gap-2 w-full"
                         onClick={() => {
                           if (isMobile) {
@@ -411,50 +429,29 @@ export const RadixSidebar = () => {
                           }
                         }}
                       >
-                        <Users className="size-4" />
-                        আমার প্রোফাইল
+                        <BadgeCheck className="size-4" />
+                        প্রতিষ্ঠানের প্রোফাইল
                       </Link>
                     </DropdownMenuItem>
                   )}
-                  {userProfile?.userType === "Institution" &&
-                    currentRole === "Subscriber" && (
-                      <DropdownMenuItem
-                        asChild
-                        className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
-                      >
-                        <Link
-                          to="/dashboard/institution"
-                          className="flex items-center gap-2 w-full"
-                          onClick={() => {
-                            if (isMobile) {
-                              setOpenMobile(false);
-                            }
-                          }}
-                        >
-                          <BadgeCheck className="size-4" />
-                          প্রতিষ্ঠানের প্রোফাইল
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                  {["Subscriber", "Support Team"].includes(currentRole) && (
-                    <DropdownMenuItem
-                      asChild
-                      className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
+
+                  <DropdownMenuItem
+                    asChild
+                    className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
+                  >
+                    <Link
+                      to="/dashboard/support"
+                      className="flex items-center gap-2 w-full"
+                      onClick={() => {
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
                     >
-                      <Link
-                        to="/dashboard/support"
-                        className="flex items-center gap-2 w-full"
-                        onClick={() => {
-                          if (isMobile) {
-                            setOpenMobile(false);
-                          }
-                        }}
-                      >
-                        <Bell className="size-4" />
-                        যোগাযোগ ও সাপোর্ট
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
+                      <Bell className="size-4" />
+                      যোগাযোগ ও সাপোর্ট
+                    </Link>
+                  </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator className="bg-black/[0.04]" />
                 <DropdownMenuItem className="p-0 focus:bg-transparent">
