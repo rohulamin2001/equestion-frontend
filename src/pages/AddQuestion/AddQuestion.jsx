@@ -219,7 +219,7 @@ export default function AddQuestion() {
                       fontWeight: isActive ? 700 : 600,
                     }}
                     transition={{ duration: 0.3 }}
-                    className="text-[10px] sm:text-[13px] font-sans leading-tight text-center break-words max-w-[85px] sm:max-w-none sm:whitespace-nowrap"
+                    className="text-[9.5px] sm:text-[13px] font-sans leading-tight text-center whitespace-nowrap tracking-tight"
                   >
                     {item.label}
                   </motion.span>
@@ -714,11 +714,11 @@ export default function AddQuestion() {
               initial={{ opacity: 0, x: 15 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -15 }}
-              className="bg-glass p-6 sm:p-8 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-6"
+              className="bg-glass p-3.5 sm:p-8 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4 sm:space-y-6"
             >
-              <div className="flex justify-between items-center border-b border-black/[0.05] pb-3.5">
-                <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
-                  <HelpCircle className="size-5 text-[#4F46E5]" />
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-black/[0.05] pb-2.5 sm:pb-3.5">
+                <h3 className="font-bold text-slate-800 text-sm sm:text-lg flex items-center gap-1.5 sm:gap-2">
+                  <HelpCircle className="size-4 sm:size-5 text-[#4F46E5]" />
                   <span>
                     প্রশ্ন এডিটর -{" "}
                     {
@@ -727,7 +727,7 @@ export default function AddQuestion() {
                     }
                   </span>
                 </h3>
-                <span className="bg-white/[0.45] border border-black/[0.06] backdrop-blur-sm text-slate-600 font-bold text-xs px-3 py-1 rounded-full">
+                <span className="bg-white/[0.45] border border-black/[0.06] backdrop-blur-sm text-slate-600 font-bold text-[10px] sm:text-xs px-2.5 py-0.5 sm:py-1 rounded-full">
                   {CLASSES_MAP.find((c) => c.value === qm.formClass)?.label} •{" "}
                   {
                     qm.formSubjects.find((s) => s._id === qm.formSubjectId)
@@ -737,7 +737,7 @@ export default function AddQuestion() {
               </div>
 
               {/* Chapter & Difficulty Selection at the top of Step 2 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-black/[0.01] p-4 rounded-xl border border-black/[0.03]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 bg-black/[0.01] p-3 sm:p-4 rounded-xl border border-black/[0.03]">
                 {/* Chapter Selection */}
                 <div className="space-y-1.5">
                   <div className="flex justify-between items-center h-4">
@@ -1624,36 +1624,36 @@ export default function AddQuestion() {
               )}
 
               {/* Step 2 Action Buttons */}
-              <div className="flex justify-between items-center pt-6 border-t border-black/[0.05]">
+              <div className="flex justify-between items-center gap-2 pt-4 sm:pt-6 border-t border-black/[0.05]">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handlePrevStep}
-                  className="border-black/[0.10] text-slate-600 hover:bg-black/[0.02] rounded-xl h-10 px-5 flex items-center gap-1.5 font-semibold cursor-pointer"
+                  className="border-black/[0.10] text-slate-600 hover:bg-black/[0.02] rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer text-xs sm:text-sm shrink-0"
                 >
-                  <ChevronLeft className="size-4" />
-                  পেছনে যান
+                  <ChevronLeft className="size-3.5 sm:size-4" />
+                  পেছনে
                 </Button>
 
-                <div className="flex gap-3">
+                <div className="flex gap-2 sm:gap-3 flex-wrap justify-end">
                   {qm.editingDraftId ? (
                     <>
                       <Button
                         type="button"
                         variant="outline"
                         onClick={qm.cancelEditDraft}
-                        className="border-rose-200 text-rose-650 hover:bg-rose-50 hover:border-rose-300 rounded-xl h-10 px-5 flex items-center gap-1.5 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm"
+                        className="border-rose-200 text-rose-650 hover:bg-rose-50 hover:border-rose-300 rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm text-xs sm:text-sm shrink-0"
                       >
-                        বাতিল করুন
+                        বাতিল
                       </Button>
                       <Button
                         type="button"
                         variant="outline"
                         onClick={qm.updateDraftQuestion}
-                        className="border-emerald-200 text-emerald-650 hover:bg-emerald-50 hover:border-emerald-300 rounded-xl h-10 px-5 flex items-center gap-1.5 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm"
+                        className="border-emerald-200 text-emerald-650 hover:bg-emerald-50 hover:border-emerald-300 rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm text-xs sm:text-sm shrink-0"
                       >
-                        <Save className="size-4" />
-                        আপডেট করুন
+                        <Save className="size-3.5 sm:size-4" />
+                        আপডেট
                       </Button>
                     </>
                   ) : (
@@ -1662,20 +1662,20 @@ export default function AddQuestion() {
                         type="button"
                         variant="outline"
                         onClick={qm.addQuestionToList}
-                        className="border-[#4F46E5]/20 text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/40 rounded-xl h-10 px-5 flex items-center gap-1.5 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm"
+                        className="border-[#4F46E5]/20 text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/40 rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm text-xs sm:text-sm shrink-0"
                       >
-                        <Plus className="size-4" />
-                        প্রশ্ন যুক্ত করুন
+                        <Plus className="size-3.5 sm:size-4" />
+                        যোগ করুন
                       </Button>
                     )
                   )}
                   <Button
                     type="button"
                     onClick={handleNextStep}
-                    className="bg-[#4F46E5] hover:bg-[#4F46E5]/90 text-white rounded-xl h-10 px-6 flex items-center gap-1.5 font-semibold cursor-pointer shadow-md shadow-purple-500/10"
+                    className="bg-[#4F46E5] hover:bg-[#4F46E5]/90 text-white rounded-xl h-8 sm:h-10 px-3 sm:px-6 flex items-center gap-1 font-semibold cursor-pointer shadow-md shadow-purple-500/10 text-xs sm:text-sm shrink-0"
                   >
-                    প্রিভিউ দেখুন
-                    <ChevronRight className="size-4" />
+                    প্রিভিউ
+                    <ChevronRight className="size-3.5 sm:size-4" />
                   </Button>
                 </div>
               </div>
@@ -1693,11 +1693,11 @@ export default function AddQuestion() {
             >
               {/* Live Preview Paper Card (Left 2 cols) */}
               <div className="lg:col-span-2 bg-white/[0.80] backdrop-blur-md rounded-2xl border border-black/[0.08] shadow-xl overflow-hidden flex flex-col">
-                <div className="border-b border-black/[0.05] bg-white/[0.5] backdrop-blur-md px-6 py-4 flex justify-between items-center">
-                  <h4 className="font-bold text-sm text-slate-800 tracking-wide uppercase font-sans">
+                <div className="border-b border-black/[0.05] bg-white/[0.5] backdrop-blur-md px-3.5 sm:px-6 py-2.5 sm:py-4 flex justify-between items-center gap-2">
+                  <h4 className="font-bold text-[10px] sm:text-sm text-slate-800 tracking-wide uppercase font-sans">
                     NCTB Live Exam Preview Sheet
                   </h4>
-                  <span className="bg-[#4F46E5]/10 text-[#4F46E5] text-[11px] font-bold px-3 py-1 rounded-full border border-[#4F46E5]/20 whitespace-nowrap">
+                  <span className="bg-[#4F46E5]/10 text-[#4F46E5] text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#4F46E5]/20 whitespace-nowrap">
                     শ্রেণী:{" "}
                     {CLASSES_MAP.find((c) => c.value === qm.formClass)?.label}
                   </span>
@@ -2413,13 +2413,13 @@ export default function AddQuestion() {
               </div>
 
               {/* Action Sidebar (Right 1 col) */}
-              <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4 h-fit">
-                <h4 className="font-bold text-slate-800 text-[16px] border-b border-black/[0.05] pb-2 flex items-center gap-2">
-                  <Database className="size-4 text-[#4F46E5]" />
+              <div className="bg-glass p-3.5 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-3 sm:space-y-4 h-fit">
+                <h4 className="font-bold text-slate-800 text-sm sm:text-[16px] border-b border-black/[0.05] pb-2 flex items-center gap-1.5 sm:gap-2">
+                  <Database className="size-3.5 sm:size-4 text-[#4F46E5]" />
                   সংরক্ষণ করুন
                 </h4>
 
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">
                   সব তথ্য পুনরায় যাচাই করে ডাটাবেজে সেভ করুন। প্রশ্ন সংরক্ষণের
                   পর আপনার "আমার তৈরি প্রশ্ন" মডিউলে দেখতে পাবেন।
                 </p>
@@ -2428,9 +2428,9 @@ export default function AddQuestion() {
                   <RippleButton
                     onClick={qm.handleSaveQuestion}
                     disabled={qm.formLoading}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] hover:from-[#4338CA] hover:to-[#7C3AED] text-white font-semibold h-11 rounded-xl shadow-md shadow-purple-500/10"
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] hover:from-[#4338CA] hover:to-[#7C3AED] text-white font-semibold h-9 sm:h-11 rounded-xl shadow-md shadow-purple-500/10 text-xs sm:text-base"
                   >
-                    <Save className="size-4" />
+                    <Save className="size-3.5 sm:size-4" />
                     {qm.formLoading ? "সংরক্ষণ হচ্ছে..." : "ডাটাবেজে সেভ করুন"}
                     <RippleButtonRipples color="rgba(255, 255, 255, 0.3)" />
                   </RippleButton>
@@ -2440,10 +2440,10 @@ export default function AddQuestion() {
                     variant="outline"
                     onClick={handlePrevStep}
                     disabled={qm.formLoading}
-                    className="w-full border-black/[0.10] text-slate-600 hover:bg-black/[0.02] rounded-xl h-10 px-5 flex items-center justify-center gap-1.5 font-semibold bg-white/[0.45] backdrop-blur-sm shadow-sm"
+                    className="w-full border-black/[0.10] text-slate-600 hover:bg-black/[0.02] rounded-xl h-8 sm:h-10 px-3 sm:px-5 flex items-center justify-center gap-1 font-semibold bg-white/[0.45] backdrop-blur-sm shadow-sm text-xs sm:text-sm"
                   >
-                    <ChevronLeft className="size-4" />
-                    পেছনে যান
+                    <ChevronLeft className="size-3.5 sm:size-4" />
+                    পেছনে
                   </Button>
                 </div>
               </div>
