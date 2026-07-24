@@ -225,7 +225,16 @@ export default function App() {
           <Route
             path="support"
             element={
-              <RoleRouteGuard allowedRoles={["Subscriber", "Support Team"]}>
+              <RoleRouteGuard
+                allowedRoles={[
+                  "Super Admin",
+                  "Admin",
+                  "Content Manager",
+                  "Question Creator",
+                  "Support Team",
+                  "Subscriber",
+                ]}
+              >
                 <Support />
               </RoleRouteGuard>
             }
