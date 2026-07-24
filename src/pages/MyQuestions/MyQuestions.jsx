@@ -171,22 +171,22 @@ export default function MyQuestions() {
   return (
     <div className="space-y-6 pb-12 w-full font-bengali">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">
+      <div className="bg-glass p-3.5 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-1">
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-base sm:text-2xl font-bold text-slate-800 tracking-tight font-sans">
             আমার তৈরি প্রশ্ন
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
-            আপনার পূর্বে প্রস্তুতকৃত এবং সেভ করা সকল প্রশ্নপত্রসমূহ
-          </p>
+          <Button
+            onClick={() => navigate("/dashboard/add-question")}
+            className="bg-[#4F46E5] hover:bg-[#4E3FB4] text-white rounded-xl h-8 sm:h-10 px-3 sm:px-4 flex items-center gap-1.5 text-xs sm:text-sm font-semibold shadow-md shadow-[#4F46E5]/10 cursor-pointer shrink-0"
+          >
+            <Plus className="size-3.5 sm:size-4" />
+            নতুন প্রশ্ন যোগ করুন
+          </Button>
         </div>
-        <Button
-          onClick={() => navigate("/dashboard/add-question")}
-          className="bg-[#4F46E5] hover:bg-[#4E3FB4] text-white rounded-xl h-11 px-5 flex items-center gap-2 font-semibold shadow-md shadow-[#4F46E5]/10 cursor-pointer"
-        >
-          <Plus className="size-4" />
-          নতুন প্রশ্ন যোগ করুন
-        </Button>
+        <p className="text-slate-500 text-[11px] sm:text-sm leading-snug">
+          আপনার পূর্বে প্রস্তুতকৃত এবং সেভ করা সকল প্রশ্নপত্রসমূহ
+        </p>
       </div>
 
       {/* Statistics Banner */}
@@ -194,7 +194,7 @@ export default function MyQuestions() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4"
       >
         {[
           {
@@ -236,26 +236,26 @@ export default function MyQuestions() {
               key={i}
               variants={cardVariants}
               whileHover={{ y: -6 }}
-              className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-5 rounded-2xl border border-black/[0.04] ${stat.border} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-default`}
+              className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-3.5 sm:p-5 rounded-2xl border border-black/[0.04] ${stat.border} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-default gap-2`}
             >
               {/* Ultra premium subtle glow background effect */}
               <div
                 className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}
               />
 
-              <div className="relative z-10 space-y-1.5">
-                <span className="text-sm font-bold text-slate-600 block uppercase tracking-wider font-sans">
+              <div className="relative z-10 space-y-1">
+                <span className="text-[11px] sm:text-xs font-bold text-slate-600 block uppercase tracking-wider font-sans">
                   {stat.label}
                 </span>
-                <span className="text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
+                <span className="text-xl sm:text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
                   {stat.count.toLocaleString("bn-BD")}
                 </span>
               </div>
 
               <div
-                className={`relative z-10 size-12 rounded-xl bg-gradient-to-br ${stat.bg} ${stat.color} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}
+                className={`relative z-10 size-9 sm:size-12 rounded-xl bg-gradient-to-br ${stat.bg} ${stat.color} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out shrink-0`}
               >
-                <IconComponent className="size-5.5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6" />
+                <IconComponent className="size-4 sm:size-5.5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6" />
               </div>
             </motion.div>
           );
@@ -263,15 +263,15 @@ export default function MyQuestions() {
       </motion.div>
 
       {/* Personal Status Statistics Banner */}
-      <div className="space-y-2.5">
-        <div className="text-xs font-bold text-slate-400 uppercase tracking-wider font-sans pl-1">
+      <div className="space-y-2">
+        <div className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider font-sans pl-1">
           আমার তৈরি প্রশ্নের অবস্থা
         </div>
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4"
         >
           {[
             {
@@ -328,28 +328,28 @@ export default function MyQuestions() {
                     qm.setFilterStatus(stat.statusType);
                   }
                 }}
-                className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-5 rounded-2xl border ${
+                className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-3.5 sm:p-5 rounded-2xl border ${
                   isCurrent ? stat.activeBorderClass : "border-black/[0.04]"
-                } ${stat.borderClass} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-pointer`}
+                } ${stat.borderClass} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-pointer gap-2`}
               >
                 {/* Subtle glow effect */}
                 <div
                   className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}
                 />
 
-                <div className="relative z-10 space-y-1.5">
-                  <span className="text-sm md:text-base font-bold text-slate-600 block font-sans">
+                <div className="relative z-10 space-y-1">
+                  <span className="text-xs sm:text-base font-bold text-slate-600 block font-sans">
                     {stat.label}
                   </span>
-                  <span className="text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
+                  <span className="text-xl sm:text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
                     {stat.count.toLocaleString("bn-BD")}
                   </span>
                 </div>
 
                 <div
-                  className={`relative z-10 size-12 rounded-xl ${stat.iconBgClass} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}
+                  className={`relative z-10 size-9 sm:size-12 rounded-xl ${stat.iconBgClass} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out shrink-0`}
                 >
-                  <IconComponent className="size-5.5" />
+                  <IconComponent className="size-4 sm:size-5.5" />
                 </div>
               </motion.div>
             );
@@ -358,46 +358,46 @@ export default function MyQuestions() {
       </div>
 
       {/* Filters Panel */}
-      <div className="bg-glass p-5 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div className="bg-glass p-3.5 sm:p-5 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-3 sm:space-y-4">
+        <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-4 items-center justify-between">
           <div className="relative w-full sm:max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 sm:size-4 text-slate-400" />
             <Input
               placeholder="প্রশ্ন বা উদ্দীপকের অংশবিশেষ খুঁজুন..."
               value={qm.filterSearch}
               onChange={(e) => qm.setFilterSearch(e.target.value)}
-              className="pl-10 h-11 bg-white/[0.45] border-black/[0.08] focus-visible:ring-[#4F46E5]/15 focus-visible:border-[#4F46E5] rounded-xl font-semibold text-slate-700 backdrop-blur-sm"
+              className="pl-8 sm:pl-10 h-9 sm:h-11 text-xs sm:text-sm bg-white/[0.45] border-black/[0.08] focus-visible:ring-[#4F46E5]/15 focus-visible:border-[#4F46E5] rounded-xl font-semibold text-slate-700 backdrop-blur-sm"
             />
             {qm.filterSearch && (
               <button
                 onClick={() => qm.setFilterSearch("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               >
-                <X className="size-4" />
+                <X className="size-3.5 sm:size-4" />
               </button>
             )}
           </div>
 
-          <div className="flex gap-2 w-full sm:w-auto shrink-0 justify-end">
+          <div className="flex gap-2 w-full sm:w-auto shrink-0 justify-end flex-wrap sm:flex-nowrap">
             <Button
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
-              className={`border-black/[0.08] text-slate-600 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-11 px-4 flex items-center gap-2 font-semibold ${
+              className={`border-black/[0.08] text-slate-600 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2.5 sm:px-4 text-xs sm:text-sm flex items-center gap-1.5 font-semibold ${
                 showFilters
                   ? "bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5]"
                   : ""
               }`}
             >
-              <Filter className="size-4" />
+              <Filter className="size-3.5 sm:size-4" />
               ফিল্টারসমূহ
               <ChevronDown
-                className={`size-4 transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
+                className={`size-3.5 sm:size-4 transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
               />
             </Button>
             <Button
               variant="outline"
               onClick={() => setShowAnswers(!showAnswers)}
-              className={`border-black/[0.08] text-slate-600 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-11 px-4 flex items-center gap-2 font-semibold ${
+              className={`border-black/[0.08] text-slate-600 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2.5 sm:px-4 text-xs sm:text-sm flex items-center gap-1.5 font-semibold ${
                 showAnswers
                   ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600"
                   : ""
@@ -410,7 +410,7 @@ export default function MyQuestions() {
               <Button
                 variant="ghost"
                 onClick={handleResetFilters}
-                className="text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl h-11 px-3.5 font-semibold transition"
+                className="text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl h-8 sm:h-11 px-2.5 sm:px-3.5 text-xs sm:text-sm font-semibold transition"
               >
                 রিসেট
               </Button>
@@ -1031,11 +1031,11 @@ export default function MyQuestions() {
                   key={q._id}
                   variants={cardVariants}
                   whileHover={{ y: -4 }}
-                  className="bg-white/[0.45] hover:bg-white/[0.60] p-6 rounded-2xl border border-black/[0.04] backdrop-blur-md hover:shadow-md transition-colors duration-200 flex flex-col space-y-4 relative"
+                  className="bg-white/[0.45] hover:bg-white/[0.60] p-3.5 sm:p-6 rounded-2xl border border-black/[0.04] backdrop-blur-md hover:shadow-md transition-colors duration-200 flex flex-col space-y-3 sm:space-y-4 relative"
                 >
                   {/* Badge Header Row */}
                   <div className="flex flex-wrap justify-between items-center gap-2">
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-sans font-bold text-slate-500">
                       {new Date() - new Date(q.createdAt) <
                         24 * 60 * 60 * 1000 && (
                         <span className="bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded flex items-center gap-1.5">
@@ -1507,23 +1507,23 @@ export default function MyQuestions() {
                   </div>
 
                   {/* Footer Metadata & Action Buttons */}
-                  <div className="flex justify-between items-center border-t border-black/[0.05] pt-3 text-[11px] font-sans text-slate-500">
-                    <div className="flex flex-wrap items-center gap-4 font-medium">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="size-3.5 text-slate-400" />
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-t border-black/[0.05] pt-2.5 sm:pt-3 text-[10px] sm:text-[11px] font-sans text-slate-500">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 font-medium">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="size-3 sm:size-3.5 text-slate-400 shrink-0" />
                         <span>
                           সংরক্ষণকাল: {formatBengaliDateTime(q.createdAt)}
                         </span>
                       </div>
                       {q.status === "Rejected" && q.rejectedBy?.fullName && (
-                        <div className="flex items-center gap-1 text-rose-600 bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/10">
-                          <X className="size-3 text-rose-600" />
+                        <div className="flex items-center gap-1 text-rose-600 bg-rose-500/5 px-1.5 py-0.5 rounded border border-rose-500/10">
+                          <X className="size-3 text-rose-600 shrink-0" />
                           <span>বাতিলকারী: {q.rejectedBy.fullName}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap justify-end w-full sm:w-auto">
                       {q.status !== "Approved" && (
                         <>
                           {q.status === "Rejected" && (
@@ -1534,7 +1534,7 @@ export default function MyQuestions() {
                                 setReviewRequestId(q._id);
                                 setReviewComment("");
                               }}
-                              className="border-indigo-200 text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/30 rounded-xl h-8 px-3 text-xs flex items-center gap-1.5 font-bold cursor-pointer bg-[#4F46E5]/5"
+                              className="border-indigo-200 text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/30 rounded-xl h-7 sm:h-8 px-2 sm:px-3 text-[11px] sm:text-xs flex items-center gap-1 font-bold cursor-pointer bg-[#4F46E5]/5 shrink-0"
                             >
                               <RefreshCw className="size-3" />
                               রিভিউ রিকোয়েস্ট
@@ -1544,7 +1544,7 @@ export default function MyQuestions() {
                             type="button"
                             variant="outline"
                             onClick={() => handleEdit(q)}
-                            className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                            className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-7 sm:h-8 px-2 sm:px-3 text-[11px] sm:text-xs flex items-center gap-1 font-bold cursor-pointer shrink-0"
                           >
                             <Edit3 className="size-3" />
                             সম্পাদন
@@ -1553,7 +1553,7 @@ export default function MyQuestions() {
                             type="button"
                             variant="outline"
                             onClick={() => setDeleteConfirmId(q._id)}
-                            className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                            className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-7 sm:h-8 px-2 sm:px-3 text-[11px] sm:text-xs flex items-center gap-1 font-bold cursor-pointer shrink-0"
                           >
                             <Trash2 className="size-3" />
                             মুছে ফেলুন

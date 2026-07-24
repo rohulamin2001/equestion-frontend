@@ -97,9 +97,6 @@ export default function DashboardLayout() {
                   </BreadcrumbList>
                 </Breadcrumb>
               </div>
-              <div className="flex items-center gap-4">
-                <UserButton afterSignOutUrl="/" />
-              </div>
             </header>
 
             {/* Dashboard Content Workspace */}
