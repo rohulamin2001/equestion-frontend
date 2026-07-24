@@ -1,14 +1,16 @@
-import path from "path"
-import { defineConfig, searchForWorkspaceRoot } from 'vite'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
-import babel from '@rolldown/plugin-babel'
+import babel from "@rolldown/plugin-babel";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import process from "node:process";
+import path from "path";
+import { fileURLToPath } from "url";
+import { defineConfig, searchForWorkspaceRoot } from "vite";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    babel({ presets: [reactCompilerPreset()] })
-  ],
+  plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -19,8 +21,8 @@ export default defineConfig({
     fs: {
       allow: [
         searchForWorkspaceRoot(process.cwd()),
-        '/media/rohul/MyData/Project/schoolmanagement-sms/sms-frontend/node_modules',
+        "/media/rohul/MyData/Project/schoolmanagement-sms/sms-frontend/node_modules",
       ],
     },
   },
-})
+});
