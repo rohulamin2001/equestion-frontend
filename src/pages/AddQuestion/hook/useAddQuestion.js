@@ -56,7 +56,9 @@ export function useAddQuestion() {
 
   const activeSchools = metadataList.filter((m) => m.type === "School");
   const activeBoards = metadataList.filter((m) => m.type === "Board");
-  const activeYears = metadataList.filter((m) => m.type === "Year");
+  const activeYears = metadataList
+    .filter((m) => m.type === "Year")
+    .sort((a, b) => b.name.localeCompare(a.name, undefined, { numeric: true }));
   const activeLevels = metadataList.filter((m) => m.type === "Level");
   const activeSpecialSearches = metadataList.filter((m) => m.type === "SpecialSearch");
 

@@ -16,7 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useUserContext } from "@/context/UserContext";
-import { useAuth, UserButton } from "@clerk/react";
+import { useAuth } from "@clerk/react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 const ROUTE_TITLES = {
@@ -24,13 +24,24 @@ const ROUTE_TITLES = {
   "/dashboard/generate": "১ ক্লিকে প্রশ্ন তৈরি",
   "/dashboard/created-questions": "তৈরিকৃত প্রশ্ন",
   "/dashboard/bank": "প্রশ্নব্যাংক",
+  "/dashboard/question-approval": "প্রশ্ন অনুমোদন",
   "/dashboard/my-questions": "আমার তৈরি প্রশ্ন",
   "/dashboard/add-question": "নতুন প্রশ্ন যোগ",
   "/dashboard/exams": "অনলাইন পরীক্ষা",
   "/dashboard/omr": "OMR মূল্যায়ন",
+  "/dashboard/staff": "স্টাফ ব্যবস্থাপনা",
+  "/dashboard/syllabus": "সিলেবাস ব্যবস্থাপনা",
+  "/dashboard/subject-setup": "সাবজেক্ট সেটআপ",
+  "/dashboard/metadata-setup": "মেটাডাটা সেটআপ",
+  "/dashboard/academic-setup": "অ্যাকাডেমিক সেটআপ",
+  "/dashboard/admin/pricing": "প্যাকেজ ও ডিসকাউন্ট",
   "/dashboard/institution": "আমার প্রতিষ্ঠান",
   "/dashboard/subscription": "সাবস্ক্রিপশন ও প্যাকেজ",
   "/dashboard/support": "যোগাযোগ ও সাপোর্ট",
+  "/dashboard/profile": "আমার প্রোফাইল",
+  "/dashboard/questions": "প্রশ্ন নির্বাচন ও জেনারেট",
+  "/dashboard/questions/select": "প্রশ্ন বাছাইকরণ",
+  "/dashboard/questions/preview": "প্রশ্ন প্রিভিউ",
 };
 
 export default function DashboardLayout() {

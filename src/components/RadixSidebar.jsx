@@ -293,7 +293,7 @@ export const RadixSidebar = () => {
                       tooltip={item.title}
                       className={
                         isActive
-                          ? "bg-[#4F46E5]/[0.10] text-[#4F46E5] font-bold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
+                          ? "bg-[#4F46E5]/[0.10] text-[#4F46E5] font-semibold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
                           : "text-slate-700 hover:text-slate-900 hover:bg-black/[0.03] font-semibold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
                       }
                     >

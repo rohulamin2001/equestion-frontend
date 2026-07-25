@@ -815,7 +815,7 @@ export default function QuestionPaperPreview({
                                     />
                                   </div>
                                   {q.mcqData.options && (
-                                    <div className="grid grid-cols-2 gap-2 text-black text-inherit">
+                                    <div className="grid grid-cols-2  text-black text-inherit">
                                       {q.mcqData.options.map((opt, oIdx) => {
                                         const prefix = ["ক", "খ", "গ", "ঘ"][
                                           oIdx

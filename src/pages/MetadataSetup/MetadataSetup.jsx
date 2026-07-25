@@ -202,12 +202,15 @@ export default function MetadataSetup() {
     });
   };
 
-  // Client-side pagination logic
-  const totalItems = rawMetadata.length;
+  // Client-side pagination & sorting logic
+  const sortedMetadata = activeTab === "Year"
+    ? [...rawMetadata].sort((a, b) => b.name.localeCompare(a.name, undefined, { numeric: true }))
+    : rawMetadata;
+  const totalItems = sortedMetadata.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-  const paginatedMetadata = rawMetadata.slice(startIndex, endIndex);
+  const paginatedMetadata = sortedMetadata.slice(startIndex, endIndex);
 
   return (
     <div className="space-y-6 pb-12 w-full font-bengali">
