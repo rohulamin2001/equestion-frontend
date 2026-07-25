@@ -27,6 +27,7 @@ import {
   Database,
   Edit3,
   Eye,
+  EyeOff,
   Filter,
   GraduationCap,
   HelpCircle,
@@ -141,6 +142,14 @@ export default function QuestionBank() {
 
   const [showAnswers, setShowAnswers] = React.useState(false);
   const [showModalAnswers, setShowModalAnswers] = React.useState(false);
+  const [expandedAnswerIds, setExpandedAnswerIds] = React.useState({});
+
+  const toggleIndividualAnswer = (id) => {
+    setExpandedAnswerIds((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   const observerRef = React.useRef(null);
   React.useEffect(() => {
@@ -973,7 +982,13 @@ export default function QuestionBank() {
             </div>
           </div>
 
-          <motion.div layout className="space-y-4">
+          <motion.div
+            key="question-bank-list-container"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-4"
+          >
             {visibleQuestions.map((q, index) => {
               const classLabel =
                 CLASSES_MAP.find((c) => c.value === q.className)?.label ||
@@ -985,12 +1000,14 @@ export default function QuestionBank() {
                 label: q.difficulty,
                 color: "text-slate-600 border-slate-200 bg-slate-50",
               };
+              const isAnswerVisible = showAnswers || !!expandedAnswerIds[q._id];
 
               return (
                 <motion.div
                   key={q._id}
-                  layout
-                  className="bg-glass border border-black/[0.06] hover:border-black/[0.12] rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-6 flex flex-col gap-4 relative overflow-hidden backdrop-blur-md group"
+                  variants={cardVariants}
+                  whileHover={{ y: -4 }}
+                  className="bg-glass border border-black/[0.06] hover:border-black/[0.12] rounded-2xl shadow-sm hover:shadow-md transition-colors duration-200 p-6 flex flex-col gap-4 relative overflow-hidden backdrop-blur-md group"
                 >
                   {/* Badge Header Row */}
                   <div
@@ -1107,6 +1124,25 @@ export default function QuestionBank() {
                       >
                         {diffConfig.label}
                       </span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleIndividualAnswer(q._id);
+                        }}
+                        className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${
+                          isAnswerVisible
+                            ? "bg-indigo-50 text-[#4F46E5] border-indigo-200"
+                            : "bg-slate-50 text-slate-400 hover:text-slate-600 border-slate-200 hover:bg-slate-100"
+                        }`}
+                        title={isAnswerVisible ? "উত্তর লুকান" : "উত্তর দেখান"}
+                      >
+                        {isAnswerVisible ? (
+                          <EyeOff className="size-3.5" />
+                        ) : (
+                          <Eye className="size-3.5" />
+                        )}
+                      </button>
                     </div>
                   </div>
 
@@ -1173,7 +1209,9 @@ export default function QuestionBank() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 text-[15px] font-serif">
                           {q.mcqData.options &&
                             q.mcqData.options.slice(0, 4).map((opt, idx) => {
-                              const isCorrect = q.mcqData.correctAnswer === idx;
+                              const isCorrect =
+                                isAnswerVisible &&
+                                q.mcqData.correctAnswer === idx;
                               return (
                                 <div
                                   key={idx}
@@ -1212,7 +1250,7 @@ export default function QuestionBank() {
                             })}
                         </div>
 
-                        {q.mcqData.explanation && (
+                        {isAnswerVisible && q.mcqData.explanation && (
                           <div className="mt-3 p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
                             <span className="font-semibold text-[15px] ">
                               বিশ্লেষণ:{" "}
@@ -1259,7 +1297,7 @@ export default function QuestionBank() {
                                     ).toLocaleString("bn-BD")}
                                   </span>
                                 </div>
-                                {showAnswers &&
+                                {isAnswerVisible &&
                                   q.creativeData.subQuestions?.cognitiveA
                                     ?.answer && (
                                     <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
@@ -1293,7 +1331,7 @@ export default function QuestionBank() {
                                     ).toLocaleString("bn-BD")}
                                   </span>
                                 </div>
-                                {showAnswers &&
+                                {isAnswerVisible &&
                                   q.creativeData.subQuestions?.cognitiveB
                                     ?.answer && (
                                     <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
@@ -1327,7 +1365,7 @@ export default function QuestionBank() {
                                     ).toLocaleString("bn-BD")}
                                   </span>
                                 </div>
-                                {showAnswers &&
+                                {isAnswerVisible &&
                                   q.creativeData.subQuestions?.cognitiveC
                                     ?.answer && (
                                     <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
@@ -1361,7 +1399,7 @@ export default function QuestionBank() {
                                     ).toLocaleString("bn-BD")}
                                   </span>
                                 </div>
-                                {showAnswers &&
+                                {isAnswerVisible &&
                                   q.creativeData.subQuestions?.cognitiveD
                                     ?.answer && (
                                     <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
@@ -1411,7 +1449,7 @@ export default function QuestionBank() {
                             </span>
                           </div>
 
-                          {q.generalData.suggestedAnswer && (
+                          {isAnswerVisible && q.generalData.suggestedAnswer && (
                             <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] font-serif text-slate-700">
                               <span className="font-semibold">উত্তর: </span>
                               <RichTextRender

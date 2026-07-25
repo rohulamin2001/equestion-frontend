@@ -153,6 +153,14 @@ export default function QuestionApproval() {
   const [showChatHistory, setShowChatHistory] = React.useState(true);
   const [showAnswers, setShowAnswers] = React.useState(false);
   const [showModalAnswers, setShowModalAnswers] = React.useState(false);
+  const [expandedAnswerIds, setExpandedAnswerIds] = React.useState({});
+
+  const toggleIndividualAnswer = (id) => {
+    setExpandedAnswerIds((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
   const [rejectConfirmId, setRejectConfirmId] = React.useState(null);
   const [rejectionReasonInput, setRejectionReasonInput] = React.useState("");
   const [selectedRejectionReason, setSelectedRejectionReason] =
@@ -894,6 +902,7 @@ export default function QuestionApproval() {
             const categoryObj = CATEGORIES_MAP.find(
               (c) => c.value === q.category,
             );
+            const isAnswerVisible = showAnswers || !!expandedAnswerIds[q._id];
             return (
               <motion.div
                 key={q._id}
@@ -1066,6 +1075,25 @@ export default function QuestionApproval() {
                           ? "মধ্যম"
                           : "কঠিন"}
                     </span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleIndividualAnswer(q._id);
+                      }}
+                      className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${
+                        isAnswerVisible
+                          ? "bg-indigo-50 text-[#4F46E5] border-indigo-200"
+                          : "bg-slate-50 text-slate-400 hover:text-slate-600 border-slate-200 hover:bg-slate-100"
+                      }`}
+                      title={isAnswerVisible ? "উত্তর লুকান" : "উত্তর দেখান"}
+                    >
+                      {isAnswerVisible ? (
+                        <EyeOff className="size-3.5" />
+                      ) : (
+                        <Eye className="size-3.5" />
+                      )}
+                    </button>
                   </div>
                 </div>
 
@@ -1128,7 +1156,7 @@ export default function QuestionApproval() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 text-[15px] font-serif">
                         {q.mcqData.options &&
                           q.mcqData.options.slice(0, 4).map((opt, idx) => {
-                            const isCorrect = q.mcqData.correctAnswer === idx;
+                            const isCorrect = isAnswerVisible && q.mcqData.correctAnswer === idx;
                             return (
                               <div
                                 key={idx}
@@ -1167,7 +1195,7 @@ export default function QuestionApproval() {
                           })}
                       </div>
 
-                      {q.mcqData.explanation && (
+                      {isAnswerVisible && q.mcqData.explanation && (
                         <div className="mt-3 p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
                           <span className="font-semibold text-[15px] ">
                             বিশ্লেষণ:{" "}
@@ -1218,7 +1246,7 @@ export default function QuestionApproval() {
                                   ).toLocaleString("bn-BD")}
                                 </span>
                               </div>
-                              {showAnswers &&
+                              {isAnswerVisible &&
                                 q.creativeData.subQuestions?.cognitiveA
                                   ?.answer && (
                                   <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
@@ -1252,7 +1280,7 @@ export default function QuestionApproval() {
                                   ).toLocaleString("bn-BD")}
                                 </span>
                               </div>
-                              {showAnswers &&
+                              {isAnswerVisible &&
                                 q.creativeData.subQuestions?.cognitiveB
                                   ?.answer && (
                                   <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
@@ -1286,7 +1314,7 @@ export default function QuestionApproval() {
                                   ).toLocaleString("bn-BD")}
                                 </span>
                               </div>
-                              {showAnswers &&
+                              {isAnswerVisible &&
                                 q.creativeData.subQuestions?.cognitiveC
                                   ?.answer && (
                                   <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
@@ -1320,7 +1348,7 @@ export default function QuestionApproval() {
                                   ).toLocaleString("bn-BD")}
                                 </span>
                               </div>
-                              {showAnswers &&
+                              {isAnswerVisible &&
                                 q.creativeData.subQuestions?.cognitiveD
                                   ?.answer && (
                                   <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
@@ -1368,7 +1396,7 @@ export default function QuestionApproval() {
                           </span>
                         </div>
 
-                        {q.generalData.suggestedAnswer && (
+                        {isAnswerVisible && q.generalData.suggestedAnswer && (
                           <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] font-serif text-slate-700">
                             <span className="font-semibold">উত্তর: </span>
                             <RichTextRender
