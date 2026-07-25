@@ -83,10 +83,10 @@ export function useSubjectSetup() {
   const [subjectYears, setSubjectYears] = useState([new Date().getFullYear()]);
   const [subjectCategories, setSubjectCategories] = useState(['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']);
 
-  // Version Field using derived state pattern
-  const [userSelectedVersion, setUserSelectedVersion] = useState(null);
-  const defaultVersion = config?.versions && config.versions.length > 0 ? config.versions[0] : 'Bangla';
-  const subjectVersion = userSelectedVersion ?? defaultVersion;
+  // Version Field
+  const [userSelectedVersion, setUserSelectedVersion] = useState('Bangla');
+  const defaultVersion = 'Bangla';
+  const subjectVersion = userSelectedVersion || defaultVersion;
   const setSubjectVersion = setUserSelectedVersion;
 
   // Modal / Editing states
@@ -227,7 +227,7 @@ export function useSubjectSetup() {
     setSubjectGroup('General');
     setSubjectYears([new Date().getFullYear()]);
     setSubjectCategories(['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']);
-    setUserSelectedVersion(null);
+    setUserSelectedVersion('Bangla');
   };
 
   const handleCreateSubjectSubmit = (e) => {

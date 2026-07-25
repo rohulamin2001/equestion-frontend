@@ -348,7 +348,7 @@ export default function MetadataSetup() {
                         <td className="py-3.5 px-5 font-bold text-slate-400">{rowNumber}</td>
                         <td className="py-3.5 px-5 text-slate-800">
                           {item.name}
-                          {item.shortName && (
+                          {activeTab === "Board" && item.shortName && (
                             <span className="text-slate-400 font-normal text-xs ml-1.5">
                               ({item.shortName})
                             </span>

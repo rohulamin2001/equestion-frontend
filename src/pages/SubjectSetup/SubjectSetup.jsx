@@ -263,10 +263,9 @@ export default function SubjectSetup() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
-                  বিষয় কোড <span className="text-indigo-400">*</span>
+                  বিষয় কোড <span className="text-slate-400 font-normal lowercase">(ঐচ্ছিক)</span>
                 </label>
                 <Input
-                  required
                   placeholder="যেমন: ১০১"
                   value={subjectCode}
                   onChange={(e) => setSubjectCode(e.target.value)}
@@ -565,10 +564,16 @@ export default function SubjectSetup() {
                     {/* Top Row: Code Badge & Actions */}
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex flex-wrap gap-1.5 items-center">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-extrabold rounded-lg">
-                          <Code className="size-3.5" />
-                          কোড: {sub.subjectCode}
-                        </span>
+                        {sub.subjectCode ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-extrabold rounded-lg">
+                            <Code className="size-3.5" />
+                            কোড: {sub.subjectCode}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-50 border border-slate-200 text-slate-400 text-[10px] font-medium rounded-lg">
+                            কোড নেই
+                          </span>
+                        )}
                         {(!config?.versions || config.versions.length > 1) && (
                           <span
                             className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md border ${
@@ -720,10 +725,9 @@ export default function SubjectSetup() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-slate-600 block">
-                      বিষয় কোড
+                      বিষয় কোড <span className="text-slate-400 font-normal text-[11px]">(ঐচ্ছিক)</span>
                     </label>
                     <Input
-                      required
                       value={editingSubject.subjectCode}
                       onChange={(e) =>
                         setEditingSubject({
