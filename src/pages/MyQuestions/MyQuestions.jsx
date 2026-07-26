@@ -1247,7 +1247,7 @@ export default function MyQuestions() {
                               />
                               {q.mcqData.mcqType === "MultipleCompletion" &&
                                 q.mcqData.statements && (
-                                  <div className="space-y-1 pl-4 mt-2 font-normal text-[15px] text-slate-700">
+                                  <div className="space-y-1 pl-6 mt-2 font-normal text-[15px] text-slate-700">
                                     {q.mcqData.statements.map((st, idx) => (
                                       <div
                                         key={idx}

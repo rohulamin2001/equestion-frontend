@@ -2217,12 +2217,12 @@ export default function AddQuestion() {
                                   content={qm.mcqQuestionText || "প্রশ্ন বিবরণ"}
                                 />
                               </div>
-                              <span className="text-slate-700 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
+                              <span className="text-slate-700 text-xs font-sans font-bold whitespace-nowrap pt-1 ">
                                 ১
                               </span>
                             </div>
                             {qm.mcqType === "MultipleCompletion" && (
-                              <div className="space-y-1 pl-8 mt-2 font-normal text-sm font-sans">
+                              <div className="space-y-1 pl-6 mt-2 font-normal text-sm font-sans">
                                 {qm.mcqStatements.map(
                                   (st, idx) =>
                                     st && (
