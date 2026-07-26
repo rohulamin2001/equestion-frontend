@@ -6,11 +6,12 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import { toast } from "sonner";
 import { useAcademicConfig } from "./useAcademicConfig";
 
 export function useQuestionManagement(options = {}) {
+  const isSubmittingRef = useRef(false);
   const { isPersonalOnly = false, skipFetch = false, pageSize = 10 } = options;
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
@@ -485,6 +486,9 @@ export function useQuestionManagement(options = {}) {
           "প্রশ্ন সংরক্ষণ করতে ব্যর্থ হয়েছে",
       );
     },
+    onSettled: () => {
+      isSubmittingRef.current = false;
+    }
   });
 
   // Update Question Mutation
@@ -510,6 +514,9 @@ export function useQuestionManagement(options = {}) {
           "প্রশ্ন আপডেট করতে ব্যর্থ হয়েছে",
       );
     },
+    onSettled: () => {
+      isSubmittingRef.current = false;
+    }
   });
 
   // Delete Question Mutation
@@ -977,9 +984,15 @@ export function useQuestionManagement(options = {}) {
 
   // Submit Handler
   const handleSaveQuestion = async () => {
+    if (isSubmittingRef.current || formLoading) return;
+    isSubmittingRef.current = true;
+
     if (editingQuestion) {
       const payload = buildPayloadFromForm();
-      if (!payload) return;
+      if (!payload) {
+        isSubmittingRef.current = false;
+        return;
+      }
       updateQuestionMutation.mutate({ id: editingQuestion._id, payload });
       return;
     }
@@ -993,7 +1006,10 @@ export function useQuestionManagement(options = {}) {
       });
     } else {
       const singlePayload = buildPayloadFromForm();
-      if (!singlePayload) return;
+      if (!singlePayload) {
+        isSubmittingRef.current = false;
+        return;
+      }
       payloads = [singlePayload];
     }
 
