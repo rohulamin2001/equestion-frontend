@@ -67,9 +67,10 @@ export function useSyllabusManagement() {
   const [formYears, setFormYears] = useState([new Date().getFullYear()]);
   
   // Derived / Dynamic Version State
+  const activeVersions = config?.versions && config.versions.length > 0 ? config.versions : ['Bangla', 'English', 'Madrasah'];
+  const defaultVersion = activeVersions.includes('Bangla') ? 'Bangla' : activeVersions[0];
   const [userFormVersion, setUserFormVersion] = useState(null);
-  const defaultVersion = config?.versions && config.versions.length > 0 ? config.versions[0] : 'Bangla';
-  const formVersion = userFormVersion ?? defaultVersion;
+  const formVersion = (userFormVersion && activeVersions.includes(userFormVersion)) ? userFormVersion : defaultVersion;
   const setFormVersion = (val) => {
     setUserFormVersion(val);
     if (!editingSyllabus) {

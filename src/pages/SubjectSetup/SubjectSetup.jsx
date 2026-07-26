@@ -325,21 +325,22 @@ export default function SubjectSetup() {
               </div>
             )}
 
-            {/* Version Selection (Only shown if both Bangla and English versions are active in config) */}
-            {(!config?.versions || config.versions.length > 1) && (
-              <div className="space-y-2.5">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
-                  ভার্সন <span className="text-indigo-400">*</span>
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { value: "Bangla", label: "বাংলা" },
-                    { value: "English", label: "ইংরেজি" },
-                    { value: "Madrasah", label: "মাদ্রাসা" },
-                  ].map((ver) => (
+            {/* Version Selection */}
+            <div className="space-y-2.5">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
+                ভার্সন <span className="text-indigo-400">*</span>
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { value: "Bangla", label: "বাংলা" },
+                  { value: "English", label: "ইংরেজি" },
+                  { value: "Madrasah", label: "মাদ্রাসা" },
+                ]
+                  .filter((ver) => !config?.versions || config.versions.includes(ver.value))
+                  .map((ver) => (
                     <label
                       key={ver.value}
-                      className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all duration-200 ${
+                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all duration-200 ${
                         subjectVersion === ver.value
                           ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200"
                           : "bg-white/60 border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600"
@@ -356,9 +357,8 @@ export default function SubjectSetup() {
                       {ver.label}
                     </label>
                   ))}
-                </div>
               </div>
-            )}
+            </div>
 
             {/* Active Years */}
             <div className="space-y-3">
@@ -804,20 +804,21 @@ export default function SubjectSetup() {
                 )}
 
                 {/* Version Selection in Edit */}
-                {(!config?.versions || config.versions.length > 1) && (
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold text-slate-600 block">
-                      ভার্সন
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { value: "Bangla", label: "বাংলা" },
-                        { value: "English", label: "ইংরেজি" },
-                        { value: "Madrasah", label: "মাদ্রাসা" },
-                      ].map((ver) => (
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-slate-600 block">
+                    ভার্সন
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { value: "Bangla", label: "বাংলা" },
+                      { value: "English", label: "ইংরেজি" },
+                      { value: "Madrasah", label: "মাদ্রাসা" },
+                    ]
+                      .filter((ver) => !config?.versions || config.versions.includes(ver.value))
+                      .map((ver) => (
                         <label
                           key={ver.value}
-                          className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all duration-200 ${
+                          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all duration-200 ${
                             editingSubject.version === ver.value
                               ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200"
                               : "bg-white/60 border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600"
@@ -839,9 +840,8 @@ export default function SubjectSetup() {
                           {ver.label}
                         </label>
                       ))}
-                    </div>
                   </div>
-                )}
+                </div>
 
                 {/* Edit Years setup */}
                 <div className="space-y-2 p-3 bg-slate-50 border border-slate-100 rounded-xl">

@@ -1,3 +1,4 @@
+import { useAcademicConfig } from "@/hooks/useAcademicConfig";
 import { useUserContext } from "@/context/UserContext";
 import apiClient from "@/lib/apiClient";
 import { useAuth } from "@clerk/react";
@@ -9,28 +10,63 @@ export function useCreatedQuestions() {
   const { role, userProfile } = useUserContext();
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
-  const [expandedClass, setExpandedClass] = useState(null);
-  const [selectedVersion, setSelectedVersion] = useState("Bangla");
-  const [setToDelete, setSetToDelete] = useState(null);
+  const { allowedClasses: systemAllowedClasses, config } = useAcademicConfig();
 
   const currentRole = role || "Subscriber";
 
-  // Parse active classes from subscription (Super Admin/Admin see all 3-12)
-  const activeClasses = useMemo(() => {
-    if (currentRole === "Super Admin" || currentRole === "Admin") {
-      return [
-        "Class 3",
-        "Class 4",
-        "Class 5",
-        "Class 6",
-        "Class 7",
-        "Class 8",
-        "Class 9",
-        "Class 10",
-        "Class 11",
-        "Class 12",
-      ];
+  // System active versions (fallback to ["Bangla", "English", "Madrasah"])
+  const activeVersions = useMemo(() => {
+    if (config?.versions && Array.isArray(config.versions) && config.versions.length > 0) {
+      return config.versions;
     }
+    return ["Bangla", "English", "Madrasah"];
+  }, [config?.versions]);
+
+  const [expandedClass, setExpandedClass] = useState(null);
+  const [userSelectedVersion, setUserSelectedVersion] = useState("Bangla");
+  const [setToDelete, setSetToDelete] = useState(null);
+
+  // If userSelectedVersion is not in activeVersions, fallback to first active version
+  const selectedVersion = useMemo(() => {
+    if (activeVersions.includes(userSelectedVersion)) {
+      return userSelectedVersion;
+    }
+    return activeVersions[0] || "Bangla";
+  }, [activeVersions, userSelectedVersion]);
+
+  const setSelectedVersion = (ver) => {
+    setUserSelectedVersion(ver);
+  };
+
+  // Parse active classes from system config & user subscription for the selected version
+  const activeClasses = useMemo(() => {
+    if (!systemAllowedClasses || systemAllowedClasses.length === 0) {
+      return [];
+    }
+
+    // Filter system allowed classes by selected version type (Madrasah vs School/College)
+    const allowedForVersion = systemAllowedClasses.filter((c) => {
+      if (selectedVersion === "Madrasah") {
+        return c.type === "Madrasah";
+      }
+      return c.type === "School" || c.type === "College";
+    });
+
+    const versionClassNames = new Set(allowedForVersion.map((c) => c.value));
+
+    if (currentRole === "Super Admin" || currentRole === "Admin") {
+      const sorted = Array.from(versionClassNames)
+        .filter((c) => {
+          const num = parseInt(c.replace(/\D/g, "")) || 0;
+          return num >= 1 && num <= 12;
+        })
+        .sort((a, b) => {
+          const getNum = (str) => parseInt(str.replace(/\D/g, "")) || 0;
+          return getNum(a) - getNum(b);
+        });
+      return sorted;
+    }
+
     const clsSet = new Set();
     userProfile?.subscriptions?.forEach((sub) => {
       if (sub.isSuspended || !sub.isActive) return;
@@ -38,18 +74,22 @@ export function useCreatedQuestions() {
       if (end < new Date()) return;
 
       if (sub.packageId && sub.packageId.startsWith("teacher-")) {
-        ["Class 6", "Class 7", "Class 8", "Class 9", "Class 10"].forEach((c) =>
-          clsSet.add(c),
-        );
+        ["Class 6", "Class 7", "Class 8", "Class 9", "Class 10"].forEach((c) => {
+          if (versionClassNames.has(c)) clsSet.add(c);
+        });
       } else if (
         sub.purchaseType === "Package" ||
         sub.purchaseType === "Class"
       ) {
-        sub.classNames?.forEach((c) => clsSet.add(c));
+        sub.classNames?.forEach((c) => {
+          if (versionClassNames.has(c)) clsSet.add(c);
+        });
       } else if (sub.purchaseType === "Subject") {
         sub.subjectIds?.forEach((s) => {
           const clsName = s?.className;
-          if (clsName) clsSet.add(clsName);
+          if (clsName && versionClassNames.has(clsName)) {
+            clsSet.add(clsName);
+          }
         });
       }
     });
@@ -57,14 +97,14 @@ export function useCreatedQuestions() {
     const sorted = Array.from(clsSet)
       .filter((c) => {
         const num = parseInt(c.replace(/\D/g, "")) || 0;
-        return num >= 3 && num <= 12;
+        return num >= 1 && num <= 12;
       })
       .sort((a, b) => {
         const getNum = (str) => parseInt(str.replace(/\D/g, "")) || 0;
         return getNum(a) - getNum(b);
       });
     return sorted;
-  }, [userProfile, currentRole]);
+  }, [userProfile, currentRole, systemAllowedClasses, selectedVersion]);
 
   // Fetch question sets
   const questionSetsQuery = useQuery({
@@ -157,6 +197,7 @@ export function useCreatedQuestions() {
     setExpandedClass,
     selectedVersion,
     setSelectedVersion,
+    activeVersions,
     setToDelete,
     setSetToDelete,
     activeClasses,

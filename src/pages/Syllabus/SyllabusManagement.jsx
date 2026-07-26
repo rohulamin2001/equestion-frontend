@@ -578,60 +578,61 @@ export default function SyllabusManagement() {
                       </DropdownMenu>
                     </div>
 
-                    {/* Version Selection (Only shown if both Bangla and English versions are active in config) */}
-                    {(!config?.versions || config.versions.length > 1) && (
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                          ভার্সন (Version) <span className="text-indigo-400">*</span>
-                        </label>
-                        <div className={`grid gap-2 ${formType === 'Madrasah' ? 'grid-cols-1' : 'grid-cols-2'}`}>
-                          {[
-                            { value: 'Bangla', label: 'বাংলা' },
-                            { value: 'English', label: 'ইংরেজি' },
-                            { value: 'Madrasah', label: 'মাদ্রাসা' },
-                          ].filter((ver) => {
-                            if (formType === 'Madrasah') {
-                              return ver.value === 'Madrasah';
-                            } else {
-                              return ver.value !== 'Madrasah';
-                            }
-                          }).map((ver) => {
-                            const isSelected = formVersion === ver.value;
-                            return (
-                              <label
-                                key={ver.value}
-                                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold select-none transition-all duration-200 h-11 ${
-                                  editingSyllabus
-                                    ? 'pointer-events-none'
-                                    : 'cursor-pointer'
-                                } ${
-                                  isSelected
-                                    ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200'
-                                    : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600'
-                                } ${
-                                  editingSyllabus && !isSelected
-                                    ? 'opacity-50'
-                                    : ''
-                                }`}
-                              >
-                                <input
-                                  type="radio"
-                                  name="formVersion"
-                                  checked={isSelected}
-                                  onChange={() => setFormVersion(ver.value)}
-                                  disabled={formLoading || !!editingSyllabus}
-                                  className="sr-only"
-                                />
-                                {ver.label}
-                              </label>
-                            );
-                          })}
-                        </div>
+                    {/* Version Selection */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                        ভার্সন (Version) <span className="text-indigo-400">*</span>
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { value: 'Bangla', label: 'বাংলা' },
+                          { value: 'English', label: 'ইংরেজি' },
+                          { value: 'Madrasah', label: 'মাদ্রাসা' },
+                        ].filter((ver) => {
+                          if (config?.versions && !config.versions.includes(ver.value)) {
+                            return false;
+                          }
+                          if (formType === 'Madrasah') {
+                            return ver.value === 'Madrasah';
+                          } else {
+                            return ver.value !== 'Madrasah';
+                          }
+                        }).map((ver) => {
+                          const isSelected = formVersion === ver.value;
+                          return (
+                            <label
+                              key={ver.value}
+                              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold select-none transition-all duration-200 h-11 ${
+                                editingSyllabus
+                                  ? 'pointer-events-none'
+                                  : 'cursor-pointer'
+                              } ${
+                                isSelected
+                                  ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200'
+                                  : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600'
+                              } ${
+                                editingSyllabus && !isSelected
+                                  ? 'opacity-50'
+                                  : ''
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name="formVersion"
+                                checked={isSelected}
+                                onChange={() => setFormVersion(ver.value)}
+                                disabled={formLoading || !!editingSyllabus}
+                                className="sr-only"
+                              />
+                              {ver.label}
+                            </label>
+                          );
+                        })}
                       </div>
-                    )}
+                    </div>
 
                     {/* Subject Selection Dropdown */}
-                    <div className={`space-y-2 ${(!config?.versions || config.versions.length > 1) ? 'sm:col-span-2' : ''}`}>
+                    <div className="space-y-2 sm:col-span-2">
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
                         বিষয় নির্বাচন (Subject)
                       </label>
@@ -654,7 +655,7 @@ export default function SyllabusManagement() {
                               {subjectsLoading ? (
                                 <span className="flex items-center gap-1.5"><Loader2 className="size-3 animate-spin" /> লোড হচ্ছে...</span>
                               ) : (
-                                formSubject ? `${formSubject} (${formSubjectCode})` : 'বিষয় নির্বাচন করুন'
+                                formSubject ? formSubject : 'বিষয় নির্বাচন করুন'
                               )}
                             </span>
                             <ChevronDown className={`size-4 text-slate-400 transition-transform duration-300 ${isFormSubjectDropdownOpen ? 'rotate-180' : ''}`} />
@@ -688,7 +689,7 @@ export default function SyllabusManagement() {
                                       : 'text-slate-700'
                                   }`}
                                 >
-                                  <span>{sub.subjectName} ({sub.subjectCode})</span>
+                                  <span>{sub.subjectName}</span>
                                   {isSelected && (
                                     <span className="size-1.5 rounded-full bg-indigo-500" />
                                   )}
@@ -708,7 +709,7 @@ export default function SyllabusManagement() {
                 <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/40 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-semibold">
                   <div>
                     <span className="text-slate-500 block uppercase text-[10px] tracking-wider mb-1.5">বিষয় কোড (Subject Code)</span>
-                    <span className="text-slate-800 font-bold bg-slate-100/70 px-2.5 py-1.5 rounded-lg border border-slate-200 inline-block font-mono">{formSubjectCode}</span>
+                    <span className="text-slate-800 font-bold bg-slate-100/70 px-2.5 py-1.5 rounded-lg border border-slate-200 inline-block font-mono">{formSubjectCode || 'কোড নেই'}</span>
                   </div>
                   <div>
                     <span className="text-slate-500 block uppercase text-[10px] tracking-wider mb-1.5">বিভাগ / গ্রুপ (Group)</span>

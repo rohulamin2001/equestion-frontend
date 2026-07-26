@@ -18,6 +18,7 @@ import {
   Loader2,
   Trash2,
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { useCreatedQuestions } from "./hook/useCreatedQuestions";
 
@@ -27,6 +28,7 @@ export default function CreatedQuestions() {
     setExpandedClass,
     selectedVersion,
     setSelectedVersion,
+    activeVersions = ["Bangla", "English", "Madrasah"],
     setToDelete,
     setSetToDelete,
     activeClasses,
@@ -69,219 +71,229 @@ export default function CreatedQuestions() {
         </Link>
       </div>
 
-      {/* Category selection tabs */}
-      <div className="flex justify-start">
-        <div className="bg-slate-100 p-1 rounded-xl flex flex-wrap gap-1 border border-slate-200/60 shadow-inner">
-          <button
-            onClick={() => {
-              setSelectedVersion("Bangla");
-              setExpandedClass(null);
-            }}
-            className={`px-4 py-2 rounded-lg text-xs font-bold font-bengali transition-all duration-200 flex items-center gap-2 cursor-pointer select-none ${
-              selectedVersion === "Bangla"
-                ? "bg-white text-indigo-600 shadow-sm"
-                : "text-slate-500 hover:text-slate-800 hover:bg-white/40"
-            }`}
-          >
-            বাংলা ভার্সন
-            <span
-              className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                selectedVersion === "Bangla"
-                  ? "bg-indigo-50 text-indigo-650"
-                  : "bg-slate-200/60 text-slate-500"
-              }`}
-            >
-              {versionCounts.bangla}
-            </span>
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedVersion("English");
-              setExpandedClass(null);
-            }}
-            className={`px-4 py-2 rounded-lg text-xs font-bold font-bengali transition-all duration-200 flex items-center gap-2 cursor-pointer select-none ${
-              selectedVersion === "English"
-                ? "bg-white text-indigo-600 shadow-sm"
-                : "text-slate-500 hover:text-slate-800 hover:bg-white/40"
-            }`}
-          >
-            ইংলিশ ভার্সন
-            <span
-              className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                selectedVersion === "English"
-                  ? "bg-indigo-50 text-indigo-650"
-                  : "bg-slate-200/60 text-slate-500"
-              }`}
-            >
-              {versionCounts.english}
-            </span>
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedVersion("Madrasah");
-              setExpandedClass(null);
-            }}
-            className={`px-4 py-2 rounded-lg text-xs font-bold font-bengali transition-all duration-200 flex items-center gap-2 cursor-pointer select-none ${
-              selectedVersion === "Madrasah"
-                ? "bg-white text-indigo-600 shadow-sm"
-                : "text-slate-500 hover:text-slate-800 hover:bg-white/40"
-            }`}
-          >
-            মাদ্রাসা
-            <span
-              className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                selectedVersion === "Madrasah"
-                  ? "bg-indigo-50 text-indigo-650"
-                  : "bg-slate-200/60 text-slate-500"
-              }`}
-            >
-              {versionCounts.madrasah}
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* Class folders grid */}
-      <div className="grid grid-cols-1 gap-4">
-        {activeClasses.map((clsName) => {
-          const label = translateSubscriptionKey(clsName);
-          const sets = questionSetsByClass[clsName] || [];
-          const isExpanded = expandedClass === clsName;
-
-          return (
-            <div
-              key={clsName}
-              className={`bg-glass-elevated border rounded-2xl transition-all duration-300 overflow-hidden ${
-                isExpanded
-                  ? "border-indigo-200 shadow-md ring-1 ring-indigo-500/5"
-                  : "border-slate-200/50 shadow-sm hover:border-slate-350"
-              }`}
-            >
-              {/* Folder Header */}
-              <div
-                onClick={() => setExpandedClass(isExpanded ? null : clsName)}
-                className="flex items-center justify-between p-5 cursor-pointer select-none"
-              >
-                <div className="flex items-center gap-4 text-left">
-                  <div
-                    className={`p-3 rounded-xl transition ${
-                      isExpanded
-                        ? "bg-indigo-50 text-indigo-600"
-                        : "bg-slate-50 text-slate-500"
+      {/* Category selection tabs - dynamically rendered from activeVersions */}
+      {activeVersions.length > 0 && (
+        <div className="flex justify-start">
+          <div className="bg-slate-100 p-1.5 rounded-2xl flex flex-wrap gap-1 border border-slate-200/60 shadow-inner relative">
+            {[
+              {
+                id: "Bangla",
+                label: "বাংলা ভার্সন",
+                count: versionCounts.bangla,
+              },
+              {
+                id: "English",
+                label: "ইংলিশ ভার্সন",
+                count: versionCounts.english,
+              },
+              {
+                id: "Madrasah",
+                label: "মাদ্রাসা",
+                count: versionCounts.madrasah,
+              },
+            ]
+              .filter((tab) => activeVersions.includes(tab.id))
+              .map((tab) => {
+                const isSelected = selectedVersion === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setSelectedVersion(tab.id);
+                      setExpandedClass(null);
+                    }}
+                    className={`relative px-4 py-2 rounded-xl text-xs font-bold font-bengali transition-colors duration-200 flex items-center gap-2 cursor-pointer select-none z-10 ${
+                      isSelected
+                        ? "text-indigo-700"
+                        : "text-slate-500 hover:text-slate-800"
                     }`}
                   >
-                    {isExpanded ? (
-                      <FolderOpen className="size-6" />
-                    ) : (
-                      <Folder className="size-6" />
+                    {isSelected && (
+                      <motion.div
+                        layoutId="activeCreatedVersionTab"
+                        className="absolute inset-0 bg-white rounded-xl shadow-sm border border-slate-200/50 -z-10"
+                        transition={{
+                          type: "spring",
+                          stiffness: 400,
+                          damping: 30,
+                        }}
+                      />
                     )}
-                  </div>
-                  <div>
-                    <h3 className="text-[15px] font-black text-slate-800 font-bengali">
-                      {label}
-                    </h3>
-                    <p className="text-[11px] text-slate-400 font-bold font-sans mt-0.5">
-                      মোট তৈরি করা প্রশ্ন সেট: {sets.length} টি
-                    </p>
-                  </div>
-                </div>
+                    <span>{tab.label}</span>
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
+                        isSelected
+                          ? "bg-indigo-50 text-indigo-700 font-extrabold"
+                          : "bg-slate-200/70 text-slate-500 font-bold"
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  </button>
+                );
+              })}
+          </div>
+        </div>
+      )}
 
-                <span className="text-xs font-bold text-slate-400 flex items-center gap-1">
-                  {isExpanded ? "বন্ধ করুন" : "খুলুন"}
-                </span>
-              </div>
+      {/* Class folders grid */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={selectedVersion}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -15 }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
+          className="grid grid-cols-1 gap-4"
+        >
+          {activeClasses.map((clsName) => {
+            const label = translateSubscriptionKey(clsName);
+            const sets = questionSetsByClass[clsName] || [];
+            const isExpanded = expandedClass === clsName;
 
-              {/* Folder Content - Accordion Panel */}
-              {isExpanded && (
-                <div className="border-t border-slate-100 bg-[#FAFAFC]/40 p-5">
-                  {sets.length === 0 ? (
-                    <div className="text-center py-8 space-y-2 border border-dashed border-slate-200 rounded-xl bg-white/50">
-                      <HelpCircle className="size-8 text-slate-300 mx-auto" />
-                      <p className="text-xs text-slate-400 font-semibold font-bengali">
-                        এই ক্লাসে এখনও কোনো প্রশ্ন সেট তৈরি করা হয়নি।
+            return (
+              <div
+                key={clsName}
+                className={`bg-glass-elevated border rounded-2xl transition-all duration-300 overflow-hidden ${
+                  isExpanded
+                    ? "border-indigo-200 shadow-md ring-1 ring-indigo-500/5"
+                    : "border-slate-200/50 shadow-sm hover:border-slate-350"
+                }`}
+              >
+                {/* Folder Header */}
+                <div
+                  onClick={() => setExpandedClass(isExpanded ? null : clsName)}
+                  className="flex items-center justify-between p-5 cursor-pointer select-none"
+                >
+                  <div className="flex items-center gap-4 text-left">
+                    <div
+                      className={`p-3 rounded-xl transition ${
+                        isExpanded
+                          ? "bg-indigo-50 text-indigo-600"
+                          : "bg-slate-50 text-slate-500"
+                      }`}
+                    >
+                      {isExpanded ? (
+                        <FolderOpen className="size-6" />
+                      ) : (
+                        <Folder className="size-6" />
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="text-[15px] font-black text-slate-800 font-bengali">
+                        {label}
+                      </h3>
+                      <p className="text-[11px] text-slate-400 font-bold font-sans mt-0.5">
+                        মোট তৈরি করা প্রশ্ন সেট: {sets.length} টি
                       </p>
                     </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {sets.map((set) => (
-                        <Link
-                          key={set._id}
-                          to={`/dashboard/questions?setId=${set._id}`}
-                          className="group relative flex items-start gap-4 p-4 border border-slate-200/50 bg-white hover:border-indigo-200 hover:bg-indigo-50/5 rounded-xl shadow-sm hover:shadow transition-all duration-200 text-left"
-                        >
-                          <div className="p-2.5 bg-indigo-50 text-indigo-500 rounded-xl">
-                            <FileText className="size-5" />
-                          </div>
+                  </div>
 
-                          <div className="space-y-1.5 flex-1 min-w-0 pr-8">
-                            <h4 className="text-[13px] font-black text-slate-800 font-bengali truncate group-hover:text-indigo-700 transition">
-                              {set.examName}
-                            </h4>
-
-                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-400 font-bold font-bengali">
-                              <span>
-                                বিষয়:{" "}
-                                <strong className="text-slate-600">
-                                  {set.subjectName}
-                                </strong>
-                              </span>
-                              <span className="h-3 w-px bg-slate-200 hidden sm:inline" />
-                              <span>
-                                মার্কস:{" "}
-                                <strong className="text-slate-600">
-                                  {set.totalMarks}
-                                </strong>
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-1 text-[10px] text-slate-400 font-sans mt-2">
-                              <Calendar className="size-3" />
-                              {new Date(set.createdAt).toLocaleDateString(
-                                "bn-BD",
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Delete Set Button */}
-                          <button
-                            onClick={(e) => handleDeleteClick(e, set._id)}
-                            disabled={deleteMutation.isPending}
-                            className="absolute right-3 top-3 p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-500 rounded-lg opacity-0 group-hover:opacity-100 transition cursor-pointer"
-                            title="মুছে ফেলুন"
-                          >
-                            <Trash2 className="size-3.5" />
-                          </button>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+                  <span className="text-xs font-bold text-slate-400 flex items-center gap-1">
+                    {isExpanded ? "বন্ধ করুন" : "খুলুন"}
+                  </span>
                 </div>
-              )}
-            </div>
-          );
-        })}
 
-        {activeClasses.length === 0 && (
-          <div className="text-center py-16 bg-glass-elevated border border-slate-200/50 rounded-2xl space-y-3">
-            <HelpCircle className="size-12 text-slate-300 mx-auto" />
-            <h3 className="text-sm font-bold text-slate-800 font-bengali">
-              কোনো সাবস্ক্রাইব করা ক্লাস নেই
-            </h3>
-            <p className="text-xs text-slate-400 font-semibold font-bengali max-w-md mx-auto">
-              প্রশ্ন সেট তৈরি করতে হলে প্রথমে আপনাকে প্যাকেজ বা ক্লাস
-              সাবস্ক্রাইব করতে হবে।
-            </p>
-            <Link
-              to="/dashboard/subscription"
-              className="inline-block px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold font-bengali shadow mt-2"
-            >
-              সাবস্ক্রিপশন কিনুন
-            </Link>
-          </div>
-        )}
-      </div>
+                {/* Folder Content - Accordion Panel */}
+                <AnimatePresence initial={false}>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="border-t border-slate-100 bg-[#FAFAFC]/40 p-5">
+                        {sets.length === 0 ? (
+                          <div className="text-center py-8 space-y-2 border border-dashed border-slate-200 rounded-xl bg-white/50">
+                            <HelpCircle className="size-8 text-slate-300 mx-auto" />
+                            <p className="text-xs text-slate-400 font-semibold font-bengali">
+                              এই ক্লাসে এখনও কোনো প্রশ্ন সেট তৈরি করা হয়নি।
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {sets.map((set) => (
+                              <Link
+                                key={set._id}
+                                to={`/dashboard/questions?setId=${set._id}`}
+                                className="group relative flex items-start gap-4 p-4 border border-slate-200/50 bg-white hover:border-indigo-200 hover:bg-indigo-50/5 rounded-xl shadow-sm hover:shadow transition-all duration-200 text-left"
+                              >
+                                <div className="p-2.5 bg-indigo-50 text-indigo-500 rounded-xl">
+                                  <FileText className="size-5" />
+                                </div>
+
+                                <div className="space-y-1.5 flex-1 min-w-0 pr-8">
+                                  <h4 className="text-[13px] font-black text-slate-800 font-bengali truncate group-hover:text-indigo-700 transition">
+                                    {set.examName}
+                                  </h4>
+
+                                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-400 font-bold font-bengali">
+                                    <span>
+                                      বিষয়:{" "}
+                                      <strong className="text-slate-600">
+                                        {set.subjectName}
+                                      </strong>
+                                    </span>
+                                    <span className="h-3 w-px bg-slate-200 hidden sm:inline" />
+                                    <span>
+                                      মার্কস:{" "}
+                                      <strong className="text-slate-600">
+                                        {set.totalMarks}
+                                      </strong>
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-1 text-[10px] text-slate-400 font-sans mt-2">
+                                    <Calendar className="size-3" />
+                                    {new Date(set.createdAt).toLocaleDateString(
+                                      "bn-BD",
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Delete Set Button */}
+                                <button
+                                  onClick={(e) => handleDeleteClick(e, set._id)}
+                                  disabled={deleteMutation.isPending}
+                                  className="absolute top-3.5 right-3.5 p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition opacity-0 group-hover:opacity-100 cursor-pointer"
+                                  title="মুছে ফেলুন"
+                                >
+                                  <Trash2 className="size-4" />
+                                </button>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+
+          {activeClasses.length === 0 && (
+            <div className="text-center py-16 bg-glass-elevated border border-slate-200/50 rounded-2xl space-y-3">
+              <HelpCircle className="size-12 text-slate-300 mx-auto" />
+              <h3 className="text-sm font-bold text-slate-800 font-bengali">
+                কোনো সাবস্ক্রাইব করা ক্লাস নেই
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold font-bengali max-w-md mx-auto">
+                প্রশ্ন সেট তৈরি করতে হলে প্রথমে আপনাকে প্যাকেজ বা ক্লাস
+                সাবস্ক্রাইব করতে হবে।
+              </p>
+              <Link
+                to="/dashboard/subscription"
+                className="inline-block px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold font-bengali shadow mt-2"
+              >
+                সাবস্ক্রিপশন কিনুন
+              </Link>
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
 
       {/* Delete Confirmation Alert Dialog */}
       <AlertDialog

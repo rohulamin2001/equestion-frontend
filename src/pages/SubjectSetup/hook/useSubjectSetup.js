@@ -84,9 +84,10 @@ export function useSubjectSetup() {
   const [subjectCategories, setSubjectCategories] = useState(['MCQ', 'Creative', 'ShortAnswer', 'BroadQuestion']);
 
   // Version Field
-  const [userSelectedVersion, setUserSelectedVersion] = useState('Bangla');
-  const defaultVersion = 'Bangla';
-  const subjectVersion = userSelectedVersion || defaultVersion;
+  const activeVersions = config?.versions && config.versions.length > 0 ? config.versions : ['Bangla', 'English', 'Madrasah'];
+  const defaultVersion = activeVersions.includes('Bangla') ? 'Bangla' : activeVersions[0];
+  const [userSelectedVersion, setUserSelectedVersion] = useState(null);
+  const subjectVersion = (userSelectedVersion && activeVersions.includes(userSelectedVersion)) ? userSelectedVersion : defaultVersion;
   const setSubjectVersion = setUserSelectedVersion;
 
   // Modal / Editing states
