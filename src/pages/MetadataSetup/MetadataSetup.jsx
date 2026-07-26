@@ -218,7 +218,7 @@ export default function MetadataSetup() {
 
     // Case-insensitive duplicate check
     const isDuplicate = rawMetadata.some(
-      (item) => item.name?.trim().toLowerCase() === trimmed.toLowerCase()
+      (item) => item.name?.trim().toLowerCase() === trimmed.toLowerCase(),
     );
     if (isDuplicate) {
       const tabLabel = TABS.find((t) => t.id === activeTab)?.label || "এন্ট্রি";
@@ -254,7 +254,7 @@ export default function MetadataSetup() {
     const isDuplicate = rawMetadata.some(
       (item) =>
         item._id !== editingItem?._id &&
-        item.name?.trim().toLowerCase() === trimmed.toLowerCase()
+        item.name?.trim().toLowerCase() === trimmed.toLowerCase(),
     );
     if (isDuplicate) {
       const tabLabel = TABS.find((t) => t.id === activeTab)?.label || "এন্ট্রি";

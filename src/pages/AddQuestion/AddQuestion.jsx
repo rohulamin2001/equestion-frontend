@@ -13,6 +13,7 @@ import {
   RippleButton,
   RippleButtonRipples,
 } from "@/components/ui/ripple-button";
+import { useState } from "react";
 import {
   AlertCircle,
   BookOpen,
@@ -26,6 +27,7 @@ import {
   Pencil,
   Plus,
   Save,
+  Search,
   Trash2,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -53,6 +55,7 @@ const stripHtml = (html) => {
 };
 
 export default function AddQuestion() {
+  const [schoolSearchQuery, setSchoolSearchQuery] = useState("");
   const {
     qm,
     activeDropdown,
@@ -1410,47 +1413,111 @@ export default function AddQuestion() {
                         <>
                           <div
                             className="fixed inset-0 z-10"
-                            onClick={() => setActiveDropdown(null)}
+                            onClick={() => {
+                              setActiveDropdown(null);
+                              setSchoolSearchQuery("");
+                            }}
                           />
-                          <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-52 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                          <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-64 overflow-y-auto p-1.5 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                            {/* Sticky Search Input */}
+                            <div className="sticky top-0 bg-white pt-0.5 pb-1 px-0.5 border-b border-slate-100 z-10">
+                              <div className="relative">
+                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
+                                <input
+                                  type="text"
+                                  value={schoolSearchQuery}
+                                  onChange={(e) =>
+                                    setSchoolSearchQuery(e.target.value)
+                                  }
+                                  placeholder="স্কুল নাম লিখে খুঁজুন..."
+                                  className="w-full pl-8 pr-7 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#4F46E5] bg-slate-50/50"
+                                  autoFocus
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                                {schoolSearchQuery && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSchoolSearchQuery("");
+                                    }}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold transition p-0.5"
+                                    title="ক্লিয়ার করুন"
+                                  >
+                                    ✕
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+
                             <button
                               type="button"
                               onClick={() => {
                                 qm.setFormSchool([]);
                               }}
-                              className="w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:bg-slate-50"
+                              className="w-full text-left px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50"
                             >
                               রিসেট / খালি করুন
                             </button>
-                            {activeSchools.map((sch) => {
-                              const isSelected =
-                                qm.formSchool &&
-                                qm.formSchool.includes(sch.name);
-                              return (
-                                <button
-                                  key={sch._id}
-                                  type="button"
-                                  onClick={() => {
-                                    const nextSchools = isSelected
-                                      ? qm.formSchool.filter(
-                                          (s) => s !== sch.name,
-                                        )
-                                      : [...(qm.formSchool || []), sch.name];
-                                    qm.setFormSchool(nextSchools);
-                                  }}
-                                  className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex justify-between items-center ${
-                                    isSelected
-                                      ? "bg-[#4F46E5]/10 text-[#4F46E5]"
-                                      : "text-slate-700 hover:bg-slate-50"
-                                  }`}
-                                >
-                                  <span>{sch.name}</span>
-                                  {isSelected && (
-                                    <Check className="size-4 shrink-0 text-[#4F46E5]" />
-                                  )}
-                                </button>
-                              );
-                            })}
+
+                            {activeSchools.filter((sch) =>
+                              !schoolSearchQuery.trim()
+                                ? true
+                                : sch.name
+                                    ?.toLowerCase()
+                                    .includes(
+                                      schoolSearchQuery.toLowerCase().trim(),
+                                    ),
+                            ).length === 0 ? (
+                              <div className="px-3 py-3 text-xs text-slate-400 text-center italic">
+                                &ldquo;{schoolSearchQuery}&rdquo; দিয়ে কোনো স্কুল পাওয়া যায়নি
+                              </div>
+                            ) : (
+                              activeSchools
+                                .filter((sch) =>
+                                  !schoolSearchQuery.trim()
+                                    ? true
+                                    : sch.name
+                                        ?.toLowerCase()
+                                        .includes(
+                                          schoolSearchQuery
+                                            .toLowerCase()
+                                            .trim(),
+                                        ),
+                                )
+                                .map((sch) => {
+                                  const isSelected =
+                                    qm.formSchool &&
+                                    qm.formSchool.includes(sch.name);
+                                  return (
+                                    <button
+                                      key={sch._id}
+                                      type="button"
+                                      onClick={() => {
+                                        const nextSchools = isSelected
+                                          ? qm.formSchool.filter(
+                                              (s) => s !== sch.name,
+                                            )
+                                          : [
+                                              ...(qm.formSchool || []),
+                                              sch.name,
+                                            ];
+                                        qm.setFormSchool(nextSchools);
+                                      }}
+                                      className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex justify-between items-center ${
+                                        isSelected
+                                          ? "bg-[#4F46E5]/10 text-[#4F46E5]"
+                                          : "text-slate-700 hover:bg-slate-50"
+                                      }`}
+                                    >
+                                      <span>{sch.name}</span>
+                                      {isSelected && (
+                                        <Check className="size-4 shrink-0 text-[#4F46E5]" />
+                                      )}
+                                    </button>
+                                  );
+                                })
+                            )}
                           </div>
                         </>
                       )}
