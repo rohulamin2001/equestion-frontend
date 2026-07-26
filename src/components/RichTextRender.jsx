@@ -89,7 +89,7 @@ export default function RichTextRender({
   if (inline) {
     return (
       <span
-        className={`inline [&_*]:inline [&_p]:inline [&_p]:m-0 [&_p]:p-0 text-inherit select-text break-words jodit-rendered-content ${className}`}
+        className={`inline [&_*]:inline [&_*]:!text-inherit [&_p]:inline [&_p]:m-0 [&_p]:p-0 text-inherit select-text break-words jodit-rendered-content ${className}`}
         dangerouslySetInnerHTML={{ __html: renderedContent }}
         {...props}
       />

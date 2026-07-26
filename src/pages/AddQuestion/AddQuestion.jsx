@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -1817,18 +1816,21 @@ export default function AddQuestion() {
                               <div className="space-y-3">
                                 {q.mcqData.mcqType === "Contextual" &&
                                   q.mcqData.stem && (
-                                    <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm italic font-serif leading-relaxed">
-                                      <strong>উদ্দীপক:</strong>
+                                    <div className="text-[14px] leading-relaxed font-serif text-slate-800">
+                                      <strong className="font-bold text-slate-900 mr-1.5">
+                                        উদ্দীপক:
+                                      </strong>
                                       <RichTextRender
                                         content={q.mcqData.stem}
-                                        className="mt-1"
+                                        inline={true}
+                                        className="inline text-[14px] leading-relaxed font-serif text-slate-800"
                                       />
                                     </div>
                                   )}
 
                                 <div className="text-[15px] flex justify-between items-start gap-4 w-full text-slate-800">
                                   <div className="flex gap-2">
-                                    <span className="font-bold shrink-0">
+                                    <span className="font-normal text-black shrink-0">
                                       {(idx + 1).toLocaleString("bn-BD")}.
                                     </span>
                                     <RichTextRender
@@ -1876,14 +1878,14 @@ export default function AddQuestion() {
                                   )}
 
                                 {/* Options Grid */}
-                                <div className="grid grid-cols-2 gap-x-8 gap-y-2 pl-6 text-sm font-sans text-slate-700">
+                                <div className="grid grid-cols-2 gap-x-8 gap-y-2 pl-6 text-sm font-sans text-black">
                                   {q.mcqData.options &&
                                     q.mcqData.options.map((opt, oIdx) => (
                                       <div
                                         key={oIdx}
                                         className="flex gap-1.5 items-center"
                                       >
-                                        <span className="text-slate-400 shrink-0 font-semibold">
+                                        <span className="text-black shrink-0 font-normal">
                                           {oIdx === 0
                                             ? "ক)"
                                             : oIdx === 1
@@ -1894,7 +1896,7 @@ export default function AddQuestion() {
                                         </span>
                                         <RichTextRender
                                           content={opt || "অপশন..."}
-                                          className="inline-block font-sans [&_p]:inline [&_p]:m-0 font-normal"
+                                          className="inline-block font-sans [&_p]:inline [&_p]:m-0 font-normal text-[14px]"
                                         />
                                       </div>
                                     ))}
@@ -1920,17 +1922,24 @@ export default function AddQuestion() {
                             {q.category === "Creative" && q.creativeData && (
                               <div className="space-y-5">
                                 {q.creativeData.stem && (
-                                  <div className="p-5 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm leading-relaxed font-serif">
+                                  <div className="text-[14px] leading-relaxed font-serif text-slate-800">
+                                    <strong className="font-bold text-slate-900 mr-1.5">
+                                      উদ্দীপক:
+                                    </strong>
                                     <RichTextRender
                                       content={q.creativeData.stem}
+                                      inline={true}
+                                      className="inline text-[14px] leading-relaxed font-serif text-slate-800"
                                     />
                                   </div>
                                 )}
 
-                                <div className="pl-4 space-y-3.5 text-sm font-sans font-normal text-slate-700">
+                                <div className="pl-2 space-y-3.5 text-[14px] font-sans font-normal text-slate-800">
                                   <div className="flex flex-col gap-2">
                                     <div className="flex justify-between items-start gap-2">
-                                      <span className="w-6">ক.</span>
+                                      <span className="w-6 font-normal text-black">
+                                        ক.
+                                      </span>
                                       <span className="flex-1 font-serif font-normal text-slate-800">
                                         {q.creativeData.subQuestions?.cognitiveA
                                           ?.text || "জ্ঞানমূলক প্রশ্ন..."}
@@ -1944,8 +1953,8 @@ export default function AddQuestion() {
                                     </div>
                                     {q.creativeData.subQuestions?.cognitiveA
                                       ?.answer && (
-                                      <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[15px] text-green-800 font-serif">
-                                        <span className="font-bold text-green-700 mr-1.5">
+                                      <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[14px] text-green-800 font-serif">
+                                        <span className="font-bold text-green-700 mr-1.5 text-[14px]">
                                           উত্তর:
                                         </span>
                                         <RichTextRender
@@ -1954,13 +1963,16 @@ export default function AddQuestion() {
                                               .cognitiveA.answer
                                           }
                                           inline={true}
+                                          className="inline text-[14px] font-serif [&_*]:!text-[14px] [&_p]:inline [&_p]:m-0"
                                         />
                                       </div>
                                     )}
                                   </div>
                                   <div className="flex flex-col gap-2">
                                     <div className="flex justify-between items-start gap-2">
-                                      <span className="w-6">খ.</span>
+                                      <span className="w-6 font-normal text-black">
+                                        খ.
+                                      </span>
                                       <span className="flex-1 font-serif font-normal text-slate-800">
                                         {q.creativeData.subQuestions?.cognitiveB
                                           ?.text || "অনুধাবনমূলক প্রশ্ন..."}
@@ -1974,8 +1986,8 @@ export default function AddQuestion() {
                                     </div>
                                     {q.creativeData.subQuestions?.cognitiveB
                                       ?.answer && (
-                                      <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[15px] text-green-800 font-serif">
-                                        <span className="font-bold text-green-700 mr-1.5">
+                                      <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[14px] text-green-800 font-serif">
+                                        <span className="font-bold text-green-700 mr-1.5 text-[14px]">
                                           উত্তর:
                                         </span>
                                         <RichTextRender
@@ -1984,13 +1996,16 @@ export default function AddQuestion() {
                                               .cognitiveB.answer
                                           }
                                           inline={true}
+                                          className="inline text-[14px] font-serif [&_*]:!text-[14px] [&_p]:inline [&_p]:m-0"
                                         />
                                       </div>
                                     )}
                                   </div>
                                   <div className="flex flex-col gap-2">
                                     <div className="flex justify-between items-start gap-2">
-                                      <span className="w-6">গ.</span>
+                                      <span className="w-6 font-normal text-black">
+                                        গ.
+                                      </span>
                                       <span className="flex-1 font-serif font-normal text-slate-800">
                                         {q.creativeData.subQuestions?.cognitiveC
                                           ?.text || "প্রয়োগমূলক প্রশ্ন..."}
@@ -2020,7 +2035,9 @@ export default function AddQuestion() {
                                   </div>
                                   <div className="flex flex-col gap-2">
                                     <div className="flex justify-between items-start gap-2">
-                                      <span className="w-6">ঘ.</span>
+                                      <span className="w-6 font-normal text-black">
+                                        ঘ.
+                                      </span>
                                       <span className="flex-1 font-serif font-normal text-slate-800">
                                         {q.creativeData.subQuestions?.cognitiveD
                                           ?.text ||
@@ -2067,7 +2084,7 @@ export default function AddQuestion() {
 
                                   <div className="text-[15px] flex justify-between items-start gap-4 w-full text-slate-800">
                                     <div className="flex gap-2">
-                                      <span className="font-bold shrink-0">
+                                      <span className="font-normal text-black shrink-0">
                                         {(idx + 1).toLocaleString("bn-BD")}.
                                       </span>
                                       <RichTextRender
@@ -2178,11 +2195,14 @@ export default function AddQuestion() {
                       {qm.formCategory === "MCQ" && qm.mcqQuestionText && (
                         <div className="space-y-4">
                           {qm.mcqType === "Contextual" && qm.mcqStem && (
-                            <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm italic font-serif">
-                              <strong>উদ্দীপক:</strong>
+                            <div className="text-[14px] leading-relaxed font-serif text-slate-800">
+                              <strong className="font-bold text-slate-900 mr-1.5">
+                                উদ্দীপক:
+                              </strong>
                               <RichTextRender
                                 content={qm.mcqStem}
-                                className="mt-1"
+                                inline={true}
+                                className="inline text-[14px] leading-relaxed font-serif text-slate-800"
                               />
                             </div>
                           )}
@@ -2190,13 +2210,15 @@ export default function AddQuestion() {
                           <div className="space-y-2.5">
                             <div className="text-[15px] flex justify-between items-start gap-4 w-full">
                               <div className="flex gap-2">
-                                <span className="font-bold shrink-0">১.</span>
+                                <span className="font-normal text-black shrink-0">
+                                  ১.
+                                </span>
                                 <RichTextRender
                                   content={qm.mcqQuestionText || "প্রশ্ন বিবরণ"}
                                 />
                               </div>
-                              <span className="text-slate-400 text-xs font-sans font-bold whitespace-nowrap pt-1           font-serif">
-                                1
+                              <span className="text-slate-700 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
+                                ১
                               </span>
                             </div>
                             {qm.mcqType === "MultipleCompletion" && (
@@ -2229,13 +2251,13 @@ export default function AddQuestion() {
                             )}
 
                             {/* Options Grid */}
-                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 pl-6 text-sm font-sans text-slate-700">
+                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 pl-6 text-[14px] font-sans text-black">
                               {qm.mcqOptions.map((opt, idx) => (
                                 <div
                                   key={idx}
                                   className="flex gap-1.5 items-start"
                                 >
-                                  <span className="font-semibold text-slate-500 shrink-0">
+                                  <span className="font-normal text-black shrink-0">
                                     {idx === 0
                                       ? "ক)"
                                       : idx === 1
@@ -2246,7 +2268,7 @@ export default function AddQuestion() {
                                   </span>
                                   <RichTextRender
                                     content={opt || "অপশন..."}
-                                    className="inline-block font-sans [&_p]:inline [&_p]:m-0 font-normal text-slate-600"
+                                    className="inline-block font-sans [&_p]:inline [&_p]:m-0 font-normal text-black"
                                   />
                                 </div>
                               ))}
@@ -2271,18 +2293,27 @@ export default function AddQuestion() {
                       )}
 
                       {qm.formCategory === "Creative" && qm.creativeStem && (
-                        <div className="space-y-5">
+                        <div className="space-y-4">
                           {qm.creativeStem && (
-                            <div className="p-5 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm leading-relaxed font-serif">
-                              <RichTextRender content={qm.creativeStem} />
+                            <div className="text-[14px] leading-relaxed font-serif text-slate-800">
+                              <strong className="font-bold text-slate-900 mr-1.5">
+                                উদ্দীপক:
+                              </strong>
+                              <RichTextRender
+                                content={qm.creativeStem}
+                                inline={true}
+                                className="inline text-[14px] leading-relaxed font-serif text-slate-800"
+                              />
                             </div>
                           )}
 
-                          <div className="pl-4 space-y-3.5 text-sm font-sans font-normal text-slate-700">
+                          <div className="pl-2 space-y-3.5 text-[14px] font-sans font-normal text-slate-800">
                             <div className="flex flex-col gap-2">
-                              <div className="flex justify-between items-start ">
-                                <span className="w-6">ক.</span>
-                                <span className="flex-1 font-serif font-normal text-slate-800">
+                              <div className="flex justify-between items-start gap-2">
+                                <span className="w-6 font-normal text-black">
+                                  ক.
+                                </span>
+                                <span className="flex-1 font-serif font-normal text-slate-800 text-[14px]">
                                   {qm.creativeCognitiveA ||
                                     "জ্ঞানমূলক প্রশ্ন..."}
                                 </span>
@@ -2291,21 +2322,24 @@ export default function AddQuestion() {
                                 </span>
                               </div>
                               {qm.creativeCognitiveA_Answer && (
-                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
-                                  <span className="font-bold text-green-700 mr-1.5">
+                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[14px] text-green-800 font-serif">
+                                  <span className="font-bold text-green-700 mr-1.5 text-[14px]">
                                     উত্তর:
                                   </span>
                                   <RichTextRender
                                     content={qm.creativeCognitiveA_Answer}
                                     inline={true}
+                                    className="inline text-[14px] font-serif [&_*]:!text-[14px] [&_p]:inline [&_p]:m-0"
                                   />
                                 </div>
                               )}
                             </div>
                             <div className="flex flex-col gap-2">
-                              <div className="flex justify-between items-start">
-                                <span className="w-6">খ.</span>
-                                <span className="flex-1 font-serif font-normal text-slate-800">
+                              <div className="flex justify-between items-start gap-2">
+                                <span className="w-6 font-normal text-black">
+                                  খ.
+                                </span>
+                                <span className="flex-1 font-serif font-normal text-slate-800 text-[14px]">
                                   {qm.creativeCognitiveB ||
                                     "অনুধাবনমূলক প্রশ্ন..."}
                                 </span>
@@ -2314,21 +2348,24 @@ export default function AddQuestion() {
                                 </span>
                               </div>
                               {qm.creativeCognitiveB_Answer && (
-                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
-                                  <span className="font-bold text-green-700 mr-1.5">
+                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[14px] text-green-800 font-serif">
+                                  <span className="font-bold text-green-700 mr-1.5 text-[14px]">
                                     উত্তর:
                                   </span>
                                   <RichTextRender
                                     content={qm.creativeCognitiveB_Answer}
                                     inline={true}
+                                    className="inline text-[14px] font-serif [&_*]:!text-[14px] [&_p]:inline [&_p]:m-0"
                                   />
                                 </div>
                               )}
                             </div>
                             <div className="flex flex-col gap-2">
-                              <div className="flex justify-between items-start">
-                                <span className="w-6">গ.</span>
-                                <span className="flex-1 font-serif font-normal text-slate-800">
+                              <div className="flex justify-between items-start gap-2">
+                                <span className="w-6 font-normal text-black">
+                                  গ.
+                                </span>
+                                <span className="flex-1 font-serif font-normal text-slate-800 text-[14px]">
                                   {qm.creativeCognitiveC ||
                                     "প্রয়োগমূলক প্রশ্ন..."}
                                 </span>
@@ -2337,21 +2374,24 @@ export default function AddQuestion() {
                                 </span>
                               </div>
                               {qm.creativeCognitiveC_Answer && (
-                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
-                                  <span className="font-bold text-green-700 mr-1.5">
+                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[14px] text-green-800 font-serif">
+                                  <span className="font-bold text-green-700 mr-1.5 text-[14px]">
                                     উত্তর:
                                   </span>
                                   <RichTextRender
                                     content={qm.creativeCognitiveC_Answer}
                                     inline={true}
+                                    className="inline text-[14px] font-serif [&_*]:!text-[14px] [&_p]:inline [&_p]:m-0"
                                   />
                                 </div>
                               )}
                             </div>
                             <div className="flex flex-col gap-2">
-                              <div className="flex justify-between items-start">
-                                <span className="w-6">ঘ.</span>
-                                <span className="flex-1 font-serif font-normal text-slate-800">
+                              <div className="flex justify-between items-start gap-2">
+                                <span className="w-6 font-normal text-black">
+                                  ঘ.
+                                </span>
+                                <span className="flex-1 font-serif font-normal text-slate-800 text-[14px]">
                                   {qm.creativeCognitiveD ||
                                     "উচ্চতর চিন্তাদক্ষতা প্রশ্ন..."}
                                 </span>
@@ -2360,13 +2400,14 @@ export default function AddQuestion() {
                                 </span>
                               </div>
                               {qm.creativeCognitiveD_Answer && (
-                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
-                                  <span className="font-bold text-green-700 mr-1.5">
+                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[14px] text-green-800 font-serif">
+                                  <span className="font-bold text-green-700 mr-1.5 text-[14px]">
                                     উত্তর:
                                   </span>
                                   <RichTextRender
                                     content={qm.creativeCognitiveD_Answer}
                                     inline={true}
+                                    className="inline text-[14px] font-serif [&_*]:!text-[14px] [&_p]:inline [&_p]:m-0"
                                   />
                                 </div>
                               )}
@@ -2462,39 +2503,46 @@ export default function AddQuestion() {
         open={!!deleteConfirmId}
         onOpenChange={(open) => !open && setDeleteConfirmId(null)}
       >
-        <DialogContent className="max-w-md border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-650 font-bold">
-              <AlertCircle
-                className="size-5 animate-pulse text-red-500"
-                strokeWidth={2.5}
-              />
-              প্রশ্নটি কি মুছে ফেলতে চান?
-            </DialogTitle>
-            <DialogDescription className="pt-2 text-slate-600 leading-relaxed font-semibold">
-              প্রশ্নটি মুছে ফেললে তা তালিকা থেকে সম্পূর্ণভাবে চলে যাবে। আপনি কি
-              নিশ্চিতভাবে এটি মুছে ফেলতে চান?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex gap-2 justify-end mt-4">
-            <Button
-              variant="outline"
-              onClick={() => setDeleteConfirmId(null)}
-              className="border-black/[0.08] text-slate-600 hover:bg-black/[0.02] rounded-xl font-semibold cursor-pointer"
-            >
-              বাতিল করুন
-            </Button>
-            <Button
-              onClick={() => {
-                qm.removeQuestionFromList(deleteConfirmId);
-                setDeleteConfirmId(null);
-              }}
-              className="bg-red-650 hover:bg-red-700 text-white rounded-xl font-semibold cursor-pointer flex items-center gap-1.5 shadow-sm shadow-red-500/10"
-            >
-              <Trash2 className="size-4" />
-              হ্যাঁ, মুছে ফেলুন
-            </Button>
-          </DialogFooter>
+        <DialogContent className="max-w-md p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative font-bengali">
+          <div className="p-6 space-y-4">
+            <DialogHeader className="space-y-3 text-left">
+              <div className="size-12 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 shadow-sm">
+                <AlertCircle
+                  className="size-6 text-rose-600 animate-pulse"
+                  strokeWidth={2.5}
+                />
+              </div>
+              <DialogTitle className="text-lg font-bold text-slate-900 tracking-tight">
+                প্রশ্নটি কি মুছে ফেলতে চান?
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-600 leading-relaxed font-medium">
+                প্রশ্নটি মুছে ফেললে তা তালিকা থেকে সম্পূর্ণভাবে চলে যাবে। আপনি
+                কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200/60">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDeleteConfirmId(null)}
+                className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 font-semibold text-xs transition cursor-pointer shadow-sm h-10"
+              >
+                বাতিল করুন
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  qm.removeQuestionFromList(deleteConfirmId);
+                  setDeleteConfirmId(null);
+                }}
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-bold text-xs shadow-md shadow-red-500/20 transition flex items-center gap-2 cursor-pointer h-10"
+              >
+                <Trash2 className="size-4 text-white" />
+                হ্যাঁ, মুছে ফেলুন
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

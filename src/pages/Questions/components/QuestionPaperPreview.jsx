@@ -795,10 +795,10 @@ export default function QuestionPaperPreview({
                               inline={true}
                               placeholder="সিরিয়াল"
                             />
-                            <div className="flex-1 space-y-2">
+                            <div className="flex-1 space-y-2 ">
                               {/* MCQ format */}
                               {q.category === "MCQ" && q.mcqData && (
-                                <div className="space-y-2">
+                                <div className="space-y-2 ">
                                   <div className="font-normal">
                                     <InlineEditable
                                       value={q.mcqData.questionText}
