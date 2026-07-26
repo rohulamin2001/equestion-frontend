@@ -795,10 +795,10 @@ export default function QuestionPaperPreview({
                               inline={true}
                               placeholder="সিরিয়াল"
                             />
-                            <div className="flex-1 space-y-2 ">
+                            <div className="flex-1 space-y-1">
                               {/* MCQ format */}
                               {q.category === "MCQ" && q.mcqData && (
-                                <div className="space-y-2 ">
+                                <div className="space-y-1">
                                   <div className="font-normal">
                                     <InlineEditable
                                       value={q.mcqData.questionText}
@@ -815,7 +815,7 @@ export default function QuestionPaperPreview({
                                     />
                                   </div>
                                   {q.mcqData.options && (
-                                    <div className="grid grid-cols-2  text-black text-inherit">
+                                    <div className="grid grid-cols-2 text-black text-inherit !mt-0.5">
                                       {q.mcqData.options.map((opt, oIdx) => {
                                         const prefix = ["ক", "খ", "গ", "ঘ"][
                                           oIdx
