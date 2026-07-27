@@ -399,11 +399,11 @@ export default function MyQuestions() {
             )}
           </div>
 
-          <div className="flex gap-2 w-full sm:w-auto shrink-0 justify-end flex-wrap sm:flex-nowrap">
+          <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto shrink-0 justify-center sm:justify-end flex-nowrap overflow-x-auto no-scrollbar py-0.5">
             <Button
               variant="outline"
               onClick={qm.toggleSortOrder}
-              className="border-black/[0.08] text-slate-700 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2.5 sm:px-4 text-xs sm:text-sm flex items-center gap-1.5 font-semibold cursor-pointer backdrop-blur-sm transition-all shadow-sm"
+              className="border-black/[0.08] text-slate-700 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2 sm:px-4 text-[11px] sm:text-sm flex items-center gap-1 sm:gap-1.5 font-semibold cursor-pointer backdrop-blur-sm transition-all shadow-sm shrink-0 whitespace-nowrap"
               title={
                 qm.sortOrder === "desc"
                   ? "নতুন থেকে পুরাতন (সর্বশেষ প্রশ্ন আগে)"
@@ -412,12 +412,12 @@ export default function MyQuestions() {
             >
               {qm.sortOrder === "desc" ? (
                 <>
-                  <ArrowDownWideNarrow className="size-3.5 sm:size-4 text-indigo-600" />
+                  <ArrowDownWideNarrow className="size-3 sm:size-4 text-indigo-600 shrink-0" />
                   <span>নতুন থেকে পুরাতন</span>
                 </>
               ) : (
                 <>
-                  <ArrowUpNarrowWide className="size-3.5 sm:size-4 text-indigo-600" />
+                  <ArrowUpNarrowWide className="size-3 sm:size-4 text-indigo-600 shrink-0" />
                   <span>পুরাতন থেকে নতুন</span>
                 </>
               )}
@@ -425,22 +425,22 @@ export default function MyQuestions() {
             <Button
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
-              className={`border-black/[0.08] text-slate-600 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2.5 sm:px-4 text-xs sm:text-sm flex items-center gap-1.5 font-semibold ${
+              className={`border-black/[0.08] text-slate-600 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2 sm:px-4 text-[11px] sm:text-sm flex items-center gap-1 sm:gap-1.5 font-semibold shrink-0 whitespace-nowrap ${
                 showFilters
                   ? "bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5]"
                   : ""
               }`}
             >
-              <Filter className="size-3.5 sm:size-4" />
-              ফিল্টারসমূহ
+              <Filter className="size-3 sm:size-4 shrink-0" />
+              ফিল্টার
               <ChevronDown
-                className={`size-3.5 sm:size-4 transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
+                className={`size-3 sm:size-4 transition-transform duration-200 shrink-0 ${showFilters ? "rotate-180" : ""}`}
               />
             </Button>
             <Button
               variant="outline"
               onClick={() => setShowAnswers(!showAnswers)}
-              className={`border-black/[0.08] text-slate-600 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2.5 sm:px-4 text-xs sm:text-sm flex items-center gap-1.5 font-semibold ${
+              className={`border-black/[0.08] text-slate-600 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2 sm:px-4 text-[11px] sm:text-sm flex items-center gap-1 sm:gap-1.5 font-semibold shrink-0 whitespace-nowrap ${
                 showAnswers
                   ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600"
                   : ""
@@ -453,7 +453,7 @@ export default function MyQuestions() {
               <Button
                 variant="ghost"
                 onClick={handleResetFilters}
-                className="text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl h-8 sm:h-11 px-2.5 sm:px-3.5 text-xs sm:text-sm font-semibold transition"
+                className="text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl h-8 sm:h-11 px-2 sm:px-3.5 text-[11px] sm:text-sm font-semibold transition shrink-0 whitespace-nowrap"
               >
                 রিসেট
               </Button>
