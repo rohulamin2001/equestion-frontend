@@ -670,9 +670,15 @@ export function useQuestionManagement(options = {}) {
 
   // Delete Question Mutation
   const deleteQuestionMutation = useMutation({
-    mutationFn: async (id) => {
+    mutationFn: async (target) => {
       const token = await getToken();
-      await apiClient.delete(`/questions/${id}`, {
+      const id = typeof target === "object" ? target.id : target;
+      const deleteAllGroup =
+        typeof target === "object" ? target.deleteAllGroup : false;
+      const url = deleteAllGroup
+        ? `/questions/${id}?deleteAllGroup=true`
+        : `/questions/${id}`;
+      await apiClient.delete(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
     },
@@ -755,6 +761,7 @@ export function useQuestionManagement(options = {}) {
             ...payload,
             passageGroupId: groupId,
             passageStem: stemText,
+            passageOrder: i,
             mcqData: {
               mcqType: mq.mcqType,
               questionText: mq.mcqQuestionText.trim(),
@@ -1363,9 +1370,11 @@ export function useQuestionManagement(options = {}) {
         const updatePromises = [];
         const newPayloads = [];
 
-        for (const mq of mcqGroupQuestions) {
+        for (let i = 0; i < mcqGroupQuestions.length; i++) {
+          const mq = mcqGroupQuestions[i];
           const itemPayload = {
             ...basePayload,
+            passageOrder: i,
             mcqData: {
               mcqType: mq.mcqType,
               questionText: mq.mcqQuestionText.trim(),

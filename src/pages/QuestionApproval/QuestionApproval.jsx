@@ -1144,6 +1144,53 @@ export default function QuestionApproval() {
                       );
                     })}
                   </div>
+
+                  {/* Footer Metadata & Action Buttons */}
+                  <div
+                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-t border-black/[0.05] pt-3 gap-3 text-[11px] font-sans text-slate-500"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex flex-wrap items-center gap-4 font-medium">
+                      <div className="flex items-center gap-1">
+                        <User className="size-3.5 text-slate-400" />
+                        <span>
+                          তৈরি করেছেন:{" "}
+                          {qMeta.creatorId?.fullName || "Content Creator"}
+                          {qMeta.creatorId?.role
+                            ? ` (${qMeta.creatorId.role})`
+                            : ""}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="size-3.5 text-slate-400" />
+                        <span>তারিখ: {formatBengaliDate(qMeta.createdAt)}</span>
+                      </div>
+                      {qMeta.status === "Approved" && qMeta.approvedBy?.fullName && (
+                        <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
+                          <Check className="size-3 text-emerald-600" />
+                          <span>অনুমোদনকারী: {qMeta.approvedBy.fullName}</span>
+                        </div>
+                      )}
+                      {qMeta.status === "Rejected" && qMeta.rejectedBy?.fullName && (
+                        <div className="flex items-center gap-1 text-rose-600 bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/10">
+                          <XCircle className="size-3 text-rose-600" />
+                          <span>বাতিলকারী: {qMeta.rejectedBy.fullName}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setSelectedPreviewQuestion(item.questions[0])}
+                        className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                      >
+                        <Eye className="size-3" />
+                        বিস্তারিত
+                      </Button>
+                    </div>
+                  </div>
                 </motion.div>
               );
             }

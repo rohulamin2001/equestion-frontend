@@ -114,8 +114,6 @@ export default function QuestionBank() {
     setDeleteConfirmId,
     showFilters,
     setShowFilters,
-    selectedQuestionIds,
-    handleToggleSelect,
     filterActiveTypes,
     filterActiveLevels,
     filterActiveClasses,
@@ -1038,19 +1036,6 @@ export default function QuestionBank() {
                           <Eye className="size-3.5" />
                           সবগুলোর উত্তর দেখান
                         </button>
-                        {canManageQuestion(qMeta) && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEdit(item);
-                            }}
-                            className="p-1.5 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-semibold px-2.5 gap-1 font-sans cursor-pointer flex items-center shrink-0"
-                          >
-                            <Edit3 className="size-3.5" />
-                            এডিট করুন
-                          </button>
-                        )}
                       </div>
                     </div>
 
@@ -1076,7 +1061,6 @@ export default function QuestionBank() {
                           label: q.difficulty,
                           color: "text-slate-600 border-slate-200 bg-slate-50",
                         };
-                        const isSelected = selectedQuestionIds.includes(q._id);
 
                         return (
                           <div
@@ -1116,18 +1100,6 @@ export default function QuestionBank() {
                                   ) : (
                                     <Eye className="size-3.5" />
                                   )}
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleToggleSelect(q._id)}
-                                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs ${
-                                    isSelected
-                                      ? "bg-indigo-600 text-white border border-indigo-600"
-                                      : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
-                                  }`}
-                                >
-                                  <CheckSquare className="size-3.5" />
-                                  {isSelected ? "বাছাইকৃত" : "বাছাই করুন"}
                                 </button>
                               </div>
                             </div>
@@ -1224,6 +1196,61 @@ export default function QuestionBank() {
                           </div>
                         );
                       })}
+                    </div>
+
+                    {/* Footer Metadata & Action Buttons */}
+                    <div
+                      className="flex justify-between items-center border-t border-black/[0.05] pt-3 text-[11px] font-sans text-slate-500"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex flex-wrap items-center gap-4 font-medium">
+                        <div className="flex items-center gap-1">
+                          <User className="size-3.5 text-slate-400" />
+                          <span>
+                            তৈরি করেছেন:{" "}
+                            {qMeta.creatorId?.fullName || "Content Creator"}
+                          </span>
+                        </div>
+                        <div className="hidden sm:flex items-center gap-1">
+                          <Calendar className="size-3.5 text-slate-400" />
+                          <span>
+                            তারিখ: {formatBengaliDate(qMeta.createdAt)}
+                          </span>
+                        </div>
+                        {qMeta.approvedBy?.fullName && (
+                          <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
+                            <Check className="size-3 text-emerald-600" />
+                            <span>
+                              অনুমোদনকারী: {qMeta.approvedBy.fullName}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {canManageQuestion(qMeta) && (
+                          <>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => handleEdit(item)}
+                              className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                            >
+                              <Edit3 className="size-3" />
+                              সম্পাদন
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => setDeleteConfirmId({ id: qMeta._id, deleteAllGroup: true, isGroup: true, count: item.questions.length })}
+                              className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                            >
+                              <Trash2 className="size-3" />
+                              মুছে ফেলুন
+                            </Button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 );
@@ -2496,11 +2523,14 @@ export default function QuestionBank() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600 font-bold">
               <AlertCircle className="size-5 animate-pulse" />
-              প্রশ্নটি কি মুছে ফেলতে চান?
+              {typeof deleteConfirmId === "object" && deleteConfirmId?.isGroup
+                ? "সম্পূর্ণ উদ্দীপক প্রশ্নগুচ্ছটি কি মুছে ফেলতে চান?"
+                : "প্রশ্নটি কি মুছে ফেলতে চান?"}
             </DialogTitle>
             <DialogDescription className="pt-2 text-slate-600 leading-relaxed font-semibold">
-              প্রশ্নটি মুছে ফেললে তা স্থায়ীভাবে হারিয়ে যাবে এবং পরবর্তীতে আর
-              উদ্ধার করা সম্ভব হবে না। আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?
+              {typeof deleteConfirmId === "object" && deleteConfirmId?.isGroup
+                ? `এই উদ্দীপকভিত্তিক প্রশ্নগুচ্ছের সকল (${(deleteConfirmId.count || 0).toLocaleString("bn-BD")}টি) প্রশ্ন স্থায়ীভাবে মুছে যাবে এবং পরবর্তীতে উদ্ধার করা সম্ভব হবে না। আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?`
+                : "প্রশ্নটি মুছে ফেললে তা স্থায়ীভাবে হারিয়ে যাবে এবং পরবর্তীতে আর উদ্ধার করা সম্ভব হবে না। আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?"}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2 justify-end mt-4">

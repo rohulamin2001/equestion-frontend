@@ -1072,17 +1072,6 @@ export default function MyQuestions() {
                           <Eye className="size-3.5" />
                           সবগুলোর উত্তর দেখান
                         </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(item);
-                          }}
-                          className="p-1.5 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-semibold px-2.5 gap-1 font-sans cursor-pointer flex items-center shrink-0"
-                        >
-                          <Edit3 className="size-3.5" />
-                          এডিট করুন
-                        </button>
                       </div>
                     </div>
 
@@ -1157,14 +1146,16 @@ export default function MyQuestions() {
                                     <Eye className="size-3.5" />
                                   )}
                                 </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setDeleteConfirmId(q._id)}
-                                  className="p-1.5 rounded-lg border border-rose-200 bg-rose-50/50 hover:bg-rose-100 text-rose-600 transition cursor-pointer"
-                                  title="মুছে ফেলুন"
-                                >
-                                  <Trash2 className="size-3.5" />
-                                </button>
+                                {q.status !== "Approved" && qMeta.status !== "Approved" && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setDeleteConfirmId({ id: q._id, deleteAllGroup: false, isGroup: false })}
+                                    className="p-1.5 rounded-lg border border-rose-200 bg-rose-50/50 hover:bg-rose-100 text-rose-600 transition cursor-pointer"
+                                    title="এই নির্দিষ্ট প্রশ্নটি মুছে ফেলুন"
+                                  >
+                                    <Trash2 className="size-3.5" />
+                                  </button>
+                                )}
                               </div>
                             </div>
 
@@ -1260,6 +1251,69 @@ export default function MyQuestions() {
                           </div>
                         );
                       })}
+                    </div>
+
+                    {/* Footer Metadata & Action Buttons */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-t border-black/[0.05] pt-2.5 sm:pt-3 text-[10px] sm:text-[11px] font-sans text-slate-500">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-4 font-medium">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="size-3 sm:size-3.5 text-slate-400 shrink-0" />
+                          <span>
+                            সংরক্ষণকাল: {formatBengaliDateTime(qMeta.createdAt)}
+                          </span>
+                        </div>
+                        {qMeta.status === "Rejected" && qMeta.rejectedBy?.fullName && (
+                          <div className="flex items-center gap-1 text-rose-600 bg-rose-500/5 px-1.5 py-0.5 rounded border border-rose-500/10">
+                            <X className="size-3 text-rose-600 shrink-0" />
+                            <span>বাতিলকারী: {qMeta.rejectedBy.fullName}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap justify-end w-full sm:w-auto">
+                        {qMeta.status !== "Approved" && (
+                          <>
+                            {qMeta.status === "Rejected" && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  setReviewRequestId(qMeta._id);
+                                  setReviewComment("");
+                                }}
+                                className="border-indigo-200 text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/30 rounded-xl h-7 sm:h-8 px-2 sm:px-3 text-[11px] sm:text-xs flex items-center gap-1 font-bold cursor-pointer bg-[#4F46E5]/5 shrink-0"
+                              >
+                                <RefreshCw className="size-3" />
+                                রিভিউ রিকোয়েস্ট
+                              </Button>
+                            )}
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => handleEdit(item)}
+                              className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-7 sm:h-8 px-2 sm:px-3 text-[11px] sm:text-xs flex items-center gap-1 font-bold cursor-pointer shrink-0"
+                            >
+                              <Edit3 className="size-3" />
+                              সম্পাদন
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => setDeleteConfirmId({ id: qMeta._id, deleteAllGroup: true, isGroup: true, count: item.questions.length })}
+                              className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-7 sm:h-8 px-2 sm:px-3 text-[11px] sm:text-xs flex items-center gap-1 font-bold cursor-pointer shrink-0"
+                            >
+                              <Trash2 className="size-3" />
+                              মুছে ফেলুন
+                            </Button>
+                          </>
+                        )}
+                        {qMeta.status === "Approved" && qMeta.approvedBy?.fullName && (
+                          <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10 font-bold">
+                            <Check className="size-3.5 text-emerald-600" />
+                            <span>অনুমোদনকারী: {qMeta.approvedBy.fullName}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 );
@@ -1867,11 +1921,14 @@ export default function MyQuestions() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600 font-bold">
               <AlertCircle className="size-5 animate-pulse" />
-              প্রশ্নটি কি মুছে ফেলতে চান?
+              {typeof deleteConfirmId === "object" && deleteConfirmId?.isGroup
+                ? "সম্পূর্ণ উদ্দীপক প্রশ্নগুচ্ছটি কি মুছে ফেলতে চান?"
+                : "প্রশ্নটি কি মুছে ফেলতে চান?"}
             </DialogTitle>
             <DialogDescription className="pt-2 text-slate-600 leading-relaxed font-semibold">
-              প্রশ্নটি মুছে ফেললে তা স্থায়ীভাবে হারিয়ে যাবে এবং পরবর্তীতে আর
-              উদ্ধার করা সম্ভব হবে না। আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?
+              {typeof deleteConfirmId === "object" && deleteConfirmId?.isGroup
+                ? `এই উদ্দীপকভিত্তিক প্রশ্নগুচ্ছের সকল (${(deleteConfirmId.count || 0).toLocaleString("bn-BD")}টি) প্রশ্ন স্থায়ীভাবে মুছে যাবে এবং পরবর্তীতে উদ্ধার করা সম্ভব হবে না। আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?`
+                : "প্রশ্নটি মুছে ফেললে তা স্থায়ীভাবে হারিয়ে যাবে এবং পরবর্তীতে আর উদ্ধার করা সম্ভব হবে না। আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?"}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2 justify-end mt-4">

@@ -21,6 +21,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import RichTextRender from "../../components/RichTextRender.jsx";
 import { useQuestions } from "./hook/useQuestions";
+import { groupPassageQuestions } from "@/lib/questionUtils";
 
 export default function QuestionSelect() {
   const navigate = useNavigate();
@@ -51,6 +52,8 @@ export default function QuestionSelect() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const [initializedSetId, setInitializedSetId] = useState(null);
+
+  const groupedBankItems = useMemo(() => groupPassageQuestions(bankQuestions), [bankQuestions]);
 
   // Set active set ID on load
   useEffect(() => {
@@ -233,7 +236,130 @@ export default function QuestionSelect() {
               </div>
             ) : (
               <div className="space-y-4">
-                {bankQuestions.map((q) => {
+                {groupedBankItems.map((item) => {
+                  if (item.isGroup) {
+                    const groupQuestions = item.questions;
+                    const allGroupSelected = groupQuestions.every((gq) =>
+                      selectedQuestions.some((sq) => (sq._id || sq) === gq._id),
+                    );
+                    const someGroupSelected = groupQuestions.some((gq) =>
+                      selectedQuestions.some((sq) => (sq._id || sq) === gq._id),
+                    );
+
+                    return (
+                      <div
+                        key={item.groupId}
+                        className={`border p-4 rounded-2xl transition space-y-3 ${
+                          someGroupSelected
+                            ? "bg-indigo-50/20 border-indigo-300 shadow-sm"
+                            : "bg-white border-slate-150 hover:border-slate-300"
+                        }`}
+                      >
+                        {/* Group Header Stem */}
+                        <div className="flex justify-between items-start gap-4 border-b border-slate-150 pb-3">
+                          <div className="flex-1 space-y-1">
+                            <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
+                              উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ ({groupQuestions.length} টি)
+                            </span>
+                            <div className="font-bold text-slate-800 text-[13px] italic mt-1 leading-relaxed">
+                              <RichTextRender html={item.passageStem} />
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (allGroupSelected) {
+                                const gIds = new Set(groupQuestions.map((gq) => gq._id));
+                                setSelectedQuestions((prev) =>
+                                  prev.filter((sq) => !gIds.has(sq._id || sq)),
+                                );
+                              } else {
+                                setSelectedQuestions((prev) => {
+                                  const existingIds = new Set(prev.map((sq) => sq._id || sq));
+                                  const toAdd = groupQuestions.filter(
+                                    (gq) => !existingIds.has(gq._id),
+                                  );
+                                  return [...prev, ...toAdd];
+                                });
+                              }
+                            }}
+                            className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 shrink-0 ${
+                              allGroupSelected
+                                ? "bg-indigo-600 text-white"
+                                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                            }`}
+                          >
+                            <Check className="size-3" />
+                            {allGroupSelected ? "সবগুলো নির্বাচিত" : "সবগুলো বাছুন"}
+                          </button>
+                        </div>
+
+                        {/* Sub-questions List */}
+                        <div className="space-y-2.5 pt-1">
+                          {groupQuestions.map((q, subIdx) => {
+                            const isSubSelected = selectedQuestions.some(
+                              (sq) => (sq._id || sq) === q._id,
+                            );
+                            return (
+                              <div
+                                key={q._id}
+                                onClick={() => {
+                                  if (isSubSelected) {
+                                    setSelectedQuestions((prev) =>
+                                      prev.filter((sq) => (sq._id || sq) !== q._id),
+                                    );
+                                  } else {
+                                    setSelectedQuestions((prev) => [...prev, q]);
+                                  }
+                                }}
+                                className={`p-3 rounded-xl border transition cursor-pointer flex justify-between gap-3 ${
+                                  isSubSelected
+                                    ? "bg-indigo-100/50 border-indigo-300"
+                                    : "bg-slate-50/70 border-slate-200/70 hover:bg-slate-100/70"
+                                }`}
+                              >
+                                <div className="space-y-1 text-[13px] text-slate-800 flex-1">
+                                  <div className="flex gap-2">
+                                    <span className="font-bold shrink-0 text-slate-500">
+                                      {(subIdx + 1).toLocaleString("bn-BD")}।
+                                    </span>
+                                    <div className="flex-1 font-semibold">
+                                      <RichTextRender html={q.mcqData?.questionText || q.generalData?.questionText || ""} />
+                                    </div>
+                                  </div>
+
+                                  {q.category === "MCQ" && q.mcqData?.options && (
+                                    <div className="grid grid-cols-2 gap-1.5 text-slate-600 text-[12px] pl-6 mt-1">
+                                      {q.mcqData.options.map((opt, oIdx) => (
+                                        <div key={oIdx}>
+                                          {["ক", "খ", "গ", "ঘ"][oIdx]}। {opt}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="shrink-0 flex items-center justify-center">
+                                  <div
+                                    className={`h-4.5 w-4.5 rounded-full border-2 flex items-center justify-center transition-all ${
+                                      isSubSelected
+                                        ? "bg-indigo-600 border-indigo-600 text-white shadow"
+                                        : "bg-white border-slate-300"
+                                    }`}
+                                  >
+                                    {isSubSelected && <Check className="size-3" />}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  const q = item.question;
                   const isSelected = selectedQuestions.some(
                     (sq) => (sq._id || sq) === q._id,
                   );
