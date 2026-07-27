@@ -13,7 +13,6 @@ import {
   RippleButton,
   RippleButtonRipples,
 } from "@/components/ui/ripple-button";
-import { useState } from "react";
 import {
   AlertCircle,
   BookOpen,
@@ -31,6 +30,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
 import {
   CATEGORIES_MAP,
   CLASSES_MAP,
@@ -897,168 +897,436 @@ export default function AddQuestion() {
               {/* DYNAMIC FORMS BASED ON CATEGORY */}
               {qm.formCategory === "MCQ" && (
                 <div className="space-y-6">
-                  {/* MCQ Type Selector */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      MCQ ধরণ
-                    </label>
-                    <div className="flex flex-col lg:flex-row gap-2.5 lg:gap-6">
-                      {[
-                        { value: "Simple", label: "সাধারণ বহুনির্বাচনি" },
-                        {
-                          value: "MultipleCompletion",
-                          label: "বহুপদী সমাপ্তিসূচক",
-                        },
-                        {
-                          value: "Contextual",
-                          label: "অভিন্ন তথ্যভিত্তিক (উদ্দীপকযুক্ত)",
-                        },
-                      ].map((item) => (
-                        <label
-                          key={item.value}
-                          className="flex items-center gap-2.5 cursor-pointer text-xs sm:text-sm font-semibold text-slate-700 hover:text-[#4F46E5] transition-colors w-fit"
-                        >
-                          <input
-                            type="radio"
-                            name="mcqType"
-                            value={item.value}
-                            checked={qm.mcqType === item.value}
-                            onChange={(e) => qm.setMcqType(e.target.value)}
-                            className="accent-[#4F46E5] size-4 shrink-0 cursor-pointer"
-                          />
-                          <span>{item.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Stem input (only for Contextual MCQs) */}
-                  {qm.mcqType === "Contextual" && (
-                    <div className="space-y-2 animate-in fade-in duration-200">
-                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                        উদ্দীপক (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
-                      </label>
-                      <Editor
-                        value={qm.mcqStem}
-                        onChange={qm.setMcqStem}
-                        placeholder="যেমন: নিচের অনুচ্ছেদটি পড়ো এবং প্রশ্নের উত্তর দাও..."
-                        height={200}
+                  {/* MCQ Group Toggle */}
+                  <div className="flex items-center gap-4 mb-2 p-4 bg-slate-50/80 rounded-xl border border-slate-200/60">
+                    <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700">
+                      <input
+                        type="radio"
+                        checked={!qm.isGroupedMcq}
+                        onChange={() => qm.setIsGroupedMcq(false)}
+                        className="accent-[#4F46E5] size-4 shrink-0 cursor-pointer"
                       />
-                    </div>
-                  )}
-
-                  {/* Question Text */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                      প্রশ্ন (Question){" "}
-                      <span className="normal-case tracking-normal">
-                        (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
-                      </span>
+                      <span>একক MCQ</span>
                     </label>
-                    <Editor
-                      value={qm.mcqQuestionText}
-                      onChange={qm.setMcqQuestionText}
-                      placeholder="যেমন: নিচের কোনটি মৌলিক সংখ্যা?"
-                      height={200}
-                    />
+                    <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700">
+                      <input
+                        type="radio"
+                        checked={qm.isGroupedMcq}
+                        onChange={() => qm.setIsGroupedMcq(true)}
+                        className="accent-[#4F46E5] size-4 shrink-0 cursor-pointer"
+                      />
+                      <span>উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ</span>
+                    </label>
                   </div>
 
-                  {/* Statements inputs (only for Multiple Completion) */}
-                  {qm.mcqType === "MultipleCompletion" && (
-                    <div className="space-y-3 p-5 bg-black/[0.02] border border-black/[0.05] rounded-2xl animate-in fade-in duration-200">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                        বিবৃতিসমূহ (Statements)
-                      </label>
-                      {qm.mcqStatements.map((statement, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <span className="font-bold text-slate-400 text-sm w-6 text-center">
-                            {idx === 0 ? "i." : idx === 1 ? "ii." : "iii."}
-                          </span>
-                          <Input
-                            placeholder={`বিবৃতি লিখুন`}
-                            value={statement}
-                            onChange={(e) => {
-                              const updated = [...qm.mcqStatements];
-                              updated[idx] = e.target.value;
-                              qm.setMcqStatements(updated);
-                            }}
-                            className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5]"
+                  {!qm.isGroupedMcq ? (
+                    <>
+                      {/* MCQ Type Selector */}
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                          MCQ ধরণ
+                        </label>
+                        <div className="flex flex-col lg:flex-row gap-2.5 lg:gap-6">
+                          {[
+                            { value: "Simple", label: "সাধারণ বহুনির্বাচনি" },
+                            {
+                              value: "MultipleCompletion",
+                              label: "বহুপদী সমাপ্তিসূচক",
+                            },
+                            {
+                              value: "Contextual",
+                              label: "অভিন্ন তথ্যভিত্তিক (উদ্দীপকযুক্ত)",
+                            },
+                          ].map((item) => (
+                            <label
+                              key={item.value}
+                              className="flex items-center gap-2.5 cursor-pointer text-xs sm:text-sm font-semibold text-slate-700 hover:text-[#4F46E5] transition-colors w-fit"
+                            >
+                              <input
+                                type="radio"
+                                name="mcqType"
+                                value={item.value}
+                                checked={qm.mcqType === item.value}
+                                onChange={(e) => qm.setMcqType(e.target.value)}
+                                className="accent-[#4F46E5] size-4 shrink-0 cursor-pointer"
+                              />
+                              <span>{item.label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Stem input (only for Contextual MCQs) */}
+                      {qm.mcqType === "Contextual" && (
+                        <div className="space-y-2 animate-in fade-in duration-200">
+                          <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                            উদ্দীপক (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                          </label>
+                          <Editor
+                            value={qm.mcqStem}
+                            onChange={qm.setMcqStem}
+                            placeholder="যেমন: নিচের অনুচ্ছেদটি পড়ো এবং প্রশ্নের উত্তর দাও..."
+                            height={200}
                           />
                         </div>
-                      ))}
+                      )}
+
+                      {/* Question Text */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                          প্রশ্ন (Question){" "}
+                          <span className="normal-case tracking-normal">
+                            (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                          </span>
+                        </label>
+                        <Editor
+                          value={qm.mcqQuestionText}
+                          onChange={qm.setMcqQuestionText}
+                          placeholder="যেমন: নিচের কোনটি মৌলিক সংখ্যা?"
+                          height={200}
+                        />
+                      </div>
+
+                      {/* Statements inputs (only for Multiple Completion) */}
+                      {qm.mcqType === "MultipleCompletion" && (
+                        <div className="space-y-3 p-5 bg-black/[0.02] border border-black/[0.05] rounded-2xl animate-in fade-in duration-200">
+                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                            বিবৃতিসমূহ (Statements)
+                          </label>
+                          {qm.mcqStatements.map((statement, idx) => (
+                            <div key={idx} className="flex items-center gap-2">
+                              <span className="font-bold text-slate-400 text-sm w-6 text-center">
+                                {idx === 0 ? "i." : idx === 1 ? "ii." : "iii."}
+                              </span>
+                              <Input
+                                placeholder={`বিবৃতি লিখুন`}
+                                value={statement}
+                                onChange={(e) => {
+                                  const updated = [...qm.mcqStatements];
+                                  updated[idx] = e.target.value;
+                                  qm.setMcqStatements(updated);
+                                }}
+                                className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5]"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Options Input */}
+                      <div className="space-y-3">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                          অপশনসমূহ ও সঠিক উত্তর নির্বাচন
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {qm.mcqOptions.map((opt, idx) => {
+                            const isCorrect = qm.mcqCorrectAnswer === idx;
+                            return (
+                              <div
+                                key={idx}
+                                className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${
+                                  isCorrect
+                                    ? "bg-emerald-500/5 border-emerald-500/30 backdrop-blur-sm shadow-sm"
+                                    : "bg-white/[0.45] border-black/[0.06] backdrop-blur-sm"
+                                }`}
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => qm.setMcqCorrectAnswer(idx)}
+                                  className={`size-6 rounded-full border flex items-center justify-center shrink-0 transition-all font-bold text-xs ${
+                                    isCorrect
+                                      ? "bg-emerald-500 border-emerald-500 text-white"
+                                      : "border-black/[0.15] hover:border-[#4F46E5] text-transparent"
+                                  }`}
+                                >
+                                  ✓
+                                </button>
+                                <span className="font-bold text-slate-500 text-sm">
+                                  {idx === 0
+                                    ? "ক)"
+                                    : idx === 1
+                                      ? "খ)"
+                                      : idx === 2
+                                        ? "গ)"
+                                        : "ঘ)"}
+                                </span>
+                                <input
+                                  type="text"
+                                  required
+                                  placeholder={`অপশন লিখুন`}
+                                  value={opt}
+                                  onChange={(e) => {
+                                    const updated = [...qm.mcqOptions];
+                                    updated[idx] = e.target.value;
+                                    qm.setMcqOptions(updated);
+                                  }}
+                                  className="w-full bg-transparent border-0 focus:outline-none focus:ring-0 text-sm font-semibold text-slate-700"
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Explanation Input */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                          উত্তর বিশ্লেষণ / ব্যাখ্যা (ঐচ্ছিক){" "}
+                          <span className="normal-case tracking-normal">
+                            (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                          </span>
+                        </label>
+                        <Editor
+                          value={qm.mcqExplanation}
+                          onChange={qm.setMcqExplanation}
+                          placeholder="সঠিক উত্তর কিভাবে আসলো তার সংক্ষিপ্ত ব্যাখ্যা..."
+                          height={200}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="space-y-8 animate-in fade-in duration-300">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                          উদ্দীপক / অনুচ্ছেদ (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে
+                          হবে)
+                        </label>
+                        <Editor
+                          value={qm.mcqStem}
+                          onChange={qm.setMcqStem}
+                          placeholder="যেমন: নিচের অনুচ্ছেদটি পড়ো এবং প্রশ্নের উত্তর দাও..."
+                          height={200}
+                        />
+                      </div>
+
+                      <div className="space-y-6">
+                        {qm.mcqGroupQuestions.map((q, qIndex) => (
+                          <div
+                            key={qIndex}
+                            className="p-5 bg-white border border-slate-200/80 rounded-2xl shadow-sm space-y-5"
+                          >
+                            <div className="flex justify-between items-center">
+                              <h4 className="font-bold text-slate-700">
+                                প্রশ্ন {qIndex + 1}
+                              </h4>
+                              {qm.mcqGroupQuestions.length > 2 && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const next = [...qm.mcqGroupQuestions];
+                                    next.splice(qIndex, 1);
+                                    qm.setMcqGroupQuestions(next);
+                                  }}
+                                  className="text-red-500 hover:text-red-600 text-sm font-semibold transition-colors"
+                                >
+                                  মুছে ফেলুন
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Type Selector */}
+                            <div className="flex gap-4">
+                              {[
+                                {
+                                  value: "Simple",
+                                  label: "সাধারণ বহুনির্বাচনি",
+                                },
+                                {
+                                  value: "MultipleCompletion",
+                                  label: "বহুপদী সমাপ্তিসূচক",
+                                },
+                              ].map((item) => (
+                                <label
+                                  key={item.value}
+                                  className="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer"
+                                >
+                                  <input
+                                    type="radio"
+                                    name={`mcqType-${qIndex}`}
+                                    value={item.value}
+                                    checked={q.mcqType === item.value}
+                                    onChange={(e) => {
+                                      const next = [...qm.mcqGroupQuestions];
+                                      next[qIndex] = {
+                                        ...next[qIndex],
+                                        mcqType: e.target.value,
+                                      };
+                                      qm.setMcqGroupQuestions(next);
+                                    }}
+                                    className="accent-[#4F46E5] size-4 shrink-0"
+                                  />
+                                  <span>{item.label}</span>
+                                </label>
+                              ))}
+                            </div>
+
+                            {/* Question Text */}
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-bold text-slate-500 uppercase block">
+                                প্রশ্ন
+                              </label>
+                              <Editor
+                                value={q.mcqQuestionText}
+                                onChange={(val) => {
+                                  const next = [...qm.mcqGroupQuestions];
+                                  next[qIndex] = {
+                                    ...next[qIndex],
+                                    mcqQuestionText: val,
+                                  };
+                                  qm.setMcqGroupQuestions(next);
+                                }}
+                                height={150}
+                              />
+                            </div>
+
+                            {/* Statements */}
+                            {q.mcqType === "MultipleCompletion" && (
+                              <div className="space-y-3 p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                                <label className="text-xs font-bold text-slate-500 uppercase block">
+                                  বিবৃতিসমূহ (Statements)
+                                </label>
+                                {q.mcqStatements.map((stmt, sIdx) => (
+                                  <div
+                                    key={sIdx}
+                                    className="flex items-center gap-2"
+                                  >
+                                    <span className="font-bold text-slate-400 text-sm w-6 text-center">
+                                      {sIdx === 0
+                                        ? "i."
+                                        : sIdx === 1
+                                          ? "ii."
+                                          : "iii."}
+                                    </span>
+                                    <Input
+                                      value={stmt}
+                                      onChange={(e) => {
+                                        const next = [...qm.mcqGroupQuestions];
+                                        const stmts = [
+                                          ...next[qIndex].mcqStatements,
+                                        ];
+                                        stmts[sIdx] = e.target.value;
+                                        next[qIndex] = {
+                                          ...next[qIndex],
+                                          mcqStatements: stmts,
+                                        };
+                                        qm.setMcqGroupQuestions(next);
+                                      }}
+                                      className="bg-white"
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Options Input */}
+                            <div className="space-y-3">
+                              <label className="text-xs font-bold text-slate-500 uppercase block">
+                                অপশনসমূহ ও সঠিক উত্তর নির্বাচন
+                              </label>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {q.mcqOptions.map((opt, oIdx) => {
+                                  const isCorrect = q.mcqCorrectAnswer === oIdx;
+                                  return (
+                                    <div
+                                      key={oIdx}
+                                      className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${isCorrect ? "bg-emerald-50 border-emerald-500/40 shadow-sm" : "bg-slate-50/50 border-slate-200"}`}
+                                    >
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const next = [
+                                            ...qm.mcqGroupQuestions,
+                                          ];
+                                          next[qIndex] = {
+                                            ...next[qIndex],
+                                            mcqCorrectAnswer: oIdx,
+                                          };
+                                          qm.setMcqGroupQuestions(next);
+                                        }}
+                                        className={`size-6 rounded-full border flex items-center justify-center shrink-0 font-bold text-xs transition-colors ${isCorrect ? "bg-emerald-500 text-white border-emerald-500" : "border-slate-300 text-transparent hover:border-[#4F46E5]"}`}
+                                      >
+                                        ✓
+                                      </button>
+                                      <span className="font-bold text-slate-500 text-sm">
+                                        {oIdx === 0
+                                          ? "ক)"
+                                          : oIdx === 1
+                                            ? "খ)"
+                                            : oIdx === 2
+                                              ? "গ)"
+                                              : "ঘ)"}
+                                      </span>
+                                      <input
+                                        type="text"
+                                        required
+                                        value={opt}
+                                        onChange={(e) => {
+                                          const next = [
+                                            ...qm.mcqGroupQuestions,
+                                          ];
+                                          const opts = [
+                                            ...next[qIndex].mcqOptions,
+                                          ];
+                                          opts[oIdx] = e.target.value;
+                                          next[qIndex] = {
+                                            ...next[qIndex],
+                                            mcqOptions: opts,
+                                          };
+                                          qm.setMcqGroupQuestions(next);
+                                        }}
+                                        className="w-full bg-transparent border-0 focus:outline-none text-sm font-semibold text-slate-700"
+                                        placeholder="অপশন লিখুন"
+                                      />
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            {/* Explanation Input */}
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-bold text-slate-500 uppercase block">
+                                ব্যাখ্যা (ঐচ্ছিক)
+                              </label>
+                              <Editor
+                                value={q.mcqExplanation}
+                                onChange={(val) => {
+                                  const next = [...qm.mcqGroupQuestions];
+                                  next[qIndex] = {
+                                    ...next[qIndex],
+                                    mcqExplanation: val,
+                                  };
+                                  qm.setMcqGroupQuestions(next);
+                                }}
+                                height={150}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          qm.setMcqGroupQuestions([
+                            ...qm.mcqGroupQuestions,
+                            {
+                              mcqType: "Simple",
+                              mcqQuestionText: "",
+                              mcqStatements: ["", "", ""],
+                              mcqOptions: ["", "", "", ""],
+                              mcqCorrectAnswer: 0,
+                              mcqExplanation: "",
+                            },
+                          ]);
+                        }}
+                        className="w-full py-3.5 border-2 border-dashed border-[#4F46E5]/40 text-[#4F46E5] hover:bg-[#4F46E5]/5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2"
+                      >
+                        <Plus className="size-4" />
+                        <span>নতুন উপ-প্রশ্ন যোগ করুন</span>
+                      </button>
                     </div>
                   )}
-
-                  {/* Options Input */}
-                  <div className="space-y-3">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      অপশনসমূহ ও সঠিক উত্তর নির্বাচন
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {qm.mcqOptions.map((opt, idx) => {
-                        const isCorrect = qm.mcqCorrectAnswer === idx;
-                        return (
-                          <div
-                            key={idx}
-                            className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${
-                              isCorrect
-                                ? "bg-emerald-500/5 border-emerald-500/30 backdrop-blur-sm shadow-sm"
-                                : "bg-white/[0.45] border-black/[0.06] backdrop-blur-sm"
-                            }`}
-                          >
-                            <button
-                              type="button"
-                              onClick={() => qm.setMcqCorrectAnswer(idx)}
-                              className={`size-6 rounded-full border flex items-center justify-center shrink-0 transition-all font-bold text-xs ${
-                                isCorrect
-                                  ? "bg-emerald-500 border-emerald-500 text-white"
-                                  : "border-black/[0.15] hover:border-[#4F46E5] text-transparent"
-                              }`}
-                            >
-                              ✓
-                            </button>
-                            <span className="font-bold text-slate-500 text-sm">
-                              {idx === 0
-                                ? "ক)"
-                                : idx === 1
-                                  ? "খ)"
-                                  : idx === 2
-                                    ? "গ)"
-                                    : "ঘ)"}
-                            </span>
-                            <input
-                              type="text"
-                              required
-                              placeholder={`অপশন লিখুন`}
-                              value={opt}
-                              onChange={(e) => {
-                                const updated = [...qm.mcqOptions];
-                                updated[idx] = e.target.value;
-                                qm.setMcqOptions(updated);
-                              }}
-                              className="w-full bg-transparent border-0 focus:outline-none focus:ring-0 text-sm font-semibold text-slate-700"
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Explanation Input */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                      উত্তর বিশ্লেষণ / ব্যাখ্যা (ঐচ্ছিক){" "}
-                      <span className="normal-case tracking-normal">
-                        (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
-                      </span>
-                    </label>
-                    <Editor
-                      value={qm.mcqExplanation}
-                      onChange={qm.setMcqExplanation}
-                      placeholder="সঠিক উত্তর কিভাবে আসলো তার সংক্ষিপ্ত ব্যাখ্যা..."
-                      height={200}
-                    />
-                  </div>
                 </div>
               )}
 
@@ -1470,7 +1738,8 @@ export default function AddQuestion() {
                                     ),
                             ).length === 0 ? (
                               <div className="px-3 py-3 text-xs text-slate-400 text-center italic">
-                                &ldquo;{schoolSearchQuery}&rdquo; দিয়ে কোনো স্কুল পাওয়া যায়নি
+                                &ldquo;{schoolSearchQuery}&rdquo; দিয়ে কোনো
+                                স্কুল পাওয়া যায়নি
                               </div>
                             ) : (
                               activeSchools
@@ -2259,7 +2528,112 @@ export default function AddQuestion() {
                       )}
 
                       {/* Current Single Question Preview */}
-                      {qm.formCategory === "MCQ" && qm.mcqQuestionText && (
+                      {qm.formCategory === "MCQ" &&
+                      qm.isGroupedMcq &&
+                      qm.mcqGroupQuestions?.length > 0 ? (
+                        <div className="space-y-6">
+                          <div className="text-[14px] leading-relaxed font-serif text-slate-800">
+                            <RichTextRender
+                              content={qm.mcqStem || ""}
+                              inline={true}
+                              className="inline text-[14px] leading-relaxed font-serif text-slate-800"
+                            />
+                          </div>
+
+                          <div className="space-y-6 divide-y divide-black/[0.05]">
+                            {qm.mcqGroupQuestions.map((q, qIdx) => (
+                              <div
+                                key={qIdx}
+                                className={`space-y-2.5 ${qIdx > 0 ? "pt-6" : ""}`}
+                              >
+                                <div className="text-[15px] flex justify-between items-start gap-4 w-full">
+                                  <div className="flex gap-2">
+                                    <span className="font-normal text-black shrink-0">
+                                      {(qIdx + 1).toLocaleString("bn-BD")}.
+                                    </span>
+                                    <RichTextRender
+                                      content={
+                                        q.mcqQuestionText || "প্রশ্ন বিবরণ"
+                                      }
+                                    />
+                                  </div>
+                                  <span className="text-slate-700 text-xs font-sans font-bold whitespace-nowrap pt-1">
+                                    ১
+                                  </span>
+                                </div>
+                                {q.mcqType === "MultipleCompletion" &&
+                                  q.mcqStatements && (
+                                    <div className="space-y-1 pl-6 mt-2 font-normal text-sm font-sans">
+                                      {q.mcqStatements.map(
+                                        (st, idx) =>
+                                          st && (
+                                            <div
+                                              key={idx}
+                                              className="flex gap-1 items-start"
+                                            >
+                                              <span className="shrink-0">
+                                                {idx === 0
+                                                  ? "i. "
+                                                  : idx === 1
+                                                    ? "ii. "
+                                                    : "iii. "}
+                                              </span>
+                                              <RichTextRender
+                                                content={st}
+                                                className="inline-block font-sans font-normal"
+                                              />
+                                            </div>
+                                          ),
+                                      )}
+                                      <div className="mt-2 font-semibold">
+                                        নিচের কোনটি সঠিক?
+                                      </div>
+                                    </div>
+                                  )}
+                                <div className="grid grid-cols-2 gap-x-8 gap-y-2 pl-6 text-[14px] font-sans text-black">
+                                  {q.mcqOptions &&
+                                    q.mcqOptions.map((opt, optIdx) => (
+                                      <div
+                                        key={optIdx}
+                                        className="flex gap-1.5 items-start"
+                                      >
+                                        <span className="font-normal text-black shrink-0">
+                                          {optIdx === 0
+                                            ? "ক)"
+                                            : optIdx === 1
+                                              ? "খ)"
+                                              : optIdx === 2
+                                                ? "গ)"
+                                                : "ঘ)"}
+                                        </span>
+                                        <RichTextRender
+                                          content={opt || "অপশন..."}
+                                          className="inline-block font-sans [&_p]:inline [&_p]:m-0 font-normal text-black"
+                                        />
+                                      </div>
+                                    ))}
+                                </div>
+                                {/* Correct Answer Badge */}
+                                <div className="mt-4 pt-3 border-t border-black/[0.02] text-xs font-sans flex items-center gap-2 text-emerald-600 bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100">
+                                  <CheckCircle2 className="size-4 shrink-0" />
+                                  <span>
+                                    <strong>সঠিক উত্তর:</strong>{" "}
+                                    {q.mcqCorrectAnswer === 0
+                                      ? "ক"
+                                      : q.mcqCorrectAnswer === 1
+                                        ? "খ"
+                                        : q.mcqCorrectAnswer === 2
+                                          ? "গ"
+                                          : "ঘ"}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : qm.formCategory === "MCQ" &&
+                        qm.mcqQuestionText &&
+                        !qm.isGroupedMcq ? (
                         <div className="space-y-4">
                           {qm.mcqType === "Contextual" && qm.mcqStem && (
                             <div className="text-[14px] leading-relaxed font-serif text-slate-800">
@@ -2357,7 +2731,7 @@ export default function AddQuestion() {
                             </div>
                           </div>
                         </div>
-                      )}
+                      ) : null}
 
                       {qm.formCategory === "Creative" && qm.creativeStem && (
                         <div className="space-y-4">

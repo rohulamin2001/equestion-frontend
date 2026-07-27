@@ -97,9 +97,22 @@ export default function QuestionSelect() {
   // Toggle selection
   const handleToggleQuestion = (q) => {
     const isSelected = selectedQuestions.some((sq) => (sq._id || sq) === q._id);
-    setSelectedQuestions((prev) =>
-      isSelected ? prev.filter((sq) => (sq._id || sq) !== q._id) : [...prev, q],
-    );
+    
+    if (isSelected) {
+      // Uncheck only this question
+      setSelectedQuestions((prev) => prev.filter((sq) => (sq._id || sq) !== q._id));
+    } else {
+      // Check this question. If it's part of a group, check all related questions visible in the current list
+      if (q.passageGroupId) {
+        const relatedQuestions = bankQuestions.filter(bq => bq.passageGroupId === q.passageGroupId);
+        setSelectedQuestions((prev) => {
+          const toAdd = relatedQuestions.filter(rq => !prev.some(sq => (sq._id || sq) === rq._id));
+          return [...prev, ...toAdd];
+        });
+      } else {
+        setSelectedQuestions((prev) => [...prev, q]);
+      }
+    }
   };
 
   // Select all questions currently shown in bank questions

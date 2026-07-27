@@ -17,8 +17,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
+import { groupPassageQuestions } from "@/lib/questionUtils";
 import {
   AlertCircle,
+  BookOpen,
   Calendar,
   Check,
   CheckCircle,
@@ -165,6 +167,15 @@ export default function QuestionApproval() {
   const [rejectionReasonInput, setRejectionReasonInput] = React.useState("");
   const [selectedRejectionReason, setSelectedRejectionReason] =
     React.useState(null);
+
+  const handleApprove = (id) => {
+    handleUpdateStatus(id, "Approved");
+  };
+
+  const handleRejectClick = (id) => {
+    setRejectConfirmId(id);
+    setRejectionReasonInput("");
+  };
 
   const currentQuestionId = selectedPreviewQuestion?._id || null;
   if (currentQuestionId !== prevQuestionId) {
@@ -897,7 +908,247 @@ export default function QuestionApproval() {
           animate="visible"
           className="space-y-4"
         >
-          {questions.map((q, index) => {
+          {groupPassageQuestions(questions).map((item, index) => {
+            if (item.isGroup) {
+              const qMeta = item.meta;
+              const classObj = CLASSES_MAP.find(
+                (c) => c.value === qMeta.className,
+              );
+              const isGroupAnswerVisible =
+                showAnswers ||
+                item.questions.some((q) => !!expandedAnswerIds[q._id]);
+
+              return (
+                <motion.div
+                  key={item.passageGroupId}
+                  variants={cardVariants}
+                  className="bg-white/[0.60] hover:bg-white/[0.75] p-4 sm:p-6 rounded-2xl border-2 border-[#4F46E5]/25 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-200 flex flex-col space-y-4 relative overflow-hidden"
+                >
+                  {/* Header Row */}
+                  <div className="flex flex-wrap justify-between items-center gap-2 border-b border-black/[0.06] pb-3">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-sans font-bold text-slate-500">
+                      <span className="bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] text-white px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 font-sans text-xs">
+                        <BookOpen className="size-3.5" />
+                        উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ ({item.questions.length}টি
+                        প্রশ্ন)
+                      </span>
+                      {classObj && (
+                        <span className="bg-indigo-50 text-[#4F46E5] border border-indigo-100 px-2 py-0.5 rounded">
+                          {classObj.label}
+                        </span>
+                      )}
+                      <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
+                        {qMeta.subjectId?.subjectName || "বিষয়"}
+                      </span>
+                      <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded">
+                        অধ্যায় {qMeta.chapterNumber}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          item.questions.forEach((q) =>
+                            toggleIndividualAnswer(q._id),
+                          );
+                        }}
+                        className="p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 bg-indigo-50 text-[#4F46E5] border-indigo-200 hover:bg-indigo-100 text-xs font-semibold px-2.5 gap-1 font-sans"
+                      >
+                        {isGroupAnswerVisible ? (
+                          <EyeOff className="size-3.5" />
+                        ) : (
+                          <Eye className="size-3.5" />
+                        )}
+                        {isGroupAnswerVisible
+                          ? "সবগুলোর উত্তর লুকান"
+                          : "সবগুলোর উত্তর দেখান"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Passage Box */}
+                  {item.passageStem && (
+                    <div className="p-4 bg-indigo-50/70 border border-indigo-100 rounded-xl text-slate-800 font-serif text-[14px] leading-relaxed shadow-inner">
+                      <RichTextRender
+                        content={item.passageStem}
+                        inline={false}
+                      />
+                    </div>
+                  )}
+
+                  {/* Sub Questions List */}
+                  <div className="space-y-4 pt-2 border-t border-dashed border-indigo-200/80">
+                    {item.questions.map((q, qSubIndex) => {
+                      const isAnswerVisible =
+                        showAnswers || !!expandedAnswerIds[q._id];
+                      const subCatLabel =
+                        CATEGORIES_MAP.find((c) => c.value === q.category)
+                          ?.label || q.category;
+
+                      return (
+                        <div
+                          key={q._id}
+                          className="p-4 bg-white/70 rounded-xl border border-slate-200/60 space-y-3 relative group/sub shadow-2xs"
+                        >
+                          {/* Sub Question Row Header */}
+                          <div className="flex flex-wrap justify-between items-center gap-2">
+                            <div className="flex items-center gap-2 text-xs font-bold text-slate-600 font-sans">
+                              <span className="text-[#4F46E5]">
+                                প্রশ্ন {(qSubIndex + 1).toLocaleString("bn-BD")}
+                              </span>
+                              <span
+                                className={`px-2 py-0.5 rounded border text-[10px] ${q.status === "Approved" ? "bg-emerald-50 text-emerald-700 border-emerald-100" : q.status === "Pending" ? "bg-amber-50 text-amber-700 border-amber-100" : "bg-rose-50 text-rose-700 border-rose-100"}`}
+                              >
+                                {q.status === "Approved"
+                                  ? "অনুমোদিত"
+                                  : q.status === "Pending"
+                                    ? "অপেক্ষমান"
+                                    : "বাতিলকৃত"}
+                              </span>
+                              <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-2 py-0.5 rounded text-[10px]">
+                                {subCatLabel}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => toggleIndividualAnswer(q._id)}
+                                className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${isAnswerVisible ? "bg-indigo-50 text-[#4F46E5] border-indigo-200" : "bg-slate-50 text-slate-400 hover:text-slate-600 border-slate-200"}`}
+                                title={
+                                  isAnswerVisible
+                                    ? "উত্তর লুকান"
+                                    : "উত্তর দেখান"
+                                }
+                              >
+                                {isAnswerVisible ? (
+                                  <EyeOff className="size-3.5" />
+                                ) : (
+                                  <Eye className="size-3.5" />
+                                )}
+                              </button>
+                              {q.status !== "Approved" && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleApprove(q._id)}
+                                  className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition flex items-center gap-1 cursor-pointer shadow-xs"
+                                >
+                                  <Check className="size-3.5" />
+                                  অনুমোদন
+                                </button>
+                              )}
+                              {q.status !== "Rejected" && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRejectClick(q._id)}
+                                  className="px-2.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition flex items-center gap-1 cursor-pointer shadow-xs"
+                                >
+                                  <X className="size-3.5" />
+                                  বাতিল
+                                </button>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Question Content */}
+                          <div className="text-[15px]">
+                            <div className="flex gap-2">
+                              <span className="font-bold shrink-0">
+                                {(qSubIndex + 1).toLocaleString("bn-BD")}.
+                              </span>
+                              <div className="flex-1">
+                                <RichTextRender
+                                  content={q.mcqData?.questionText || ""}
+                                />
+                                {q.mcqData?.mcqType === "MultipleCompletion" &&
+                                  q.mcqData?.statements && (
+                                    <div className="space-y-1 pl-6 mt-2 font-normal text-[15px] text-slate-700">
+                                      {q.mcqData.statements.map((st, idx) => (
+                                        <div
+                                          key={idx}
+                                          className="flex gap-1 items-start"
+                                        >
+                                          <span className="shrink-0 text-slate-500 font-bold">
+                                            {idx === 0
+                                              ? "i. "
+                                              : idx === 1
+                                                ? "ii. "
+                                                : "iii. "}
+                                          </span>
+                                          <RichTextRender
+                                            content={st}
+                                            className="inline-block"
+                                          />
+                                        </div>
+                                      ))}
+                                      <div className="mt-2 font-semibold">
+                                        নিচের কোনটি সঠিক?
+                                      </div>
+                                    </div>
+                                  )}
+                              </div>
+                            </div>
+
+                            {/* Options Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 mt-3 text-[15px]">
+                              {q.mcqData?.options?.map((opt, idx) => {
+                                const isCorrect =
+                                  isAnswerVisible &&
+                                  q.mcqData.correctAnswer === idx;
+                                return (
+                                  <div
+                                    key={idx}
+                                    className={`flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border transition-all duration-300 ${isCorrect ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm" : "bg-white border-black/[0.04] text-slate-600"}`}
+                                  >
+                                    <div className="flex items-center gap-2.5">
+                                      <span
+                                        className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${isCorrect ? "bg-emerald-500 text-white" : "bg-black/[0.04] text-slate-500"}`}
+                                      >
+                                        {idx === 0
+                                          ? "ক"
+                                          : idx === 1
+                                            ? "খ"
+                                            : idx === 2
+                                              ? "গ"
+                                              : "ঘ"}
+                                      </span>
+                                      <RichTextRender
+                                        content={opt}
+                                        className={`inline-block ${isCorrect ? "text-emerald-800" : "font-normal"}`}
+                                      />
+                                    </div>
+                                    {isCorrect && (
+                                      <Check className="size-4 text-emerald-600 shrink-0" />
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+
+                            {isAnswerVisible && q.mcqData?.explanation && (
+                              <div className="mt-3 p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
+                                <span className="font-semibold text-[15px]">
+                                  বিশ্লেষণ:{" "}
+                                </span>
+                                <RichTextRender
+                                  content={q.mcqData.explanation}
+                                  className="inline-block"
+                                  inline
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              );
+            }
+
+            const q = item.question;
             const classObj = CLASSES_MAP.find((c) => c.value === q.className);
             const categoryObj = CATEGORIES_MAP.find(
               (c) => c.value === q.category,
@@ -1465,10 +1716,7 @@ export default function QuestionApproval() {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => {
-                            setRejectConfirmId(q._id);
-                            setRejectionReasonInput("");
-                          }}
+                          onClick={() => handleRejectClick(q._id)}
                           disabled={updateStatusMutation.isPending}
                           className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
                         >
@@ -1482,10 +1730,7 @@ export default function QuestionApproval() {
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => {
-                          setRejectConfirmId(q._id);
-                          setRejectionReasonInput("");
-                        }}
+                        onClick={() => handleRejectClick(q._id)}
                         disabled={updateStatusMutation.isPending}
                         className="border-red-200 text-red-650 hover:bg-red-50 hover:border-red-300 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
                       >
@@ -1986,17 +2231,21 @@ export default function QuestionApproval() {
                   {selectedPreviewQuestion.category === "MCQ" &&
                     selectedPreviewQuestion.mcqData && (
                       <div className="space-y-5">
-                        {selectedPreviewQuestion.mcqData.mcqType ===
-                          "Contextual" &&
-                          selectedPreviewQuestion.mcqData.stem && (
-                            <div className="p-4 bg-black/[0.015] border-l-4 border-[#4F46E5]/70 border-y border-r border-black/[0.03] rounded-r-xl rounded-l-none text-sm font-serif leading-relaxed text-slate-700">
-                              <strong>উদ্দীপক:</strong>
-                              <RichTextRender
-                                content={selectedPreviewQuestion.mcqData.stem}
-                                className="mt-1 font-serif"
-                              />
-                            </div>
-                          )}
+                        {(selectedPreviewQuestion.passageStem ||
+                          (selectedPreviewQuestion.mcqData.mcqType ===
+                            "Contextual" &&
+                            selectedPreviewQuestion.mcqData.stem)) && (
+                          <div className="p-4 bg-black/[0.015] border-l-4 border-[#4F46E5]/70 border-y border-r border-black/[0.03] rounded-r-xl rounded-l-none text-sm font-serif leading-relaxed text-slate-700">
+                            <strong>উদ্দীপক:</strong>
+                            <RichTextRender
+                              content={
+                                selectedPreviewQuestion.passageStem ||
+                                selectedPreviewQuestion.mcqData.stem
+                              }
+                              className="mt-1 font-serif"
+                            />
+                          </div>
+                        )}
 
                         <div className="space-y-3">
                           <div className="text-[15px] flex justify-between items-start gap-4 w-full">
@@ -2485,10 +2734,9 @@ export default function QuestionApproval() {
                       </Button>
                       <Button
                         variant="outline"
-                        onClick={() => {
-                          setRejectConfirmId(selectedPreviewQuestion._id);
-                          setRejectionReasonInput("");
-                        }}
+                        onClick={() =>
+                          handleRejectClick(selectedPreviewQuestion._id)
+                        }
                         disabled={updateStatusMutation.isPending}
                         className="border-red-200 text-red-650 hover:bg-red-50 hover:border-red-350 rounded-xl font-bold text-xs h-10 px-4 cursor-pointer flex items-center gap-1.5 shadow-sm transition hover:scale-102 shrink-0"
                       >
@@ -2501,10 +2749,9 @@ export default function QuestionApproval() {
                   {selectedPreviewQuestion.status === "Approved" && (
                     <Button
                       variant="outline"
-                      onClick={() => {
-                        setRejectConfirmId(selectedPreviewQuestion._id);
-                        setRejectionReasonInput("");
-                      }}
+                      onClick={() =>
+                        handleRejectClick(selectedPreviewQuestion._id)
+                      }
                       disabled={updateStatusMutation.isPending}
                       className="border-red-200 text-red-650 hover:bg-red-50 hover:border-red-350 rounded-xl font-bold text-xs h-10 px-4 cursor-pointer flex items-center gap-1.5 shadow-sm transition hover:scale-102 shrink-0"
                     >

@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
+import { groupPassageQuestions } from "@/lib/questionUtils";
 import {
   AlertCircle,
   BookOpen,
@@ -113,6 +114,8 @@ export default function QuestionBank() {
     setDeleteConfirmId,
     showFilters,
     setShowFilters,
+    selectedQuestionIds,
+    handleToggleSelect,
     filterActiveTypes,
     filterActiveLevels,
     filterActiveClasses,
@@ -989,7 +992,244 @@ export default function QuestionBank() {
             animate="visible"
             className="space-y-4"
           >
-            {visibleQuestions.map((q, index) => {
+            {groupPassageQuestions(visibleQuestions).map((item, index) => {
+              if (item.isGroup) {
+                const qMeta = item.meta;
+                const classLabel =
+                  CLASSES_MAP.find((c) => c.value === qMeta.className)?.label ||
+                  qMeta.className;
+
+                return (
+                  <motion.div
+                    key={item.passageGroupId}
+                    variants={cardVariants}
+                    className="bg-white/[0.60] hover:bg-white/[0.75] p-4 sm:p-6 rounded-2xl border-2 border-[#4F46E5]/25 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-200 flex flex-col space-y-4 relative overflow-hidden"
+                  >
+                    {/* Header Row */}
+                    <div className="flex flex-wrap justify-between items-center gap-2 border-b border-black/[0.06] pb-3">
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-sans font-bold text-slate-500">
+                        <span className="bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] text-white px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 font-sans text-xs">
+                          <BookOpen className="size-3.5" />
+                          উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ ({item.questions.length}টি
+                          প্রশ্ন)
+                        </span>
+                        <span className="bg-indigo-50 text-[#4F46E5] border border-indigo-100 px-2 py-0.5 rounded">
+                          {classLabel}
+                        </span>
+                        <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
+                          {qMeta.subjectId?.subjectName || "বিষয়"}
+                        </span>
+                        <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded">
+                          অধ্যায় {qMeta.chapterNumber}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            item.questions.forEach((q) =>
+                              toggleIndividualAnswer(q._id),
+                            );
+                          }}
+                          className="p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 bg-indigo-50 text-[#4F46E5] border-indigo-200 hover:bg-indigo-100 text-xs font-semibold px-2.5 gap-1 font-sans"
+                        >
+                          <Eye className="size-3.5" />
+                          সবগুলোর উত্তর দেখান
+                        </button>
+                        {canManageQuestion(qMeta) && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(item);
+                            }}
+                            className="p-1.5 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-semibold px-2.5 gap-1 font-sans cursor-pointer flex items-center shrink-0"
+                          >
+                            <Edit3 className="size-3.5" />
+                            এডিট করুন
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Passage Box */}
+                    {item.passageStem && (
+                      <div className="p-4 bg-indigo-50/70 border border-indigo-100 rounded-xl text-slate-800 font-serif text-[14px] leading-relaxed shadow-inner">
+                        <RichTextRender
+                          content={item.passageStem}
+                          inline={false}
+                        />
+                      </div>
+                    )}
+
+                    {/* Sub Questions List */}
+                    <div className="space-y-4 pt-2 border-t border-dashed border-indigo-200/80">
+                      {item.questions.map((q, qSubIndex) => {
+                        const isAnswerVisible =
+                          showAnswers || !!expandedAnswerIds[q._id];
+                        const subCatLabel =
+                          CATEGORIES_MAP.find((c) => c.value === q.category)
+                            ?.label || q.category;
+                        const subDiffConfig = DIFFICULTY_MAP[q.difficulty] || {
+                          label: q.difficulty,
+                          color: "text-slate-600 border-slate-200 bg-slate-50",
+                        };
+                        const isSelected = selectedQuestionIds.includes(q._id);
+
+                        return (
+                          <div
+                            key={q._id}
+                            className="p-4 bg-white/70 rounded-xl border border-slate-200/60 space-y-3 relative group/sub shadow-2xs"
+                          >
+                            {/* Sub Question Row Header */}
+                            <div className="flex flex-wrap justify-between items-center gap-2">
+                              <div className="flex items-center gap-2 text-xs font-bold text-slate-600 font-sans">
+                                <span className="text-[#4F46E5]">
+                                  প্রশ্ন{" "}
+                                  {(qSubIndex + 1).toLocaleString("bn-BD")}
+                                </span>
+                                <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-2 py-0.5 rounded text-[10px]">
+                                  {subCatLabel}
+                                </span>
+                                <span
+                                  className={`px-2 py-0.5 rounded border text-[10px] ${subDiffConfig.color}`}
+                                >
+                                  {subDiffConfig.label}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => toggleIndividualAnswer(q._id)}
+                                  className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${isAnswerVisible ? "bg-indigo-50 text-[#4F46E5] border-indigo-200" : "bg-slate-50 text-slate-400 hover:text-slate-600 border-slate-200"}`}
+                                  title={
+                                    isAnswerVisible
+                                      ? "উত্তর লুকান"
+                                      : "উত্তর দেখান"
+                                  }
+                                >
+                                  {isAnswerVisible ? (
+                                    <EyeOff className="size-3.5" />
+                                  ) : (
+                                    <Eye className="size-3.5" />
+                                  )}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleToggleSelect(q._id)}
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs ${
+                                    isSelected
+                                      ? "bg-indigo-600 text-white border border-indigo-600"
+                                      : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
+                                  }`}
+                                >
+                                  <CheckSquare className="size-3.5" />
+                                  {isSelected ? "বাছাইকৃত" : "বাছাই করুন"}
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Question Content */}
+                            <div className="text-[15px]">
+                              <div className="flex gap-2">
+                                <span className="font-bold shrink-0">
+                                  {(qSubIndex + 1).toLocaleString("bn-BD")}.
+                                </span>
+                                <div className="flex-1">
+                                  <RichTextRender
+                                    content={q.mcqData?.questionText || ""}
+                                  />
+                                  {q.mcqData?.mcqType ===
+                                    "MultipleCompletion" &&
+                                    q.mcqData?.statements && (
+                                      <div className="space-y-1 pl-6 mt-2 font-normal text-[15px] text-slate-700">
+                                        {q.mcqData.statements.map((st, idx) => (
+                                          <div
+                                            key={idx}
+                                            className="flex gap-1 items-start"
+                                          >
+                                            <span className="shrink-0 text-slate-500 font-bold">
+                                              {idx === 0
+                                                ? "i. "
+                                                : idx === 1
+                                                  ? "ii. "
+                                                  : "iii. "}
+                                            </span>
+                                            <RichTextRender
+                                              content={st}
+                                              className="inline-block"
+                                            />
+                                          </div>
+                                        ))}
+                                        <div className="mt-2 font-semibold">
+                                          নিচের কোনটি সঠিক?
+                                        </div>
+                                      </div>
+                                    )}
+                                </div>
+                              </div>
+
+                              {/* Options Grid */}
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 mt-3 text-[15px]">
+                                {q.mcqData?.options?.map((opt, idx) => {
+                                  const isCorrect =
+                                    isAnswerVisible &&
+                                    q.mcqData.correctAnswer === idx;
+                                  return (
+                                    <div
+                                      key={idx}
+                                      className={`flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border transition-all duration-300 ${isCorrect ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm" : "bg-white border-black/[0.04] text-slate-600"}`}
+                                    >
+                                      <div className="flex items-center gap-2.5">
+                                        <span
+                                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${isCorrect ? "bg-emerald-500 text-white" : "bg-black/[0.04] text-slate-500"}`}
+                                        >
+                                          {idx === 0
+                                            ? "ক"
+                                            : idx === 1
+                                              ? "খ"
+                                              : idx === 2
+                                                ? "গ"
+                                                : "ঘ"}
+                                        </span>
+                                        <RichTextRender
+                                          content={opt}
+                                          className={`inline-block ${isCorrect ? "text-emerald-800" : "font-normal"}`}
+                                        />
+                                      </div>
+                                      {isCorrect && (
+                                        <Check className="size-4 text-emerald-600 shrink-0" />
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+
+                              {isAnswerVisible && q.mcqData?.explanation && (
+                                <div className="mt-3 p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
+                                  <span className="font-semibold text-[15px]">
+                                    বিশ্লেষণ:{" "}
+                                  </span>
+                                  <RichTextRender
+                                    content={q.mcqData.explanation}
+                                    className="inline-block"
+                                    inline
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                );
+              }
+
+              const q = item.question;
               const classLabel =
                 CLASSES_MAP.find((c) => c.value === q.className)?.label ||
                 q.className;
@@ -1151,16 +1391,17 @@ export default function QuestionBank() {
                     {/* MCQ */}
                     {q.category === "MCQ" && q.mcqData && (
                       <div className="space-y-4">
-                        {q.mcqData.mcqType === "Contextual" &&
-                          q.mcqData.stem && (
-                            <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-sm italic font-serif leading-relaxed text-slate-700 backdrop-blur-sm">
-                              <strong>উদ্দীপক:</strong>
-                              <RichTextRender
-                                content={q.mcqData.stem}
-                                className="mt-1 font-serif"
-                              />
-                            </div>
-                          )}
+                        {(q.passageStem ||
+                          (q.mcqData.mcqType === "Contextual" &&
+                            q.mcqData.stem)) && (
+                          <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-sm italic font-serif leading-relaxed text-slate-700 backdrop-blur-sm">
+                            <strong>উদ্দীপক:</strong>
+                            <RichTextRender
+                              content={q.passageStem || q.mcqData.stem}
+                              className="mt-1 font-serif"
+                            />
+                          </div>
+                        )}
 
                         <div className="text-[15px] flex justify-between items-start gap-4">
                           <div className="flex gap-2">
@@ -1799,17 +2040,21 @@ export default function QuestionBank() {
                   {selectedPreviewQuestion.category === "MCQ" &&
                     selectedPreviewQuestion.mcqData && (
                       <div className="space-y-4">
-                        {selectedPreviewQuestion.mcqData.mcqType ===
-                          "Contextual" &&
-                          selectedPreviewQuestion.mcqData.stem && (
-                            <div className="p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-sm italic font-serif leading-relaxed backdrop-blur-sm">
-                              <strong>উদ্দীপক:</strong>
-                              <RichTextRender
-                                content={selectedPreviewQuestion.mcqData.stem}
-                                className="mt-1 font-serif"
-                              />
-                            </div>
-                          )}
+                        {(selectedPreviewQuestion.passageStem ||
+                          (selectedPreviewQuestion.mcqData.mcqType ===
+                            "Contextual" &&
+                            selectedPreviewQuestion.mcqData.stem)) && (
+                          <div className="p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-sm italic font-serif leading-relaxed backdrop-blur-sm">
+                            <strong>উদ্দীপক:</strong>
+                            <RichTextRender
+                              content={
+                                selectedPreviewQuestion.passageStem ||
+                                selectedPreviewQuestion.mcqData.stem
+                              }
+                              className="mt-1 font-serif"
+                            />
+                          </div>
+                        )}
 
                         <div className="space-y-3">
                           <div className="text-[15px] flex justify-between items-start gap-4 w-full">

@@ -40,6 +40,13 @@ export function useQuestionBank() {
   const [selectedPreviewQuestion, setSelectedPreviewQuestion] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedQuestionIds, setSelectedQuestionIds] = useState([]);
+
+  const handleToggleSelect = (id) => {
+    setSelectedQuestionIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
 
   // Fetch global questions from pages
   const {
@@ -272,6 +279,9 @@ export function useQuestionBank() {
     setDeleteConfirmId,
     showFilters,
     setShowFilters,
+    selectedQuestionIds,
+    setSelectedQuestionIds,
+    handleToggleSelect,
     filterActiveTypes,
     filterActiveLevels,
     filterActiveClasses,

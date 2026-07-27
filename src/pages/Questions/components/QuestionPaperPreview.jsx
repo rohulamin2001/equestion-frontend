@@ -1,6 +1,7 @@
 import { Info, Monitor, Plus, Settings } from "lucide-react";
 import { useState } from "react";
 import InlineEditable from "../../../components/InlineEditable.jsx";
+import RichTextRender from "../../../components/RichTextRender.jsx";
 import { translateSubscriptionKey } from "../../../constants/subscriptions.js";
 import {
   getCategoryMarkLabel,
@@ -740,7 +741,7 @@ export default function QuestionPaperPreview({
                   </div>
 
                   <div className="block">
-                    {group.questions.map((q) => {
+                    {group.questions.map((q, qIndex) => {
                       const serialNum = (() => {
                         const num = q.serialNumber || 1;
                         const padded = num < 10 ? `0${num}` : String(num);
@@ -765,6 +766,123 @@ export default function QuestionPaperPreview({
                           )
                           .join("");
                       })();
+
+                      const isFirstInGroup =
+                        q.passageGroupId &&
+                        (qIndex === 0 ||
+                          group.questions[qIndex - 1].passageGroupId !==
+                            q.passageGroupId);
+                      let groupHeader = null;
+                      if (isFirstInGroup) {
+                        const groupQs = group.questions.filter(
+                          (x) => x.passageGroupId === q.passageGroupId,
+                        );
+                        if (groupQs.length > 1) {
+                          const firstNum = groupQs[0].serialNumber || 1;
+                          const lastNum =
+                            groupQs[groupQs.length - 1].serialNumber || 1;
+                          const toBangla = (n) =>
+                            String(n)
+                              .split("")
+                              .map((c) =>
+                                c >= "0" && c <= "9"
+                                  ? [
+                                      "০",
+                                      "১",
+                                      "২",
+                                      "৩",
+                                      "৪",
+                                      "৫",
+                                      "৬",
+                                      "৭",
+                                      "৮",
+                                      "৯",
+                                    ][Number(c)]
+                                  : c,
+                              )
+                              .join("");
+                          const firstBangla = toBangla(firstNum);
+                          const lastBangla = toBangla(lastNum);
+                          let headerText = `নিচের উদ্দীপকটি পড়ে ${firstBangla} ও ${lastBangla} নম্বর প্রশ্নের উত্তর দাও:`;
+                          if (groupQs.length > 2) {
+                            headerText = `নিচের উদ্দীপকটি পড়ে ${firstBangla} থেকে ${lastBangla} নম্বর প্রশ্নের উত্তর দাও:`;
+                          }
+                          groupHeader = (
+                            <div
+                              className="mb-3 mt-1"
+                              style={{
+                                breakInside: "avoid",
+                                pageBreakInside: "avoid",
+                              }}
+                            >
+                              <div
+                                className="font-bold text-black font-sans mb-1"
+                                style={{ fontSize: `${baseFontSize}px` }}
+                              >
+                                {headerText}
+                              </div>
+                              <div
+                                className="text-black text-justify leading-relaxed"
+                                style={{ fontSize: `${baseFontSize}px` }}
+                              >
+                                <RichTextRender
+                                  content={
+                                    q.passageStem ||
+                                    (q.mcqData && q.mcqData.stem)
+                                  }
+                                />
+                              </div>
+                            </div>
+                          );
+                        } else if (
+                          q.passageStem ||
+                          (q.mcqData && q.mcqData.stem)
+                        ) {
+                          groupHeader = (
+                            <div
+                              className="mb-3 mt-1"
+                              style={{
+                                breakInside: "avoid",
+                                pageBreakInside: "avoid",
+                              }}
+                            >
+                              <div
+                                className="text-black text-justify leading-relaxed"
+                                style={{ fontSize: `${baseFontSize}px` }}
+                              >
+                                <RichTextRender
+                                  content={
+                                    q.passageStem ||
+                                    (q.mcqData && q.mcqData.stem)
+                                  }
+                                />
+                              </div>
+                            </div>
+                          );
+                        }
+                      } else if (
+                        !q.passageGroupId &&
+                        q.mcqData?.mcqType === "Contextual" &&
+                        q.mcqData?.stem
+                      ) {
+                        groupHeader = (
+                          <div
+                            className="mb-3 mt-1"
+                            style={{
+                              breakInside: "avoid",
+                              pageBreakInside: "avoid",
+                            }}
+                          >
+                            <div
+                              className="text-black text-justify leading-relaxed"
+                              style={{ fontSize: `${baseFontSize}px` }}
+                            >
+                              <RichTextRender content={q.mcqData.stem} />
+                            </div>
+                          </div>
+                        );
+                      }
+
                       return (
                         <div
                           key={q._id}
@@ -775,6 +893,7 @@ export default function QuestionPaperPreview({
                             pageBreakInside: "avoid",
                           }}
                         >
+                          {groupHeader}
                           <div className="flex items-start gap-2 text-inherit text-black">
                             <InlineEditable
                               value={

@@ -269,6 +269,26 @@ export function useQuestionManagement(options = {}) {
   const [editingDraftId, setEditingDraftId] = useState(null);
 
   // MCQ Specific Form Fields
+  const [isGroupedMcq, setIsGroupedMcq] = useState(false);
+  const [mcqGroupQuestions, setMcqGroupQuestions] = useState([
+    {
+      mcqType: "Simple",
+      mcqQuestionText: "",
+      mcqStatements: ["", "", ""],
+      mcqOptions: ["", "", "", ""],
+      mcqCorrectAnswer: 0,
+      mcqExplanation: "",
+    },
+    {
+      mcqType: "Simple",
+      mcqQuestionText: "",
+      mcqStatements: ["", "", ""],
+      mcqOptions: ["", "", "", ""],
+      mcqCorrectAnswer: 0,
+      mcqExplanation: "",
+    },
+  ]);
+
   const [mcqType, setMcqType] = useState("Simple");
   const [mcqStem, setMcqStem] = useState("");
   const [mcqQuestionText, setMcqQuestionText] = useState("");
@@ -300,6 +320,7 @@ export function useQuestionManagement(options = {}) {
   const [generalMarks, setGeneralMarks] = useState(1);
 
   const [editingQuestion, setEditingQuestion] = useState(null); // null if creating
+  const [editingPassageGroup, setEditingPassageGroup] = useState(null);
 
   // Reset Form
   const resetForm = useCallback(() => {
@@ -316,6 +337,7 @@ export function useQuestionManagement(options = {}) {
     setFormDifficulty("Medium");
     setQuestionsList([]);
     setEditingDraftId(null);
+    setEditingPassageGroup(null);
 
     // Reset new metadata
     setFormYear([]);
@@ -323,6 +345,26 @@ export function useQuestionManagement(options = {}) {
     setFormSchool([]);
     setFormLevelTag("");
     setFormSpecialSearch([]);
+
+    setIsGroupedMcq(false);
+    setMcqGroupQuestions([
+      {
+        mcqType: "Simple",
+        mcqQuestionText: "",
+        mcqStatements: ["", "", ""],
+        mcqOptions: ["", "", "", ""],
+        mcqCorrectAnswer: 0,
+        mcqExplanation: "",
+      },
+      {
+        mcqType: "Simple",
+        mcqQuestionText: "",
+        mcqStatements: ["", "", ""],
+        mcqOptions: ["", "", "", ""],
+        mcqCorrectAnswer: 0,
+        mcqExplanation: "",
+      },
+    ]);
 
     setMcqType("Simple");
     setMcqStem("");
@@ -352,7 +394,81 @@ export function useQuestionManagement(options = {}) {
   }, [filterClass, filterType, filterLevel]);
 
   // Set form values from existing question for editing
-  const handleOpenEditMode = useCallback((question) => {
+  const handleOpenEditMode = useCallback((target) => {
+    if (!target) return;
+
+    if (target.isGroup) {
+      const qMeta = target.meta || target.questions?.[0] || {};
+      setEditingPassageGroup(target);
+      setEditingQuestion(qMeta);
+
+      setFormType(qMeta.institutionType || "School");
+      setFormLevel(qMeta.academicLevel || "Secondary");
+      setFormClass(qMeta.className);
+      setUserFormVersion(qMeta.subjectId?.version || "Bangla");
+      setFormSubjectId(qMeta.subjectId?._id || qMeta.subjectId || "");
+      setFormGroup(qMeta.subjectId?.group || "General");
+      setFormChapterNumber(
+        qMeta.chapterNumber ? qMeta.chapterNumber.toString() : "",
+      );
+      setFormTopics(qMeta.topics || []);
+      setFormCategory("MCQ");
+      setFormDifficulty(qMeta.difficulty || "Medium");
+
+      setFormYear(
+        Array.isArray(qMeta.year)
+          ? [...qMeta.year]
+          : typeof qMeta.year === "string" && qMeta.year
+            ? qMeta.year.split(",").map((s) => s.trim())
+            : [],
+      );
+      setFormBoard(
+        Array.isArray(qMeta.board)
+          ? [...qMeta.board]
+          : typeof qMeta.board === "string" && qMeta.board
+            ? qMeta.board.split(",").map((s) => s.trim())
+            : [],
+      );
+      setFormSchool(
+        Array.isArray(qMeta.school)
+          ? [...qMeta.school]
+          : typeof qMeta.school === "string" && qMeta.school
+            ? qMeta.school.split(",").map((s) => s.trim())
+            : [],
+      );
+      setFormLevelTag(qMeta.level || "");
+      setFormSpecialSearch(
+        Array.isArray(qMeta.specialSearch)
+          ? [...qMeta.specialSearch]
+          : typeof qMeta.specialSearch === "string" && qMeta.specialSearch
+            ? qMeta.specialSearch.split(",").map((s) => s.trim())
+            : [],
+      );
+
+      setIsGroupedMcq(true);
+      setMcqStem(target.passageStem || "");
+      setMcqGroupQuestions(
+        (target.questions || []).map((q) => ({
+          _id: q._id,
+          mcqType: q.mcqData?.mcqType || "Simple",
+          mcqQuestionText: q.mcqData?.questionText || "",
+          mcqStatements: q.mcqData?.statements?.length
+            ? [...q.mcqData.statements]
+            : ["", "", ""],
+          mcqOptions: q.mcqData?.options?.length
+            ? [...q.mcqData.options]
+            : ["", "", "", ""],
+          mcqCorrectAnswer: q.mcqData?.correctAnswer ?? 0,
+          mcqExplanation: q.mcqData?.explanation || "",
+        })),
+      );
+
+      setActiveStep(2);
+      return;
+    }
+
+    const question = target;
+    setEditingPassageGroup(null);
     setEditingQuestion(question);
 
     setFormType(question.institutionType || "School");
@@ -604,47 +720,106 @@ export function useQuestionManagement(options = {}) {
     };
 
     if (formCategory === "MCQ") {
-      payload.mcqData = {
-        mcqType,
-        stem: isHtmlEmpty(mcqStem) ? "" : mcqStem.trim(),
-        questionText: isHtmlEmpty(mcqQuestionText)
-          ? ""
-          : mcqQuestionText.trim(),
-        statements:
-          mcqType === "MultipleCompletion"
-            ? mcqStatements.filter((s) => !isHtmlEmpty(s)).map((s) => s.trim())
-            : [],
-        options: mcqOptions.map((o) => (isHtmlEmpty(o) ? "" : o.trim())),
-        correctAnswer: Number(mcqCorrectAnswer),
-        explanation: isHtmlEmpty(mcqExplanation) ? "" : mcqExplanation.trim(),
-      };
+      if (isGroupedMcq) {
+        if (isHtmlEmpty(mcqStem)) {
+          toast.error("উদ্দীপকভিত্তিক প্রশ্নগুচ্ছের জন্য উদ্দীপক আবশ্যক");
+          return null;
+        }
 
-      if (mcqType === "Contextual" && isHtmlEmpty(mcqStem)) {
-        toast.error(
-          "বহুপদী/অভিন্ন তথ্যভিত্তিক বহুনির্বাচনি প্রশ্নের জন্য উদ্দীপক আবশ্যক",
-        );
-        return null;
-      }
-      if (isHtmlEmpty(mcqQuestionText) && mcqType !== "Contextual") {
-        toast.error(
-          "দয়া করে বহুনির্বাচনি প্রশ্নের মূল টেক্সট লিখুন (খালি স্পেস গ্রহণযোগ্য নয়)",
-        );
-        return null;
-      }
-      if (
-        mcqType === "MultipleCompletion" &&
-        payload.mcqData.statements.length < 2
-      ) {
-        toast.error(
-          "বহুপদী সমাপ্তিসূচক প্রশ্নের জন্য অন্তত ২টি বক্তব্য প্রদান করুন",
-        );
-        return null;
-      }
-      if (payload.mcqData.options.some((o) => isHtmlEmpty(o))) {
-        toast.error(
-          "বহুনির্বাচনি প্রশ্নের ৪টি অপশনই আবশ্যক (খালি স্পেস গ্রহণযোগ্য নয়)",
-        );
-        return null;
+        const payloads = [];
+        const groupId =
+          Date.now().toString() + Math.random().toString(36).substring(2, 9);
+        const stemText = mcqStem.trim();
+
+        for (let i = 0; i < mcqGroupQuestions.length; i++) {
+          const mq = mcqGroupQuestions[i];
+          if (isHtmlEmpty(mq.mcqQuestionText)) {
+            toast.error(`প্রশ্ন ${i + 1} এর মূল টেক্সট আবশ্যক`);
+            return null;
+          }
+          if (
+            mq.mcqType === "MultipleCompletion" &&
+            mq.mcqStatements.filter((s) => !isHtmlEmpty(s)).length < 2
+          ) {
+            toast.error(
+              `প্রশ্ন ${i + 1} এর জন্য অন্তত ২টি বক্তব্য প্রদান করুন`,
+            );
+            return null;
+          }
+          if (mq.mcqOptions.some((o) => isHtmlEmpty(o))) {
+            toast.error(`প্রশ্ন ${i + 1} এর ৪টি অপশনই আবশ্যক`);
+            return null;
+          }
+
+          payloads.push({
+            ...payload,
+            passageGroupId: groupId,
+            passageStem: stemText,
+            mcqData: {
+              mcqType: mq.mcqType,
+              questionText: mq.mcqQuestionText.trim(),
+              statements:
+                mq.mcqType === "MultipleCompletion"
+                  ? mq.mcqStatements
+                      .filter((s) => !isHtmlEmpty(s))
+                      .map((s) => s.trim())
+                  : [],
+              options: mq.mcqOptions.map((o) =>
+                isHtmlEmpty(o) ? "" : o.trim(),
+              ),
+              correctAnswer: Number(mq.mcqCorrectAnswer),
+              explanation: isHtmlEmpty(mq.mcqExplanation)
+                ? ""
+                : mq.mcqExplanation.trim(),
+            },
+          });
+        }
+        return payloads;
+      } else {
+        payload.mcqData = {
+          mcqType,
+          stem: isHtmlEmpty(mcqStem) ? "" : mcqStem.trim(),
+          questionText: isHtmlEmpty(mcqQuestionText)
+            ? ""
+            : mcqQuestionText.trim(),
+          statements:
+            mcqType === "MultipleCompletion"
+              ? mcqStatements
+                  .filter((s) => !isHtmlEmpty(s))
+                  .map((s) => s.trim())
+              : [],
+          options: mcqOptions.map((o) => (isHtmlEmpty(o) ? "" : o.trim())),
+          correctAnswer: Number(mcqCorrectAnswer),
+          explanation: isHtmlEmpty(mcqExplanation) ? "" : mcqExplanation.trim(),
+        };
+
+        if (mcqType === "Contextual" && isHtmlEmpty(mcqStem)) {
+          toast.error(
+            "বহুপদী/অভিন্ন তথ্যভিত্তিক বহুনির্বাচনি প্রশ্নের জন্য উদ্দীপক আবশ্যক",
+          );
+          return null;
+        }
+        if (isHtmlEmpty(mcqQuestionText) && mcqType !== "Contextual") {
+          toast.error(
+            "দয়া করে বহুনির্বাচনি প্রশ্নের মূল টেক্সট লিখুন (খালি স্পেস গ্রহণযোগ্য নয়)",
+          );
+          return null;
+        }
+        if (
+          mcqType === "MultipleCompletion" &&
+          payload.mcqData.statements.length < 2
+        ) {
+          toast.error(
+            "বহুপদী সমাপ্তিসূচক প্রশ্নের জন্য অন্তত ২টি বক্তব্য প্রদান করুন",
+          );
+          return null;
+        }
+        if (payload.mcqData.options.some((o) => isHtmlEmpty(o))) {
+          toast.error(
+            "বহুনির্বাচনি প্রশ্নের ৪টি অপশনই আবশ্যক (খালি স্পেস গ্রহণযোগ্য নয়)",
+          );
+          return null;
+        }
       }
     } else if (formCategory === "Creative") {
       payload.creativeData = {
@@ -755,6 +930,8 @@ export function useQuestionManagement(options = {}) {
     formSchool,
     formLevelTag,
     formSpecialSearch,
+    isGroupedMcq,
+    mcqGroupQuestions,
     mcqType,
     mcqStem,
     mcqQuestionText,
@@ -780,11 +957,38 @@ export function useQuestionManagement(options = {}) {
     if (!qPayload) return false;
 
     // Attach temporary frontend ID
-    qPayload.id =
-      Date.now().toString() + Math.random().toString(36).substring(2, 9);
-    setQuestionsList((prev) => [...prev, qPayload]);
+    if (Array.isArray(qPayload)) {
+      const payloadsWithIds = qPayload.map((p) => ({
+        ...p,
+        id: Date.now().toString() + Math.random().toString(36).substring(2, 9),
+      }));
+      setQuestionsList((prev) => [...prev, ...payloadsWithIds]);
+    } else {
+      qPayload.id =
+        Date.now().toString() + Math.random().toString(36).substring(2, 9);
+      setQuestionsList((prev) => [...prev, qPayload]);
+    }
 
     // Clear question editors only, keep metadata
+    setIsGroupedMcq(false);
+    setMcqGroupQuestions([
+      {
+        mcqType: "Simple",
+        mcqQuestionText: "",
+        mcqStatements: ["", "", ""],
+        mcqOptions: ["", "", "", ""],
+        mcqCorrectAnswer: 0,
+        mcqExplanation: "",
+      },
+      {
+        mcqType: "Simple",
+        mcqQuestionText: "",
+        mcqStatements: ["", "", ""],
+        mcqOptions: ["", "", "", ""],
+        mcqCorrectAnswer: 0,
+        mcqExplanation: "",
+      },
+    ]);
     setMcqType("Simple");
     setMcqStem("");
     setMcqQuestionText("");
@@ -1096,6 +1300,138 @@ export function useQuestionManagement(options = {}) {
     if (isSubmittingRef.current || formLoading) return;
     isSubmittingRef.current = true;
 
+    if (editingPassageGroup || (editingQuestion && isGroupedMcq)) {
+      const groupId =
+        editingPassageGroup?.passageGroupId ||
+        editingQuestion?.passageGroupId ||
+        Date.now().toString();
+      if (isHtmlEmpty(mcqStem)) {
+        toast.error("উদ্দীপকভিত্তিক প্রশ্নগুচ্ছের জন্য উদ্দীপক আবশ্যক");
+        isSubmittingRef.current = false;
+        return;
+      }
+
+      // Validate all sub-questions
+      for (let i = 0; i < mcqGroupQuestions.length; i++) {
+        const mq = mcqGroupQuestions[i];
+        if (isHtmlEmpty(mq.mcqQuestionText)) {
+          toast.error(`প্রশ্ন ${i + 1} এর মূল টেক্সট আবশ্যক`);
+          isSubmittingRef.current = false;
+          return;
+        }
+        if (
+          mq.mcqType === "MultipleCompletion" &&
+          mq.mcqStatements.filter((s) => !isHtmlEmpty(s)).length < 2
+        ) {
+          toast.error(`প্রশ্ন ${i + 1} এর জন্য অন্তত ২টি বক্তব্য প্রদান করুন`);
+          isSubmittingRef.current = false;
+          return;
+        }
+        if (mq.mcqOptions.some((o) => isHtmlEmpty(o))) {
+          toast.error(`প্রশ্ন ${i + 1} এর ৪টি অপশনই আবশ্যক`);
+          isSubmittingRef.current = false;
+          return;
+        }
+      }
+
+      try {
+        const token = await getToken();
+        const basePayload = {
+          className: formClass,
+          institutionType: formType,
+          academicLevel: formLevel,
+          subjectId: formSubjectId,
+          chapterNumber: Number(formChapterNumber),
+          topics: formTopics,
+          category: "MCQ",
+          difficulty: formDifficulty,
+          year: formYear,
+          board: formBoard,
+          school: formSchool,
+          level: formLevelTag,
+          specialSearch: formSpecialSearch,
+          passageGroupId: groupId,
+          passageStem: mcqStem.trim(),
+        };
+
+        const originalQuestions = editingPassageGroup?.questions || [];
+        const originalIds = new Set(originalQuestions.map((q) => q._id));
+        const currentIds = new Set(
+          mcqGroupQuestions.map((mq) => mq._id).filter(Boolean),
+        );
+
+        const updatePromises = [];
+        const newPayloads = [];
+
+        for (const mq of mcqGroupQuestions) {
+          const itemPayload = {
+            ...basePayload,
+            mcqData: {
+              mcqType: mq.mcqType,
+              questionText: mq.mcqQuestionText.trim(),
+              statements:
+                mq.mcqType === "MultipleCompletion"
+                  ? mq.mcqStatements
+                      .filter((s) => !isHtmlEmpty(s))
+                      .map((s) => s.trim())
+                  : [],
+              options: mq.mcqOptions.map((o) =>
+                isHtmlEmpty(o) ? "" : o.trim(),
+              ),
+              correctAnswer: Number(mq.mcqCorrectAnswer),
+              explanation: isHtmlEmpty(mq.mcqExplanation)
+                ? ""
+                : mq.mcqExplanation.trim(),
+            },
+          };
+
+          if (mq._id && originalIds.has(mq._id)) {
+            updatePromises.push(
+              apiClient.put(`/questions/${mq._id}`, itemPayload, {
+                headers: { Authorization: `Bearer ${token}` },
+              }),
+            );
+          } else {
+            newPayloads.push(itemPayload);
+          }
+        }
+
+        const deletePromises = [];
+        for (const qId of originalIds) {
+          if (!currentIds.has(qId)) {
+            deletePromises.push(
+              apiClient.delete(`/questions/${qId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              }),
+            );
+          }
+        }
+
+        if (newPayloads.length > 0) {
+          updatePromises.push(
+            apiClient.post("/questions", newPayloads, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          );
+        }
+
+        await Promise.all([...updatePromises, ...deletePromises]);
+
+        toast.success("উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ সফলভাবে হালনাগাদ করা হয়েছে");
+        queryClient.invalidateQueries({ queryKey: ["questions"] });
+        queryClient.invalidateQueries({ queryKey: ["questionStats"] });
+        setEditingPassageGroup(null);
+        setEditingQuestion(null);
+        resetForm();
+      } catch (err) {
+        console.error("Passage group edit error:", err);
+        toast.error("উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ সেভ করতে সমস্যা হয়েছে");
+      } finally {
+        isSubmittingRef.current = false;
+      }
+      return;
+    }
+
     if (editingQuestion) {
       const payload = buildPayloadFromForm();
       if (!payload) {
@@ -1119,7 +1455,7 @@ export function useQuestionManagement(options = {}) {
         isSubmittingRef.current = false;
         return;
       }
-      payloads = [singlePayload];
+      payloads = Array.isArray(singlePayload) ? singlePayload : [singlePayload];
     }
 
     addQuestionMutation.mutate(payloads);
@@ -1201,6 +1537,10 @@ export function useQuestionManagement(options = {}) {
     setFormSpecialSearch,
 
     // MCQ fields & setters
+    isGroupedMcq,
+    setIsGroupedMcq,
+    mcqGroupQuestions,
+    setMcqGroupQuestions,
     mcqType,
     setMcqType,
     mcqStem,
@@ -1268,5 +1608,6 @@ export function useQuestionManagement(options = {}) {
     // API statuses
     formLoading,
     editingQuestion,
+    editingPassageGroup,
   };
 }
