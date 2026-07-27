@@ -142,12 +142,15 @@ export default function MyQuestions() {
     handleRequestReview,
   } = useMyQuestions();
 
-  const groupedQuestionsList = groupPassageQuestions(visibleQuestions);
-  const totalGroupedCount = groupedQuestionsList.length;
-  const getSerialNo = (idx) => {
-    const serial = qm.sortOrder === "desc" ? totalGroupedCount - idx : idx + 1;
-    return serial.toLocaleString("bn-BD");
-  };
+  const questionsWithSerials = visibleQuestions.map((q, idx) => {
+    const serial = qm.sortOrder === "desc" ? totalCount - idx : idx + 1;
+    return {
+      ...q,
+      _overallSerial: serial,
+    };
+  });
+
+  const groupedQuestionsList = groupPassageQuestions(questionsWithSerials);
 
   const [selectedRejectionReason, setSelectedRejectionReason] =
     React.useState(null);
@@ -1075,8 +1078,16 @@ export default function MyQuestions() {
                       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-sans font-bold text-slate-500">
                         <span className="bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] text-white px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 font-sans text-xs">
                           <BookOpen className="size-3.5" />
-                          {getSerialNo(index)}. উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ (
-                          {item.questions.length}টি প্রশ্ন)
+                          {(() => {
+                            const firstSerial = item.questions[0]?._overallSerial;
+                            const lastSerial = item.questions[item.questions.length - 1]?._overallSerial;
+                            const rangeStr = firstSerial && lastSerial && firstSerial !== lastSerial
+                              ? `প্রশ্ন ${firstSerial.toLocaleString("bn-BD")} - ${lastSerial.toLocaleString("bn-BD")}`
+                              : firstSerial
+                                ? `প্রশ্ন ${firstSerial.toLocaleString("bn-BD")}`
+                                : "উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ";
+                            return `${rangeStr}: উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ (${item.questions.length}টি প্রশ্ন)`;
+                          })()}
                         </span>
                         <span className="bg-indigo-50 text-[#4F46E5] border border-indigo-100 px-2 py-0.5 rounded">
                           {classLabel}
@@ -1201,7 +1212,7 @@ export default function MyQuestions() {
                             <div className="text-[15px]">
                               <div className="flex gap-2">
                                 <span className="font-bold shrink-0">
-                                  {(qSubIndex + 1).toLocaleString("bn-BD")}.
+                                  {q._overallSerial ? `${q._overallSerial.toLocaleString("bn-BD")}.` : `${(qSubIndex + 1).toLocaleString("bn-BD")}.`}
                                 </span>
                                 <div className="flex-1">
                                   <RichTextRender
@@ -1584,7 +1595,7 @@ export default function MyQuestions() {
                         <div className="text-[15px] flex justify-between items-start gap-4">
                           <div className="flex gap-2">
                             <span className="font-bold shrink-0">
-                              {getSerialNo(index)}.
+                              {q._overallSerial ? `${q._overallSerial.toLocaleString("bn-BD")}.` : `${(index + 1).toLocaleString("bn-BD")}.`}
                             </span>
                             <div className="flex-1">
                               <RichTextRender
@@ -1689,7 +1700,7 @@ export default function MyQuestions() {
                       <div className="space-y-4">
                         <div className="flex gap-2">
                           <span className="font-bold shrink-0">
-                            {getSerialNo(index)}.
+                            {q._overallSerial ? `${q._overallSerial.toLocaleString("bn-BD")}.` : `${(index + 1).toLocaleString("bn-BD")}.`}
                           </span>
                           <div className="flex-1 space-y-4">
                             {q.creativeData.stem && (
@@ -1854,7 +1865,7 @@ export default function MyQuestions() {
                           <div className="text-[15px] flex justify-between items-start gap-4">
                             <div className="flex gap-2">
                               <span className="font-bold shrink-0">
-                                {getSerialNo(index)}.
+                                {q._overallSerial ? `${q._overallSerial.toLocaleString("bn-BD")}.` : `${(index + 1).toLocaleString("bn-BD")}.`}
                               </span>
                               <RichTextRender
                                 content={q.generalData.questionText}

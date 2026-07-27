@@ -238,11 +238,14 @@ export function useMyQuestions() {
         ];
   };
 
-  // Count Statistics
-  const totalCount = questionsData?.pages?.[0]?.pagination?.total || questions.length;
-  const mcqCount = questions.filter((q) => q.category === "MCQ").length;
-  const creativeCount = questions.filter((q) => q.category === "Creative").length;
-  const otherCount = questions.length - mcqCount - creativeCount;
+  // Count Statistics from Database API
+  const totalCount =
+    personalStats?.total ??
+    questionsData?.pages?.[0]?.pagination?.total ??
+    questions.length;
+  const mcqCount = personalStats?.mcq ?? 0;
+  const creativeCount = personalStats?.creative ?? 0;
+  const otherCount = personalStats?.other ?? 0;
 
   const setPageSize = (size) => {
     setPageSizeState(size);
