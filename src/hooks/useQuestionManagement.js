@@ -6,9 +6,38 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback, useState, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAcademicConfig } from "./useAcademicConfig";
+
+export const isHtmlEmpty = (html) => {
+  if (!html) return true;
+  if (typeof html !== "string") return false;
+  if (
+    /<(img|svg|canvas|audio|video|iframe|embed|object|picture)[^>]*>/i.test(
+      html,
+    )
+  ) {
+    return false;
+  }
+  let text;
+  if (typeof window !== "undefined" && typeof DOMParser !== "undefined") {
+    try {
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      text = doc.body.textContent || doc.body.innerText || "";
+    } catch {
+      text = html.replace(/<[^>]*>/g, "");
+    }
+  } else {
+    text = html.replace(/<[^>]*>/g, "");
+  }
+  return (
+    text
+      .replace(/\u00a0/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .trim().length === 0
+  );
+};
 
 export function useQuestionManagement(options = {}) {
   const isSubmittingRef = useRef(false);
@@ -251,13 +280,17 @@ export function useQuestionManagement(options = {}) {
   // Creative (সৃজনশীল) Specific Form Fields
   const [creativeStem, setCreativeStem] = useState("");
   const [creativeCognitiveA, setCreativeCognitiveA] = useState("");
-  const [creativeCognitiveA_Answer, setCreativeCognitiveA_Answer] = useState("");
+  const [creativeCognitiveA_Answer, setCreativeCognitiveA_Answer] =
+    useState("");
   const [creativeCognitiveB, setCreativeCognitiveB] = useState("");
-  const [creativeCognitiveB_Answer, setCreativeCognitiveB_Answer] = useState("");
+  const [creativeCognitiveB_Answer, setCreativeCognitiveB_Answer] =
+    useState("");
   const [creativeCognitiveC, setCreativeCognitiveC] = useState("");
-  const [creativeCognitiveC_Answer, setCreativeCognitiveC_Answer] = useState("");
+  const [creativeCognitiveC_Answer, setCreativeCognitiveC_Answer] =
+    useState("");
   const [creativeCognitiveD, setCreativeCognitiveD] = useState("");
-  const [creativeCognitiveD_Answer, setCreativeCognitiveD_Answer] = useState("");
+  const [creativeCognitiveD_Answer, setCreativeCognitiveD_Answer] =
+    useState("");
 
   // General Questions (Short/Broad/Matching/FillInBlanks)
   const [generalQuestionText, setGeneralQuestionText] = useState("");
@@ -488,7 +521,7 @@ export function useQuestionManagement(options = {}) {
     },
     onSettled: () => {
       isSubmittingRef.current = false;
-    }
+    },
   });
 
   // Update Question Mutation
@@ -516,7 +549,7 @@ export function useQuestionManagement(options = {}) {
     },
     onSettled: () => {
       isSubmittingRef.current = false;
-    }
+    },
   });
 
   // Delete Question Mutation
@@ -573,60 +606,136 @@ export function useQuestionManagement(options = {}) {
     if (formCategory === "MCQ") {
       payload.mcqData = {
         mcqType,
-        stem: mcqStem.trim(),
-        questionText: mcqQuestionText.trim(),
+        stem: isHtmlEmpty(mcqStem) ? "" : mcqStem.trim(),
+        questionText: isHtmlEmpty(mcqQuestionText)
+          ? ""
+          : mcqQuestionText.trim(),
         statements:
           mcqType === "MultipleCompletion"
-            ? mcqStatements.filter((s) => s.trim())
+            ? mcqStatements.filter((s) => !isHtmlEmpty(s)).map((s) => s.trim())
             : [],
-        options: mcqOptions.map((o) => o.trim()),
+        options: mcqOptions.map((o) => (isHtmlEmpty(o) ? "" : o.trim())),
         correctAnswer: Number(mcqCorrectAnswer),
-        explanation: mcqExplanation.trim(),
+        explanation: isHtmlEmpty(mcqExplanation) ? "" : mcqExplanation.trim(),
       };
 
-      if (!payload.mcqData.questionText && mcqType !== "Contextual") {
-        toast.error("দয়া করে প্রশ্নের মূল টেক্সট লিখুন");
+      if (mcqType === "Contextual" && isHtmlEmpty(mcqStem)) {
+        toast.error(
+          "বহুপদী/অভিন্ন তথ্যভিত্তিক বহুনির্বাচনি প্রশ্নের জন্য উদ্দীপক আবশ্যক",
+        );
         return null;
       }
-      if (payload.mcqData.options.some((o) => !o)) {
-        toast.error("বহুনির্বাচনি প্রশ্নের ৪টি অপশনই আবশ্যক");
+      if (isHtmlEmpty(mcqQuestionText) && mcqType !== "Contextual") {
+        toast.error(
+          "দয়া করে বহুনির্বাচনি প্রশ্নের মূল টেক্সট লিখুন (খালি স্পেস গ্রহণযোগ্য নয়)",
+        );
+        return null;
+      }
+      if (
+        mcqType === "MultipleCompletion" &&
+        payload.mcqData.statements.length < 2
+      ) {
+        toast.error(
+          "বহুপদী সমাপ্তিসূচক প্রশ্নের জন্য অন্তত ২টি বক্তব্য প্রদান করুন",
+        );
+        return null;
+      }
+      if (payload.mcqData.options.some((o) => isHtmlEmpty(o))) {
+        toast.error(
+          "বহুনির্বাচনি প্রশ্নের ৪টি অপশনই আবশ্যক (খালি স্পেস গ্রহণযোগ্য নয়)",
+        );
         return null;
       }
     } else if (formCategory === "Creative") {
       payload.creativeData = {
-        stem: creativeStem.trim(),
+        stem: isHtmlEmpty(creativeStem) ? "" : creativeStem.trim(),
         subQuestions: {
-          cognitiveA: { text: creativeCognitiveA.trim(), answer: creativeCognitiveA_Answer.trim(), marks: 1 },
-          cognitiveB: { text: creativeCognitiveB.trim(), answer: creativeCognitiveB_Answer.trim(), marks: 2 },
-          cognitiveC: { text: creativeCognitiveC.trim(), answer: creativeCognitiveC_Answer.trim(), marks: 3 },
-          cognitiveD: { text: creativeCognitiveD.trim(), answer: creativeCognitiveD_Answer.trim(), marks: 4 },
+          cognitiveA: {
+            text: isHtmlEmpty(creativeCognitiveA)
+              ? ""
+              : creativeCognitiveA.trim(),
+            answer: isHtmlEmpty(creativeCognitiveA_Answer)
+              ? ""
+              : creativeCognitiveA_Answer.trim(),
+            marks: 1,
+          },
+          cognitiveB: {
+            text: isHtmlEmpty(creativeCognitiveB)
+              ? ""
+              : creativeCognitiveB.trim(),
+            answer: isHtmlEmpty(creativeCognitiveB_Answer)
+              ? ""
+              : creativeCognitiveB_Answer.trim(),
+            marks: 2,
+          },
+          cognitiveC: {
+            text: isHtmlEmpty(creativeCognitiveC)
+              ? ""
+              : creativeCognitiveC.trim(),
+            answer: isHtmlEmpty(creativeCognitiveC_Answer)
+              ? ""
+              : creativeCognitiveC_Answer.trim(),
+            marks: 3,
+          },
+          cognitiveD: {
+            text: isHtmlEmpty(creativeCognitiveD)
+              ? ""
+              : creativeCognitiveD.trim(),
+            answer: isHtmlEmpty(creativeCognitiveD_Answer)
+              ? ""
+              : creativeCognitiveD_Answer.trim(),
+            marks: 4,
+          },
         },
       };
 
-      if (!payload.creativeData.stem) {
-        toast.error("সৃজনশীল প্রশ্নের জন্য উদ্দীপক আবশ্যক");
+      if (isHtmlEmpty(creativeStem)) {
+        toast.error(
+          "সৃজনশীল প্রশ্নের জন্য উদ্দীপক আবশ্যক (খালি স্পেস গ্রহণযোগ্য নয়)",
+        );
         return null;
       }
-      if (
-        !creativeCognitiveA ||
-        !creativeCognitiveB ||
-        !creativeCognitiveC ||
-        !creativeCognitiveD
-      ) {
-        toast.error("সৃজনশীল প্রশ্নের ক, খ, গ, ঘ চারটি উপ-প্রশ্নই পূরণ করুন");
+      if (isHtmlEmpty(creativeCognitiveA)) {
+        toast.error(
+          "সৃজনশীল প্রশ্নের 'ক' নং প্রশ্ন পূরণ করুন (খালি স্পেস গ্রহণযোগ্য নয়)",
+        );
+        return null;
+      }
+      if (isHtmlEmpty(creativeCognitiveB)) {
+        toast.error(
+          "সৃজনশীল প্রশ্নের 'খ' নং প্রশ্ন পূরণ করুন (খালি স্পেস গ্রহণযোগ্য নয়)",
+        );
+        return null;
+      }
+      if (isHtmlEmpty(creativeCognitiveC)) {
+        toast.error(
+          "সৃজনশীল প্রশ্নের 'গ' নং প্রশ্ন পূরণ করুন (খালি স্পেস গ্রহণযোগ্য নয়)",
+        );
+        return null;
+      }
+      if (isHtmlEmpty(creativeCognitiveD)) {
+        toast.error(
+          "সৃজনশীল প্রশ্নের 'ঘ' নং প্রশ্ন পূরণ করুন (খালি স্পেস গ্রহণযোগ্য নয়)",
+        );
         return null;
       }
     } else {
       payload.generalData = {
-        questionText: generalQuestionText.trim(),
-        stem: "",
-        subQuestions: generalSubQuestions.filter((q) => q.text.trim()),
-        suggestedAnswer: generalSuggestedAnswer.trim(),
-        marks: Number(generalMarks),
+        questionText: isHtmlEmpty(generalQuestionText)
+          ? ""
+          : generalQuestionText.trim(),
+        stem: isHtmlEmpty(generalStem) ? "" : generalStem.trim(),
+        subQuestions: generalSubQuestions
+          .filter((q) => !isHtmlEmpty(q.text))
+          .map((q) => ({ text: q.text.trim(), marks: Number(q.marks) || 1 })),
+        suggestedAnswer: isHtmlEmpty(generalSuggestedAnswer)
+          ? ""
+          : generalSuggestedAnswer.trim(),
+        marks: Number(generalMarks) || 1,
       };
 
-      if (!payload.generalData.questionText) {
-        toast.error("দয়া করে প্রশ্নের বিবরণ লিখুন");
+      if (isHtmlEmpty(generalQuestionText)) {
+        toast.error("দয়া করে প্রশ্নের বিবরণ লিখুন (খালি স্পেস গ্রহণযোগ্য নয়)");
         return null;
       }
     }
