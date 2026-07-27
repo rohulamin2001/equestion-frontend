@@ -446,7 +446,7 @@ export default function MyQuestions() {
                   : ""
               }`}
             >
-              {showAnswers ? "লুকান" : "উত্তর"}
+              {showAnswers ? "উত্তর লুকান" : "উত্তর দেখান"}
             </Button>
 
             {hasActiveFilters && (
