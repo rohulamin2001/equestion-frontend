@@ -1354,7 +1354,7 @@ export default function MyQuestions() {
 
                             <div className="pl-4 space-y-2.5 text-[15px] text-slate-700">
                               <div className="flex flex-col gap-2">
-                                <div className="flex justify-between items-start ">
+                                <div className="flex justify-between items-center ">
                                   <span className="w-6">ক.</span>
                                   <RichTextRender
                                     content={
@@ -1388,7 +1388,7 @@ export default function MyQuestions() {
                                   )}
                               </div>
                               <div className="flex flex-col gap-2">
-                                <div className="flex justify-between items-start ">
+                                <div className="flex justify-between items-center ">
                                   <span className="w-6">খ.</span>
                                   <RichTextRender
                                     content={
@@ -1422,7 +1422,7 @@ export default function MyQuestions() {
                                   )}
                               </div>
                               <div className="flex flex-col gap-2">
-                                <div className="flex justify-between items-start ">
+                                <div className="flex justify-between items-center ">
                                   <span className="w-6">গ.</span>
                                   <RichTextRender
                                     content={
@@ -1456,7 +1456,7 @@ export default function MyQuestions() {
                                   )}
                               </div>
                               <div className="flex flex-col gap-2">
-                                <div className="flex justify-between items-start ">
+                                <div className="flex justify-between items-center ">
                                   <span className="w-6">ঘ.</span>
                                   <RichTextRender
                                     content={
