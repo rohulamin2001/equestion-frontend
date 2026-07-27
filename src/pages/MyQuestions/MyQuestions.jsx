@@ -20,6 +20,8 @@ import { CLASSES_MAP } from "@/constants/classes";
 import { groupPassageQuestions } from "@/lib/questionUtils";
 import {
   AlertCircle,
+  ArrowDownWideNarrow,
+  ArrowUpNarrowWide,
   BookOpen,
   Calendar,
   Check,
@@ -139,6 +141,13 @@ export default function MyQuestions() {
     requestReviewMutation,
     handleRequestReview,
   } = useMyQuestions();
+
+  const groupedQuestionsList = groupPassageQuestions(visibleQuestions);
+  const totalGroupedCount = groupedQuestionsList.length;
+  const getSerialNo = (idx) => {
+    const serial = qm.sortOrder === "desc" ? totalGroupedCount - idx : idx + 1;
+    return serial.toLocaleString("bn-BD");
+  };
 
   const [selectedRejectionReason, setSelectedRejectionReason] =
     React.useState(null);
@@ -391,6 +400,28 @@ export default function MyQuestions() {
           </div>
 
           <div className="flex gap-2 w-full sm:w-auto shrink-0 justify-end flex-wrap sm:flex-nowrap">
+            <Button
+              variant="outline"
+              onClick={qm.toggleSortOrder}
+              className="border-black/[0.08] text-slate-700 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2.5 sm:px-4 text-xs sm:text-sm flex items-center gap-1.5 font-semibold cursor-pointer backdrop-blur-sm transition-all shadow-sm"
+              title={
+                qm.sortOrder === "desc"
+                  ? "নতুন থেকে পুরাতন (সর্বশেষ প্রশ্ন আগে)"
+                  : "পুরাতন থেকে নতুন (প্রথম প্রশ্ন আগে)"
+              }
+            >
+              {qm.sortOrder === "desc" ? (
+                <>
+                  <ArrowDownWideNarrow className="size-3.5 sm:size-4 text-indigo-600" />
+                  <span>নতুন থেকে পুরাতন</span>
+                </>
+              ) : (
+                <>
+                  <ArrowUpNarrowWide className="size-3.5 sm:size-4 text-indigo-600" />
+                  <span>পুরাতন থেকে নতুন</span>
+                </>
+              )}
+            </Button>
             <Button
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
@@ -1026,7 +1057,7 @@ export default function MyQuestions() {
             animate="visible"
             className="space-y-4"
           >
-            {groupPassageQuestions(visibleQuestions).map((item, index) => {
+            {groupedQuestionsList.map((item, index) => {
               if (item.isGroup) {
                 const qMeta = item.meta;
                 const classLabel =
@@ -1044,8 +1075,8 @@ export default function MyQuestions() {
                       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-sans font-bold text-slate-500">
                         <span className="bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] text-white px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 font-sans text-xs">
                           <BookOpen className="size-3.5" />
-                          উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ ({item.questions.length}টি
-                          প্রশ্ন)
+                          {getSerialNo(index)}. উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ (
+                          {item.questions.length}টি প্রশ্ন)
                         </span>
                         <span className="bg-indigo-50 text-[#4F46E5] border border-indigo-100 px-2 py-0.5 rounded">
                           {classLabel}
@@ -1146,16 +1177,23 @@ export default function MyQuestions() {
                                     <Eye className="size-3.5" />
                                   )}
                                 </button>
-                                {q.status !== "Approved" && qMeta.status !== "Approved" && (
-                                  <button
-                                    type="button"
-                                    onClick={() => setDeleteConfirmId({ id: q._id, deleteAllGroup: false, isGroup: false })}
-                                    className="p-1.5 rounded-lg border border-rose-200 bg-rose-50/50 hover:bg-rose-100 text-rose-600 transition cursor-pointer"
-                                    title="এই নির্দিষ্ট প্রশ্নটি মুছে ফেলুন"
-                                  >
-                                    <Trash2 className="size-3.5" />
-                                  </button>
-                                )}
+                                {q.status !== "Approved" &&
+                                  qMeta.status !== "Approved" && (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setDeleteConfirmId({
+                                          id: q._id,
+                                          deleteAllGroup: false,
+                                          isGroup: false,
+                                        })
+                                      }
+                                      className="p-1.5 rounded-lg border border-rose-200 bg-rose-50/50 hover:bg-rose-100 text-rose-600 transition cursor-pointer"
+                                      title="এই নির্দিষ্ট প্রশ্নটি মুছে ফেলুন"
+                                    >
+                                      <Trash2 className="size-3.5" />
+                                    </button>
+                                  )}
                               </div>
                             </div>
 
@@ -1262,12 +1300,15 @@ export default function MyQuestions() {
                             সংরক্ষণকাল: {formatBengaliDateTime(qMeta.createdAt)}
                           </span>
                         </div>
-                        {qMeta.status === "Rejected" && qMeta.rejectedBy?.fullName && (
-                          <div className="flex items-center gap-1 text-rose-600 bg-rose-500/5 px-1.5 py-0.5 rounded border border-rose-500/10">
-                            <X className="size-3 text-rose-600 shrink-0" />
-                            <span>বাতিলকারী: {qMeta.rejectedBy.fullName}</span>
-                          </div>
-                        )}
+                        {qMeta.status === "Rejected" &&
+                          qMeta.rejectedBy?.fullName && (
+                            <div className="flex items-center gap-1 text-rose-600 bg-rose-500/5 px-1.5 py-0.5 rounded border border-rose-500/10">
+                              <X className="size-3 text-rose-600 shrink-0" />
+                              <span>
+                                বাতিলকারী: {qMeta.rejectedBy.fullName}
+                              </span>
+                            </div>
+                          )}
                       </div>
 
                       <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap justify-end w-full sm:w-auto">
@@ -1299,7 +1340,14 @@ export default function MyQuestions() {
                             <Button
                               type="button"
                               variant="outline"
-                              onClick={() => setDeleteConfirmId({ id: qMeta._id, deleteAllGroup: true, isGroup: true, count: item.questions.length })}
+                              onClick={() =>
+                                setDeleteConfirmId({
+                                  id: qMeta._id,
+                                  deleteAllGroup: true,
+                                  isGroup: true,
+                                  count: item.questions.length,
+                                })
+                              }
                               className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-7 sm:h-8 px-2 sm:px-3 text-[11px] sm:text-xs flex items-center gap-1 font-bold cursor-pointer shrink-0"
                             >
                               <Trash2 className="size-3" />
@@ -1307,12 +1355,15 @@ export default function MyQuestions() {
                             </Button>
                           </>
                         )}
-                        {qMeta.status === "Approved" && qMeta.approvedBy?.fullName && (
-                          <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10 font-bold">
-                            <Check className="size-3.5 text-emerald-600" />
-                            <span>অনুমোদনকারী: {qMeta.approvedBy.fullName}</span>
-                          </div>
-                        )}
+                        {qMeta.status === "Approved" &&
+                          qMeta.approvedBy?.fullName && (
+                            <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10 font-bold">
+                              <Check className="size-3.5 text-emerald-600" />
+                              <span>
+                                অনুমোদনকারী: {qMeta.approvedBy.fullName}
+                              </span>
+                            </div>
+                          )}
                       </div>
                     </div>
                   </motion.div>
@@ -1533,7 +1584,7 @@ export default function MyQuestions() {
                         <div className="text-[15px] flex justify-between items-start gap-4">
                           <div className="flex gap-2">
                             <span className="font-bold shrink-0">
-                              {(index + 1).toLocaleString("bn-BD")}.
+                              {getSerialNo(index)}.
                             </span>
                             <div className="flex-1">
                               <RichTextRender
@@ -1638,7 +1689,7 @@ export default function MyQuestions() {
                       <div className="space-y-4">
                         <div className="flex gap-2">
                           <span className="font-bold shrink-0">
-                            {(index + 1).toLocaleString("bn-BD")}.
+                            {getSerialNo(index)}.
                           </span>
                           <div className="flex-1 space-y-4">
                             {q.creativeData.stem && (
@@ -1803,7 +1854,7 @@ export default function MyQuestions() {
                           <div className="text-[15px] flex justify-between items-start gap-4">
                             <div className="flex gap-2">
                               <span className="font-bold shrink-0">
-                                {(index + 1).toLocaleString("bn-BD")}.
+                                {getSerialNo(index)}.
                               </span>
                               <RichTextRender
                                 content={q.generalData.questionText}

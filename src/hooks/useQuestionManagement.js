@@ -558,6 +558,11 @@ export function useQuestionManagement(options = {}) {
     setActiveStep(2); // Jump straight to editor when editing
   }, []);
 
+  const [sortOrder, setSortOrder] = useState("desc");
+  const toggleSortOrder = useCallback(() => {
+    setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
+  }, []);
+
   // Fetch Questions list (for QuestionBank and MyQuestions)
   const questionsQuery = useInfiniteQuery({
     queryKey: [
@@ -574,6 +579,7 @@ export function useQuestionManagement(options = {}) {
       filterStatus,
       filterPersonal,
       pageSize,
+      sortOrder,
     ],
     enabled: !skipFetch,
     initialPageParam: 1,
@@ -586,6 +592,7 @@ export function useQuestionManagement(options = {}) {
         academicLevel: filterLevel,
         page: pageParam,
         limit: pageSize,
+        sortOrder,
       };
       if (filterSubjectId) params.subjectId = filterSubjectId;
       if (filterChapter) params.chapterNumber = filterChapter;
@@ -1510,6 +1517,9 @@ export function useQuestionManagement(options = {}) {
     setFilterStatus,
     filterPersonal,
     setFilterPersonal,
+    sortOrder,
+    setSortOrder,
+    toggleSortOrder,
 
     // Form fields & setters
     formType,
