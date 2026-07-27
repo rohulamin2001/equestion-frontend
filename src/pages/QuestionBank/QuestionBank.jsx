@@ -1274,23 +1274,23 @@ export default function QuestionBank() {
                           </span>
                           <div className="flex-1 space-y-4">
                             {q.creativeData.stem && (
-                              <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[14px] leading-relaxed text-slate-700 font-serif backdrop-blur-sm">
+                              <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none  leading-relaxed text-slate-700 backdrop-blur-sm">
                                 <RichTextRender content={q.creativeData.stem} />
                               </div>
                             )}
 
-                            <div className="pl-4 space-y-2.5 text-[15px] font-serif text-slate-700">
+                            <div className="pl-4 space-y-2.5 text-[15px] text-slate-700">
                               <div className="flex flex-col gap-2">
-                                <div className="flex justify-between items-start">
+                                <div className="flex justify-between items-center ">
                                   <span className="w-6">ক.</span>
                                   <RichTextRender
                                     content={
                                       q.creativeData.subQuestions?.cognitiveA
                                         ?.text
                                     }
-                                    className="flex-1 font-serif inline-block"
+                                    className="flex-1 inline-block text-sm"
                                   />
-                                  <span className="text-slate-505 text-[15px] font-bold">
+                                  <span className="text-slate-555 text-[15px] font-bold">
                                     {(
                                       q.creativeData.subQuestions?.cognitiveA
                                         ?.marks || 1
@@ -1315,16 +1315,16 @@ export default function QuestionBank() {
                                   )}
                               </div>
                               <div className="flex flex-col gap-2">
-                                <div className="flex justify-between items-start">
+                                <div className="flex justify-between items-center ">
                                   <span className="w-6">খ.</span>
                                   <RichTextRender
                                     content={
                                       q.creativeData.subQuestions?.cognitiveB
                                         ?.text
                                     }
-                                    className="flex-1 font-serif inline-block"
+                                    className="flex-1 inline-block text-sm"
                                   />
-                                  <span className="text-slate-505 text-[15px] font-bold">
+                                  <span className="text-slate-555 text-[15px] font-bold">
                                     {(
                                       q.creativeData.subQuestions?.cognitiveB
                                         ?.marks || 2
@@ -1349,16 +1349,16 @@ export default function QuestionBank() {
                                   )}
                               </div>
                               <div className="flex flex-col gap-2">
-                                <div className="flex justify-between items-start">
+                                <div className="flex justify-between items-center ">
                                   <span className="w-6">গ.</span>
                                   <RichTextRender
                                     content={
                                       q.creativeData.subQuestions?.cognitiveC
                                         ?.text
                                     }
-                                    className="flex-1 font-serif inline-block"
+                                    className="flex-1 inline-block text-sm"
                                   />
-                                  <span className="text-slate-505 text-[15px] font-bold">
+                                  <span className="text-slate-555 text-[15px] font-bold">
                                     {(
                                       q.creativeData.subQuestions?.cognitiveC
                                         ?.marks || 3
@@ -1383,16 +1383,16 @@ export default function QuestionBank() {
                                   )}
                               </div>
                               <div className="flex flex-col gap-2">
-                                <div className="flex justify-between items-start">
+                                <div className="flex justify-between items-center ">
                                   <span className="w-6">ঘ.</span>
                                   <RichTextRender
                                     content={
                                       q.creativeData.subQuestions?.cognitiveD
                                         ?.text
                                     }
-                                    className="flex-1 font-serif inline-block"
+                                    className="flex-1 inline-block text-sm"
                                   />
-                                  <span className="text-slate-505 text-[15px] font-bold">
+                                  <span className="text-slate-555 text-[15px] font-bold">
                                     {(
                                       q.creativeData.subQuestions?.cognitiveD
                                         ?.marks || 4
@@ -1924,7 +1924,7 @@ export default function QuestionBank() {
                     selectedPreviewQuestion.creativeData && (
                       <div className="space-y-5">
                         {selectedPreviewQuestion.creativeData.stem && (
-                          <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5] border border-black/[0.05] rounded-r-xl text-[14px] leading-relaxed text-slate-700 backdrop-blur-sm font-serif">
+                          <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none leading-relaxed text-slate-700 backdrop-blur-sm">
                             <RichTextRender
                               content={
                                 selectedPreviewQuestion.creativeData.stem
@@ -1935,16 +1935,16 @@ export default function QuestionBank() {
 
                         <div className="pl-4 space-y-3.5 text-[15px] text-slate-700">
                           <div className="flex flex-col gap-2">
-                            <div className="flex justify-between items-start">
+                            <div className="flex justify-between items-center">
                               <span className="w-6 text-slate-400">ক.</span>
                               <RichTextRender
                                 content={
                                   selectedPreviewQuestion.creativeData
                                     .subQuestions?.cognitiveA?.text
                                 }
-                                className="flex-1 font-serif inline-block text-slate-800"
+                                className="flex-1 inline-block text-sm text-slate-800"
                               />
-                              <span className="text-slate-505 text-[15px] font-bold">
+                              <span className="text-slate-555 text-[15px] font-bold">
                                 {(
                                   selectedPreviewQuestion.creativeData
                                     .subQuestions?.cognitiveA?.marks || 1
@@ -1969,16 +1969,16 @@ export default function QuestionBank() {
                               )}
                           </div>
                           <div className="flex flex-col gap-2">
-                            <div className="flex justify-between items-start">
+                            <div className="flex justify-between items-center">
                               <span className="w-6 text-slate-400">খ.</span>
                               <RichTextRender
                                 content={
                                   selectedPreviewQuestion.creativeData
                                     .subQuestions?.cognitiveB?.text
                                 }
-                                className="flex-1 font-serif inline-block text-slate-800"
+                                className="flex-1 inline-block text-sm text-slate-800"
                               />
-                              <span className="text-slate-505 text-[15px] font-bold">
+                              <span className="text-slate-555 text-[15px] font-bold">
                                 {(
                                   selectedPreviewQuestion.creativeData
                                     .subQuestions?.cognitiveB?.marks || 2
@@ -2003,16 +2003,16 @@ export default function QuestionBank() {
                               )}
                           </div>
                           <div className="flex flex-col gap-2">
-                            <div className="flex justify-between items-start">
+                            <div className="flex justify-between items-center">
                               <span className="w-6 text-slate-400">গ.</span>
                               <RichTextRender
                                 content={
                                   selectedPreviewQuestion.creativeData
                                     .subQuestions?.cognitiveC?.text
                                 }
-                                className="flex-1 font-serif inline-block text-slate-800"
+                                className="flex-1 inline-block text-sm text-slate-800"
                               />
-                              <span className="text-slate-505 text-[15px] font-bold">
+                              <span className="text-slate-555 text-[15px] font-bold">
                                 {(
                                   selectedPreviewQuestion.creativeData
                                     .subQuestions?.cognitiveC?.marks || 3
@@ -2037,16 +2037,16 @@ export default function QuestionBank() {
                               )}
                           </div>
                           <div className="flex flex-col gap-2">
-                            <div className="flex justify-between items-start">
+                            <div className="flex justify-between items-center">
                               <span className="w-6 text-slate-400">ঘ.</span>
                               <RichTextRender
                                 content={
                                   selectedPreviewQuestion.creativeData
                                     .subQuestions?.cognitiveD?.text
                                 }
-                                className="flex-1 font-serif inline-block text-slate-800"
+                                className="flex-1 inline-block text-sm text-slate-800"
                               />
-                              <span className="text-slate-505 text-[15px] font-bold">
+                              <span className="text-slate-555 text-[15px] font-bold">
                                 {(
                                   selectedPreviewQuestion.creativeData
                                     .subQuestions?.cognitiveD?.marks || 4
