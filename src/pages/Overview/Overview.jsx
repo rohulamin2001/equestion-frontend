@@ -1,4 +1,4 @@
-import { LayoutGrid, FileText, CheckCircle, Users } from "lucide-react";
+import { CheckCircle, FileText, LayoutGrid, Users } from "lucide-react";
 
 export default function Overview() {
   return (
@@ -27,8 +27,12 @@ export default function Overview() {
               মোট প্রশ্নপত্র
             </p>
             <div className="flex items-baseline gap-0.5 mt-1">
-              <span className="text-3xl font-bold text-slate-800 font-sans tracking-tight">12</span>
-              <span className="text-sm font-semibold text-slate-500 font-bengali">টি</span>
+              <span className="text-3xl font-bold text-slate-800 font-sans tracking-tight">
+                12
+              </span>
+              <span className="text-sm font-semibold text-slate-500 font-bengali">
+                টি
+              </span>
             </div>
           </div>
         </div>
@@ -43,8 +47,12 @@ export default function Overview() {
               প্রশ্ন সংখ্যা
             </p>
             <div className="flex items-baseline gap-0.5 mt-1">
-              <span className="text-3xl font-bold text-slate-800 font-sans tracking-tight">450</span>
-              <span className="text-sm font-semibold text-slate-500 font-bengali">টি</span>
+              <span className="text-3xl font-bold text-slate-800 font-sans tracking-tight">
+                450
+              </span>
+              <span className="text-sm font-semibold text-slate-500 font-bengali">
+                টি
+              </span>
             </div>
           </div>
         </div>
@@ -59,8 +67,12 @@ export default function Overview() {
               অনলাইন পরীক্ষা
             </p>
             <div className="flex items-baseline gap-0.5 mt-1">
-              <span className="text-3xl font-bold text-slate-800 font-sans tracking-tight">5</span>
-              <span className="text-sm font-semibold text-slate-500 font-bengali">টি</span>
+              <span className="text-3xl font-bold text-slate-800 font-sans tracking-tight">
+                5
+              </span>
+              <span className="text-sm font-semibold text-slate-500 font-bengali">
+                টি
+              </span>
             </div>
           </div>
         </div>
@@ -75,8 +87,12 @@ export default function Overview() {
               প্রতিষ্ঠানের শিক্ষক
             </p>
             <div className="flex items-baseline gap-0.5 mt-1">
-              <span className="text-3xl font-bold text-slate-800 font-sans tracking-tight">8</span>
-              <span className="text-sm font-semibold text-slate-500 font-bengali">জন</span>
+              <span className="text-3xl font-bold text-slate-800 font-sans tracking-tight">
+                8
+              </span>
+              <span className="text-sm font-semibold text-slate-500 font-bengali">
+                জন
+              </span>
             </div>
           </div>
         </div>
@@ -88,12 +104,16 @@ export default function Overview() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-[3px] bg-gradient-to-r from-transparent via-[#4F46E5] to-transparent shadow-[0_1px_12px_rgba(79,70,229,0.3)]" />
 
         <h2 className="text-2xl font-bold text-slate-800 font-bengali tracking-tight">
-          স্বাগতম ইপ্রশ্নব্যাংক-এ!
+          স্বাগতম প্রশ্ন-এ!
         </h2>
         <p className="text-[15px] text-slate-600 leading-relaxed font-bengali max-w-2xl mx-auto">
-          আপনার প্রতিষ্ঠানের জন্য পরীক্ষার প্রশ্নপত্র তৈরি করতে বাম পাশের মেনু থেকে{" "}
-          <span className="text-[#4F46E5] font-bold">"১ ক্লিকে প্রশ্ন তৈরি"</span> অথবা{" "}
-          <span className="text-[#4F46E5] font-bold">"প্রশ্নব্যাংক"</span> অপশনটি নির্বাচন করুন।
+          আপনার প্রতিষ্ঠানের জন্য পরীক্ষার প্রশ্নপত্র তৈরি করতে বাম পাশের মেনু
+          থেকে{" "}
+          <span className="text-[#4F46E5] font-bold">
+            "১ ক্লিকে প্রশ্ন তৈরি"
+          </span>{" "}
+          অথবা <span className="text-[#4F46E5] font-bold">"প্রশ্ন"</span> অপশনটি
+          নির্বাচন করুন।
         </p>
       </div>
     </div>

@@ -283,7 +283,7 @@ export default function OnboardingModal() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 font-sans tracking-tight">
-                ইপ্রশ্নব্যাংক অনবোর্ডিং
+                প্রশ্ন অনবোর্ডিং
               </h2>
               <p className="text-xs text-slate-500 font-sans">
                 অ্যাকাউন্ট ভেরিফিকেশন সম্পন্ন করার শেষ ধাপ
@@ -311,7 +311,7 @@ export default function OnboardingModal() {
           <div className="p-8 space-y-6">
             <div className="text-center space-y-2">
               <h1 className="text-2xl font-bold text-slate-800 font-bengali">
-                ইপ্রশ্নব্যাংক-এ আপনাকে স্বাগতম!
+                প্রশ্ন-এ আপনাকে স্বাগতম!
               </h1>
               <p className="text-sm text-slate-500 max-w-md mx-auto leading-relaxed font-bengali">
                 ড্যাশবোর্ডে প্রবেশ করার আগে দয়া করে আপনার সঠিক ভূমিকা নির্বাচন

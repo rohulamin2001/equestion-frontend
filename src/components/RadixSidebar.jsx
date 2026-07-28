@@ -50,7 +50,7 @@ import { Link, useLocation } from "react-router-dom";
 const DATA = {
   teams: [
     {
-      name: "ইপ্রশ্নব্যাংক",
+      name: "প্রশ্ন",
       logo: BookOpen,
       plan: "SaaS Platform",
     },
@@ -90,7 +90,7 @@ const DATA = {
           roles: ["Super Admin", "Admin", "Subscriber"],
         },
         {
-          title: "প্রশ্নব্যাংক",
+          title: "প্রশ্ন",
           url: "/dashboard/bank",
           icon: Database,
           roles: ["Super Admin", "Admin"],

@@ -23,7 +23,7 @@ const ROUTE_TITLES = {
   "/dashboard": "ড্যাশবোর্ড ওভারভিউ",
   "/dashboard/generate": "১ ক্লিকে প্রশ্ন তৈরি",
   "/dashboard/created-questions": "তৈরিকৃত প্রশ্ন",
-  "/dashboard/bank": "প্রশ্নব্যাংক",
+  "/dashboard/bank": "প্রশ্ন",
   "/dashboard/question-approval": "প্রশ্ন অনুমোদন",
   "/dashboard/my-questions": "আমার তৈরি প্রশ্ন",
   "/dashboard/add-question": "নতুন প্রশ্ন যোগ",
@@ -96,7 +96,7 @@ export default function DashboardLayout() {
                   <BreadcrumbList>
                     <BreadcrumbItem className="hidden lg:block">
                       <BreadcrumbLink className="text-slate-500 hover:text-[#4F46E5] transition font-sans">
-                        ইপ্রশ্নব্যাংক
+                        প্রশ্ন
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator className="hidden lg:block text-slate-400" />
