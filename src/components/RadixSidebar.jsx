@@ -90,7 +90,7 @@ const DATA = {
           roles: ["Super Admin", "Admin", "Subscriber"],
         },
         {
-          title: "প্রশ্ন",
+          title: "প্রশ্নব্যাংক",
           url: "/dashboard/bank",
           icon: Database,
           roles: ["Super Admin", "Admin"],
