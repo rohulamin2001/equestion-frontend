@@ -102,7 +102,7 @@ export default function AddQuestion() {
           <div className="flex items-center gap-2">
             <Button
               onClick={() => setShowBulkModal(true)}
-              className="bg-[#900EB0] hover:bg-[#720A7B] text-white rounded-xl h-7 sm:h-9 text-[11px] sm:text-xs  px-3 sm:px-4 flex items-center gap-1.5 shadow-md shadow-[#900EB0]/20 cursor-pointer shrink-0 accent-glow-purple"
+              className="bg-purple-600 hover:bg-purple-800 text-white rounded-xl h-7 sm:h-9 text-[11px] sm:text-xs  px-3 sm:px-4 flex items-center gap-1.5 shadow-md shadow-purple-600/20 cursor-pointer shrink-0 accent-glow-purple"
             >
               <UploadCloud className="size-3.5 sm:size-4" />
               ইমপোর্ট
@@ -136,7 +136,7 @@ export default function AddQuestion() {
 
           {/* Animated progress fill */}
           <motion.div
-            className="absolute top-[18px] sm:top-[30px] h-[2px] sm:h-[3px] bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full origin-left"
+            className="absolute top-[18px] sm:top-[30px] h-[2px] sm:h-[3px] bg-gradient-to-r from-purple-600 to-purple-500 rounded-full origin-left"
             initial={false}
             animate={{ scaleX: (qm.activeStep - 1) / 2 }}
             transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
@@ -182,21 +182,23 @@ export default function AddQuestion() {
                     isActive
                       ? {
                           scale: 1.1,
-                          boxShadow: "0 8px 25px rgba(79,70,229,0.35)",
+                          boxShadow:
+                            "0 8px 25px var(--purple-accent-shadow, rgba(144,14,176,0.35))",
                         }
                       : isCompleted
                         ? {
                             scale: 1,
-                            boxShadow: "0 4px 14px rgba(79,70,229,0.22)",
+                            boxShadow:
+                              "0 4px 14px var(--purple-accent-shadow, rgba(144,14,176,0.22))",
                           }
                         : { scale: 1, boxShadow: "none" }
                   }
                   transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
                   className={`w-9 h-9 sm:w-[60px] sm:h-[60px] rounded-full flex items-center justify-center transition-colors duration-300 cursor-pointer outline-none ${
                     isCompleted
-                      ? "bg-gradient-to-br from-indigo-500 to-violet-600 text-white border-0"
+                      ? "bg-gradient-to-br from-purple-600 to-purple-500 text-white border-0"
                       : isActive
-                        ? "bg-white border-[2.5px] sm:border-[3px] border-indigo-500 text-indigo-600"
+                        ? "bg-white border-[2.5px] sm:border-[3px] border-purple-600 text-purple-600"
                         : "bg-white/60 border-2 border-slate-200 text-slate-400"
                   }`}
                 >
@@ -233,9 +235,9 @@ export default function AddQuestion() {
                   <motion.span
                     animate={{
                       color: isActive
-                        ? "#4F46E5"
+                        ? "var(--purple-600)"
                         : isCompleted
-                          ? "#6D28D9"
+                          ? "var(--purple-800)"
                           : "#94a3b8",
                       fontWeight: isActive ? 700 : 600,
                     }}
@@ -247,7 +249,7 @@ export default function AddQuestion() {
                   <motion.span
                     animate={{ opacity: isActive ? 1 : 0 }}
                     transition={{ duration: 0.3 }}
-                    className="text-[9px] sm:text-[10px] font-sans text-indigo-400 font-medium"
+                    className="text-[9px] sm:text-[10px] font-sans text-purple-600/70 font-medium"
                   >
                     চলমান
                   </motion.span>
@@ -274,7 +276,7 @@ export default function AddQuestion() {
               <div className="md:col-span-2 bg-glass p-3.5 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4 sm:space-y-5 relative z-20">
                 <div className="border-b border-black/[0.05] pb-2 flex items-center justify-between gap-2">
                   <h3 className="font-bold text-slate-800 text-xs sm:text-[16px] flex items-center gap-1.5 sm:gap-2 shrink-0">
-                    <BookOpen className="size-3.5 sm:size-4 text-[#4F46E5]" />
+                    <BookOpen className="size-3.5 sm:size-4 text-purple-600" />
                     সিলেবাস ও অধ্যায় লিঙ্ক করুন
                   </h3>
                   {(() => {
@@ -284,8 +286,8 @@ export default function AddQuestion() {
                     if (!selectedSub) return null;
                     return (
                       <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-[10px] sm:text-xs font-bold">
-                          <span className="text-indigo-400">পূর্ণমান:</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-600/10 border border-purple-600/20 text-purple-600 text-[10px] sm:text-xs font-bold">
+                          <span className="text-purple-600/70">পূর্ণমান:</span>
                           {selectedSub?.subjectId?.totalMarks || "—"}
                         </span>
 
@@ -314,11 +316,17 @@ export default function AddQuestion() {
                             activeDropdown === "type" ? null : "type",
                           )
                         }
-                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm"
+                        className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm transition-all ${
+                          activeDropdown === "type"
+                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                            : qm.formType
+                              ? "border-purple-600/50 bg-white hover:bg-white/[0.60]"
+                              : "border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.60] hover:border-purple-600/40"
+                        }`}
                       >
                         {TYPE_LABELS[qm.formType] || qm.formType}
                         <ChevronRight
-                          className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "type" ? "rotate-90" : ""}`}
+                          className={`size-4 transition-transform duration-200 ${activeDropdown === "type" ? "rotate-90 text-purple-600" : "text-slate-400"}`}
                         />
                       </button>
 
@@ -339,7 +347,7 @@ export default function AddQuestion() {
                                 }}
                                 className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
                                   qm.formType === type
-                                    ? "bg-[#4F46E5]/10 text-[#4F46E5]"
+                                    ? "bg-purple-50 text-purple-700 font-bold"
                                     : "text-slate-700 hover:bg-slate-50"
                                 }`}
                               >
@@ -367,11 +375,17 @@ export default function AddQuestion() {
                             activeDropdown === "level" ? null : "level",
                           )
                         }
-                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm"
+                        className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm transition-all ${
+                          activeDropdown === "level"
+                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                            : qm.formLevel
+                              ? "border-purple-600/50 bg-white hover:bg-white/[0.60]"
+                              : "border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.60] hover:border-purple-600/40"
+                        }`}
                       >
                         {LEVEL_LABELS[qm.formLevel] || qm.formLevel}
                         <ChevronRight
-                          className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "level" ? "rotate-90" : ""}`}
+                          className={`size-4 transition-transform duration-200 ${activeDropdown === "level" ? "rotate-90 text-purple-600" : "text-slate-400"}`}
                         />
                       </button>
 
@@ -392,7 +406,7 @@ export default function AddQuestion() {
                                 }}
                                 className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
                                   qm.formLevel === level
-                                    ? "bg-[#4F46E5]/10 text-[#4F46E5]"
+                                    ? "bg-purple-50 text-purple-700 font-bold"
                                     : "text-slate-700 hover:bg-slate-50"
                                 }`}
                               >
@@ -420,12 +434,18 @@ export default function AddQuestion() {
                             activeDropdown === "class" ? null : "class",
                           )
                         }
-                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm"
+                        className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm transition-all ${
+                          activeDropdown === "class"
+                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                            : qm.formClass
+                              ? "border-purple-600/50 bg-white hover:bg-white/[0.60]"
+                              : "border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.60] hover:border-purple-600/40"
+                        }`}
                       >
                         {formActiveClasses.find((c) => c.value === qm.formClass)
                           ?.label || qm.formClass}
                         <ChevronRight
-                          className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "class" ? "rotate-90" : ""}`}
+                          className={`size-4 transition-transform duration-200 ${activeDropdown === "class" ? "rotate-90 text-purple-600" : "text-slate-400"}`}
                         />
                       </button>
 
@@ -450,7 +470,7 @@ export default function AddQuestion() {
                                 }}
                                 className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
                                   qm.formClass === cls.value
-                                    ? "bg-[#4F46E5]/10 text-[#4F46E5]"
+                                    ? "bg-purple-50 text-purple-700 font-bold"
                                     : "text-slate-700 hover:bg-slate-50"
                                 }`}
                               >
@@ -485,8 +505,8 @@ export default function AddQuestion() {
                                   : "cursor-pointer"
                               } ${
                                 isSelected
-                                  ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200"
-                                  : "bg-white/[0.45] border-black/[0.08] text-slate-600 hover:border-indigo-300 hover:text-indigo-600 hover:bg-white/[0.60]"
+                                  ? "bg-purple-600 border-purple-600 text-white shadow-md shadow-purple-600/20"
+                                  : "bg-white/[0.45] border-black/[0.08] text-slate-600 hover:border-purple-600/40 hover:text-purple-600 hover:bg-white/[0.60]"
                               }`}
                             >
                               <input
@@ -523,7 +543,13 @@ export default function AddQuestion() {
                               activeDropdown === "group" ? null : "group",
                             )
                           }
-                          className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm"
+                          className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm transition-all ${
+                            activeDropdown === "group"
+                              ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                              : qm.formGroup
+                                ? "border-purple-600/50 bg-white hover:bg-white/[0.60]"
+                                : "border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.60] hover:border-purple-600/40"
+                          }`}
                         >
                           {qm.formGroup === "Science"
                             ? "বিজ্ঞান (Science)"
@@ -533,7 +559,7 @@ export default function AddQuestion() {
                                 ? "ব্যবসায় শিক্ষা (Commerce)"
                                 : "সাধারণ (General)"}
                           <ChevronRight
-                            className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "group" ? "rotate-90" : ""}`}
+                            className={`size-4 transition-transform duration-200 ${activeDropdown === "group" ? "rotate-90 text-purple-600" : "text-slate-400"}`}
                           />
                         </button>
 
@@ -571,7 +597,7 @@ export default function AddQuestion() {
                                   }}
                                   className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
                                     qm.formGroup === grp.value
-                                      ? "bg-[#4F46E5]/10 text-[#4F46E5]"
+                                      ? "bg-purple-50 text-purple-700 font-bold"
                                       : "text-slate-700 hover:bg-slate-50"
                                   }`}
                                 >
@@ -600,7 +626,13 @@ export default function AddQuestion() {
                             activeDropdown === "subject" ? null : "subject",
                           )
                         }
-                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white/[0.45] hover:bg-white/[0.60] hover:border-[#4F46E5]/40 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm disabled:bg-slate-50/50 disabled:text-slate-400"
+                        className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-11 shadow-sm backdrop-blur-sm transition-all disabled:bg-slate-50/50 disabled:text-slate-400 ${
+                          activeDropdown === "subject"
+                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                            : qm.formSubjectId
+                              ? "border-purple-600/50 bg-white hover:bg-white/[0.60]"
+                              : "border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.60] hover:border-purple-600/40"
+                        }`}
                         disabled={qm.formSubjects.length === 0}
                       >
                         <span className="truncate pr-2 text-left">
@@ -609,7 +641,7 @@ export default function AddQuestion() {
                           )?.subjectName || "বিষয় নির্বাচন করুন"}
                         </span>
                         <ChevronRight
-                          className={`size-4 shrink-0 text-slate-400 transition-transform duration-200 ${activeDropdown === "subject" ? "rotate-90" : ""}`}
+                          className={`size-4 shrink-0 transition-transform duration-200 ${activeDropdown === "subject" ? "rotate-90 text-purple-600" : "text-slate-400"}`}
                         />
                       </button>
 
@@ -632,7 +664,7 @@ export default function AddQuestion() {
                                 }}
                                 className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
                                   qm.formSubjectId === sub._id
-                                    ? "bg-[#4F46E5]/10 text-[#4F46E5]"
+                                    ? "bg-purple-50 text-purple-700 font-bold"
                                     : "text-slate-700 hover:bg-slate-50"
                                 }`}
                               >
@@ -650,7 +682,7 @@ export default function AddQuestion() {
               {/* Right Column: Question Category Select */}
               <div className="bg-glass p-4 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4 relative z-10">
                 <h3 className="font-bold text-slate-800 text-[16px] border-b border-black/[0.05] pb-2 flex items-center gap-2">
-                  <FileText className="size-4 text-[#4F46E5]" />
+                  <FileText className="size-4 text-purple-600" />
                   প্রশ্ন ক্যাটাগরি
                 </h3>
 
@@ -702,13 +734,13 @@ export default function AddQuestion() {
                           onClick={() => qm.setFormCategory(cat.value)}
                           className={`w-full text-left px-4 py-3 rounded-xl border text-sm font-semibold transition cursor-pointer flex justify-between items-center ${
                             isSelected
-                              ? "bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5] ring-4 ring-[#4F46E5]/10 font-bold"
+                              ? "bg-purple-600/10 border-purple-600/30 text-purple-600 ring-4 ring-purple-600/10 font-bold"
                               : "bg-white/[0.45] border-black/[0.06] text-slate-600 hover:bg-white/[0.60] hover:border-black/[0.12] backdrop-blur-sm"
                           }`}
                         >
                           {cat.label}
                           {isSelected && (
-                            <span className="size-2 rounded-full bg-[#4F46E5]" />
+                            <span className="size-2 rounded-full bg-purple-600" />
                           )}
                         </button>
                       );
@@ -720,7 +752,7 @@ export default function AddQuestion() {
                   <RippleButton
                     onClick={handleNextStep}
                     disabled={!isStep1Valid()}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] hover:from-[#4338CA] hover:to-[#7C3AED] text-white font-semibold h-11 rounded-xl shadow-md shadow-purple-500/10 disabled:opacity-50 disabled:pointer-events-none"
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-800 hover:to-purple-600 text-white font-semibold h-11 rounded-xl shadow-md shadow-purple-600/20 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                   >
                     পরবর্তী ধাপ
                     <ChevronRight className="size-4" />
@@ -742,7 +774,7 @@ export default function AddQuestion() {
             >
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-black/[0.05] pb-2.5 sm:pb-3.5">
                 <h3 className="font-bold text-slate-800 text-sm sm:text-lg flex items-center gap-1.5 sm:gap-2">
-                  <HelpCircle className="size-4 sm:size-5 text-[#4F46E5]" />
+                  <HelpCircle className="size-4 sm:size-5 text-purple-600" />
                   <span>
                     প্রশ্ন এডিটর -{" "}
                     {
@@ -789,7 +821,11 @@ export default function AddQuestion() {
                       className={`w-full px-4 rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm transition-all border ${
                         showStep2Error && !qm.formChapterNumber
                           ? "border-red-500 bg-red-50/10 focus:ring-red-500/10 focus:border-red-500 hover:bg-red-50/20"
-                          : "border-black/[0.08] bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+                          : activeDropdown === "chapter"
+                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                            : qm.formChapterNumber
+                              ? "border-purple-600/50 bg-white hover:bg-slate-50"
+                              : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
                       }`}
                     >
                       <span className="truncate pr-2 text-left">
@@ -829,7 +865,7 @@ export default function AddQuestion() {
                               className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
                                 qm.formChapterNumber ===
                                 chap.chapterNumber.toString()
-                                  ? "bg-[#4F46E5]/10 text-[#4F46E5]"
+                                  ? "bg-purple-50 text-purple-700 font-bold"
                                   : "text-slate-700 hover:bg-slate-50"
                               }`}
                             >
@@ -858,7 +894,7 @@ export default function AddQuestion() {
                           onClick={() => qm.setFormDifficulty(diffKey)}
                           className={`px-3 py-2 rounded-xl border text-sm font-semibold transition cursor-pointer flex justify-center items-center h-10 ${
                             isSelected
-                              ? config.color + " ring-4 ring-[#4F46E5]/10"
+                              ? config.color + " ring-4 ring-purple-600/10"
                               : "bg-white border-black/[0.08] text-slate-600 hover:bg-slate-50"
                           }`}
                         >
@@ -890,7 +926,7 @@ export default function AddQuestion() {
                             onClick={() => handleTopicToggle(topic)}
                             className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
                               isSelected
-                                ? "bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5] font-bold"
+                                ? "bg-purple-600/10 border-purple-600/30 text-purple-600 font-bold"
                                 : "bg-white border-black/[0.06] text-slate-600 hover:bg-slate-50"
                             }`}
                           >
@@ -923,7 +959,7 @@ export default function AddQuestion() {
                         type="radio"
                         checked={!qm.isGroupedMcq}
                         onChange={() => qm.setIsGroupedMcq(false)}
-                        className="accent-[#4F46E5] size-4 shrink-0 cursor-pointer"
+                        className="accent-purple-600 size-4 shrink-0 cursor-pointer"
                       />
                       <span>একক MCQ</span>
                     </label>
@@ -932,7 +968,7 @@ export default function AddQuestion() {
                         type="radio"
                         checked={qm.isGroupedMcq}
                         onChange={() => qm.setIsGroupedMcq(true)}
-                        className="accent-[#4F46E5] size-4 shrink-0 cursor-pointer"
+                        className="accent-[#900EB0] size-4 shrink-0 cursor-pointer"
                       />
                       <span>উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ</span>
                     </label>
@@ -959,7 +995,7 @@ export default function AddQuestion() {
                           ].map((item) => (
                             <label
                               key={item.value}
-                              className="flex items-center gap-2.5 cursor-pointer text-xs sm:text-sm font-semibold text-slate-700 hover:text-[#4F46E5] transition-colors w-fit"
+                              className="flex items-center gap-2.5 cursor-pointer text-xs sm:text-sm font-semibold text-slate-700 hover:text-[#900EB0] transition-colors w-fit"
                             >
                               <input
                                 type="radio"
@@ -967,7 +1003,7 @@ export default function AddQuestion() {
                                 value={item.value}
                                 checked={qm.mcqType === item.value}
                                 onChange={(e) => qm.setMcqType(e.target.value)}
-                                className="accent-[#4F46E5] size-4 shrink-0 cursor-pointer"
+                                className="accent-[#900EB0] size-4 shrink-0 cursor-pointer"
                               />
                               <span>{item.label}</span>
                             </label>
@@ -1025,7 +1061,7 @@ export default function AddQuestion() {
                                   updated[idx] = e.target.value;
                                   qm.setMcqStatements(updated);
                                 }}
-                                className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5]"
+                                className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-purple-600/20 focus-visible:border-purple-600"
                               />
                             </div>
                           ))}
@@ -1055,7 +1091,7 @@ export default function AddQuestion() {
                                   className={`size-6 rounded-full border flex items-center justify-center shrink-0 transition-all font-bold text-xs ${
                                     isCorrect
                                       ? "bg-emerald-500 border-emerald-500 text-white"
-                                      : "border-black/[0.15] hover:border-[#4F46E5] text-transparent"
+                                      : "border-black/[0.15] hover:border-purple-600 text-transparent"
                                   }`}
                                 >
                                   ✓
@@ -1262,7 +1298,7 @@ export default function AddQuestion() {
                                           };
                                           qm.setMcqGroupQuestions(next);
                                         }}
-                                        className={`size-6 rounded-full border flex items-center justify-center shrink-0 font-bold text-xs transition-colors ${isCorrect ? "bg-emerald-500 text-white border-emerald-500" : "border-slate-300 text-transparent hover:border-[#4F46E5]"}`}
+                                        className={`size-6 rounded-full border flex items-center justify-center shrink-0 font-bold text-xs transition-colors ${isCorrect ? "bg-emerald-500 text-white border-emerald-500" : "border-slate-300 text-transparent hover:border-purple-600"}`}
                                       >
                                         ✓
                                       </button>
@@ -1339,7 +1375,7 @@ export default function AddQuestion() {
                             },
                           ]);
                         }}
-                        className="w-full py-3.5 border-2 border-dashed border-[#4F46E5]/40 text-[#4F46E5] hover:bg-[#4F46E5]/5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2"
+                        className="w-full py-3.5 border-2 border-dashed border-purple-600/40 text-purple-600 hover:bg-purple-600/5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2"
                       >
                         <Plus className="size-4" />
                         <span>নতুন উপ-প্রশ্ন যোগ করুন</span>
@@ -1427,7 +1463,7 @@ export default function AddQuestion() {
                             placeholder={item.placeholder}
                             value={item.value}
                             onChange={(e) => item.setter(e.target.value)}
-                            className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11"
+                            className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-purple-600/20 focus-visible:border-purple-600 h-11"
                           />
                         </div>
                         <div className="space-y-1.5">
@@ -1504,7 +1540,7 @@ export default function AddQuestion() {
                         onChange={(e) =>
                           qm.setGeneralMarks(Number(e.target.value))
                         }
-                        className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11"
+                        className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-purple-600/20 focus-visible:border-purple-600 h-11"
                         min={1}
                       />
                     </div>
@@ -1515,7 +1551,7 @@ export default function AddQuestion() {
               {/* Question Metadata Link Section (School, Board, Year, Level, Special Search) */}
               <div className="p-5 bg-black/[0.01] border border-black/[0.04] rounded-2xl space-y-4 pt-4">
                 <h4 className="font-bold text-slate-800 text-sm flex items-center gap-1.5 border-b border-black/[0.04] pb-2">
-                  <Database className="size-4 text-[#4F46E5]" />
+                  <Database className="size-4 text-purple-600" />
                   <span>প্রশ্ন মেটাডাটা লিঙ্ক করুন (ঐচ্ছিক)</span>
                 </h4>
 
@@ -1533,7 +1569,13 @@ export default function AddQuestion() {
                             activeDropdown === "year" ? null : "year",
                           )
                         }
-                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm truncate pr-8 relative"
+                        className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm truncate pr-8 relative transition-all ${
+                          activeDropdown === "year"
+                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                            : qm.formYear && qm.formYear.length > 0
+                              ? "border-purple-600/50 bg-white hover:bg-slate-50"
+                              : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
+                        }`}
                       >
                         <span className="truncate pr-1">
                           {qm.formYear && qm.formYear.length > 0
@@ -1576,13 +1618,13 @@ export default function AddQuestion() {
                                   }}
                                   className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex justify-between items-center ${
                                     isSelected
-                                      ? "bg-[#4F46E5]/10 text-[#4F46E5]"
+                                      ? "bg-purple-50 text-purple-700 font-bold"
                                       : "text-slate-700 hover:bg-slate-50"
                                   }`}
                                 >
                                   <span>{yr.name}</span>
                                   {isSelected && (
-                                    <Check className="size-4 shrink-0 text-[#4F46E5]" />
+                                    <Check className="size-4 shrink-0 text-purple-600" />
                                   )}
                                 </button>
                               );
@@ -1606,7 +1648,13 @@ export default function AddQuestion() {
                             activeDropdown === "board" ? null : "board",
                           )
                         }
-                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm truncate pr-8 relative"
+                        className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm truncate pr-8 relative transition-all ${
+                          activeDropdown === "board"
+                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                            : qm.formBoard && qm.formBoard.length > 0
+                              ? "border-purple-600/50 bg-white hover:bg-slate-50"
+                              : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
+                        }`}
                       >
                         <span className="truncate pr-1">
                           {qm.formBoard && qm.formBoard.length > 0
@@ -1651,7 +1699,7 @@ export default function AddQuestion() {
                                   }}
                                   className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex justify-between items-center ${
                                     isSelected
-                                      ? "bg-[#4F46E5]/10 text-[#4F46E5]"
+                                      ? "bg-purple-50 text-purple-700 font-bold"
                                       : "text-slate-700 hover:bg-slate-50"
                                   }`}
                                 >
@@ -1660,7 +1708,7 @@ export default function AddQuestion() {
                                     {bd.shortName && `(${bd.shortName})`}
                                   </span>
                                   {isSelected && (
-                                    <Check className="size-4 shrink-0 text-[#4F46E5]" />
+                                    <Check className="size-4 shrink-0 text-purple-600" />
                                   )}
                                 </button>
                               );
@@ -1684,7 +1732,13 @@ export default function AddQuestion() {
                             activeDropdown === "school" ? null : "school",
                           )
                         }
-                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm truncate pr-8 relative"
+                        className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm truncate pr-8 relative transition-all ${
+                          activeDropdown === "school"
+                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                            : qm.formSchool && qm.formSchool.length > 0
+                              ? "border-purple-600/50 bg-white hover:bg-slate-50"
+                              : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
+                        }`}
                       >
                         <span className="truncate pr-1">
                           {qm.formSchool && qm.formSchool.length > 0
@@ -1717,7 +1771,7 @@ export default function AddQuestion() {
                                     setSchoolSearchQuery(e.target.value)
                                   }
                                   placeholder="স্কুল নাম লিখে খুঁজুন..."
-                                  className="w-full pl-8 pr-7 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#4F46E5] bg-slate-50/50"
+                                  className="w-full pl-8 pr-7 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 bg-slate-50/50"
                                   autoFocus
                                   onClick={(e) => e.stopPropagation()}
                                 />
@@ -1794,13 +1848,13 @@ export default function AddQuestion() {
                                       }}
                                       className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex justify-between items-center ${
                                         isSelected
-                                          ? "bg-[#4F46E5]/10 text-[#4F46E5]"
+                                          ? "bg-purple-50 text-purple-700 font-bold"
                                           : "text-slate-700 hover:bg-slate-50"
                                       }`}
                                     >
                                       <span>{sch.name}</span>
                                       {isSelected && (
-                                        <Check className="size-4 shrink-0 text-[#4F46E5]" />
+                                        <Check className="size-4 shrink-0 text-purple-600" />
                                       )}
                                     </button>
                                   );
@@ -1825,7 +1879,13 @@ export default function AddQuestion() {
                             activeDropdown === "levelTag" ? null : "levelTag",
                           )
                         }
-                        className="w-full px-4 border border-black/[0.08] rounded-xl text-sm bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm"
+                        className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm transition-all ${
+                          activeDropdown === "levelTag"
+                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                            : qm.formLevelTag
+                              ? "border-purple-600/50 bg-white hover:bg-slate-50"
+                              : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
+                        }`}
                       >
                         {qm.formLevelTag || "লেভেল নির্বাচন করুন"}
                         <ChevronRight
@@ -1860,7 +1920,7 @@ export default function AddQuestion() {
                                 }}
                                 className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
                                   qm.formLevelTag === lvl.name
-                                    ? "bg-[#4F46E5]/10 text-[#4F46E5]"
+                                    ? "bg-purple-50 text-purple-700 font-bold"
                                     : "text-slate-700 hover:bg-slate-50"
                                 }`}
                               >
@@ -1898,7 +1958,7 @@ export default function AddQuestion() {
                             }}
                             className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
                               isSelected
-                                ? "bg-[#8B5CF6]/10 border-[#8B5CF6]/30 text-[#8B5CF6] font-bold"
+                                ? "bg-purple-600/10 border-purple-600/30 text-purple-600 font-bold"
                                 : "bg-white border-black/[0.06] text-slate-600 hover:bg-slate-50"
                             }`}
                           >
@@ -1915,7 +1975,7 @@ export default function AddQuestion() {
               {!qm.editingQuestion && qm.questionsList.length > 0 && (
                 <div className="space-y-3 pt-5 border-t border-black/[0.05] animate-in fade-in duration-200">
                   <h4 className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
-                    <Database className="size-4 text-[#4F46E5]" />
+                    <Database className="size-4 text-purple-600" />
                     <span>
                       যুক্ত করা প্রশ্নসমূহ ({qm.questionsList.length})
                     </span>
@@ -1931,16 +1991,16 @@ export default function AddQuestion() {
                           key={q.id || idx}
                           className={`flex items-center justify-between p-3.5 border rounded-xl text-xs font-semibold text-slate-700 transition-all duration-200 ${
                             isEditingThis
-                              ? "bg-[#4F46E5]/5 border-[#4F46E5]/30 ring-1 ring-[#4F46E5]/20 shadow-sm"
+                              ? "bg-purple-600/5 border-purple-600/30 ring-1 ring-purple-600/20 shadow-sm"
                               : "bg-white/[0.30] border-black/[0.05]"
                           }`}
                         >
                           <div className="flex items-center gap-3 min-w-0">
-                            <span className="bg-[#4F46E5]/10 text-[#4F46E5] font-bold size-5 rounded-full flex items-center justify-center shrink-0">
+                            <span className="bg-purple-600/10 text-purple-600 font-bold size-5 rounded-full flex items-center justify-center shrink-0">
                               {idx + 1}
                             </span>
                             <div className="min-w-0">
-                              <span className="font-bold text-[#4F46E5] mr-2 uppercase text-[9px] bg-[#4F46E5]/10 px-1.5 py-0.5 rounded">
+                              <span className="font-bold text-purple-600 mr-2 uppercase text-[9px] bg-purple-600/10 px-1.5 py-0.5 rounded">
                                 {catLabel}
                               </span>
                               <span className="truncate block mt-1 font-serif">
@@ -1959,8 +2019,8 @@ export default function AddQuestion() {
                               onClick={() => qm.editDraftQuestion(q.id)}
                               className={`p-1.5 rounded-lg transition cursor-pointer ${
                                 isEditingThis
-                                  ? "text-[#4F46E5] bg-[#4F46E5]/10"
-                                  : "text-slate-400 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10"
+                                  ? "text-purple-600 bg-purple-600/10"
+                                  : "text-slate-400 hover:text-purple-600 hover:bg-purple-600/10"
                               }`}
                               title="এডিট করুন"
                             >
@@ -2019,9 +2079,8 @@ export default function AddQuestion() {
                     !qm.editingQuestion && (
                       <Button
                         type="button"
-                        variant="outline"
                         onClick={qm.addQuestionToList}
-                        className="border-[#4F46E5]/20 text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/40 rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm text-xs sm:text-sm shrink-0"
+                        className="border-[#900EB0]/20 text-[#900EB0] hover:bg-[#900EB0]/10 hover:border-[#900EB0]/40 rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm text-xs sm:text-sm shrink-0"
                       >
                         <Plus className="size-3.5 sm:size-4" />
                         যোগ করুন
@@ -2031,7 +2090,7 @@ export default function AddQuestion() {
                   <Button
                     type="button"
                     onClick={handleNextStep}
-                    className="bg-[#4F46E5] hover:bg-[#4F46E5]/90 text-white rounded-xl h-8 sm:h-10 px-3 sm:px-6 flex items-center gap-1 font-semibold cursor-pointer shadow-md shadow-purple-500/10 text-xs sm:text-sm shrink-0"
+                    className="bg-[#900EB0] hover:bg-[#720A7B] text-white rounded-xl h-8 sm:h-10 px-3 sm:px-6 flex items-center gap-1 font-semibold cursor-pointer shadow-md shadow-[#900EB0]/20 text-xs sm:text-sm shrink-0"
                   >
                     প্রিভিউ
                     <ChevronRight className="size-3.5 sm:size-4" />
@@ -2056,7 +2115,7 @@ export default function AddQuestion() {
                   <h4 className="font-bold text-[10px] sm:text-sm text-slate-800 tracking-wide uppercase font-sans">
                     NCTB Live Exam Preview Sheet
                   </h4>
-                  <span className="bg-[#4F46E5]/10 text-[#4F46E5] text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#4F46E5]/20 whitespace-nowrap">
+                  <span className="bg-purple-600/10 text-purple-600 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-purple-600/20 whitespace-nowrap">
                     শ্রেণী:{" "}
                     {CLASSES_MAP.find((c) => c.value === qm.formClass)?.label}
                   </span>
@@ -2921,7 +2980,7 @@ export default function AddQuestion() {
               {/* Action Sidebar (Right 1 col) */}
               <div className="bg-glass p-3.5 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-3 sm:space-y-4 h-fit">
                 <h4 className="font-bold text-slate-800 text-sm sm:text-[16px] border-b border-black/[0.05] pb-2 flex items-center gap-1.5 sm:gap-2">
-                  <Database className="size-3.5 sm:size-4 text-[#4F46E5]" />
+                  <Database className="size-3.5 sm:size-4 text-[#900EB0]" />
                   সংরক্ষণ করুন
                 </h4>
 
@@ -2934,7 +2993,7 @@ export default function AddQuestion() {
                   <RippleButton
                     onClick={qm.handleSaveQuestion}
                     disabled={qm.formLoading}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] hover:from-[#4338CA] hover:to-[#7C3AED] text-white font-semibold h-9 sm:h-11 rounded-xl shadow-md shadow-purple-500/10 text-xs sm:text-base"
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#900EB0] to-[#B010CA] hover:from-[#720A7B] hover:to-[#900EB0] text-white font-semibold h-9 sm:h-11 rounded-xl shadow-md shadow-[#900EB0]/20 text-xs sm:text-base cursor-pointer"
                   >
                     <Save className="size-3.5 sm:size-4" />
                     {qm.formLoading ? "সংরক্ষণ হচ্ছে..." : "ডাটাবেজে সেভ করুন"}
