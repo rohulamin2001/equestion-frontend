@@ -1,0 +1,280 @@
+/**
+ * Sample JSON Template for Bulk Importing Questions (MCQ & Creative)
+ */
+
+export const ALLOWED_IMPORT_VALUES = {
+  institutionType: ["School", "College", "Madrasah"],
+  academicLevel: [
+    "Primary",
+    "Secondary",
+    "Higher Secondary",
+    "Ebtedayee",
+    "Dakhil",
+    "Alim",
+  ],
+  version: ["Bangla", "English"],
+  className: [
+    "Class 1",
+    "Class 2",
+    "Class 3",
+    "Class 4",
+    "Class 5",
+    "Class 6",
+    "Class 7",
+    "Class 8",
+    "Class 9",
+    "Class 10",
+    "Class 11",
+    "Class 12",
+  ],
+  category: [
+    "MCQ",
+    "Creative",
+    "ShortAnswer",
+    "BroadQuestion",
+    "FillInBlanks",
+    "Matching",
+    "Poem",
+    "SentenceFormation",
+    "ConjunctLetters",
+    "WordMeaning",
+    "Punctuation",
+    "GenderChange",
+    "Antonym",
+    "FormFilling",
+    "Paragraph",
+    "Essay",
+  ],
+  difficulty: ["Easy", "Medium", "Hard"],
+  mcqType: ["Simple", "MultipleCompletion", "Contextual"],
+  board: [
+    "Dhaka",
+    "Rajshahi",
+    "Comilla",
+    "Jessore",
+    "Chittagong",
+    "Barisal",
+    "Sylhet",
+    "Dinajpur",
+    "Mymensingh",
+    "Madrasah",
+    "Technical",
+  ],
+  year: [
+    "2026",
+    "2025",
+    "2024",
+    "2023",
+    "2022",
+    "2021",
+    "2020",
+    "2019",
+    "2018",
+    "2017",
+    "2016",
+    "2015",
+  ],
+  school: [
+    "মতিঝিল আইডিয়াল স্কুল ও কলেজ",
+    "ভিকারুননিসা নূন স্কুল ও কলেজ",
+    "গভ. ল্যাবরেটরি হাই স্কুল",
+  ],
+  level: ["অনুধাবন", "জ্ঞান", "দক্ষতা", "দৃষ্টিভঙ্গি", "প্রয়োগ", "মূল্যবোধ"],
+  specialSearch: [
+    "অনুশীলনি",
+    "অভিন্ন তথ্যভিত্তিক",
+    "গাণিতিক",
+    "চিত্রযুক্ত",
+    "তত্ত্বীয়",
+    "রিপিটেড স্কুল",
+  ],
+  note: "subjectId অবশ্যই সিস্টেমের সঠিক 24-character MongoDB ID হতে হবে এবং chapterNumber একটি ধনাত্মক সংখ্যা (1, 2, 3...) হতে হবে।",
+};
+
+export const SAMPLE_QUESTIONS_TEMPLATE = [
+  // ১. সাধারণ বহুনির্বাচনি (Simple MCQ)
+  {
+    className: "Class 6",
+    institutionType: "School",
+    academicLevel: "Secondary",
+    version: "Bangla",
+    subjectId: "6a65e46462c905bec8b28da4",
+    chapterNumber: 1,
+    category: "MCQ",
+    difficulty: "Easy",
+    topics: ["সততার পুরস্কার"],
+    year: ["2026"],
+    board: ["Dhaka"],
+    school: ["মতিঝিল আইডিয়াল স্কুল ও কলেজ"],
+    level: "জ্ঞান",
+    specialSearch: ["অনুশীলনি", "তত্ত্বীয়"],
+    mcqData: {
+      mcqType: "Simple",
+      questionText:
+        "<p>'সততার পুরস্কার' গল্পে প্রথম লোকটির শরীরে কী রোগ ছিল?</p>",
+      options: [
+        "<p>ধবল রোগ</p>",
+        "<p>টাকপড়া</p>",
+        "<p>অন্ধত্ব</p>",
+        "<p>জ্বর</p>",
+      ],
+      correctAnswer: 0,
+      explanation:
+        "<p>গল্প অনুযায়ী প্রথম লোকটির শরীর ধবল রোগে আক্রান্ত ছিল.</p>",
+      marks: 1,
+    },
+  },
+  // ২. বহুপদী সমাপ্তিসূচক বহুনির্বাচনি (Multiple Completion MCQ)
+  {
+    className: "Class 6",
+    institutionType: "School",
+    academicLevel: "Secondary",
+    version: "Bangla",
+    subjectId: "6a65e46462c905bec8b28da4",
+    chapterNumber: 1,
+    category: "MCQ",
+    difficulty: "Medium",
+    topics: ["সততার পুরস্কার"],
+    year: ["2026"],
+    board: ["Dhaka"],
+    school: ["ভিকারুননিসা নূন স্কুল ও কলেজ"],
+    level: "অনুধাবন",
+    specialSearch: ["অনুশীলনি", "রিপিটেড স্কুল"],
+    mcqData: {
+      mcqType: "MultipleCompletion",
+      questionText: "<p>'সততার পুরস্কার' গল্পের মূল শিক্ষা হলো—</p>",
+      statements: [
+        "i. সততা ও ঈমানদারী",
+        "ii. আল্লাহর প্রতি কৃতজ্ঞতা প্রকাশ",
+        "iii. অকৃতজ্ঞতার কুফল",
+      ],
+      options: ["i ও ii", "ii ও iii", "i ও iii", "i, ii ও iii"],
+      correctAnswer: 3,
+      explanation:
+        "<p>তিনটি বাক্যই সততার পুরস্কার গল্পের মূল শিক্ষার অন্তর্ভুক্ত।</p>",
+      marks: 1,
+    },
+  },
+  // ৩. উদ্দীপক ভিত্তিক বহুনির্বাচনি (Contextual / Passage MCQ)
+  {
+    className: "Class 6",
+    institutionType: "School",
+    academicLevel: "Secondary",
+    version: "Bangla",
+    subjectId: "6a65e46462c905bec8b28da4",
+    chapterNumber: 1,
+    category: "MCQ",
+    difficulty: "Medium",
+    topics: ["সততার পুরস্কার"],
+    year: ["2026"],
+    board: ["Dhaka"],
+    school: ["গভ. ল্যাবরেটরি হাই স্কুল"],
+    level: "প্রয়োগ",
+    specialSearch: ["অভিন্ন তথ্যভিত্তিক"],
+    mcqData: {
+      mcqType: "Contextual",
+      stem: "<p>রাফিজ একজন গরিব লোককে সাধ্যমতো সাহায্য করল, কিন্তু তার ভাই কালাম তাকে তাড়িয়ে দিল।</p>",
+      questionText:
+        "<p>উদ্দীপকের রাফিজের আচরণের সাথে 'সততার পুরস্কার' গল্পের কোন চরিত্রের মিল রয়েছে?</p>",
+      options: [
+        "<p>তৃতীয় ব্যক্তি (অন্ধ লোক)</p>",
+        "<p>প্রথম ব্যক্তি</p>",
+        "<p>দ্বিতীয় ব্যক্তি</p>",
+        "<p>ছদ্মবেশী ফেরেশতা</p>",
+      ],
+      correctAnswer: 0,
+      explanation:
+        "<p>রাফিজের আচরণে কৃতজ্ঞতা প্রকাশ পেয়েছে যা অন্ধ লোকটির আচরণের সমতুল্য।</p>",
+      marks: 1,
+    },
+  },
+  // ৪. সৃজনশীল প্রশ্ন (Creative Question - CQ)
+  {
+    className: "Class 6",
+    institutionType: "School",
+    academicLevel: "Secondary",
+    version: "Bangla",
+    subjectId: "6a65e46462c905bec8b28da4",
+    chapterNumber: 1,
+    category: "Creative",
+    difficulty: "Medium",
+    topics: ["সততার পুরস্কার"],
+    year: ["2026"],
+    board: ["Dhaka"],
+    school: ["মতিঝিল আইডিয়াল স্কুল ও কলেজ"],
+    level: "দক্ষতা",
+    specialSearch: ["রিপিটেড স্কুল"],
+    creativeData: {
+      stem: "<p>কালাম ও রাফিজ দুই ভাই। একজন গরিব লোক সাহায্য চাইলে কালাম তাকে তাড়িয়ে দিল, কিন্তু রাফিজ সাধ্যমতো সাহায্য করল।</p>",
+      subQuestions: {
+        cognitiveA: {
+          text: "<p>'সততার পুরস্কার' গল্পের প্রথম লোকটির কী রোগ ছিল?</p>",
+          answer: "<p>প্রথম লোকটির শরীরে ধবল রোগ ছিল।</p>",
+          marks: 1,
+        },
+        cognitiveB: {
+          text: "<p>স্বর্গীয় দূত ছদ্মবেশ ধারণ করেছিলেন কেন?</p>",
+          answer:
+            "<p>আল্লাহর নির্দেশে তিন ব্যক্তির পরীক্ষা নেওয়ার জন্য তিনি ছদ্মবেশ ধারণ করেছিলেন।</p>",
+          marks: 2,
+        },
+        cognitiveC: {
+          text: "<p>কালামের আচরণে গল্পের যে দিকটি প্রকাশ পেয়েছে তা ব্যাখ্যা করো।</p>",
+          answer:
+            "<p>কালামের আচরণে অকৃতজ্ঞতা ও কৃপণতার দিকটি প্রকাশ পেয়েছে।</p>",
+          marks: 3,
+        },
+        cognitiveD: {
+          text: "<p>'রাফিজের আচরণেই সততার পুরস্কার গল্পের মূল বার্তা প্রতিফলিত'— মূল্যায়ন করো।</p>",
+          answer:
+            "<p>উক্তিটি যথার্থ। রাফিজের কৃতজ্ঞতাবোধ ও সততার মধ্যেই গল্পের মূল শিক্ষা ফুটে উঠেছে।</p>",
+          marks: 4,
+        },
+      },
+    },
+  },
+  // ৫. সংক্ষিপ্ত উত্তর প্রশ্ন (Short Answer)
+  {
+    className: "Class 6",
+    institutionType: "School",
+    academicLevel: "Secondary",
+    version: "Bangla",
+    subjectId: "6a65e46462c905bec8b28da4",
+    chapterNumber: 1,
+    category: "ShortAnswer",
+    difficulty: "Easy",
+    topics: ["সততার পুরস্কার"],
+    year: ["2026"],
+    board: ["Dhaka"],
+    school: ["ভিকারুননিসা নূন স্কুল ও কলেজ"],
+    level: "মূল্যবোধ",
+    specialSearch: ["হাফ ইয়ার্লি ২০২৬"],
+    generalData: {
+      questionText: "<p>'সততার পুরস্কার' গল্পের মূল শিক্ষা কী?</p>",
+      suggestedAnswer:
+        "<p>সততা ও সত্যবাদিতার মাধ্যমে আল্লার সন্তুষ্টি এবং পুরষ্কার লাভ করা সম্ভব।</p>",
+      marks: 2,
+    },
+  },
+];
+
+export function downloadSampleJsonFile() {
+  const payload = {
+    _instructions: {
+      description:
+        "নমুনা প্রশ্ন ইনপোর্ট টেমপ্লেট ও ইনপোর্টের জন্য সিস্টেমে অনুমোদিত সঠিক মানসমূহ (Allowed Values Reference)",
+      allowedValues: ALLOWED_IMPORT_VALUES,
+    },
+    questions: SAMPLE_QUESTIONS_TEMPLATE,
+  };
+  const jsonString = JSON.stringify(payload, null, 2);
+  const blob = new Blob([jsonString], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "sample_questions_import.json";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}

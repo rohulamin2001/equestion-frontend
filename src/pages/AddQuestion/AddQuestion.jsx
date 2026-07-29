@@ -28,9 +28,11 @@ import {
   Save,
   Search,
   Trash2,
+  UploadCloud,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import BulkImportModal from "./components/BulkImportModal";
 import {
   CATEGORIES_MAP,
   CLASSES_MAP,
@@ -56,6 +58,7 @@ const stripHtml = (html) => {
 
 export default function AddQuestion() {
   const [schoolSearchQuery, setSchoolSearchQuery] = useState("");
+  const [showBulkModal, setShowBulkModal] = useState(false);
   const {
     qm,
     activeDropdown,
@@ -83,19 +86,35 @@ export default function AddQuestion() {
 
   return (
     <div className="space-y-6 pb-12 w-full font-bengali">
+      {/* Bulk Import Modal */}
+      <BulkImportModal
+        open={showBulkModal}
+        onOpenChange={setShowBulkModal}
+        onSuccess={() => qm.refetchQuestions?.()}
+      />
+
       {/* Page Header */}
       <div className="bg-glass p-3.5 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-1 sm:space-y-1.5">
         <div className="flex items-center justify-between gap-3 w-full">
           <h1 className="text-base sm:text-2xl font-bold text-slate-800 tracking-tight font-sans">
             নতুন প্রশ্ন যোগ করুন
           </h1>
-          <Button
-            variant="outline"
-            onClick={qm.resetForm}
-            className="border-black/[0.08] text-slate-600 hover:bg-black/[0.03] rounded-xl bg-white/[0.45] backdrop-blur-sm shadow-sm h-7 sm:h-9 text-[11px] sm:text-xs font-semibold px-2.5 sm:px-4 shrink-0"
-          >
-            রিসেট ফর্ম
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setShowBulkModal(true)}
+              className="bg-[#900EB0] hover:bg-[#720A7B] text-white rounded-xl h-7 sm:h-9 text-[11px] sm:text-xs  px-3 sm:px-4 flex items-center gap-1.5 shadow-md shadow-[#900EB0]/20 cursor-pointer shrink-0 accent-glow-purple"
+            >
+              <UploadCloud className="size-3.5 sm:size-4" />
+              ইমপোর্ট
+            </Button>
+            <Button
+              variant="outline"
+              onClick={qm.resetForm}
+              className="border-black/[0.08] text-slate-600 hover:bg-black/[0.03] rounded-xl bg-white/[0.45] backdrop-blur-sm shadow-sm h-7 sm:h-9 text-[11px] sm:text-xs font-semibold px-2.5 sm:px-4 shrink-0"
+            >
+              রিসেট ফর্ম
+            </Button>
+          </div>
         </div>
         <p className="text-slate-500 text-[11px] sm:text-sm leading-snug">
           NCTB কারিকুলাম ও স্তর অনুযায়ী নতুন MCQ বা সৃজনশীল প্রশ্ন তৈরি করুন।

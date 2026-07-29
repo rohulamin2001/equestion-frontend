@@ -151,7 +151,9 @@
 
     --radius: 0.625rem;
 
-    --chart-1: var(--purple-600); /* was #4f46e5 — everything else kept distinct for readability */
+    --chart-1: var(
+      --purple-600
+    ); /* was #4f46e5 — everything else kept distinct for readability */
     --chart-2: #10b981;
     --chart-3: #f97316;
     --chart-4: #06b6d4;
@@ -161,7 +163,12 @@
     --sidebar-foreground: #1e293b;
     --sidebar-primary: var(--purple-600);
     --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: rgba(144, 14, 176, 0.06); /* was rgba(0,0,0,0.03) — faint purple tint on hover/active */
+    --sidebar-accent: rgba(
+      144,
+      14,
+      176,
+      0.06
+    ); /* was rgba(0,0,0,0.03) — faint purple tint on hover/active */
     --sidebar-accent-foreground: var(--purple-800);
     --sidebar-border: rgba(0, 0, 0, 0.05);
     --sidebar-ring: var(--purple-600);
@@ -212,16 +219,6 @@
   :root {
     --font-heading: "Noto Sans Bengali", "Geist Variable", sans-serif;
     --font-sans: "Noto Sans Bengali", "Geist Variable", sans-serif;
-
-    /* ---- Modern-UI additions: shadows, motion, focus ---- */
-    --shadow-sm: 0 1px 2px 0 rgba(88, 8, 95, 0.05);
-    --shadow-card: 0 1px 2px 0 rgba(88, 8, 95, 0.04), 0 6px 20px 0 rgba(88, 8, 95, 0.06);
-    --shadow-card-hover: 0 2px 4px 0 rgba(88, 8, 95, 0.06), 0 12px 28px 0 rgba(88, 8, 95, 0.10);
-    --shadow-glow-primary: 0 8px 24px 0 rgba(144, 14, 176, 0.22);
-
-    --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
-    --duration-fast: 120ms;
-    --duration-base: 200ms;
   }
   * {
     border-color: var(--border);
@@ -314,50 +311,6 @@
   .font-bengali {
     font-family: "Noto Sans Bengali", sans-serif !important;
     letter-spacing: 0 !important;
-  }
-
-  /* ---- Modern-UI additions ---- */
-
-  /* Soft, purple-tinted elevation — use instead of default shadow-md/lg
-     for a warmer, on-brand shadow instead of neutral gray shadows */
-  .shadow-soft { box-shadow: var(--shadow-card) !important; }
-  .shadow-soft-hover:hover { box-shadow: var(--shadow-card-hover) !important; }
-
-  /* Consistent hover-lift for cards/buttons — subtle motion, not bouncy */
-  .hover-lift {
-    transition: transform var(--duration-base) var(--ease-standard),
-                box-shadow var(--duration-base) var(--ease-standard);
-  }
-  .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-card-hover);
-  }
-
-  /* Modern soft focus ring — replaces harsh 2px solid outline with a glow */
-  .focus-ring-modern:focus-visible {
-    outline: none !important;
-    box-shadow: 0 0 0 3px rgba(213, 16, 230, 0.28) !important;
-  }
-
-  /* KPI / stat numbers — tabular so digits don't jitter/misalign when updating */
-  .text-stat {
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.01em;
-    font-weight: 700;
-  }
-
-  /* Uppercase small labels (card eyebrows, table headers) */
-  .text-label {
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--muted-foreground);
-  }
-
-  /* Base transition for anything interactive that doesn't already have one */
-  .transition-modern {
-    transition: all var(--duration-fast) var(--ease-standard);
   }
 }
 
