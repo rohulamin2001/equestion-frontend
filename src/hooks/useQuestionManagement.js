@@ -260,9 +260,41 @@ export function useQuestionManagement(options = {}) {
   // New metadata fields
   const [formYear, setFormYear] = useState([]);
   const [formBoard, setFormBoard] = useState([]);
+  const [formExamHistory, setFormExamHistory] = useState([
+    { board: "", years: [] },
+  ]);
   const [formSchool, setFormSchool] = useState([]);
   const [formLevelTag, setFormLevelTag] = useState("");
   const [formSpecialSearch, setFormSpecialSearch] = useState([]);
+
+  const addExamHistoryRow = useCallback(() => {
+    setFormExamHistory((prev) => [...prev, { board: "", years: [] }]);
+  }, []);
+
+  const removeExamHistoryRow = useCallback((index) => {
+    setFormExamHistory((prev) =>
+      prev.length > 1 ? prev.filter((_, i) => i !== index) : [{ board: "", years: [] }]
+    );
+  }, []);
+
+  const updateExamHistoryBoard = useCallback((index, boardName) => {
+    setFormExamHistory((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, board: boardName } : item))
+    );
+  }, []);
+
+  const toggleExamHistoryYear = useCallback((index, yearStr) => {
+    setFormExamHistory((prev) =>
+      prev.map((item, i) => {
+        if (i !== index) return item;
+        const exists = item.years.includes(yearStr);
+        const newYears = exists
+          ? item.years.filter((y) => y !== yearStr)
+          : [...item.years, yearStr];
+        return { ...item, years: newYears };
+      })
+    );
+  }, []);
 
   // Draft list for batch question creation
   const [questionsList, setQuestionsList] = useState([]);
@@ -342,6 +374,7 @@ export function useQuestionManagement(options = {}) {
     // Reset new metadata
     setFormYear([]);
     setFormBoard([]);
+    setFormExamHistory([{ board: "", years: [] }]);
     setFormSchool([]);
     setFormLevelTag("");
     setFormSpecialSearch([]);
@@ -482,7 +515,28 @@ export function useQuestionManagement(options = {}) {
     setFormCategory(question.category);
     setFormDifficulty(question.difficulty);
 
-    // Load new metadata
+    // Load examHistory
+    if (Array.isArray(question.examHistory) && question.examHistory.length > 0) {
+      setFormExamHistory(
+        question.examHistory.map((eh) => ({
+          board: eh.board || "",
+          years: Array.isArray(eh.years) ? [...eh.years] : [],
+        }))
+      );
+    } else if (
+      (Array.isArray(question.board) && question.board.length > 0) ||
+      (Array.isArray(question.year) && question.year.length > 0)
+    ) {
+      setFormExamHistory([
+        {
+          board: question.board?.[0] || "",
+          years: Array.isArray(question.year) ? [...question.year] : [],
+        },
+      ]);
+    } else {
+      setFormExamHistory([{ board: "", years: [] }]);
+    }
+
     setFormYear(
       Array.isArray(question.year)
         ? [...question.year]
@@ -716,6 +770,20 @@ export function useQuestionManagement(options = {}) {
       return null;
     }
 
+    const cleanedExamHistory = formExamHistory
+      .filter((item) => item.board && item.years && item.years.length > 0)
+      .map((item) => ({
+        board: item.board,
+        years: item.years,
+      }));
+
+    const derivedBoards = Array.from(
+      new Set(cleanedExamHistory.map((item) => item.board))
+    );
+    const derivedYears = Array.from(
+      new Set(cleanedExamHistory.flatMap((item) => item.years))
+    );
+
     const payload = {
       className: formClass,
       subjectId: formSubjectId,
@@ -725,8 +793,9 @@ export function useQuestionManagement(options = {}) {
       difficulty: formDifficulty,
       institutionType: formType,
       academicLevel: formLevel,
-      year: formYear,
-      board: formBoard,
+      examHistory: cleanedExamHistory,
+      year: derivedYears.length > 0 ? derivedYears : formYear,
+      board: derivedBoards.length > 0 ? derivedBoards : formBoard,
       school: formSchool,
       level: formLevelTag,
       specialSearch: formSpecialSearch,
@@ -1544,10 +1613,17 @@ export function useQuestionManagement(options = {}) {
     changeFormVersion,
     config,
 
+    // Metadata fields & setters
     formYear,
     setFormYear,
     formBoard,
     setFormBoard,
+    formExamHistory,
+    setFormExamHistory,
+    addExamHistoryRow,
+    removeExamHistoryRow,
+    updateExamHistoryBoard,
+    toggleExamHistoryYear,
     formSchool,
     setFormSchool,
     formLevelTag,

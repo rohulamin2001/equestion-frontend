@@ -1556,166 +1556,133 @@ export default function AddQuestion() {
                 </h4>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {/* Year Selection */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      সাল / শিক্ষাবর্ষ
-                    </label>
-                    <div className="relative">
+                  {/* Dynamic Exam History Builder (Board & Year Pairs) */}
+                  <div className="col-span-1 sm:col-span-2 lg:col-span-4 bg-white/70 p-4 border border-black/[0.06] rounded-xl space-y-3">
+                    <div className="flex justify-between items-center">
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                        পরীক্ষার বোর্ড ও সাল
+                      </label>
                       <button
                         type="button"
-                        onClick={() =>
-                          setActiveDropdown(
-                            activeDropdown === "year" ? null : "year",
-                          )
-                        }
-                        className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm truncate pr-8 relative transition-all ${
-                          activeDropdown === "year"
-                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
-                            : qm.formYear && qm.formYear.length > 0
-                              ? "border-purple-600/50 bg-white hover:bg-slate-50"
-                              : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
-                        }`}
+                        onClick={qm.addExamHistoryRow}
+                        className="text-xs font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-lg border border-purple-200/60 transition cursor-pointer"
                       >
-                        <span className="truncate pr-1">
-                          {qm.formYear && qm.formYear.length > 0
-                            ? qm.formYear.join(", ")
-                            : "সাল নির্বাচন করুন"}
-                        </span>
-                        <ChevronRight
-                          className={`size-4 text-slate-400 absolute right-4 transition-transform duration-200 ${activeDropdown === "year" ? "rotate-90" : ""}`}
-                        />
+                        <Plus className="size-3.5" />
+                        <span>বোর্ড ও সাল যোগ করুন</span>
                       </button>
-
-                      {activeDropdown === "year" && (
-                        <>
-                          <div
-                            className="fixed inset-0 z-10"
-                            onClick={() => setActiveDropdown(null)}
-                          />
-                          <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-52 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                qm.setFormYear([]);
-                              }}
-                              className="w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:bg-slate-50"
-                            >
-                              রিসেট / খালি করুন
-                            </button>
-                            {activeYears.map((yr) => {
-                              const isSelected =
-                                qm.formYear && qm.formYear.includes(yr.name);
-                              return (
-                                <button
-                                  key={yr._id}
-                                  type="button"
-                                  onClick={() => {
-                                    const nextYears = isSelected
-                                      ? qm.formYear.filter((y) => y !== yr.name)
-                                      : [...(qm.formYear || []), yr.name];
-                                    qm.setFormYear(nextYears);
-                                  }}
-                                  className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex justify-between items-center ${
-                                    isSelected
-                                      ? "bg-purple-50 text-purple-700 font-bold"
-                                      : "text-slate-700 hover:bg-slate-50"
-                                  }`}
-                                >
-                                  <span>{yr.name}</span>
-                                  {isSelected && (
-                                    <Check className="size-4 shrink-0 text-purple-600" />
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </>
-                      )}
                     </div>
-                  </div>
 
-                  {/* Board Selection */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      বোর্ড (Board)
-                    </label>
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setActiveDropdown(
-                            activeDropdown === "board" ? null : "board",
-                          )
-                        }
-                        className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm truncate pr-8 relative transition-all ${
-                          activeDropdown === "board"
-                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
-                            : qm.formBoard && qm.formBoard.length > 0
-                              ? "border-purple-600/50 bg-white hover:bg-slate-50"
-                              : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
-                        }`}
-                      >
-                        <span className="truncate pr-1">
-                          {qm.formBoard && qm.formBoard.length > 0
-                            ? qm.formBoard.join(", ")
-                            : "বোর্ড নির্বাচন করুন"}
-                        </span>
-                        <ChevronRight
-                          className={`size-4 text-slate-400 absolute right-4 transition-transform duration-200 ${activeDropdown === "board" ? "rotate-90" : ""}`}
-                        />
-                      </button>
-
-                      {activeDropdown === "board" && (
-                        <>
-                          <div
-                            className="fixed inset-0 z-10"
-                            onClick={() => setActiveDropdown(null)}
-                          />
-                          <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-52 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                qm.setFormBoard([]);
-                              }}
-                              className="w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:bg-slate-50"
-                            >
-                              রিসেট / খালি করুন
-                            </button>
-                            {activeBoards.map((bd) => {
-                              const isSelected =
-                                qm.formBoard && qm.formBoard.includes(bd.name);
-                              return (
+                    <div className="space-y-3">
+                      {(qm.formExamHistory || []).map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="p-3 bg-slate-50/80 border border-slate-200/80 rounded-xl space-y-2.5 relative"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            {/* Board Dropdown Selector */}
+                            <div className="w-full sm:w-1/2 relative">
+                              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                                বোর্ড #{idx + 1}
+                              </label>
+                              <div className="relative">
                                 <button
-                                  key={bd._id}
                                   type="button"
-                                  onClick={() => {
-                                    const nextBoards = isSelected
-                                      ? qm.formBoard.filter(
-                                          (b) => b !== bd.name,
-                                        )
-                                      : [...(qm.formBoard || []), bd.name];
-                                    qm.setFormBoard(nextBoards);
-                                  }}
-                                  className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex justify-between items-center ${
-                                    isSelected
-                                      ? "bg-purple-50 text-purple-700 font-bold"
-                                      : "text-slate-700 hover:bg-slate-50"
-                                  }`}
+                                  onClick={() =>
+                                    setActiveDropdown(
+                                      activeDropdown === `eh-board-${idx}`
+                                        ? null
+                                        : `eh-board-${idx}`,
+                                    )
+                                  }
+                                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 flex justify-between items-center shadow-xs hover:border-purple-600/40 transition cursor-pointer"
                                 >
-                                  <span>
-                                    {bd.name}{" "}
-                                    {bd.shortName && `(${bd.shortName})`}
+                                  <span className="truncate">
+                                    {item.board || "বোর্ড নির্বাচন করুন"}
                                   </span>
-                                  {isSelected && (
-                                    <Check className="size-4 shrink-0 text-purple-600" />
-                                  )}
+                                  <ChevronRight
+                                    className={`size-3.5 text-slate-400 shrink-0 transition-transform ${activeDropdown === `eh-board-${idx}` ? "rotate-90 text-purple-600" : ""}`}
+                                  />
                                 </button>
-                              );
-                            })}
+                                {activeDropdown === `eh-board-${idx}` && (
+                                  <>
+                                    <div
+                                      className="fixed inset-0 z-10"
+                                      onClick={() => setActiveDropdown(null)}
+                                    />
+                                    <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-30 max-h-48 overflow-y-auto p-1 space-y-0.5 animate-in fade-in duration-150">
+                                      {activeBoards.map((bd) => (
+                                        <button
+                                          key={bd._id}
+                                          type="button"
+                                          onClick={() => {
+                                            qm.updateExamHistoryBoard(
+                                              idx,
+                                              bd.name,
+                                            );
+                                            setActiveDropdown(null);
+                                          }}
+                                          className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                                            item.board === bd.name
+                                              ? "bg-purple-50 text-purple-700 font-bold"
+                                              : "text-slate-700 hover:bg-slate-50"
+                                          }`}
+                                        >
+                                          {bd.name}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Delete Row Button */}
+                            {qm.formExamHistory.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => qm.removeExamHistoryRow(idx)}
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg border border-red-200/80 transition cursor-pointer self-end mb-0.5"
+                                title="এই সারিটি মুছুন"
+                              >
+                                <Trash2 className="size-4" />
+                              </button>
+                            )}
                           </div>
-                        </>
-                      )}
+
+                          {/* Year Chips / Badges */}
+                          <div>
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
+                              পরীক্ষার সালসমূহ (
+                              {item.years && item.years.length
+                                ? item.years.join(", ")
+                                : "কোনো সাল সিলেক্ট করা হয়নি"}
+                              )
+                            </label>
+                            <div className="flex flex-wrap gap-1.5">
+                              {activeYears.map((yr) => {
+                                const isSelected =
+                                  item.years && item.years.includes(yr.name);
+                                return (
+                                  <button
+                                    key={yr._id}
+                                    type="button"
+                                    onClick={() =>
+                                      qm.toggleExamHistoryYear(idx, yr.name)
+                                    }
+                                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition cursor-pointer ${
+                                      isSelected
+                                        ? "bg-purple-600 text-white border-purple-600 font-bold shadow-xs"
+                                        : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100 hover:border-purple-600/30"
+                                    }`}
+                                  >
+                                    {isSelected ? `✓ ${yr.name}` : yr.name}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
 

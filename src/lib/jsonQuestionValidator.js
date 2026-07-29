@@ -150,6 +150,25 @@ export function validateQuestionsJson(jsonInput) {
       );
     }
 
+    if (q.examHistory !== undefined) {
+      if (!Array.isArray(q.examHistory)) {
+        errors.push(`${prefix}: 'examHistory' অবশ্যই একটি অ্যারে হতে হবে।`);
+      } else {
+        q.examHistory.forEach((item, ehIdx) => {
+          if (
+            !item ||
+            typeof item !== "object" ||
+            !item.board ||
+            !Array.isArray(item.years)
+          ) {
+            errors.push(
+              `${prefix}: 'examHistory' #${ehIdx + 1} এ 'board' এবং 'years' অ্যারে থাকা আবশ্যক।`,
+            );
+          }
+        });
+      }
+    }
+
     // Category-Specific Payload Checks
     const category = q.category ? q.category.trim() : "";
 
