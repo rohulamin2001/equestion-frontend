@@ -72,6 +72,9 @@ const getJsonPlaceholder = (category, subType = "All") => {
     if (subType === "Contextual") {
       return `[\n  {\n    "difficulty": "Hard",\n    "topics": ["সততার পুরস্কার"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026"] }],\n    "school": ["গভ. ল্যাবরেটরি হাই স্কুল"],\n    "level": "প্রয়োগ",\n    "specialSearch": ["অভিন্ন তথ্যভিত্তিক"],\n    "mcqData": {\n      "mcqType": "Contextual",\n      "stem": "<p>রাফিজ একজন গরিব লোককে সাধ্যমতো সাহায্য করল, কিন্তু তার ভাই কালাম তাকে তাড়িয়ে দিল।</p>",\n      "questionText": "<p>উদ্দীপকের রাফিজের আচরণের সাথে 'সততার পুরস্কার' গল্পের কোন চরিত্রের মিল রয়েছে?</p>",\n      "options": ["<p>তৃতীয় ইহুদি</p>", "<p>প্রথম ইহুদি</p>", "<p>দ্বিতীয় ইহুদি</p>", "<p>ফেরেশতা</p>"],\n      "correctAnswer": 0,\n      "explanation": "<p>তৃতীয় ইহুদি অন্ধত্ব দূর হওয়ার পর আল্লাহর প্রতি কৃতজ্ঞ ছিল।</p>"\n    }\n  }\n]`;
     }
+    if (subType === "Grouped") {
+      return `[\n  {\n    "isGroup": true,\n    "passageStem": "<p>রফিক সাহেব তার জমিতে রাসায়নিক সারের পরিবর্তে জৈব ও সবুজ সার ব্যবহার করায় জমির উর্বরতা বজায় রইল...</p>",\n    "questions": [\n      {\n        "difficulty": "Medium",\n        "topics": ["উদ্ভিদবিজ্ঞান"],\n        "mcqData": {\n          "mcqType": "Simple",\n          "questionText": "<p>উদ্দীপকে রফিক সাহেবের ব্যবহৃত সার কোনটি?</p>",\n          "options": ["কম্পোস্ট সার", "ইউরিয়া", "টিএসপি", "ডিএপি"],\n          "correctAnswer": 0\n        }\n      },\n      {\n        "difficulty": "Hard",\n        "mcqData": {\n          "mcqType": "MultipleCompletion",\n          "questionText": "<p>সবুজ সার ব্যবহারের সুবিধা হলো—</p>",\n          "statements": ["মাটির উর্বরতা বাড়ে", "পরিবেশবান্ধব", "অনুজীব ধ্বংস হয়"],\n          "options": ["i ও ii", "ii ও iii", "i ও iii", "i, ii ও iii"],\n          "correctAnswer": 0\n        }\n      }\n    ]\n  }\n]`;
+    }
     return `[\n  {\n    "difficulty": "Easy",\n    "topics": ["সততার পুরস্কার"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026"] }],\n    "mcqData": {\n      "mcqType": "Simple",\n      "questionText": "<p>সাধারণ বহুনির্বাচনি প্রশ্ন...</p>",\n      "options": ["অপশন ১", "অপশন ২", "অপশন ৩", "অপশন ৪"],\n      "correctAnswer": 0\n    }\n  },\n  {\n    "difficulty": "Medium",\n    "mcqData": {\n      "mcqType": "MultipleCompletion",\n      "questionText": "<p>বহুপদী সমাপ্তিসূচক প্রশ্ন...</p>",\n      "statements": ["প্রথম তথ্য", "দ্বিতীয় তথ্য", "তৃতীয় তথ্য"],\n      "options": ["i ও ii", "ii ও iii", "i ও iii", "i, ii ও iii"],\n      "correctAnswer": 3\n    }\n  },\n  {\n    "difficulty": "Hard",\n    "mcqData": {\n      "mcqType": "Contextual",\n      "stem": "<p>উদ্দীপক/অনুচ্ছেদ...</p>",\n      "questionText": "<p>উদ্দীপকভিত্তিক প্রশ্ন...</p>",\n      "options": ["অপশন ১", "অপশন ২", "অপশন ৩", "অপশন ৪"],\n      "correctAnswer": 0\n    }\n  }\n]`;
   }
   if (category === "Creative") {
@@ -929,7 +932,7 @@ export default function AddQuestion() {
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                         {[
                           {
                             value: "All",
@@ -954,6 +957,12 @@ export default function AddQuestion() {
                             label: "অভিন্ন তথ্যভিত্তিক",
                             sub: "Contextual",
                             icon: BookOpen,
+                          },
+                          {
+                            value: "Grouped",
+                            label: "উদ্দীপকভিত্তিক গুচ্ছ",
+                            sub: "Grouped MCQ",
+                            icon: Database,
                           },
                         ].map((tab) => {
                           const IconComponent = tab.icon;

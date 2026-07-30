@@ -189,7 +189,46 @@ export const SAMPLE_QUESTIONS_TEMPLATE = [
       marks: 1,
     },
   },
-  // ৪. সৃজনশীল প্রশ্ন (Creative Question - CQ)
+  // ৪. উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ (Grouped MCQ)
+  {
+    isGroup: true,
+    passageStem:
+      "<p>রফিক সাহেব তার জমিতে রাসায়নিক সারের পরিবর্তে জৈব সার ব্যবহার করায় জমির উর্বরতা বৃদ্ধি পেল এবং ফলন ভালো হলো...</p>",
+    questions: [
+      {
+        difficulty: "Medium",
+        topics: ["উদ্ভিদের শারীরতত্ত্ব"],
+        mcqData: {
+          mcqType: "Simple",
+          questionText:
+            "<p>উদ্দীপকে রফিক সাহেবের ব্যবহৃত সার ব্যবহারের মূল সুবিধা কোনটি?</p>",
+          options: [
+            "মাটির অনুজীব রক্ষা পায়",
+            "উৎপাদন খরচ বহুগুণ বাড়ে",
+            "মাটির অম্লতা বৃদ্ধি পায়",
+            "পানির ধারণক্ষমতা কমে",
+          ],
+          correctAnswer: 0,
+        },
+      },
+      {
+        difficulty: "Hard",
+        topics: ["উদ্ভিদের শারীরতত্ত্ব"],
+        mcqData: {
+          mcqType: "MultipleCompletion",
+          questionText: "<p>সবুজ সার ব্যবহারের ফলে—</p>",
+          statements: [
+            "মাটির উর্বরতা স্থায়ী হয়",
+            "পরিবেশবান্ধব কৃষিকাজ নিশ্চিত হয়",
+            "রাসায়নিক দূষণ হ্রাস পায়",
+          ],
+          options: ["i ও ii", "ii ও iii", "i ও iii", "i, ii ও iii"],
+          correctAnswer: 3,
+        },
+      },
+    ],
+  },
+  // ৫. সৃজনশীল প্রশ্ন (Creative Question - CQ)
   {
     className: "Class 6",
     institutionType: "School",

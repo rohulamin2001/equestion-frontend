@@ -329,17 +329,37 @@ export function validateCategoryQuestionsJson(jsonInput, targetCategory = "MCQ")
   }
 
   let questionsList = [];
+  const processItem = (item) => {
+    if (!item || typeof item !== "object" || item._instructions) return;
+
+    // Handle Grouped MCQ structure (isGroup: true or passageStem with nested questions array)
+    if ((item.isGroup || item.passageStem || item.stem) && Array.isArray(item.questions)) {
+      const gId =
+        item.passageGroupId ||
+        `passage_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      const stemText = item.passageStem || item.stem || "";
+      item.questions.forEach((gq, idx) => {
+        if (gq && typeof gq === "object") {
+          questionsList.push({
+            ...gq,
+            passageGroupId: gId,
+            passageStem: stemText,
+            passageOrder: typeof gq.passageOrder === "number" ? gq.passageOrder : idx,
+          });
+        }
+      });
+    } else {
+      questionsList.push(item);
+    }
+  };
+
   if (Array.isArray(rawData)) {
-    questionsList = rawData.filter(
-      (item) => item && typeof item === "object" && !item._instructions,
-    );
+    rawData.forEach(processItem);
   } else if (typeof rawData === "object" && rawData !== null) {
-    if (Array.isArray(rawData.questions)) {
-      questionsList = rawData.questions.filter(
-        (item) => item && typeof item === "object" && !item._instructions,
-      );
-    } else if (!rawData._instructions) {
-      questionsList = [rawData];
+    if (Array.isArray(rawData.questions) && !rawData.passageStem && !rawData.stem) {
+      rawData.questions.forEach(processItem);
+    } else {
+      processItem(rawData);
     }
   }
 
