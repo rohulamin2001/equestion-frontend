@@ -960,7 +960,7 @@ export default function AddQuestion() {
                           },
                           {
                             value: "Grouped",
-                            label: "উদ্দীপকভিত্তিক গুচ্ছ",
+                            label: "উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ",
                             sub: "Grouped MCQ",
                             icon: Database,
                           },
@@ -973,6 +973,10 @@ export default function AddQuestion() {
                               type="button"
                               onClick={() => setJsonMcqSubType(tab.value)}
                               className={`flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-3 py-1.5 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all duration-200 cursor-pointer border ${
+                                tab.value === "Grouped"
+                                  ? "col-span-2 sm:col-span-1"
+                                  : ""
+                              } ${
                                 isActive
                                   ? "bg-purple-700 text-white shadow-md shadow-purple-600/20 border-purple-700 ring-2 ring-purple-600/20"
                                   : "bg-white text-slate-700 hover:bg-purple-50/80 hover:text-purple-900 border-slate-200/80 hover:border-purple-300 shadow-sm"
