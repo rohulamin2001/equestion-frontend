@@ -932,7 +932,7 @@ export default function AddQuestion() {
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                         {[
                           {
                             value: "All",
@@ -974,7 +974,7 @@ export default function AddQuestion() {
                               onClick={() => setJsonMcqSubType(tab.value)}
                               className={`flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-3 py-1.5 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all duration-200 cursor-pointer border ${
                                 tab.value === "Grouped"
-                                  ? "col-span-2 sm:col-span-1"
+                                  ? "col-span-2 sm:col-span-1 lg:col-span-1"
                                   : ""
                               } ${
                                 isActive
@@ -985,10 +985,10 @@ export default function AddQuestion() {
                               <IconComponent
                                 className={`size-3.5 sm:size-4 shrink-0 ${isActive ? "text-white" : "text-purple-600"}`}
                               />
-                              <div className="flex flex-col text-left truncate leading-tight">
-                                <span className="truncate">{tab.label}</span>
+                              <div className="flex flex-col text-left leading-tight min-w-0">
+                                <span className="leading-tight text-left break-words">{tab.label}</span>
                                 <span
-                                  className={`text-[8px] sm:text-[9px] md:text-[10px] font-semibold opacity-80 truncate ${
+                                  className={`text-[8px] sm:text-[9px] md:text-[10px] font-semibold opacity-80 ${
                                     isActive
                                       ? "text-purple-100"
                                       : "text-slate-500"
