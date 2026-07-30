@@ -960,7 +960,7 @@ export default function AddQuestion() {
                           },
                           {
                             value: "Grouped",
-                            label: "উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ",
+                            label: "উদ্দীপকভিত্তিক ",
                             sub: "Grouped MCQ",
                             icon: Database,
                           },
@@ -973,7 +973,7 @@ export default function AddQuestion() {
                               type="button"
                               onClick={() => setJsonMcqSubType(tab.value)}
                               className={`flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-3 py-1.5 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all duration-200 cursor-pointer border ${
-                                tab.value === "Grouped"
+                                tab.value === "All"
                                   ? "col-span-2 sm:col-span-1 lg:col-span-1"
                                   : ""
                               } ${
@@ -986,7 +986,9 @@ export default function AddQuestion() {
                                 className={`size-3.5 sm:size-4 shrink-0 ${isActive ? "text-white" : "text-purple-600"}`}
                               />
                               <div className="flex flex-col text-left leading-tight min-w-0">
-                                <span className="leading-tight text-left break-words">{tab.label}</span>
+                                <span className="leading-tight text-left break-words">
+                                  {tab.label}
+                                </span>
                                 <span
                                   className={`text-[8px] sm:text-[9px] md:text-[10px] font-semibold opacity-80 ${
                                     isActive
