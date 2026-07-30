@@ -26,6 +26,7 @@ import {
   FileText,
   HelpCircle,
   Layers3,
+  Loader2,
   Pencil,
   Plus,
   Save,
@@ -1065,8 +1066,8 @@ export default function AddQuestion() {
                           <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-emerald-900">
                             <CheckCircle2 className="size-4 sm:size-5 text-emerald-600 shrink-0" />
                             <span>
-                              {val.validCount}টি সম্পূর্ণ সঠিক {qm.formCategory}{" "}
-                              প্রশ্ন পাওয়া গেছে!
+                              {val.validCount} টি সম্পূর্ণ সঠিক{" "}
+                              {qm.formCategory} প্রশ্ন পাওয়া গেছে!
                             </span>
                           </div>
                           <p className="text-emerald-700 text-[10px] sm:text-xs">
@@ -1097,16 +1098,27 @@ export default function AddQuestion() {
                       type="button"
                       onClick={qm.savePastedJsonQuestions}
                       disabled={
+                        qm.isSavingPasted ||
+                        qm.formLoading ||
                         !qm.rawPastedJsonText.trim() ||
                         !validateCategoryQuestionsJson(
                           qm.rawPastedJsonText,
                           qm.formCategory,
                         ).isValid
                       }
-                      className="bg-purple-600 hover:bg-purple-700 text-white  px-6 py-2.5 rounded shadow-md transition disabled:opacity-50 cursor-pointer"
+                      className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
                     >
-                      <Save className="size-4 mr-2" />
-                      <span>বাল্ক প্রশ্নসমূহ সেভ করুন</span>
+                      {qm.isSavingPasted ? (
+                        <>
+                          <Loader2 className="size-4 animate-spin text-white" />
+                          <span>সেভ করা হচ্ছে...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="size-4" />
+                          <span>বাল্ক প্রশ্নসমূহ সেভ করুন</span>
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>

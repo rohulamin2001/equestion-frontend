@@ -53,6 +53,7 @@ export function useQuestionManagement(options = {}) {
 
   // Wizard Step State
   const [activeStep, setActiveStep] = useState(1);
+  const [isSavingPasted, setIsSavingPasted] = useState(false);
 
   // Active list filters (for QuestionBank and MyQuestions pages) - Derived State Pattern
   const [userFilterType, setUserFilterType] = useState("");
@@ -899,7 +900,12 @@ export function useQuestionManagement(options = {}) {
         } else if (subType === "Grouped") {
           sample = [groupedSample];
         } else {
-          sample = [simpleSample, multipleCompletionSample, contextualSample, groupedSample];
+          sample = [
+            simpleSample,
+            multipleCompletionSample,
+            contextualSample,
+            groupedSample,
+          ];
         }
       } else if (formCategory === "Creative") {
         sample = [
@@ -1017,7 +1023,9 @@ export function useQuestionManagement(options = {}) {
         }
         if (Array.isArray(val)) {
           return val
-            .flatMap((item) => (typeof item === "string" ? item.split(";") : item))
+            .flatMap((item) =>
+              typeof item === "string" ? item.split(";") : item,
+            )
             .map((s) => (typeof s === "string" ? s.trim() : s))
             .filter(Boolean);
         }
@@ -1043,14 +1051,21 @@ export function useQuestionManagement(options = {}) {
       };
     });
 
+    if (isSavingPasted || addQuestionMutation.isPending) return;
+
+    setIsSavingPasted(true);
     isSubmittingRef.current = true;
     try {
       await addQuestionMutation.mutateAsync(finalPayloads);
       setRawPastedJsonText("");
     } catch (err) {
       console.error("Error saving pasted questions:", err);
+    } finally {
+      setIsSavingPasted(false);
+      isSubmittingRef.current = false;
     }
   }, [
+    isSavingPasted,
     formClass,
     formSubjectId,
     formChapterNumber,
@@ -2017,6 +2032,8 @@ export function useQuestionManagement(options = {}) {
     formLoading,
     editingQuestion,
     editingPassageGroup,
+    isSavingPasted: isSavingPasted || addQuestionMutation.isPending,
+    isSavingBulk: isSavingPasted || addQuestionMutation.isPending,
 
     // Step 2 Editor Mode & Smart JSON Paste
     step2EditorMode,

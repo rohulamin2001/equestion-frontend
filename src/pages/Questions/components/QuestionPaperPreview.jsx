@@ -104,7 +104,7 @@ export default function QuestionPaperPreview({
       </div>
 
       <div
-        className={`question-paper-container relative ${layoutSettings.fontFamily === "English" ? "is-english" : `font-family-${activeFont}`} bg-white text-black border border-slate-200/60 p-8 shadow-sm print:border-none print:shadow-none print:p-0 select-none print:select-text`}
+        className={`question-paper-container w-full max-w-[850px] relative ${layoutSettings.fontFamily === "English" ? "is-english" : `font-family-${activeFont}`} bg-white text-black border border-slate-200/60 p-8 shadow-sm print:border-none print:shadow-none print:p-0 select-none print:select-text`}
         style={{
           fontFamily:
             layoutSettings.fontFamily === "English"
