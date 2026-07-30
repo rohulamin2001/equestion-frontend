@@ -145,9 +145,9 @@ export const SAMPLE_QUESTIONS_TEMPLATE = [
       mcqType: "MultipleCompletion",
       questionText: "<p>'সততার পুরস্কার' গল্পের মূল শিক্ষা হলো—</p>",
       statements: [
-        "i. সততা ও ঈমানদারী",
-        "ii. আল্লাহর প্রতি কৃতজ্ঞতা প্রকাশ",
-        "iii. অকৃতজ্ঞতার কুফল",
+        "সততা ও ঈমানদারী",
+        "আল্লাহর প্রতি কৃতজ্ঞতা প্রকাশ",
+        "অকৃতজ্ঞতার কুফল",
       ],
       options: ["i ও ii", "ii ও iii", "i ও iii", "i, ii ও iii"],
       correctAnswer: 3,
@@ -316,9 +316,9 @@ export const SAMPLE_QUESTIONS_TEMPLATE_2 = [
       mcqType: "MultipleCompletion", // বহুপদী সমাপ্তিসূচক
       questionText: "<p>এখানে মূল বহুপদী প্রশ্নটি লিখুন...</p>",
       statements: [
-        "i. এখানে ১ম বিবৃতি লিখুন",
-        "ii. এখানে ২য় বিবৃতি লিখুন",
-        "iii. এখানে ৩য় বিবৃতি লিখুন",
+        "এখানে ১ম বিবৃতি লিখুন",
+        "এখানে ২য় বিবৃতি লিখুন",
+        "এখানে ৩য় বিবৃতি লিখুন",
       ],
       options: ["i ও ii", "ii ও iii", "i ও iii", "i, ii ও iii"],
       correctAnswer: 3,

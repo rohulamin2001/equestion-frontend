@@ -299,3 +299,169 @@ export function validateQuestionsJson(jsonInput) {
     },
   };
 }
+
+/**
+ * Validates raw pasted JSON text for a specific category (without top-level metadata requirements).
+ * Top-level metadata (Class, Subject, Chapter, Category, etc.) will be injected automatically from UI state.
+ */
+export function validateCategoryQuestionsJson(jsonInput, targetCategory = "MCQ") {
+  if (!jsonInput || typeof jsonInput !== "string" || !jsonInput.trim()) {
+    return {
+      isValid: false,
+      questions: [],
+      errors: ["কোনো JSON টেক্সট পেস্ট করা হয়নি।"],
+      validCount: 0,
+      totalCount: 0,
+    };
+  }
+
+  let rawData;
+  try {
+    rawData = JSON.parse(jsonInput);
+  } catch (err) {
+    return {
+      isValid: false,
+      questions: [],
+      errors: [`JSON সিনট্যাক্স এরর: ${err.message}`],
+      validCount: 0,
+      totalCount: 0,
+    };
+  }
+
+  let questionsList = [];
+  if (Array.isArray(rawData)) {
+    questionsList = rawData.filter(
+      (item) => item && typeof item === "object" && !item._instructions,
+    );
+  } else if (typeof rawData === "object" && rawData !== null) {
+    if (Array.isArray(rawData.questions)) {
+      questionsList = rawData.questions.filter(
+        (item) => item && typeof item === "object" && !item._instructions,
+      );
+    } else if (!rawData._instructions) {
+      questionsList = [rawData];
+    }
+  }
+
+  if (questionsList.length === 0) {
+    return {
+      isValid: false,
+      questions: [],
+      errors: ["JSON ডাটাতে কোনো প্রশ্নের অবজেক্ট পাওয়া যায়নি।"],
+      validCount: 0,
+      totalCount: 0,
+    };
+  }
+
+  const errors = [];
+  const validQuestions = [];
+
+  questionsList.forEach((q, idx) => {
+    const itemNum = idx + 1;
+    const prefix = `প্রশ্ন #${itemNum}`;
+
+    if (!q || typeof q !== "object") {
+      errors.push(`${prefix}: অবজেক্ট ফরম্যাট সঠিক নয়।`);
+      return;
+    }
+
+    if (targetCategory === "MCQ") {
+      if (!q.mcqData || typeof q.mcqData !== "object") {
+        errors.push(`${prefix} [MCQ]: 'mcqData' অবজেক্ট থাকা আবশ্যক।`);
+      } else {
+        const mcq = q.mcqData;
+        const mcqType = mcq.mcqType || "Simple";
+
+        if (mcqType !== "Contextual" && isHtmlEmpty(mcq.questionText)) {
+          errors.push(`${prefix} [MCQ]: 'mcqData.questionText' থাকা আবশ্যক।`);
+        }
+        if (mcqType === "Contextual" && isHtmlEmpty(mcq.stem)) {
+          errors.push(
+            `${prefix} [MCQ]: উদ্দীপকভিত্তিক প্রশ্নের জন্য 'mcqData.stem' থাকা আবশ্যক।`,
+          );
+        }
+        if (!Array.isArray(mcq.options) || mcq.options.length < 2) {
+          errors.push(`${prefix} [MCQ]: 'mcqData.options' এ অন্তত ২টি অপশন থাকতে হবে।`);
+        } else if (mcq.options.some((opt) => isHtmlEmpty(opt))) {
+          errors.push(
+            `${prefix} [MCQ]: 'mcqData.options' এর কোনো অপশন খালি রাখা যাবে না।`,
+          );
+        }
+
+        if (
+          mcq.correctAnswer === undefined ||
+          mcq.correctAnswer === null ||
+          isNaN(Number(mcq.correctAnswer)) ||
+          Number(mcq.correctAnswer) < 0 ||
+          (Array.isArray(mcq.options) &&
+            Number(mcq.correctAnswer) >= mcq.options.length)
+        ) {
+          errors.push(
+            `${prefix} [MCQ]: 'mcqData.correctAnswer' সঠিক অপশন নম্বর (0, 1, 2...) হতে হবে।`,
+          );
+        }
+      }
+    } else if (targetCategory === "Creative") {
+      if (!q.creativeData || typeof q.creativeData !== "object") {
+        errors.push(`${prefix} [সৃজনশীল]: 'creativeData' অবজেক্ট থাকা আবশ্যক।`);
+      } else {
+        const cd = q.creativeData;
+        if (isHtmlEmpty(cd.stem)) {
+          errors.push(
+            `${prefix} [সৃজনশীল]: 'creativeData.stem' (উদ্দীপক) থাকা আবশ্যক।`,
+          );
+        }
+        const subQ = cd.subQuestions;
+        if (!subQ || typeof subQ !== "object") {
+          errors.push(
+            `${prefix} [সৃজনশীল]: 'creativeData.subQuestions' অবজেক্ট থাকা আবশ্যক।`,
+          );
+        } else {
+          if (!subQ.cognitiveA || isHtmlEmpty(subQ.cognitiveA.text)) {
+            errors.push(
+              `${prefix} [সৃজনশীল]: 'ক' (subQuestions.cognitiveA.text) আবশ্যক।`,
+            );
+          }
+          if (!subQ.cognitiveB || isHtmlEmpty(subQ.cognitiveB.text)) {
+            errors.push(
+              `${prefix} [সৃজনশীল]: 'খ' (subQuestions.cognitiveB.text) আবশ্যক।`,
+            );
+          }
+          if (!subQ.cognitiveC || isHtmlEmpty(subQ.cognitiveC.text)) {
+            errors.push(
+              `${prefix} [সৃজনশীল]: 'গ' (subQuestions.cognitiveC.text) আবশ্যক।`,
+            );
+          }
+          if (!subQ.cognitiveD || isHtmlEmpty(subQ.cognitiveD.text)) {
+            errors.push(
+              `${prefix} [সৃজনশীল]: 'ঘ' (subQuestions.cognitiveD.text) আবশ্যক।`,
+            );
+          }
+        }
+      }
+    } else {
+      if (
+        !q.generalData ||
+        typeof q.generalData !== "object" ||
+        isHtmlEmpty(q.generalData.questionText)
+      ) {
+        errors.push(
+          `${prefix} [${targetCategory}]: 'generalData.questionText' থাকা আবশ্যক।`,
+        );
+      }
+    }
+
+    validQuestions.push(q);
+  });
+
+  const isValid = errors.length === 0;
+
+  return {
+    isValid,
+    totalCount: questionsList.length,
+    validCount: validQuestions.length,
+    questions: validQuestions,
+    errors,
+  };
+}
+

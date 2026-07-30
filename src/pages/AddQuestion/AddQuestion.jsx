@@ -13,6 +13,7 @@ import {
   RippleButton,
   RippleButtonRipples,
 } from "@/components/ui/ripple-button";
+import { validateCategoryQuestionsJson } from "@/lib/jsonQuestionValidator";
 import {
   AlertCircle,
   BookOpen,
@@ -20,18 +21,22 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  ClipboardPaste,
   Database,
   FileText,
   HelpCircle,
+  Layers3,
   Pencil,
   Plus,
   Save,
   Search,
+  Sparkles,
   Trash2,
   UploadCloud,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { toast } from "sonner";
 import BulkImportModal from "./components/BulkImportModal";
 import {
   CATEGORIES_MAP,
@@ -56,9 +61,52 @@ const stripHtml = (html) => {
   }
 };
 
+const getJsonPlaceholder = (category, subType = "All") => {
+  if (category === "MCQ") {
+    if (subType === "Simple") {
+      return `[\n  {\n    "difficulty": "Easy",\n    "topics": ["সততার পুরস্কার"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026", "2025"] }],\n    "school": ["মতিঝিল আইডিয়াল স্কুল ও কলেজ"],\n    "level": "জ্ঞান",\n    "specialSearch": ["অনুশীলনি"],\n    "mcqData": {\n      "mcqType": "Simple",\n      "questionText": "<p>'সততার পুরস্কার' গল্পে প্রথম লোকটির শরীরে কী রোগ ছিল?</p>",\n      "options": ["<p>ধবল রোগ</p>", "<p>টাকপড়া</p>", "<p>অন্ধত্ব</p>", "<p>জ্বর</p>"],\n      "correctAnswer": 0,\n      "explanation": "<p>গল্প অনুযায়ী প্রথম লোকটির শরীর ধবল রোগে আক্রান্ত ছিল।</p>"\n    }\n  }\n]`;
+    }
+    if (subType === "MultipleCompletion") {
+      return `[\n  {\n    "difficulty": "Medium",\n    "topics": ["সততার পুরস্কার"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026"] }],\n    "school": ["ভিকারুননিসা নূন স্কুল ও কলেজ"],\n    "level": "অনুধাবন",\n    "specialSearch": ["রিপিটেড স্কুল"],\n    "mcqData": {\n      "mcqType": "MultipleCompletion",\n      "questionText": "<p>'সততার পুরস্কার' গল্পের মূল শিক্ষা হলো—</p>",\n      "statements": [\n        "সততা ও ঈমানদারী",\n        "আল্লাহর প্রতি কৃতজ্ঞতা প্রকাশ",\n        "অকৃতজ্ঞতার কুফল"\n      ],\n      "options": ["i ও ii", "ii ও iii", "i ও iii", "i, ii ও iii"],\n      "correctAnswer": 3,\n      "explanation": "<p>তিনটি বাক্যই সততার পুরস্কার গল্পের মূল শিক্ষার অন্তর্ভুক্ত।</p>"\n    }\n  }\n]`;
+    }
+    if (subType === "Contextual") {
+      return `[\n  {\n    "difficulty": "Hard",\n    "topics": ["সততার পুরস্কার"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026"] }],\n    "school": ["গভ. ল্যাবরেটরি হাই স্কুল"],\n    "level": "প্রয়োগ",\n    "specialSearch": ["অভিন্ন তথ্যভিত্তিক"],\n    "mcqData": {\n      "mcqType": "Contextual",\n      "stem": "<p>রাফিজ একজন গরিব লোককে সাধ্যমতো সাহায্য করল, কিন্তু তার ভাই কালাম তাকে তাড়িয়ে দিল।</p>",\n      "questionText": "<p>উদ্দীপকের রাফিজের আচরণের সাথে 'সততার পুরস্কার' গল্পের কোন চরিত্রের মিল রয়েছে?</p>",\n      "options": ["<p>তৃতীয় ইহুদি</p>", "<p>প্রথম ইহুদি</p>", "<p>দ্বিতীয় ইহুদি</p>", "<p>ফেরেশতা</p>"],\n      "correctAnswer": 0,\n      "explanation": "<p>তৃতীয় ইহুদি অন্ধত্ব দূর হওয়ার পর আল্লাহর প্রতি কৃতজ্ঞ ছিল।</p>"\n    }\n  }\n]`;
+    }
+    return `[\n  {\n    "difficulty": "Easy",\n    "topics": ["সততার পুরস্কার"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026"] }],\n    "mcqData": {\n      "mcqType": "Simple",\n      "questionText": "<p>সাধারণ বহুনির্বাচনি প্রশ্ন...</p>",\n      "options": ["অপশন ১", "অপশন ২", "অপশন ৩", "অপশন ৪"],\n      "correctAnswer": 0\n    }\n  },\n  {\n    "difficulty": "Medium",\n    "mcqData": {\n      "mcqType": "MultipleCompletion",\n      "questionText": "<p>বহুপদী সমাপ্তিসূচক প্রশ্ন...</p>",\n      "statements": ["প্রথম তথ্য", "দ্বিতীয় তথ্য", "তৃতীয় তথ্য"],\n      "options": ["i ও ii", "ii ও iii", "i ও iii", "i, ii ও iii"],\n      "correctAnswer": 3\n    }\n  },\n  {\n    "difficulty": "Hard",\n    "mcqData": {\n      "mcqType": "Contextual",\n      "stem": "<p>উদ্দীপক/অনুচ্ছেদ...</p>",\n      "questionText": "<p>উদ্দীপকভিত্তিক প্রশ্ন...</p>",\n      "options": ["অপশন ১", "অপশন ২", "অপশন ৩", "অপশন ৪"],\n      "correctAnswer": 0\n    }\n  }\n]`;
+  }
+  if (category === "Creative") {
+    return `[\n  {\n    "difficulty": "Medium",\n    "topics": ["উদ্ভিদের শারীরতত্ত্ব"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026"] }],\n    "school": ["ঢাকা রেসিডেনসিয়াল মডেল কলেজ"],\n    "level": "Famous School",\n    "specialSearch": ["পরীক্ষায় আসার মতো"],\n    "creativeData": {\n      "stem": "<p>এখানে মূল উদ্দীপক বা অনুচ্ছেদটি লিখুন...</p>",\n      "subQuestions": {\n        "cognitiveA": { "text": "<p>'ক' (জ্ঞানমূলক) প্রশ্ন...</p>", "answer": "<p>'ক' প্রশ্নের উত্তর...</p>", "marks": 1 },\n        "cognitiveB": { "text": "<p>'খ' (অনুধাবনমূলক) প্রশ্ন...</p>", "answer": "<p>'খ' প্রশ্নের উত্তর...</p>", "marks": 2 },\n        "cognitiveC": { "text": "<p>'গ' (প্রয়োগমূলক) প্রশ্ন...</p>", "answer": "<p>'গ' প্রশ্নের উত্তর...</p>", "marks": 3 },\n        "cognitiveD": { "text": "<p>'ঘ' (উচ্চতর দক্ষতা) প্রশ্ন...</p>", "answer": "<p>'ঘ' প্রশ্নের উত্তর...</p>", "marks": 4 }\n      }\n    }\n  }\n]`;
+  }
+  return `[\n  {\n    "difficulty": "Easy",\n    "topics": ["সাধারণ জ্ঞান"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026"] }],\n    "school": ["গভ. ল্যাবরেটরি হাই স্কুল"],\n    "level": "Top School",\n    "specialSearch": ["সংক্ষিপ্ত প্রশ্ন"],\n    "generalData": {\n      "questionText": "<p>এখানে প্রশ্নটি লিখুন...</p>",\n      "suggestedAnswer": "<p>এখানে উত্তর লিখুন...</p>",\n      "marks": 2\n    }\n  }\n]`;
+};
+
 export default function AddQuestion() {
   const [schoolSearchQuery, setSchoolSearchQuery] = useState("");
   const [showBulkModal, setShowBulkModal] = useState(false);
+  const [jsonMcqSubType, setJsonMcqSubType] = useState("All");
+
+  const handlePasteFromClipboard = async () => {
+    try {
+      if (!navigator.clipboard || !navigator.clipboard.readText) {
+        toast.error(
+          "আপনার ব্রাউজারে অটো-পেস্ট সাপোর্ট করে না। দয়া করে ম্যানুয়ালি (Ctrl+V) পেস্ট করুন।",
+        );
+        return;
+      }
+      const text = await navigator.clipboard.readText();
+      if (!text || !text.trim()) {
+        toast.error("ক্লিপবোর্ডে কোনো টেক্সট পাওয়া যায়নি!");
+        return;
+      }
+      qm.setRawPastedJsonText(text);
+      toast.success("ক্লিপবোর্ড থেকে JSON পেস্ট করা হয়েছে! 📋");
+    } catch (err) {
+      console.error("Clipboard read error:", err);
+      toast.error(
+        "ক্লিপবোর্ড পারমিশন মেলেনি। দয়া করে ম্যানুয়ালি (Ctrl+V) পেস্ট করুন।",
+      );
+    }
+  };
   const {
     qm,
     activeDropdown,
@@ -792,395 +840,457 @@ export default function AddQuestion() {
                 </span>
               </div>
 
-              {/* Chapter & Difficulty Selection at the top of Step 2 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 bg-black/[0.01] p-3 sm:p-4 rounded-xl border border-black/[0.03]">
-                {/* Chapter Selection */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center h-4">
-                    <label
-                      className={`text-xs font-bold uppercase tracking-wider block ${showStep2Error && !qm.formChapterNumber ? "text-red-500 animate-pulse" : "text-slate-500"}`}
-                    >
-                      অধ্যায় (Chapter)
-                    </label>
-                    {showStep2Error && !qm.formChapterNumber && (
-                      <span className="text-[11px] font-bold text-red-500 animate-pulse font-sans">
-                        অধ্যায় নির্বাচন করা আবশ্যক
-                      </span>
-                    )}
+              {/* Step 2 Editor Mode Switcher Tab (Form vs JSON Paste) */}
+              <div className="flex items-center justify-center sm:justify-start gap-2 p-1 bg-slate-100/90 rounded-xl border border-slate-200/80 w-fit mx-auto sm:mx-0">
+                <button
+                  type="button"
+                  onClick={() => qm.setStep2EditorMode("form")}
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    qm.step2EditorMode === "form"
+                      ? "bg-white text-purple-700 shadow-sm border border-purple-200/60"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-white/40"
+                  }`}
+                >
+                  <Pencil className="size-3.5" />
+                  <span>ম্যানুয়াল এডিটর</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => qm.setStep2EditorMode("json")}
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    qm.step2EditorMode === "json"
+                      ? "bg-white text-purple-700 shadow-sm border border-purple-200/60"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-white/40"
+                  }`}
+                >
+                  <UploadCloud className="size-3.5" />
+                  <span>স্মার্ট JSON</span>
+                </button>
+              </div>
+
+              {qm.step2EditorMode === "json" ? (
+                <div className="space-y-4 animate-in fade-in duration-200 pt-2">
+                  {/* Info Notice */}
+                  <div className="p-3.5 sm:p-4 bg-purple-50/80 border border-purple-200/80 rounded-2xl flex items-start gap-3">
+                    <AlertCircle className="size-5 text-purple-600 shrink-0 mt-0.5" />
+                    <div className="space-y-1 text-xs text-purple-900 leading-relaxed">
+                      <p className="font-bold text-sm text-purple-950">
+                        💡 স্মার্ট JSON পেস্ট নির্দেশিকা:
+                      </p>
+                      <p>
+                        আপনাকে বারবার{" "}
+                        <span className="font-bold">
+                          শ্রেণী, বিষয়, ক্যাটাগরি, প্রতিষ্ঠানের ধরন, একাডেমিক
+                          লেভেল
+                        </span>{" "}
+                        (Step 1) এবং <span className="font-bold">অধ্যায়</span>{" "}
+                        (Step 2) মেটাডাটা লিখতে হবে না। সিস্টেম এগুলো ফর্ম থেকে
+                        স্বয়ংক্রিয়ভাবে ইনজেক্ট করে নেবে।
+                      </p>
+                      <p className="text-purple-700 font-semibold">
+                        শুধু প্রশ্নভিত্তিক তথ্য (যেমন: difficulty, topics,
+                        mcqData / creativeData / generalData, examHistory) পেস্ট
+                        করুন।
+                      </p>
+                    </div>
                   </div>
-                  <div
-                    className={`relative ${activeDropdown === "chapter" ? "z-30" : "z-10"}`}
-                  >
+
+                  {/* Header & Action Buttons */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pt-1">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                      {
+                        CATEGORIES_MAP.find((c) => c.value === qm.formCategory)
+                          ?.label
+                      }{" "}
+                      প্রশ্নের JSON টেক্সট পেস্ট করুন
+                    </label>
                     <button
                       type="button"
                       onClick={() =>
-                        setActiveDropdown(
-                          activeDropdown === "chapter" ? null : "chapter",
-                        )
+                        qm.handleInsertSampleCategoryJson(jsonMcqSubType)
                       }
-                      className={`w-full px-4 rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm transition-all border ${
-                        showStep2Error && !qm.formChapterNumber
-                          ? "border-red-500 bg-red-50/10 focus:ring-red-500/10 focus:border-red-500 hover:bg-red-50/20"
-                          : activeDropdown === "chapter"
-                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
-                            : qm.formChapterNumber
-                              ? "border-purple-600/50 bg-white hover:bg-slate-50"
-                              : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
-                      }`}
+                      className="text-xs font-bold text-purple-700 hover:text-purple-900 flex items-center gap-1.5 bg-purple-100/70 hover:bg-purple-100 px-3 py-1.5 rounded-xl border border-purple-200 transition cursor-pointer shadow-sm"
                     >
-                      <span className="truncate pr-2 text-left">
-                        {qm.formChapters.find(
-                          (c) =>
-                            c.chapterNumber.toString() === qm.formChapterNumber,
-                        )
-                          ? `অধ্যায় ${qm.formChapterNumber}: ${qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber).chapterName}`
-                          : "অধ্যায় নির্বাচন করুন"}
-                      </span>
-                      <ChevronRight
-                        className={`size-4 shrink-0 transition-transform duration-200 ${
-                          showStep2Error && !qm.formChapterNumber
-                            ? "text-red-500"
-                            : "text-slate-400"
-                        } ${activeDropdown === "chapter" ? "rotate-90" : ""}`}
-                      />
+                      <FileText className="size-3.5" />
+                      <span>নমুনা JSON ইনসার্ট করুন</span>
                     </button>
+                  </div>
 
-                    {activeDropdown === "chapter" && (
-                      <>
-                        <div
-                          className="fixed inset-0 z-10"
-                          onClick={() => setActiveDropdown(null)}
-                        />
-                        <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-2xl z-40 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
-                          {qm.formChapters.map((chap) => (
+                  {/* Sub-type 4-Button Grid for MCQ */}
+                  {qm.formCategory === "MCQ" && (
+                    <div className="space-y-2 p-2 bg-gradient-to-r from-purple-50/80 via-slate-50 to-indigo-50/80 rounded-2xl border border-purple-200/60 shadow-sm animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between px-1">
+                        <span className="text-xs font-bold text-purple-950 flex items-center gap-1.5">
+                          <Sparkles className="size-3.5 text-purple-600 animate-pulse" />
+                          <span>নমুনা MCQ টাইপ ফিল্টার ও স্ট্রাকচার:</span>
+                        </span>
+                        <span className="hidden lg:inline-block text-[10px] font-bold text-purple-700 bg-purple-100/90 px-2 py-0.5 rounded-full border border-purple-200/80">
+                          4-Type Grid
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        {[
+                          {
+                            value: "All",
+                            label: "সবকটি টাইপ",
+                            sub: "All Types",
+                            icon: Layers3,
+                          },
+                          {
+                            value: "Simple",
+                            label: "সাধারণ MCQ",
+                            sub: "Simple MCQ",
+                            icon: CheckCircle2,
+                          },
+                          {
+                            value: "MultipleCompletion",
+                            label: "বহুপদী সমাপ্তিসূচক",
+                            sub: "Multiple",
+                            icon: FileText,
+                          },
+                          {
+                            value: "Contextual",
+                            label: "অভিন্ন তথ্যভিত্তিক",
+                            sub: "Contextual",
+                            icon: BookOpen,
+                          },
+                        ].map((tab) => {
+                          const IconComponent = tab.icon;
+                          const isActive = jsonMcqSubType === tab.value;
+                          return (
                             <button
-                              key={chap.chapterNumber}
+                              key={tab.value}
                               type="button"
-                              onClick={() => {
-                                handleChapterSelect(
-                                  chap.chapterNumber.toString(),
-                                );
-                                setActiveDropdown(null);
-                              }}
-                              className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
-                                qm.formChapterNumber ===
-                                chap.chapterNumber.toString()
-                                  ? "bg-purple-50 text-purple-700 font-bold"
-                                  : "text-slate-700 hover:bg-slate-50"
+                              onClick={() => setJsonMcqSubType(tab.value)}
+                              className={`flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-3 py-1.5 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all duration-200 cursor-pointer border ${
+                                isActive
+                                  ? "bg-purple-700 text-white shadow-md shadow-purple-600/20 border-purple-700 ring-2 ring-purple-600/20"
+                                  : "bg-white text-slate-700 hover:bg-purple-50/80 hover:text-purple-900 border-slate-200/80 hover:border-purple-300 shadow-sm"
                               }`}
                             >
-                              {chap.chapterNumber}. {chap.chapterName}
+                              <IconComponent
+                                className={`size-3.5 sm:size-4 shrink-0 ${isActive ? "text-white" : "text-purple-600"}`}
+                              />
+                              <div className="flex flex-col text-left truncate leading-tight">
+                                <span className="truncate">{tab.label}</span>
+                                <span
+                                  className={`text-[8px] sm:text-[9px] md:text-[10px] font-semibold opacity-80 truncate ${
+                                    isActive
+                                      ? "text-purple-100"
+                                      : "text-slate-500"
+                                  }`}
+                                >
+                                  {tab.sub}
+                                </span>
+                              </div>
                             </button>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
-                {/* Difficulty Selection */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                    কাঠিন্যের স্তর (Difficulty)
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {Object.keys(DIFFICULTY_MAP).map((diffKey) => {
-                      const isSelected = qm.formDifficulty === diffKey;
-                      const config = DIFFICULTY_MAP[diffKey];
-                      return (
+                  {/* Textarea */}
+                  <div className="relative group">
+                    <textarea
+                      rows={14}
+                      value={qm.rawPastedJsonText}
+                      onChange={(e) => qm.setRawPastedJsonText(e.target.value)}
+                      placeholder={getJsonPlaceholder(
+                        qm.formCategory,
+                        jsonMcqSubType,
+                      )}
+                      className="w-full p-4 pt-11 font-mono text-xs bg-slate-900 text-slate-100 rounded-2xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500/50 shadow-inner resize-y leading-relaxed"
+                    />
+                    <div className="absolute top-2.5 right-3 flex items-center gap-1.5 z-10">
+                      <button
+                        type="button"
+                        onClick={handlePasteFromClipboard}
+                        className="text-[11px] font-bold text-emerald-300 hover:text-white bg-slate-800/90 hover:bg-emerald-700 px-2.5 py-1 rounded-lg border border-slate-700 hover:border-emerald-500 transition shadow-md flex items-center gap-1.5 cursor-pointer backdrop-blur-sm"
+                        title="ক্লিপবোর্ড থেকে অটো-পেস্ট করুন"
+                      >
+                        <ClipboardPaste className="size-3.5 text-emerald-400" />
+                        <span>অটো-পেস্ট</span>
+                      </button>
+                      {qm.rawPastedJsonText && (
                         <button
-                          key={diffKey}
                           type="button"
-                          onClick={() => qm.setFormDifficulty(diffKey)}
-                          className={`px-3 py-2 rounded-xl border text-sm font-semibold transition cursor-pointer flex justify-center items-center h-10 ${
-                            isSelected
-                              ? config.color + " ring-4 ring-purple-600/10"
-                              : "bg-white border-black/[0.08] text-slate-600 hover:bg-slate-50"
-                          }`}
+                          onClick={() => qm.setRawPastedJsonText("")}
+                          className="text-[11px] font-bold text-rose-300 hover:text-white bg-slate-800/90 hover:bg-rose-700 px-2.5 py-1 rounded-lg border border-slate-700 hover:border-rose-500 transition shadow-md flex items-center gap-1.5 cursor-pointer backdrop-blur-sm"
+                          title="লেখা ক্লিয়ার করুন"
                         >
-                          {config.label}
+                          <Trash2 className="size-3.5 text-rose-400" />
+                          <span>ক্লিয়ার</span>
                         </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Topics tags multi selection */}
-                {qm.formChapterNumber && (
-                  <div className="md:col-span-2 space-y-2 pt-2 border-t border-black/[0.03] animate-in fade-in duration-300">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      নির্দিষ্ট টপিক সিলেক্ট করুন (ঐচ্ছিক)
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {(
-                        qm.formChapters.find(
-                          (c) =>
-                            c.chapterNumber.toString() === qm.formChapterNumber,
-                        )?.topics || []
-                      ).map((topic, index) => {
-                        const isSelected = qm.formTopics.includes(topic);
-                        return (
-                          <button
-                            key={index}
-                            type="button"
-                            onClick={() => handleTopicToggle(topic)}
-                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
-                              isSelected
-                                ? "bg-purple-600/10 border-purple-600/30 text-purple-600 font-bold"
-                                : "bg-white border-black/[0.06] text-slate-600 hover:bg-slate-50"
-                            }`}
-                          >
-                            {isSelected ? `✓ #${topic}` : `#${topic}`}
-                          </button>
-                        );
-                      })}
-                      {(
-                        qm.formChapters.find(
-                          (c) =>
-                            c.chapterNumber.toString() === qm.formChapterNumber,
-                        )?.topics || []
-                      ).length === 0 && (
-                        <p className="text-xs text-slate-400 italic">
-                          এই অধ্যায়ের অধীনে কোনো নির্দিষ্ট টপিক যুক্ত করা হয়নি।
-                        </p>
                       )}
                     </div>
                   </div>
-                )}
-              </div>
 
-              {/* DYNAMIC FORMS BASED ON CATEGORY */}
-              {qm.formCategory === "MCQ" && (
-                <div className="space-y-6">
-                  {/* MCQ Group Toggle */}
-                  <div className="flex items-center gap-4 mb-2 p-4 bg-slate-50/80 rounded-xl border border-slate-200/60">
-                    <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700">
-                      <input
-                        type="radio"
-                        checked={!qm.isGroupedMcq}
-                        onChange={() => qm.setIsGroupedMcq(false)}
-                        className="accent-purple-600 size-4 shrink-0 cursor-pointer"
-                      />
-                      <span>একক MCQ</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700">
-                      <input
-                        type="radio"
-                        checked={qm.isGroupedMcq}
-                        onChange={() => qm.setIsGroupedMcq(true)}
-                        className="accent-[#900EB0] size-4 shrink-0 cursor-pointer"
-                      />
-                      <span>উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ</span>
-                    </label>
+                  {/* Live Validation Box */}
+                  {(() => {
+                    const val = validateCategoryQuestionsJson(
+                      qm.rawPastedJsonText,
+                      qm.formCategory,
+                    );
+                    if (!qm.rawPastedJsonText.trim()) {
+                      return (
+                        <div className="p-2.5 sm:p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-[10px] sm:text-xs text-slate-500 font-semibold flex  gap-2">
+                          <HelpCircle className="size-3.5 sm:size-4 text-slate-400 shrink-0" />
+                          <span>
+                            উপরে আপনার JSON টেক্সট পেস্ট করুন। সিনট্যাক্স ও
+                            ফরম্যাট রিয়েল-টাইমে যাচাই করা হবে।
+                          </span>
+                        </div>
+                      );
+                    }
+                    if (val.isValid && val.validCount > 0) {
+                      return (
+                        <div className="p-3 sm:p-4 bg-emerald-50 border border-emerald-200/80 rounded-2xl text-[11px] sm:text-xs font-semibold text-emerald-800 space-y-1 animate-in fade-in duration-150">
+                          <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-emerald-900">
+                            <CheckCircle2 className="size-4 sm:size-5 text-emerald-600 shrink-0" />
+                            <span>
+                              {val.validCount}টি সম্পূর্ণ সঠিক {qm.formCategory}{" "}
+                              প্রশ্ন পাওয়া গেছে!
+                            </span>
+                          </div>
+                          <p className="text-emerald-700 text-[10px] sm:text-xs">
+                            সংরক্ষণ বাটনে ক্লিক করলে স্টেপ ১ ও স্টেপ ২-এর
+                            সিলেক্টকৃত মেটাডাটা মার্জ করে ডাটাবেসে সেভ হয়ে যাবে।
+                          </p>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="p-3 sm:p-4 bg-rose-50 border border-rose-200/80 rounded-2xl text-[11px] sm:text-xs font-semibold text-rose-800 space-y-2 animate-in fade-in duration-150">
+                        <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-rose-900">
+                          <AlertCircle className="size-4 sm:size-5 text-rose-600 shrink-0" />
+                          <span>JSON ভ্যালিডেশন ত্রুটি পাওয়া গেছে:</span>
+                        </div>
+                        <ul className="list-disc list-inside space-y-1 text-rose-700 font-mono text-[10px] sm:text-[11px] pl-2 max-h-36 overflow-y-auto">
+                          {val.errors.map((err, i) => (
+                            <li key={i}>{err}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Action Buttons for JSON Mode */}
+                  <div className="flex justify-end gap-3 pt-2">
+                    <Button
+                      type="button"
+                      onClick={qm.savePastedJsonQuestions}
+                      disabled={
+                        !qm.rawPastedJsonText.trim() ||
+                        !validateCategoryQuestionsJson(
+                          qm.rawPastedJsonText,
+                          qm.formCategory,
+                        ).isValid
+                      }
+                      className="bg-purple-600 hover:bg-purple-700 text-white  px-6 py-2.5 rounded shadow-md transition disabled:opacity-50 cursor-pointer"
+                    >
+                      <Save className="size-4 mr-2" />
+                      <span>বাল্ক প্রশ্নসমূহ সেভ করুন</span>
+                    </Button>
                   </div>
-
-                  {!qm.isGroupedMcq ? (
-                    <>
-                      {/* MCQ Type Selector */}
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                          MCQ ধরণ
+                </div>
+              ) : (
+                <>
+                  {/* Chapter & Difficulty Selection at the top of Step 2 */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 bg-black/[0.01] p-3 sm:p-4 rounded-xl border border-black/[0.03]">
+                    {/* Chapter Selection */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between items-center h-4">
+                        <label
+                          className={`text-xs font-bold uppercase tracking-wider block ${showStep2Error && !qm.formChapterNumber ? "text-red-500 animate-pulse" : "text-slate-500"}`}
+                        >
+                          অধ্যায় (Chapter)
                         </label>
-                        <div className="flex flex-col lg:flex-row gap-2.5 lg:gap-6">
-                          {[
-                            { value: "Simple", label: "সাধারণ বহুনির্বাচনি" },
-                            {
-                              value: "MultipleCompletion",
-                              label: "বহুপদী সমাপ্তিসূচক",
-                            },
-                            {
-                              value: "Contextual",
-                              label: "অভিন্ন তথ্যভিত্তিক (উদ্দীপকযুক্ত)",
-                            },
-                          ].map((item) => (
-                            <label
-                              key={item.value}
-                              className="flex items-center gap-2.5 cursor-pointer text-xs sm:text-sm font-semibold text-slate-700 hover:text-[#900EB0] transition-colors w-fit"
-                            >
-                              <input
-                                type="radio"
-                                name="mcqType"
-                                value={item.value}
-                                checked={qm.mcqType === item.value}
-                                onChange={(e) => qm.setMcqType(e.target.value)}
-                                className="accent-[#900EB0] size-4 shrink-0 cursor-pointer"
-                              />
-                              <span>{item.label}</span>
-                            </label>
-                          ))}
-                        </div>
+                        {showStep2Error && !qm.formChapterNumber && (
+                          <span className="text-[11px] font-bold text-red-500 animate-pulse font-sans">
+                            অধ্যায় নির্বাচন করা আবশ্যক
+                          </span>
+                        )}
                       </div>
-
-                      {/* Stem input (only for Contextual MCQs) */}
-                      {qm.mcqType === "Contextual" && (
-                        <div className="space-y-2 animate-in fade-in duration-200">
-                          <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                            উদ্দীপক (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
-                          </label>
-                          <Editor
-                            value={qm.mcqStem}
-                            onChange={qm.setMcqStem}
-                            placeholder="যেমন: নিচের অনুচ্ছেদটি পড়ো এবং প্রশ্নের উত্তর দাও..."
-                            height={200}
+                      <div
+                        className={`relative ${activeDropdown === "chapter" ? "z-30" : "z-10"}`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setActiveDropdown(
+                              activeDropdown === "chapter" ? null : "chapter",
+                            )
+                          }
+                          className={`w-full px-4 rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm transition-all border ${
+                            showStep2Error && !qm.formChapterNumber
+                              ? "border-red-500 bg-red-50/10 focus:ring-red-500/10 focus:border-red-500 hover:bg-red-50/20"
+                              : activeDropdown === "chapter"
+                                ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                                : qm.formChapterNumber
+                                  ? "border-purple-600/50 bg-white hover:bg-slate-50"
+                                  : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
+                          }`}
+                        >
+                          <span className="truncate pr-2 text-left">
+                            {qm.formChapters.find(
+                              (c) =>
+                                c.chapterNumber.toString() ===
+                                qm.formChapterNumber,
+                            )
+                              ? `অধ্যায় ${qm.formChapterNumber}: ${qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber).chapterName}`
+                              : "অধ্যায় নির্বাচন করুন"}
+                          </span>
+                          <ChevronRight
+                            className={`size-4 shrink-0 transition-transform duration-200 ${
+                              showStep2Error && !qm.formChapterNumber
+                                ? "text-red-500"
+                                : "text-slate-400"
+                            } ${activeDropdown === "chapter" ? "rotate-90" : ""}`}
                           />
-                        </div>
-                      )}
+                        </button>
 
-                      {/* Question Text */}
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                          প্রশ্ন (Question){" "}
-                          <span className="normal-case tracking-normal">
-                            (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
-                          </span>
-                        </label>
-                        <Editor
-                          value={qm.mcqQuestionText}
-                          onChange={qm.setMcqQuestionText}
-                          placeholder="যেমন: নিচের কোনটি মৌলিক সংখ্যা?"
-                          height={200}
-                        />
-                      </div>
-
-                      {/* Statements inputs (only for Multiple Completion) */}
-                      {qm.mcqType === "MultipleCompletion" && (
-                        <div className="space-y-3 p-5 bg-black/[0.02] border border-black/[0.05] rounded-2xl animate-in fade-in duration-200">
-                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                            বিবৃতিসমূহ (Statements)
-                          </label>
-                          {qm.mcqStatements.map((statement, idx) => (
-                            <div key={idx} className="flex items-center gap-2">
-                              <span className="font-bold text-slate-400 text-sm w-6 text-center">
-                                {idx === 0 ? "i." : idx === 1 ? "ii." : "iii."}
-                              </span>
-                              <Input
-                                placeholder={`বিবৃতি লিখুন`}
-                                value={statement}
-                                onChange={(e) => {
-                                  const updated = [...qm.mcqStatements];
-                                  updated[idx] = e.target.value;
-                                  qm.setMcqStatements(updated);
-                                }}
-                                className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-purple-600/20 focus-visible:border-purple-600"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Options Input */}
-                      <div className="space-y-3">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                          অপশনসমূহ ও সঠিক উত্তর নির্বাচন
-                        </label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {qm.mcqOptions.map((opt, idx) => {
-                            const isCorrect = qm.mcqCorrectAnswer === idx;
-                            return (
-                              <div
-                                key={idx}
-                                className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${
-                                  isCorrect
-                                    ? "bg-emerald-500/5 border-emerald-500/30 backdrop-blur-sm shadow-sm"
-                                    : "bg-white/[0.45] border-black/[0.06] backdrop-blur-sm"
-                                }`}
-                              >
+                        {activeDropdown === "chapter" && (
+                          <>
+                            <div
+                              className="fixed inset-0 z-10"
+                              onClick={() => setActiveDropdown(null)}
+                            />
+                            <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-2xl z-40 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                              {qm.formChapters.map((chap) => (
                                 <button
-                                  type="button"
-                                  onClick={() => qm.setMcqCorrectAnswer(idx)}
-                                  className={`size-6 rounded-full border flex items-center justify-center shrink-0 transition-all font-bold text-xs ${
-                                    isCorrect
-                                      ? "bg-emerald-500 border-emerald-500 text-white"
-                                      : "border-black/[0.15] hover:border-purple-600 text-transparent"
-                                  }`}
-                                >
-                                  ✓
-                                </button>
-                                <span className="font-bold text-slate-500 text-sm">
-                                  {idx === 0
-                                    ? "ক)"
-                                    : idx === 1
-                                      ? "খ)"
-                                      : idx === 2
-                                        ? "গ)"
-                                        : "ঘ)"}
-                                </span>
-                                <input
-                                  type="text"
-                                  required
-                                  placeholder={`অপশন লিখুন`}
-                                  value={opt}
-                                  onChange={(e) => {
-                                    const updated = [...qm.mcqOptions];
-                                    updated[idx] = e.target.value;
-                                    qm.setMcqOptions(updated);
-                                  }}
-                                  className="w-full bg-transparent border-0 focus:outline-none focus:ring-0 text-sm font-semibold text-slate-700"
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Explanation Input */}
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                          উত্তর বিশ্লেষণ / ব্যাখ্যা (ঐচ্ছিক){" "}
-                          <span className="normal-case tracking-normal">
-                            (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
-                          </span>
-                        </label>
-                        <Editor
-                          value={qm.mcqExplanation}
-                          onChange={qm.setMcqExplanation}
-                          placeholder="সঠিক উত্তর কিভাবে আসলো তার সংক্ষিপ্ত ব্যাখ্যা..."
-                          height={200}
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    <div className="space-y-8 animate-in fade-in duration-300">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                          উদ্দীপক / অনুচ্ছেদ (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে
-                          হবে)
-                        </label>
-                        <Editor
-                          value={qm.mcqStem}
-                          onChange={qm.setMcqStem}
-                          placeholder="যেমন: নিচের অনুচ্ছেদটি পড়ো এবং প্রশ্নের উত্তর দাও..."
-                          height={200}
-                        />
-                      </div>
-
-                      <div className="space-y-6">
-                        {qm.mcqGroupQuestions.map((q, qIndex) => (
-                          <div
-                            key={qIndex}
-                            className="p-5 bg-white border border-slate-200/80 rounded-2xl shadow-sm space-y-5"
-                          >
-                            <div className="flex justify-between items-center">
-                              <h4 className="font-bold text-slate-700">
-                                প্রশ্ন {qIndex + 1}
-                              </h4>
-                              {qm.mcqGroupQuestions.length > 2 && (
-                                <button
+                                  key={chap.chapterNumber}
                                   type="button"
                                   onClick={() => {
-                                    const next = [...qm.mcqGroupQuestions];
-                                    next.splice(qIndex, 1);
-                                    qm.setMcqGroupQuestions(next);
+                                    handleChapterSelect(
+                                      chap.chapterNumber.toString(),
+                                    );
+                                    setActiveDropdown(null);
                                   }}
-                                  className="text-red-500 hover:text-red-600 text-sm font-semibold transition-colors"
+                                  className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
+                                    qm.formChapterNumber ===
+                                    chap.chapterNumber.toString()
+                                      ? "bg-purple-50 text-purple-700 font-bold"
+                                      : "text-slate-700 hover:bg-slate-50"
+                                  }`}
                                 >
-                                  মুছে ফেলুন
+                                  {chap.chapterNumber}. {chap.chapterName}
                                 </button>
-                              )}
+                              ))}
                             </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
 
-                            {/* Type Selector */}
-                            <div className="flex gap-4">
+                    {/* Difficulty Selection */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                        কাঠিন্যের স্তর (Difficulty)
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {Object.keys(DIFFICULTY_MAP).map((diffKey) => {
+                          const isSelected = qm.formDifficulty === diffKey;
+                          const config = DIFFICULTY_MAP[diffKey];
+                          return (
+                            <button
+                              key={diffKey}
+                              type="button"
+                              onClick={() => qm.setFormDifficulty(diffKey)}
+                              className={`px-3 py-2 rounded-xl border text-sm font-semibold transition cursor-pointer flex justify-center items-center h-10 ${
+                                isSelected
+                                  ? config.color + " ring-4 ring-purple-600/10"
+                                  : "bg-white border-black/[0.08] text-slate-600 hover:bg-slate-50"
+                              }`}
+                            >
+                              {config.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Topics tags multi selection */}
+                    {qm.formChapterNumber && (
+                      <div className="md:col-span-2 space-y-2 pt-2 border-t border-black/[0.03] animate-in fade-in duration-300">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                          নির্দিষ্ট টপিক সিলেক্ট করুন (ঐচ্ছিক)
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          {(
+                            qm.formChapters.find(
+                              (c) =>
+                                c.chapterNumber.toString() ===
+                                qm.formChapterNumber,
+                            )?.topics || []
+                          ).map((topic, index) => {
+                            const isSelected = qm.formTopics.includes(topic);
+                            return (
+                              <button
+                                key={index}
+                                type="button"
+                                onClick={() => handleTopicToggle(topic)}
+                                className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
+                                  isSelected
+                                    ? "bg-purple-600/10 border-purple-600/30 text-purple-600 font-bold"
+                                    : "bg-white border-black/[0.06] text-slate-600 hover:bg-slate-50"
+                                }`}
+                              >
+                                {isSelected ? `✓ #${topic}` : `#${topic}`}
+                              </button>
+                            );
+                          })}
+                          {(
+                            qm.formChapters.find(
+                              (c) =>
+                                c.chapterNumber.toString() ===
+                                qm.formChapterNumber,
+                            )?.topics || []
+                          ).length === 0 && (
+                            <p className="text-xs text-slate-400 italic">
+                              এই অধ্যায়ের অধীনে কোনো নির্দিষ্ট টপিক যুক্ত করা
+                              হয়নি।
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* DYNAMIC FORMS BASED ON CATEGORY */}
+                  {qm.formCategory === "MCQ" && (
+                    <div className="space-y-6">
+                      {/* MCQ Group Toggle */}
+                      <div className="flex items-center gap-4 mb-2 p-4 bg-slate-50/80 rounded-xl border border-slate-200/60">
+                        <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700">
+                          <input
+                            type="radio"
+                            checked={!qm.isGroupedMcq}
+                            onChange={() => qm.setIsGroupedMcq(false)}
+                            className="accent-purple-600 size-4 shrink-0 cursor-pointer"
+                          />
+                          <span>একক MCQ</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700">
+                          <input
+                            type="radio"
+                            checked={qm.isGroupedMcq}
+                            onChange={() => qm.setIsGroupedMcq(true)}
+                            className="accent-[#900EB0] size-4 shrink-0 cursor-pointer"
+                          />
+                          <span>উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ</span>
+                        </label>
+                      </div>
+
+                      {!qm.isGroupedMcq ? (
+                        <>
+                          {/* MCQ Type Selector */}
+                          <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                              MCQ ধরণ
+                            </label>
+                            <div className="flex flex-col lg:flex-row gap-2.5 lg:gap-6">
                               {[
                                 {
                                   value: "Simple",
@@ -1190,600 +1300,806 @@ export default function AddQuestion() {
                                   value: "MultipleCompletion",
                                   label: "বহুপদী সমাপ্তিসূচক",
                                 },
+                                {
+                                  value: "Contextual",
+                                  label: "অভিন্ন তথ্যভিত্তিক (উদ্দীপকযুক্ত)",
+                                },
                               ].map((item) => (
                                 <label
                                   key={item.value}
-                                  className="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer"
+                                  className="flex items-center gap-2.5 cursor-pointer text-xs sm:text-sm font-semibold text-slate-700 hover:text-[#900EB0] transition-colors w-fit"
                                 >
                                   <input
                                     type="radio"
-                                    name={`mcqType-${qIndex}`}
+                                    name="mcqType"
                                     value={item.value}
-                                    checked={q.mcqType === item.value}
-                                    onChange={(e) => {
-                                      const next = [...qm.mcqGroupQuestions];
-                                      next[qIndex] = {
-                                        ...next[qIndex],
-                                        mcqType: e.target.value,
-                                      };
-                                      qm.setMcqGroupQuestions(next);
-                                    }}
-                                    className="accent-[#4F46E5] size-4 shrink-0"
+                                    checked={qm.mcqType === item.value}
+                                    onChange={(e) =>
+                                      qm.setMcqType(e.target.value)
+                                    }
+                                    className="accent-[#900EB0] size-4 shrink-0 cursor-pointer"
                                   />
                                   <span>{item.label}</span>
                                 </label>
                               ))}
                             </div>
+                          </div>
 
-                            {/* Question Text */}
-                            <div className="space-y-1.5">
-                              <label className="text-[10px] font-bold text-slate-500 uppercase block">
-                                প্রশ্ন
+                          {/* Stem input (only for Contextual MCQs) */}
+                          {qm.mcqType === "Contextual" && (
+                            <div className="space-y-2 animate-in fade-in duration-200">
+                              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                                উদ্দীপক (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
                               </label>
                               <Editor
-                                value={q.mcqQuestionText}
-                                onChange={(val) => {
-                                  const next = [...qm.mcqGroupQuestions];
-                                  next[qIndex] = {
-                                    ...next[qIndex],
-                                    mcqQuestionText: val,
-                                  };
-                                  qm.setMcqGroupQuestions(next);
-                                }}
-                                height={150}
+                                value={qm.mcqStem}
+                                onChange={qm.setMcqStem}
+                                placeholder="যেমন: নিচের অনুচ্ছেদটি পড়ো এবং প্রশ্নের উত্তর দাও..."
+                                height={200}
                               />
                             </div>
+                          )}
 
-                            {/* Statements */}
-                            {q.mcqType === "MultipleCompletion" && (
-                              <div className="space-y-3 p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                                <label className="text-xs font-bold text-slate-500 uppercase block">
-                                  বিবৃতিসমূহ (Statements)
-                                </label>
-                                {q.mcqStatements.map((stmt, sIdx) => (
+                          {/* Question Text */}
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                              প্রশ্ন (Question){" "}
+                              <span className="normal-case tracking-normal">
+                                (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                              </span>
+                            </label>
+                            <Editor
+                              value={qm.mcqQuestionText}
+                              onChange={qm.setMcqQuestionText}
+                              placeholder="যেমন: নিচের কোনটি মৌলিক সংখ্যা?"
+                              height={200}
+                            />
+                          </div>
+
+                          {/* Statements inputs (only for Multiple Completion) */}
+                          {qm.mcqType === "MultipleCompletion" && (
+                            <div className="space-y-3 p-5 bg-black/[0.02] border border-black/[0.05] rounded-2xl animate-in fade-in duration-200">
+                              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                                বিবৃতিসমূহ (Statements)
+                              </label>
+                              {qm.mcqStatements.map((statement, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center gap-2"
+                                >
+                                  <span className="font-bold text-slate-400 text-sm w-6 text-center">
+                                    {idx === 0
+                                      ? "i."
+                                      : idx === 1
+                                        ? "ii."
+                                        : "iii."}
+                                  </span>
+                                  <Input
+                                    placeholder={`বিবৃতি লিখুন`}
+                                    value={statement}
+                                    onChange={(e) => {
+                                      const updated = [...qm.mcqStatements];
+                                      updated[idx] = e.target.value;
+                                      qm.setMcqStatements(updated);
+                                    }}
+                                    className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-purple-600/20 focus-visible:border-purple-600"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Options Input */}
+                          <div className="space-y-3">
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                              অপশনসমূহ ও সঠিক উত্তর নির্বাচন
+                            </label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {qm.mcqOptions.map((opt, idx) => {
+                                const isCorrect = qm.mcqCorrectAnswer === idx;
+                                return (
                                   <div
-                                    key={sIdx}
-                                    className="flex items-center gap-2"
+                                    key={idx}
+                                    className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${
+                                      isCorrect
+                                        ? "bg-emerald-500/5 border-emerald-500/30 backdrop-blur-sm shadow-sm"
+                                        : "bg-white/[0.45] border-black/[0.06] backdrop-blur-sm"
+                                    }`}
                                   >
-                                    <span className="font-bold text-slate-400 text-sm w-6 text-center">
-                                      {sIdx === 0
-                                        ? "i."
-                                        : sIdx === 1
-                                          ? "ii."
-                                          : "iii."}
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        qm.setMcqCorrectAnswer(idx)
+                                      }
+                                      className={`size-6 rounded-full border flex items-center justify-center shrink-0 transition-all font-bold text-xs ${
+                                        isCorrect
+                                          ? "bg-emerald-500 border-emerald-500 text-white"
+                                          : "border-black/[0.15] hover:border-purple-600 text-transparent"
+                                      }`}
+                                    >
+                                      ✓
+                                    </button>
+                                    <span className="font-bold text-slate-500 text-sm">
+                                      {idx === 0
+                                        ? "ক)"
+                                        : idx === 1
+                                          ? "খ)"
+                                          : idx === 2
+                                            ? "গ)"
+                                            : "ঘ)"}
                                     </span>
-                                    <Input
-                                      value={stmt}
+                                    <input
+                                      type="text"
+                                      required
+                                      placeholder={`অপশন লিখুন`}
+                                      value={opt}
                                       onChange={(e) => {
-                                        const next = [...qm.mcqGroupQuestions];
-                                        const stmts = [
-                                          ...next[qIndex].mcqStatements,
-                                        ];
-                                        stmts[sIdx] = e.target.value;
-                                        next[qIndex] = {
-                                          ...next[qIndex],
-                                          mcqStatements: stmts,
-                                        };
-                                        qm.setMcqGroupQuestions(next);
+                                        const updated = [...qm.mcqOptions];
+                                        updated[idx] = e.target.value;
+                                        qm.setMcqOptions(updated);
                                       }}
-                                      className="bg-white"
+                                      className="w-full bg-transparent border-0 focus:outline-none focus:ring-0 text-sm font-semibold text-slate-700"
                                     />
                                   </div>
-                                ))}
-                              </div>
-                            )}
+                                );
+                              })}
+                            </div>
+                          </div>
 
-                            {/* Options Input */}
-                            <div className="space-y-3">
-                              <label className="text-xs font-bold text-slate-500 uppercase block">
-                                অপশনসমূহ ও সঠিক উত্তর নির্বাচন
-                              </label>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {q.mcqOptions.map((opt, oIdx) => {
-                                  const isCorrect = q.mcqCorrectAnswer === oIdx;
-                                  return (
-                                    <div
-                                      key={oIdx}
-                                      className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${isCorrect ? "bg-emerald-50 border-emerald-500/40 shadow-sm" : "bg-slate-50/50 border-slate-200"}`}
+                          {/* Explanation Input */}
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                              উত্তর বিশ্লেষণ / ব্যাখ্যা (ঐচ্ছিক){" "}
+                              <span className="normal-case tracking-normal">
+                                (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                              </span>
+                            </label>
+                            <Editor
+                              value={qm.mcqExplanation}
+                              onChange={qm.setMcqExplanation}
+                              placeholder="সঠিক উত্তর কিভাবে আসলো তার সংক্ষিপ্ত ব্যাখ্যা..."
+                              height={200}
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <div className="space-y-8 animate-in fade-in duration-300">
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                              উদ্দীপক / অনুচ্ছেদ (নরমাল ফন্ট সাইজ ১৬ পিক্সেল
+                              রাখতে হবে)
+                            </label>
+                            <Editor
+                              value={qm.mcqStem}
+                              onChange={qm.setMcqStem}
+                              placeholder="যেমন: নিচের অনুচ্ছেদটি পড়ো এবং প্রশ্নের উত্তর দাও..."
+                              height={200}
+                            />
+                          </div>
+
+                          <div className="space-y-6">
+                            {qm.mcqGroupQuestions.map((q, qIndex) => (
+                              <div
+                                key={qIndex}
+                                className="p-5 bg-white border border-slate-200/80 rounded-2xl shadow-sm space-y-5"
+                              >
+                                <div className="flex justify-between items-center">
+                                  <h4 className="font-bold text-slate-700">
+                                    প্রশ্ন {qIndex + 1}
+                                  </h4>
+                                  {qm.mcqGroupQuestions.length > 2 && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const next = [...qm.mcqGroupQuestions];
+                                        next.splice(qIndex, 1);
+                                        qm.setMcqGroupQuestions(next);
+                                      }}
+                                      className="text-red-500 hover:text-red-600 text-sm font-semibold transition-colors"
                                     >
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          const next = [
-                                            ...qm.mcqGroupQuestions,
-                                          ];
-                                          next[qIndex] = {
-                                            ...next[qIndex],
-                                            mcqCorrectAnswer: oIdx,
-                                          };
-                                          qm.setMcqGroupQuestions(next);
-                                        }}
-                                        className={`size-6 rounded-full border flex items-center justify-center shrink-0 font-bold text-xs transition-colors ${isCorrect ? "bg-emerald-500 text-white border-emerald-500" : "border-slate-300 text-transparent hover:border-purple-600"}`}
-                                      >
-                                        ✓
-                                      </button>
-                                      <span className="font-bold text-slate-500 text-sm">
-                                        {oIdx === 0
-                                          ? "ক)"
-                                          : oIdx === 1
-                                            ? "খ)"
-                                            : oIdx === 2
-                                              ? "গ)"
-                                              : "ঘ)"}
-                                      </span>
+                                      মুছে ফেলুন
+                                    </button>
+                                  )}
+                                </div>
+
+                                {/* Type Selector */}
+                                <div className="flex gap-4">
+                                  {[
+                                    {
+                                      value: "Simple",
+                                      label: "সাধারণ বহুনির্বাচনি",
+                                    },
+                                    {
+                                      value: "MultipleCompletion",
+                                      label: "বহুপদী সমাপ্তিসূচক",
+                                    },
+                                  ].map((item) => (
+                                    <label
+                                      key={item.value}
+                                      className="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer"
+                                    >
                                       <input
-                                        type="text"
-                                        required
-                                        value={opt}
+                                        type="radio"
+                                        name={`mcqType-${qIndex}`}
+                                        value={item.value}
+                                        checked={q.mcqType === item.value}
                                         onChange={(e) => {
                                           const next = [
                                             ...qm.mcqGroupQuestions,
                                           ];
-                                          const opts = [
-                                            ...next[qIndex].mcqOptions,
-                                          ];
-                                          opts[oIdx] = e.target.value;
                                           next[qIndex] = {
                                             ...next[qIndex],
-                                            mcqOptions: opts,
+                                            mcqType: e.target.value,
                                           };
                                           qm.setMcqGroupQuestions(next);
                                         }}
-                                        className="w-full bg-transparent border-0 focus:outline-none text-sm font-semibold text-slate-700"
-                                        placeholder="অপশন লিখুন"
+                                        className="accent-[#4F46E5] size-4 shrink-0"
                                       />
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
+                                      <span>{item.label}</span>
+                                    </label>
+                                  ))}
+                                </div>
 
-                            {/* Explanation Input */}
+                                {/* Question Text */}
+                                <div className="space-y-1.5">
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase block">
+                                    প্রশ্ন
+                                  </label>
+                                  <Editor
+                                    value={q.mcqQuestionText}
+                                    onChange={(val) => {
+                                      const next = [...qm.mcqGroupQuestions];
+                                      next[qIndex] = {
+                                        ...next[qIndex],
+                                        mcqQuestionText: val,
+                                      };
+                                      qm.setMcqGroupQuestions(next);
+                                    }}
+                                    height={150}
+                                  />
+                                </div>
+
+                                {/* Statements */}
+                                {q.mcqType === "MultipleCompletion" && (
+                                  <div className="space-y-3 p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                                    <label className="text-xs font-bold text-slate-500 uppercase block">
+                                      বিবৃতিসমূহ (Statements)
+                                    </label>
+                                    {q.mcqStatements.map((stmt, sIdx) => (
+                                      <div
+                                        key={sIdx}
+                                        className="flex items-center gap-2"
+                                      >
+                                        <span className="font-bold text-slate-400 text-sm w-6 text-center">
+                                          {sIdx === 0
+                                            ? "i."
+                                            : sIdx === 1
+                                              ? "ii."
+                                              : "iii."}
+                                        </span>
+                                        <Input
+                                          value={stmt}
+                                          onChange={(e) => {
+                                            const next = [
+                                              ...qm.mcqGroupQuestions,
+                                            ];
+                                            const stmts = [
+                                              ...next[qIndex].mcqStatements,
+                                            ];
+                                            stmts[sIdx] = e.target.value;
+                                            next[qIndex] = {
+                                              ...next[qIndex],
+                                              mcqStatements: stmts,
+                                            };
+                                            qm.setMcqGroupQuestions(next);
+                                          }}
+                                          className="bg-white"
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Options Input */}
+                                <div className="space-y-3">
+                                  <label className="text-xs font-bold text-slate-500 uppercase block">
+                                    অপশনসমূহ ও সঠিক উত্তর নির্বাচন
+                                  </label>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {q.mcqOptions.map((opt, oIdx) => {
+                                      const isCorrect =
+                                        q.mcqCorrectAnswer === oIdx;
+                                      return (
+                                        <div
+                                          key={oIdx}
+                                          className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${isCorrect ? "bg-emerald-50 border-emerald-500/40 shadow-sm" : "bg-slate-50/50 border-slate-200"}`}
+                                        >
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const next = [
+                                                ...qm.mcqGroupQuestions,
+                                              ];
+                                              next[qIndex] = {
+                                                ...next[qIndex],
+                                                mcqCorrectAnswer: oIdx,
+                                              };
+                                              qm.setMcqGroupQuestions(next);
+                                            }}
+                                            className={`size-6 rounded-full border flex items-center justify-center shrink-0 font-bold text-xs transition-colors ${isCorrect ? "bg-emerald-500 text-white border-emerald-500" : "border-slate-300 text-transparent hover:border-purple-600"}`}
+                                          >
+                                            ✓
+                                          </button>
+                                          <span className="font-bold text-slate-500 text-sm">
+                                            {oIdx === 0
+                                              ? "ক)"
+                                              : oIdx === 1
+                                                ? "খ)"
+                                                : oIdx === 2
+                                                  ? "গ)"
+                                                  : "ঘ)"}
+                                          </span>
+                                          <input
+                                            type="text"
+                                            required
+                                            value={opt}
+                                            onChange={(e) => {
+                                              const next = [
+                                                ...qm.mcqGroupQuestions,
+                                              ];
+                                              const opts = [
+                                                ...next[qIndex].mcqOptions,
+                                              ];
+                                              opts[oIdx] = e.target.value;
+                                              next[qIndex] = {
+                                                ...next[qIndex],
+                                                mcqOptions: opts,
+                                              };
+                                              qm.setMcqGroupQuestions(next);
+                                            }}
+                                            className="w-full bg-transparent border-0 focus:outline-none text-sm font-semibold text-slate-700"
+                                            placeholder="অপশন লিখুন"
+                                          />
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+
+                                {/* Explanation Input */}
+                                <div className="space-y-1.5">
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase block">
+                                    ব্যাখ্যা (ঐচ্ছিক)
+                                  </label>
+                                  <Editor
+                                    value={q.mcqExplanation}
+                                    onChange={(val) => {
+                                      const next = [...qm.mcqGroupQuestions];
+                                      next[qIndex] = {
+                                        ...next[qIndex],
+                                        mcqExplanation: val,
+                                      };
+                                      qm.setMcqGroupQuestions(next);
+                                    }}
+                                    height={150}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              qm.setMcqGroupQuestions([
+                                ...qm.mcqGroupQuestions,
+                                {
+                                  mcqType: "Simple",
+                                  mcqQuestionText: "",
+                                  mcqStatements: ["", "", ""],
+                                  mcqOptions: ["", "", "", ""],
+                                  mcqCorrectAnswer: 0,
+                                  mcqExplanation: "",
+                                },
+                              ]);
+                            }}
+                            className="w-full py-3.5 border-2 border-dashed border-purple-600/40 text-purple-600 hover:bg-purple-600/5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2"
+                          >
+                            <Plus className="size-4" />
+                            <span>নতুন উপ-প্রশ্ন যোগ করুন</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {qm.formCategory === "Creative" && (
+                    <div className="space-y-6">
+                      {/* Stem input */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                          উদ্দীপক (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                        </label>
+                        <Editor
+                          value={qm.creativeStem}
+                          onChange={qm.setCreativeStem}
+                          placeholder="অনুচ্ছেদ/তথ্যচিত্র এখানে লিখুন যা পড়ে সৃজনশীল প্রশ্নগুলোর উত্তর দিতে হবে..."
+                          height={250}
+                        />
+                      </div>
+
+                      {/* Creative sub questions (ক, খ, গ, ঘ) */}
+                      <div className="space-y-4 border-t border-black/[0.05] pt-5">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                          প্রশ্নসমূহ
+                        </label>
+
+                        {[
+                          {
+                            id: "A",
+                            label: "ক) জ্ঞানমূলক (১ নম্বর)",
+                            value: qm.creativeCognitiveA,
+                            setter: qm.setCreativeCognitiveA,
+                            placeholder: "যেমন: শব্দ কাকে বলে?",
+                            answerValue: qm.creativeCognitiveA_Answer,
+                            answerSetter: qm.setCreativeCognitiveA_Answer,
+                            answerPlaceholder: "ক নং প্রশ্নের উত্তর...",
+                          },
+                          {
+                            id: "B",
+                            label: "খ) অনুধাবনমূলক (২ নম্বর)",
+                            value: qm.creativeCognitiveB,
+                            setter: qm.setCreativeCognitiveB,
+                            placeholder: "যেমন: উদাহরণসহ ব্যাখ্যা করো...",
+                            answerValue: qm.creativeCognitiveB_Answer,
+                            answerSetter: qm.setCreativeCognitiveB_Answer,
+                            answerPlaceholder: "খ নং প্রশ্নের উত্তর...",
+                          },
+                          {
+                            id: "C",
+                            label: "গ) প্রয়োগমূলক (৩ নম্বর)",
+                            value: qm.creativeCognitiveC,
+                            setter: qm.setCreativeCognitiveC,
+                            placeholder:
+                              "যেমন: উদ্দীপকের ঘটনার আলোকে প্রমাণ করো...",
+                            answerValue: qm.creativeCognitiveC_Answer,
+                            answerSetter: qm.setCreativeCognitiveC_Answer,
+                            answerPlaceholder: "গ নং প্রশ্নের উত্তর...",
+                          },
+                          {
+                            id: "D",
+                            label: "ঘ) উচ্চতর চিন্তাদক্ষতা (৪ নম্বর)",
+                            value: qm.creativeCognitiveD,
+                            setter: qm.setCreativeCognitiveD,
+                            placeholder:
+                              "যেমন: উদ্দীপকের ঘটনাটির যৌক্তিক মূল্যায়ন করো...",
+                            answerValue: qm.creativeCognitiveD_Answer,
+                            answerSetter: qm.setCreativeCognitiveD_Answer,
+                            answerPlaceholder: "ঘ নং প্রশ্নের উত্তর...",
+                          },
+                        ].map((item) => (
+                          <div
+                            key={item.id}
+                            className="space-y-4 p-4 border border-black/[0.04] bg-white/[0.30] rounded-2xl"
+                          >
                             <div className="space-y-1.5">
-                              <label className="text-[10px] font-bold text-slate-500 uppercase block">
-                                ব্যাখ্যা (ঐচ্ছিক)
+                              <label className="text-[12px] font-bold text-slate-600 block">
+                                {item.label}
+                              </label>
+                              <Input
+                                required
+                                placeholder={item.placeholder}
+                                value={item.value}
+                                onChange={(e) => item.setter(e.target.value)}
+                                className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-purple-600/20 focus-visible:border-purple-600 h-11"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-bold text-slate-600 block">
+                                {item.id === "A"
+                                  ? "ক"
+                                  : item.id === "B"
+                                    ? "খ"
+                                    : item.id === "C"
+                                      ? "গ"
+                                      : "ঘ"}{" "}
+                                নং প্রশ্নের উত্তর{" "}
+                                <span className="normal-case tracking-normal">
+                                  (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                                </span>
                               </label>
                               <Editor
-                                value={q.mcqExplanation}
-                                onChange={(val) => {
-                                  const next = [...qm.mcqGroupQuestions];
-                                  next[qIndex] = {
-                                    ...next[qIndex],
-                                    mcqExplanation: val,
-                                  };
-                                  qm.setMcqGroupQuestions(next);
-                                }}
+                                value={item.answerValue}
+                                onChange={item.answerSetter}
+                                placeholder={item.answerPlaceholder}
                                 height={150}
                               />
                             </div>
                           </div>
                         ))}
                       </div>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          qm.setMcqGroupQuestions([
-                            ...qm.mcqGroupQuestions,
-                            {
-                              mcqType: "Simple",
-                              mcqQuestionText: "",
-                              mcqStatements: ["", "", ""],
-                              mcqOptions: ["", "", "", ""],
-                              mcqCorrectAnswer: 0,
-                              mcqExplanation: "",
-                            },
-                          ]);
-                        }}
-                        className="w-full py-3.5 border-2 border-dashed border-purple-600/40 text-purple-600 hover:bg-purple-600/5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2"
-                      >
-                        <Plus className="size-4" />
-                        <span>নতুন উপ-প্রশ্ন যোগ করুন</span>
-                      </button>
                     </div>
                   )}
-                </div>
-              )}
 
-              {qm.formCategory === "Creative" && (
-                <div className="space-y-6">
-                  {/* Stem input */}
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                      উদ্দীপক (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
-                    </label>
-                    <Editor
-                      value={qm.creativeStem}
-                      onChange={qm.setCreativeStem}
-                      placeholder="অনুচ্ছেদ/তথ্যচিত্র এখানে লিখুন যা পড়ে সৃজনশীল প্রশ্নগুলোর উত্তর দিতে হবে..."
-                      height={250}
-                    />
-                  </div>
+                  {!["MCQ", "Creative"].includes(qm.formCategory) && (
+                    <div className="space-y-5">
+                      {/* Main Question Text */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                          প্রশ্ন (Question){" "}
+                          <span className="normal-case tracking-normal">
+                            (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                          </span>
+                        </label>
+                        <Editor
+                          value={qm.generalQuestionText}
+                          onChange={qm.setGeneralQuestionText}
+                          placeholder="প্রশ্ন লিখুন..."
+                          height={200}
+                        />
+                      </div>
 
-                  {/* Creative sub questions (ক, খ, গ, ঘ) */}
-                  <div className="space-y-4 border-t border-black/[0.05] pt-5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">
-                      প্রশ্নসমূহ
-                    </label>
+                      {/* Suggested Answer */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                          উত্তর (Answer) - ঐচ্ছিক{" "}
+                          <span className="normal-case tracking-normal">
+                            (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
+                          </span>
+                        </label>
+                        <Editor
+                          value={qm.generalSuggestedAnswer}
+                          onChange={qm.setGeneralSuggestedAnswer}
+                          placeholder="উত্তর লিখুন..."
+                          height={200}
+                        />
+                      </div>
 
-                    {[
-                      {
-                        id: "A",
-                        label: "ক) জ্ঞানমূলক (১ নম্বর)",
-                        value: qm.creativeCognitiveA,
-                        setter: qm.setCreativeCognitiveA,
-                        placeholder: "যেমন: শব্দ কাকে বলে?",
-                        answerValue: qm.creativeCognitiveA_Answer,
-                        answerSetter: qm.setCreativeCognitiveA_Answer,
-                        answerPlaceholder: "ক নং প্রশ্নের উত্তর...",
-                      },
-                      {
-                        id: "B",
-                        label: "খ) অনুধাবনমূলক (২ নম্বর)",
-                        value: qm.creativeCognitiveB,
-                        setter: qm.setCreativeCognitiveB,
-                        placeholder: "যেমন: উদাহরণসহ ব্যাখ্যা করো...",
-                        answerValue: qm.creativeCognitiveB_Answer,
-                        answerSetter: qm.setCreativeCognitiveB_Answer,
-                        answerPlaceholder: "খ নং প্রশ্নের উত্তর...",
-                      },
-                      {
-                        id: "C",
-                        label: "গ) প্রয়োগমূলক (৩ নম্বর)",
-                        value: qm.creativeCognitiveC,
-                        setter: qm.setCreativeCognitiveC,
-                        placeholder:
-                          "যেমন: উদ্দীপকের ঘটনার আলোকে প্রমাণ করো...",
-                        answerValue: qm.creativeCognitiveC_Answer,
-                        answerSetter: qm.setCreativeCognitiveC_Answer,
-                        answerPlaceholder: "গ নং প্রশ্নের উত্তর...",
-                      },
-                      {
-                        id: "D",
-                        label: "ঘ) উচ্চতর চিন্তাদক্ষতা (৪ নম্বর)",
-                        value: qm.creativeCognitiveD,
-                        setter: qm.setCreativeCognitiveD,
-                        placeholder:
-                          "যেমন: উদ্দীপকের ঘটনাটির যৌক্তিক মূল্যায়ন করো...",
-                        answerValue: qm.creativeCognitiveD_Answer,
-                        answerSetter: qm.setCreativeCognitiveD_Answer,
-                        answerPlaceholder: "ঘ নং প্রশ্নের উত্তর...",
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.id}
-                        className="space-y-4 p-4 border border-black/[0.04] bg-white/[0.30] rounded-2xl"
-                      >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {/* Marks weight */}
                         <div className="space-y-1.5">
-                          <label className="text-[12px] font-bold text-slate-600 block">
-                            {item.label}
+                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                            প্রশ্ন নম্বর (Marks)
                           </label>
                           <Input
+                            type="number"
                             required
-                            placeholder={item.placeholder}
-                            value={item.value}
-                            onChange={(e) => item.setter(e.target.value)}
+                            value={qm.generalMarks}
+                            onChange={(e) =>
+                              qm.setGeneralMarks(Number(e.target.value))
+                            }
                             className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-purple-600/20 focus-visible:border-purple-600 h-11"
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-slate-600 block">
-                            {item.id === "A"
-                              ? "ক"
-                              : item.id === "B"
-                                ? "খ"
-                                : item.id === "C"
-                                  ? "গ"
-                                  : "ঘ"}{" "}
-                            নং প্রশ্নের উত্তর{" "}
-                            <span className="normal-case tracking-normal">
-                              (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
-                            </span>
-                          </label>
-                          <Editor
-                            value={item.answerValue}
-                            onChange={item.answerSetter}
-                            placeholder={item.answerPlaceholder}
-                            height={150}
+                            min={1}
                           />
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {!["MCQ", "Creative"].includes(qm.formCategory) && (
-                <div className="space-y-5">
-                  {/* Main Question Text */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                      প্রশ্ন (Question){" "}
-                      <span className="normal-case tracking-normal">
-                        (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
-                      </span>
-                    </label>
-                    <Editor
-                      value={qm.generalQuestionText}
-                      onChange={qm.setGeneralQuestionText}
-                      placeholder="প্রশ্ন লিখুন..."
-                      height={200}
-                    />
-                  </div>
-
-                  {/* Suggested Answer */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                      উত্তর (Answer) - ঐচ্ছিক{" "}
-                      <span className="normal-case tracking-normal">
-                        (নরমাল ফন্ট সাইজ ১৬ পিক্সেল রাখতে হবে)
-                      </span>
-                    </label>
-                    <Editor
-                      value={qm.generalSuggestedAnswer}
-                      onChange={qm.setGeneralSuggestedAnswer}
-                      placeholder="উত্তর লিখুন..."
-                      height={200}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Marks weight */}
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                        প্রশ্ন নম্বর (Marks)
-                      </label>
-                      <Input
-                        type="number"
-                        required
-                        value={qm.generalMarks}
-                        onChange={(e) =>
-                          qm.setGeneralMarks(Number(e.target.value))
-                        }
-                        className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-purple-600/20 focus-visible:border-purple-600 h-11"
-                        min={1}
-                      />
                     </div>
-                  </div>
-                </div>
-              )}
+                  )}
 
-              {/* Question Metadata Link Section (School, Board, Year, Level, Special Search) */}
-              <div className="p-5 bg-black/[0.01] border border-black/[0.04] rounded-2xl space-y-4 pt-4">
-                <h4 className="font-bold text-slate-800 text-sm flex items-center gap-1.5 border-b border-black/[0.04] pb-2">
-                  <Database className="size-4 text-purple-600" />
-                  <span>প্রশ্ন মেটাডাটা লিঙ্ক করুন (ঐচ্ছিক)</span>
-                </h4>
+                  {/* Question Metadata Link Section (School, Board, Year, Level, Special Search) */}
+                  <div className="p-5 bg-black/[0.01] border border-black/[0.04] rounded-2xl space-y-4 pt-4">
+                    <h4 className="font-bold text-slate-800 text-sm flex items-center gap-1.5 border-b border-black/[0.04] pb-2">
+                      <Database className="size-4 text-purple-600" />
+                      <span>প্রশ্ন মেটাডাটা লিঙ্ক করুন (ঐচ্ছিক)</span>
+                    </h4>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {/* Dynamic Exam History Builder (Board & Year Pairs) */}
-                  <div className="col-span-1 sm:col-span-2 lg:col-span-4 bg-white/70 p-4 border border-black/[0.06] rounded-xl space-y-3">
-                    <div className="flex justify-between items-center">
-                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                        পরীক্ষার বোর্ড ও সাল
-                      </label>
-                      <button
-                        type="button"
-                        onClick={qm.addExamHistoryRow}
-                        className="text-xs font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-lg border border-purple-200/60 transition cursor-pointer"
-                      >
-                        <Plus className="size-3.5" />
-                        <span>যোগ করুন</span>
-                      </button>
-                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {/* Dynamic Exam History Builder (Board & Year Pairs) */}
+                      <div className="col-span-1 sm:col-span-2 lg:col-span-4 bg-white/70 p-4 border border-black/[0.06] rounded-xl space-y-3">
+                        <div className="flex justify-between items-center">
+                          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                            পরীক্ষার বোর্ড ও সাল
+                          </label>
+                          <button
+                            type="button"
+                            onClick={qm.addExamHistoryRow}
+                            className="text-xs font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-lg border border-purple-200/60 transition cursor-pointer"
+                          >
+                            <Plus className="size-3.5" />
+                            <span>যোগ করুন</span>
+                          </button>
+                        </div>
 
-                    <div className="space-y-3">
-                      {(qm.formExamHistory || []).map((item, idx) => (
-                        <div
-                          key={idx}
-                          className="p-3 bg-slate-50/80 border border-slate-200/80 rounded-xl space-y-2.5 relative"
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            {/* Board Dropdown Selector */}
-                            <div className="w-full sm:w-1/2 relative">
-                              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                                বোর্ড #{idx + 1}
-                              </label>
-                              <div className="relative">
+                        <div className="space-y-3">
+                          {(qm.formExamHistory || []).map((item, idx) => (
+                            <div
+                              key={idx}
+                              className="p-3 bg-slate-50/80 border border-slate-200/80 rounded-xl space-y-2.5 relative"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                {/* Board Dropdown Selector */}
+                                <div className="w-full sm:w-1/2 relative">
+                                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                                    বোর্ড #{idx + 1}
+                                  </label>
+                                  <div className="relative">
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setActiveDropdown(
+                                          activeDropdown === `eh-board-${idx}`
+                                            ? null
+                                            : `eh-board-${idx}`,
+                                        )
+                                      }
+                                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 flex justify-between items-center shadow-xs hover:border-purple-600/40 transition cursor-pointer"
+                                    >
+                                      <span className="truncate">
+                                        {item.board || "বোর্ড নির্বাচন করুন"}
+                                      </span>
+                                      <ChevronRight
+                                        className={`size-3.5 text-slate-400 shrink-0 transition-transform ${activeDropdown === `eh-board-${idx}` ? "rotate-90 text-purple-600" : ""}`}
+                                      />
+                                    </button>
+                                    {activeDropdown === `eh-board-${idx}` && (
+                                      <>
+                                        <div
+                                          className="fixed inset-0 z-10"
+                                          onClick={() =>
+                                            setActiveDropdown(null)
+                                          }
+                                        />
+                                        <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-30 max-h-48 overflow-y-auto p-1 space-y-0.5 animate-in fade-in duration-150">
+                                          {activeBoards.map((bd) => (
+                                            <button
+                                              key={bd._id}
+                                              type="button"
+                                              onClick={() => {
+                                                qm.updateExamHistoryBoard(
+                                                  idx,
+                                                  bd.name,
+                                                );
+                                                setActiveDropdown(null);
+                                              }}
+                                              className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                                                item.board === bd.name
+                                                  ? "bg-purple-50 text-purple-700 font-bold"
+                                                  : "text-slate-700 hover:bg-slate-50"
+                                              }`}
+                                            >
+                                              {bd.name}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Delete Row Button */}
+                                {qm.formExamHistory.length > 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => qm.removeExamHistoryRow(idx)}
+                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg border border-red-200/80 transition cursor-pointer self-end mb-0.5"
+                                    title="এই সারিটি মুছুন"
+                                  >
+                                    <Trash2 className="size-4" />
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Year Chips / Badges */}
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
+                                  পরীক্ষার সালসমূহ (
+                                  {item.years && item.years.length
+                                    ? item.years.join(", ")
+                                    : "কোনো সাল সিলেক্ট করা হয়নি"}
+                                  )
+                                </label>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {activeYears.map((yr) => {
+                                    const isSelected =
+                                      item.years &&
+                                      item.years.includes(yr.name);
+                                    return (
+                                      <button
+                                        key={yr._id}
+                                        type="button"
+                                        onClick={() =>
+                                          qm.toggleExamHistoryYear(idx, yr.name)
+                                        }
+                                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition cursor-pointer ${
+                                          isSelected
+                                            ? "bg-purple-600 text-white border-purple-600 font-bold shadow-xs"
+                                            : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100 hover:border-purple-600/30"
+                                        }`}
+                                      >
+                                        {isSelected ? `✓ ${yr.name}` : yr.name}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* School Selection */}
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                          শীর্ষস্থানীয় স্কুল
+                        </label>
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setActiveDropdown(
+                                activeDropdown === "school" ? null : "school",
+                              )
+                            }
+                            className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm truncate pr-8 relative transition-all ${
+                              activeDropdown === "school"
+                                ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                                : qm.formSchool && qm.formSchool.length > 0
+                                  ? "border-purple-600/50 bg-white hover:bg-slate-50"
+                                  : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
+                            }`}
+                          >
+                            <span className="truncate pr-1">
+                              {qm.formSchool && qm.formSchool.length > 0
+                                ? qm.formSchool.join(", ")
+                                : "স্কুল নির্বাচন করুন"}
+                            </span>
+                            <ChevronRight
+                              className={`size-4 text-slate-400 absolute right-4 transition-transform duration-200 ${activeDropdown === "school" ? "rotate-90" : ""}`}
+                            />
+                          </button>
+
+                          {activeDropdown === "school" && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-10"
+                                onClick={() => {
+                                  setActiveDropdown(null);
+                                  setSchoolSearchQuery("");
+                                }}
+                              />
+                              <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-64 overflow-y-auto p-1.5 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                                {/* Sticky Search Input */}
+                                <div className="sticky top-0 bg-white pt-0.5 pb-1 px-0.5 border-b border-slate-100 z-10">
+                                  <div className="relative">
+                                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
+                                    <input
+                                      type="text"
+                                      value={schoolSearchQuery}
+                                      onChange={(e) =>
+                                        setSchoolSearchQuery(e.target.value)
+                                      }
+                                      placeholder="স্কুল নাম লিখে খুঁজুন..."
+                                      className="w-full pl-8 pr-7 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 bg-slate-50/50"
+                                      autoFocus
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                    {schoolSearchQuery && (
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSchoolSearchQuery("");
+                                        }}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold transition p-0.5"
+                                        title="ক্লিয়ার করুন"
+                                      >
+                                        ✕
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+
                                 <button
                                   type="button"
-                                  onClick={() =>
-                                    setActiveDropdown(
-                                      activeDropdown === `eh-board-${idx}`
-                                        ? null
-                                        : `eh-board-${idx}`,
-                                    )
-                                  }
-                                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 flex justify-between items-center shadow-xs hover:border-purple-600/40 transition cursor-pointer"
+                                  onClick={() => {
+                                    qm.setFormSchool([]);
+                                  }}
+                                  className="w-full text-left px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50"
                                 >
-                                  <span className="truncate">
-                                    {item.board || "বোর্ড নির্বাচন করুন"}
-                                  </span>
-                                  <ChevronRight
-                                    className={`size-3.5 text-slate-400 shrink-0 transition-transform ${activeDropdown === `eh-board-${idx}` ? "rotate-90 text-purple-600" : ""}`}
-                                  />
+                                  রিসেট / খালি করুন
                                 </button>
-                                {activeDropdown === `eh-board-${idx}` && (
-                                  <>
-                                    <div
-                                      className="fixed inset-0 z-10"
-                                      onClick={() => setActiveDropdown(null)}
-                                    />
-                                    <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-30 max-h-48 overflow-y-auto p-1 space-y-0.5 animate-in fade-in duration-150">
-                                      {activeBoards.map((bd) => (
-                                        <button
-                                          key={bd._id}
-                                          type="button"
-                                          onClick={() => {
-                                            qm.updateExamHistoryBoard(
-                                              idx,
-                                              bd.name,
-                                            );
-                                            setActiveDropdown(null);
-                                          }}
-                                          className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                                            item.board === bd.name
-                                              ? "bg-purple-50 text-purple-700 font-bold"
-                                              : "text-slate-700 hover:bg-slate-50"
-                                          }`}
-                                        >
-                                          {bd.name}
-                                        </button>
-                                      ))}
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            </div>
 
-                            {/* Delete Row Button */}
-                            {qm.formExamHistory.length > 1 && (
-                              <button
-                                type="button"
-                                onClick={() => qm.removeExamHistoryRow(idx)}
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg border border-red-200/80 transition cursor-pointer self-end mb-0.5"
-                                title="এই সারিটি মুছুন"
-                              >
-                                <Trash2 className="size-4" />
-                              </button>
-                            )}
-                          </div>
-
-                          {/* Year Chips / Badges */}
-                          <div>
-                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
-                              পরীক্ষার সালসমূহ (
-                              {item.years && item.years.length
-                                ? item.years.join(", ")
-                                : "কোনো সাল সিলেক্ট করা হয়নি"}
-                              )
-                            </label>
-                            <div className="flex flex-wrap gap-1.5">
-                              {activeYears.map((yr) => {
-                                const isSelected =
-                                  item.years && item.years.includes(yr.name);
-                                return (
-                                  <button
-                                    key={yr._id}
-                                    type="button"
-                                    onClick={() =>
-                                      qm.toggleExamHistoryYear(idx, yr.name)
-                                    }
-                                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition cursor-pointer ${
-                                      isSelected
-                                        ? "bg-purple-600 text-white border-purple-600 font-bold shadow-xs"
-                                        : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100 hover:border-purple-600/30"
-                                    }`}
-                                  >
-                                    {isSelected ? `✓ ${yr.name}` : yr.name}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* School Selection */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      শীর্ষস্থানীয় স্কুল
-                    </label>
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setActiveDropdown(
-                            activeDropdown === "school" ? null : "school",
-                          )
-                        }
-                        className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm truncate pr-8 relative transition-all ${
-                          activeDropdown === "school"
-                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
-                            : qm.formSchool && qm.formSchool.length > 0
-                              ? "border-purple-600/50 bg-white hover:bg-slate-50"
-                              : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
-                        }`}
-                      >
-                        <span className="truncate pr-1">
-                          {qm.formSchool && qm.formSchool.length > 0
-                            ? qm.formSchool.join(", ")
-                            : "স্কুল নির্বাচন করুন"}
-                        </span>
-                        <ChevronRight
-                          className={`size-4 text-slate-400 absolute right-4 transition-transform duration-200 ${activeDropdown === "school" ? "rotate-90" : ""}`}
-                        />
-                      </button>
-
-                      {activeDropdown === "school" && (
-                        <>
-                          <div
-                            className="fixed inset-0 z-10"
-                            onClick={() => {
-                              setActiveDropdown(null);
-                              setSchoolSearchQuery("");
-                            }}
-                          />
-                          <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-64 overflow-y-auto p-1.5 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
-                            {/* Sticky Search Input */}
-                            <div className="sticky top-0 bg-white pt-0.5 pb-1 px-0.5 border-b border-slate-100 z-10">
-                              <div className="relative">
-                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
-                                <input
-                                  type="text"
-                                  value={schoolSearchQuery}
-                                  onChange={(e) =>
-                                    setSchoolSearchQuery(e.target.value)
-                                  }
-                                  placeholder="স্কুল নাম লিখে খুঁজুন..."
-                                  className="w-full pl-8 pr-7 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-purple-600 bg-slate-50/50"
-                                  autoFocus
-                                  onClick={(e) => e.stopPropagation()}
-                                />
-                                {schoolSearchQuery && (
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setSchoolSearchQuery("");
-                                    }}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold transition p-0.5"
-                                    title="ক্লিয়ার করুন"
-                                  >
-                                    ✕
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                qm.setFormSchool([]);
-                              }}
-                              className="w-full text-left px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50"
-                            >
-                              রিসেট / খালি করুন
-                            </button>
-
-                            {activeSchools.filter((sch) =>
-                              !schoolSearchQuery.trim()
-                                ? true
-                                : sch.name
-                                    ?.toLowerCase()
-                                    .includes(
-                                      schoolSearchQuery.toLowerCase().trim(),
-                                    ),
-                            ).length === 0 ? (
-                              <div className="px-3 py-3 text-xs text-slate-400 text-center italic">
-                                &ldquo;{schoolSearchQuery}&rdquo; দিয়ে কোনো
-                                স্কুল পাওয়া যায়নি
-                              </div>
-                            ) : (
-                              activeSchools
-                                .filter((sch) =>
+                                {activeSchools.filter((sch) =>
                                   !schoolSearchQuery.trim()
                                     ? true
                                     : sch.name
@@ -1793,277 +2109,299 @@ export default function AddQuestion() {
                                             .toLowerCase()
                                             .trim(),
                                         ),
-                                )
-                                .map((sch) => {
-                                  const isSelected =
-                                    qm.formSchool &&
-                                    qm.formSchool.includes(sch.name);
-                                  return (
-                                    <button
-                                      key={sch._id}
-                                      type="button"
-                                      onClick={() => {
-                                        const nextSchools = isSelected
-                                          ? qm.formSchool.filter(
-                                              (s) => s !== sch.name,
-                                            )
-                                          : [
-                                              ...(qm.formSchool || []),
-                                              sch.name,
-                                            ];
-                                        qm.setFormSchool(nextSchools);
-                                      }}
-                                      className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex justify-between items-center ${
-                                        isSelected
-                                          ? "bg-purple-50 text-purple-700 font-bold"
-                                          : "text-slate-700 hover:bg-slate-50"
-                                      }`}
-                                    >
-                                      <span>{sch.name}</span>
-                                      {isSelected && (
-                                        <Check className="size-4 shrink-0 text-purple-600" />
-                                      )}
-                                    </button>
-                                  );
-                                })
-                            )}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
+                                ).length === 0 ? (
+                                  <div className="px-3 py-3 text-xs text-slate-400 text-center italic">
+                                    &ldquo;{schoolSearchQuery}&rdquo; দিয়ে কোনো
+                                    স্কুল পাওয়া যায়নি
+                                  </div>
+                                ) : (
+                                  activeSchools
+                                    .filter((sch) =>
+                                      !schoolSearchQuery.trim()
+                                        ? true
+                                        : sch.name
+                                            ?.toLowerCase()
+                                            .includes(
+                                              schoolSearchQuery
+                                                .toLowerCase()
+                                                .trim(),
+                                            ),
+                                    )
+                                    .map((sch) => {
+                                      const isSelected =
+                                        qm.formSchool &&
+                                        qm.formSchool.includes(sch.name);
+                                      return (
+                                        <button
+                                          key={sch._id}
+                                          type="button"
+                                          onClick={() => {
+                                            const nextSchools = isSelected
+                                              ? qm.formSchool.filter(
+                                                  (s) => s !== sch.name,
+                                                )
+                                              : [
+                                                  ...(qm.formSchool || []),
+                                                  sch.name,
+                                                ];
+                                            qm.setFormSchool(nextSchools);
+                                          }}
+                                          className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition flex justify-between items-center ${
+                                            isSelected
+                                              ? "bg-purple-50 text-purple-700 font-bold"
+                                              : "text-slate-700 hover:bg-slate-50"
+                                          }`}
+                                        >
+                                          <span>{sch.name}</span>
+                                          {isSelected && (
+                                            <Check className="size-4 shrink-0 text-purple-600" />
+                                          )}
+                                        </button>
+                                      );
+                                    })
+                                )}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
 
-                  {/* Level Tag Selection */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      লেভেল (Level)
-                    </label>
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setActiveDropdown(
-                            activeDropdown === "levelTag" ? null : "levelTag",
-                          )
-                        }
-                        className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm transition-all ${
-                          activeDropdown === "levelTag"
-                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
-                            : qm.formLevelTag
-                              ? "border-purple-600/50 bg-white hover:bg-slate-50"
-                              : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
-                        }`}
-                      >
-                        {qm.formLevelTag || "লেভেল নির্বাচন করুন"}
-                        <ChevronRight
-                          className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "levelTag" ? "rotate-90" : ""}`}
-                        />
-                      </button>
-
-                      {activeDropdown === "levelTag" && (
-                        <>
-                          <div
-                            className="fixed inset-0 z-10"
-                            onClick={() => setActiveDropdown(null)}
-                          />
-                          <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-52 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                qm.setFormLevelTag("");
-                                setActiveDropdown(null);
-                              }}
-                              className="w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:bg-slate-50"
-                            >
-                              রিসেট / খালি করুন
-                            </button>
-                            {activeLevels.map((lvl) => (
-                              <button
-                                key={lvl._id}
-                                type="button"
-                                onClick={() => {
-                                  qm.setFormLevelTag(lvl.name);
-                                  setActiveDropdown(null);
-                                }}
-                                className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
-                                  qm.formLevelTag === lvl.name
-                                    ? "bg-purple-50 text-purple-700 font-bold"
-                                    : "text-slate-700 hover:bg-slate-50"
-                                }`}
-                              >
-                                {lvl.name}
-                              </button>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Special Search Keywords Multi-Select Tags */}
-                {activeSpecialSearches.length > 0 && (
-                  <div className="space-y-2 pt-2 border-t border-black/[0.03] animate-in fade-in duration-300">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                      স্পেশাল সার্চ কিওয়ার্ড লিঙ্ক করুন (ঐচ্ছিক)
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {activeSpecialSearches.map((ss) => {
-                        const isSelected = qm.formSpecialSearch.includes(
-                          ss.name,
-                        );
-                        return (
+                      {/* Level Tag Selection */}
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                          লেভেল (Level)
+                        </label>
+                        <div className="relative">
                           <button
-                            key={ss._id}
                             type="button"
-                            onClick={() => {
-                              qm.setFormSpecialSearch((prev) =>
-                                prev.includes(ss.name)
-                                  ? prev.filter((t) => t !== ss.name)
-                                  : [...prev, ss.name],
-                              );
-                            }}
-                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
-                              isSelected
-                                ? "bg-purple-600/10 border-purple-600/30 text-purple-600 font-bold"
-                                : "bg-white border-black/[0.06] text-slate-600 hover:bg-slate-50"
+                            onClick={() =>
+                              setActiveDropdown(
+                                activeDropdown === "levelTag"
+                                  ? null
+                                  : "levelTag",
+                              )
+                            }
+                            className={`w-full px-4 border rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm transition-all ${
+                              activeDropdown === "levelTag"
+                                ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                                : qm.formLevelTag
+                                  ? "border-purple-600/50 bg-white hover:bg-slate-50"
+                                  : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
                             }`}
                           >
-                            {isSelected ? `✓ #${ss.name}` : `#${ss.name}`}
+                            {qm.formLevelTag || "লেভেল নির্বাচন করুন"}
+                            <ChevronRight
+                              className={`size-4 text-slate-400 transition-transform duration-200 ${activeDropdown === "levelTag" ? "rotate-90" : ""}`}
+                            />
                           </button>
-                        );
-                      })}
+
+                          {activeDropdown === "levelTag" && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-10"
+                                onClick={() => setActiveDropdown(null)}
+                              />
+                              <div className="absolute left-0 right-0 mt-1 bg-white border border-black/[0.08] rounded-xl shadow-xl z-20 max-h-52 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    qm.setFormLevelTag("");
+                                    setActiveDropdown(null);
+                                  }}
+                                  className="w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:bg-slate-50"
+                                >
+                                  রিসেট / খালি করুন
+                                </button>
+                                {activeLevels.map((lvl) => (
+                                  <button
+                                    key={lvl._id}
+                                    type="button"
+                                    onClick={() => {
+                                      qm.setFormLevelTag(lvl.name);
+                                      setActiveDropdown(null);
+                                    }}
+                                    className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
+                                      qm.formLevelTag === lvl.name
+                                        ? "bg-purple-50 text-purple-700 font-bold"
+                                        : "text-slate-700 hover:bg-slate-50"
+                                    }`}
+                                  >
+                                    {lvl.name}
+                                  </button>
+                                ))}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Special Search Keywords Multi-Select Tags */}
+                    {activeSpecialSearches.length > 0 && (
+                      <div className="space-y-2 pt-2 border-t border-black/[0.03] animate-in fade-in duration-300">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                          স্পেশাল সার্চ কিওয়ার্ড লিঙ্ক করুন (ঐচ্ছিক)
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          {activeSpecialSearches.map((ss) => {
+                            const isSelected = qm.formSpecialSearch.includes(
+                              ss.name,
+                            );
+                            return (
+                              <button
+                                key={ss._id}
+                                type="button"
+                                onClick={() => {
+                                  qm.setFormSpecialSearch((prev) =>
+                                    prev.includes(ss.name)
+                                      ? prev.filter((t) => t !== ss.name)
+                                      : [...prev, ss.name],
+                                  );
+                                }}
+                                className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
+                                  isSelected
+                                    ? "bg-purple-600/10 border-purple-600/30 text-purple-600 font-bold"
+                                    : "bg-white border-black/[0.06] text-slate-600 hover:bg-slate-50"
+                                }`}
+                              >
+                                {isSelected ? `✓ #${ss.name}` : `#${ss.name}`}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Draft Questions list inside Step 2 */}
+                  {!qm.editingQuestion && qm.questionsList.length > 0 && (
+                    <div className="space-y-3 pt-5 border-t border-black/[0.05] animate-in fade-in duration-200">
+                      <h4 className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                        <Database className="size-4 text-purple-600" />
+                        <span>
+                          যুক্ত করা প্রশ্নসমূহ ({qm.questionsList.length})
+                        </span>
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-48 overflow-y-auto pr-1">
+                        {qm.questionsList.map((q, idx) => {
+                          const catLabel =
+                            CATEGORIES_MAP.find((c) => c.value === q.category)
+                              ?.label || q.category;
+                          const isEditingThis = qm.editingDraftId === q.id;
+                          return (
+                            <div
+                              key={q.id || idx}
+                              className={`flex items-center justify-between p-3.5 border rounded-xl text-xs font-semibold text-slate-700 transition-all duration-200 ${
+                                isEditingThis
+                                  ? "bg-purple-600/5 border-purple-600/30 ring-1 ring-purple-600/20 shadow-sm"
+                                  : "bg-white/[0.30] border-black/[0.05]"
+                              }`}
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <span className="bg-purple-600/10 text-purple-600 font-bold size-5 rounded-full flex items-center justify-center shrink-0">
+                                  {idx + 1}
+                                </span>
+                                <div className="min-w-0">
+                                  <span className="font-bold text-purple-600 mr-2 uppercase text-[9px] bg-purple-600/10 px-1.5 py-0.5 rounded">
+                                    {catLabel}
+                                  </span>
+                                  <span className="truncate block mt-1 font-serif">
+                                    {q.category === "MCQ" &&
+                                      stripHtml(q.mcqData?.questionText)}
+                                    {q.category === "Creative" &&
+                                      stripHtml(q.creativeData?.stem)}
+                                    {!["MCQ", "Creative"].includes(
+                                      q.category,
+                                    ) && stripHtml(q.generalData?.questionText)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => qm.editDraftQuestion(q.id)}
+                                  className={`p-1.5 rounded-lg transition cursor-pointer ${
+                                    isEditingThis
+                                      ? "text-purple-600 bg-purple-600/10"
+                                      : "text-slate-400 hover:text-purple-600 hover:bg-purple-600/10"
+                                  }`}
+                                  title="এডিট করুন"
+                                >
+                                  <Pencil className="size-4" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setDeleteConfirmId(q.id)}
+                                  className="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition cursor-pointer"
+                                  title="মুছে ফেলুন"
+                                >
+                                  <Trash2 className="size-4" />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 2 Action Buttons */}
+                  <div className="flex justify-between items-center gap-2 pt-4 sm:pt-6 border-t border-black/[0.05]">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handlePrevStep}
+                      className="border-black/[0.10] text-slate-600 hover:bg-black/[0.02] rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer text-xs sm:text-sm shrink-0"
+                    >
+                      <ChevronLeft className="size-3.5 sm:size-4" />
+                      পেছনে
+                    </Button>
+
+                    <div className="flex gap-2 sm:gap-3 flex-wrap justify-end">
+                      {qm.editingDraftId ? (
+                        <>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={qm.cancelEditDraft}
+                            className="border-rose-200 text-rose-650 hover:bg-rose-50 hover:border-rose-300 rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm text-xs sm:text-sm shrink-0"
+                          >
+                            বাতিল
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={qm.updateDraftQuestion}
+                            className="border-emerald-200 text-emerald-650 hover:bg-emerald-50 hover:border-emerald-300 rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm text-xs sm:text-sm shrink-0"
+                          >
+                            <Save className="size-3.5 sm:size-4" />
+                            আপডেট
+                          </Button>
+                        </>
+                      ) : (
+                        !qm.editingQuestion && (
+                          <Button
+                            type="button"
+                            onClick={qm.addQuestionToList}
+                            className="border-[#900EB0]/20 text-[#900EB0] hover:bg-[#900EB0]/10 hover:border-[#900EB0]/40 rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm text-xs sm:text-sm shrink-0"
+                          >
+                            <Plus className="size-3.5 sm:size-4" />
+                            যোগ করুন
+                          </Button>
+                        )
+                      )}
+                      <Button
+                        type="button"
+                        onClick={handleNextStep}
+                        className="bg-[#900EB0] hover:bg-[#720A7B] text-white rounded-xl h-8 sm:h-10 px-3 sm:px-6 flex items-center gap-1 font-semibold cursor-pointer shadow-md shadow-[#900EB0]/20 text-xs sm:text-sm shrink-0"
+                      >
+                        প্রিভিউ
+                        <ChevronRight className="size-3.5 sm:size-4" />
+                      </Button>
                     </div>
                   </div>
-                )}
-              </div>
-
-              {/* Draft Questions list inside Step 2 */}
-              {!qm.editingQuestion && qm.questionsList.length > 0 && (
-                <div className="space-y-3 pt-5 border-t border-black/[0.05] animate-in fade-in duration-200">
-                  <h4 className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
-                    <Database className="size-4 text-purple-600" />
-                    <span>
-                      যুক্ত করা প্রশ্নসমূহ ({qm.questionsList.length})
-                    </span>
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-48 overflow-y-auto pr-1">
-                    {qm.questionsList.map((q, idx) => {
-                      const catLabel =
-                        CATEGORIES_MAP.find((c) => c.value === q.category)
-                          ?.label || q.category;
-                      const isEditingThis = qm.editingDraftId === q.id;
-                      return (
-                        <div
-                          key={q.id || idx}
-                          className={`flex items-center justify-between p-3.5 border rounded-xl text-xs font-semibold text-slate-700 transition-all duration-200 ${
-                            isEditingThis
-                              ? "bg-purple-600/5 border-purple-600/30 ring-1 ring-purple-600/20 shadow-sm"
-                              : "bg-white/[0.30] border-black/[0.05]"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <span className="bg-purple-600/10 text-purple-600 font-bold size-5 rounded-full flex items-center justify-center shrink-0">
-                              {idx + 1}
-                            </span>
-                            <div className="min-w-0">
-                              <span className="font-bold text-purple-600 mr-2 uppercase text-[9px] bg-purple-600/10 px-1.5 py-0.5 rounded">
-                                {catLabel}
-                              </span>
-                              <span className="truncate block mt-1 font-serif">
-                                {q.category === "MCQ" &&
-                                  stripHtml(q.mcqData?.questionText)}
-                                {q.category === "Creative" &&
-                                  stripHtml(q.creativeData?.stem)}
-                                {!["MCQ", "Creative"].includes(q.category) &&
-                                  stripHtml(q.generalData?.questionText)}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <button
-                              type="button"
-                              onClick={() => qm.editDraftQuestion(q.id)}
-                              className={`p-1.5 rounded-lg transition cursor-pointer ${
-                                isEditingThis
-                                  ? "text-purple-600 bg-purple-600/10"
-                                  : "text-slate-400 hover:text-purple-600 hover:bg-purple-600/10"
-                              }`}
-                              title="এডিট করুন"
-                            >
-                              <Pencil className="size-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setDeleteConfirmId(q.id)}
-                              className="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition cursor-pointer"
-                              title="মুছে ফেলুন"
-                            >
-                              <Trash2 className="size-4" />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                </>
               )}
-
-              {/* Step 2 Action Buttons */}
-              <div className="flex justify-between items-center gap-2 pt-4 sm:pt-6 border-t border-black/[0.05]">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handlePrevStep}
-                  className="border-black/[0.10] text-slate-600 hover:bg-black/[0.02] rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer text-xs sm:text-sm shrink-0"
-                >
-                  <ChevronLeft className="size-3.5 sm:size-4" />
-                  পেছনে
-                </Button>
-
-                <div className="flex gap-2 sm:gap-3 flex-wrap justify-end">
-                  {qm.editingDraftId ? (
-                    <>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={qm.cancelEditDraft}
-                        className="border-rose-200 text-rose-650 hover:bg-rose-50 hover:border-rose-300 rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm text-xs sm:text-sm shrink-0"
-                      >
-                        বাতিল
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={qm.updateDraftQuestion}
-                        className="border-emerald-200 text-emerald-650 hover:bg-emerald-50 hover:border-emerald-300 rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm text-xs sm:text-sm shrink-0"
-                      >
-                        <Save className="size-3.5 sm:size-4" />
-                        আপডেট
-                      </Button>
-                    </>
-                  ) : (
-                    !qm.editingQuestion && (
-                      <Button
-                        type="button"
-                        onClick={qm.addQuestionToList}
-                        className="border-[#900EB0]/20 text-[#900EB0] hover:bg-[#900EB0]/10 hover:border-[#900EB0]/40 rounded-xl h-8 sm:h-10 px-2.5 sm:px-5 flex items-center gap-1 font-semibold cursor-pointer bg-white/[0.45] backdrop-blur-sm text-xs sm:text-sm shrink-0"
-                      >
-                        <Plus className="size-3.5 sm:size-4" />
-                        যোগ করুন
-                      </Button>
-                    )
-                  )}
-                  <Button
-                    type="button"
-                    onClick={handleNextStep}
-                    className="bg-[#900EB0] hover:bg-[#720A7B] text-white rounded-xl h-8 sm:h-10 px-3 sm:px-6 flex items-center gap-1 font-semibold cursor-pointer shadow-md shadow-[#900EB0]/20 text-xs sm:text-sm shrink-0"
-                  >
-                    প্রিভিউ
-                    <ChevronRight className="size-3.5 sm:size-4" />
-                  </Button>
-                </div>
-              </div>
             </motion.div>
           )}
 

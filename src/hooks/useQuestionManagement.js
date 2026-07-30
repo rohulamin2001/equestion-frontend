@@ -1,4 +1,5 @@
 import apiClient from "@/lib/apiClient";
+import { validateCategoryQuestionsJson } from "@/lib/jsonQuestionValidator";
 import { useAuth } from "@clerk/react";
 import {
   useInfiniteQuery,
@@ -273,13 +274,17 @@ export function useQuestionManagement(options = {}) {
 
   const removeExamHistoryRow = useCallback((index) => {
     setFormExamHistory((prev) =>
-      prev.length > 1 ? prev.filter((_, i) => i !== index) : [{ board: "", years: [] }]
+      prev.length > 1
+        ? prev.filter((_, i) => i !== index)
+        : [{ board: "", years: [] }],
     );
   }, []);
 
   const updateExamHistoryBoard = useCallback((index, boardName) => {
     setFormExamHistory((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, board: boardName } : item))
+      prev.map((item, i) =>
+        i === index ? { ...item, board: boardName } : item,
+      ),
     );
   }, []);
 
@@ -292,7 +297,7 @@ export function useQuestionManagement(options = {}) {
           ? item.years.filter((y) => y !== yearStr)
           : [...item.years, yearStr];
         return { ...item, years: newYears };
-      })
+      }),
     );
   }, []);
 
@@ -354,6 +359,10 @@ export function useQuestionManagement(options = {}) {
   const [editingQuestion, setEditingQuestion] = useState(null); // null if creating
   const [editingPassageGroup, setEditingPassageGroup] = useState(null);
 
+  // Step 2 Editor Mode: 'form' (default manual form) | 'json' (smart JSON paste mode)
+  const [step2EditorMode, setStep2EditorMode] = useState("form");
+  const [rawPastedJsonText, setRawPastedJsonText] = useState("");
+
   // Reset Form
   const resetForm = useCallback(() => {
     setActiveStep(1);
@@ -370,6 +379,8 @@ export function useQuestionManagement(options = {}) {
     setQuestionsList([]);
     setEditingDraftId(null);
     setEditingPassageGroup(null);
+    setStep2EditorMode("form");
+    setRawPastedJsonText("");
 
     // Reset new metadata
     setFormYear([]);
@@ -516,12 +527,15 @@ export function useQuestionManagement(options = {}) {
     setFormDifficulty(question.difficulty);
 
     // Load examHistory
-    if (Array.isArray(question.examHistory) && question.examHistory.length > 0) {
+    if (
+      Array.isArray(question.examHistory) &&
+      question.examHistory.length > 0
+    ) {
       setFormExamHistory(
         question.examHistory.map((eh) => ({
           board: eh.board || "",
           years: Array.isArray(eh.years) ? [...eh.years] : [],
-        }))
+        })),
       );
     } else if (
       (Array.isArray(question.board) && question.board.length > 0) ||
@@ -756,6 +770,240 @@ export function useQuestionManagement(options = {}) {
     },
   });
 
+  // Insert sample Category JSON template without top-level metadata (metadata will be auto-injected from UI)
+  const handleInsertSampleCategoryJson = useCallback(
+    (subType = "All") => {
+      let sample;
+      if (formCategory === "MCQ") {
+        const simpleSample = {
+          difficulty: "Easy",
+          topics: ["সততার পুরস্কার"],
+          examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026", "2025"] }],
+          school: ["মতিঝিল আইডিয়াল স্কুল ও কলেজ"],
+          level: "জ্ঞান",
+          specialSearch: ["অনুশীলনি"],
+          mcqData: {
+            mcqType: "Simple",
+            questionText:
+              "<p>'সততার পুরস্কার' গল্পে প্রথম লোকটির শরীরে কী রোগ ছিল?</p>",
+            options: [
+              "<p>ধবল রোগ</p>",
+              "<p>টাকপড়া</p>",
+              "<p>অন্ধত্ব</p>",
+              "<p>জ্বর</p>",
+            ],
+            correctAnswer: 0,
+            explanation:
+              "<p>গল্প অনুযায়ী প্রথম লোকটির শরীর ধবল রোগে আক্রান্ত ছিল।</p>",
+          },
+        };
+
+        const multipleCompletionSample = {
+          difficulty: "Medium",
+          topics: ["সততার পুরস্কার"],
+          examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+          school: ["ভিকারুননিসা নূন স্কুল ও কলেজ"],
+          level: "অনুধাবন",
+          specialSearch: ["রিপিটেড স্কুল"],
+          mcqData: {
+            mcqType: "MultipleCompletion",
+            questionText: "<p>'সততার পুরস্কার' গল্পের মূল শিক্ষা হলো—</p>",
+            statements: [
+              "সততা ও ঈমানদারী",
+              "আল্লাহর প্রতি কৃতজ্ঞতা প্রকাশ",
+              "অকৃতজ্ঞতার কুফল",
+            ],
+            options: ["i ও ii", "ii ও iii", "i ও iii", "i, ii ও iii"],
+            correctAnswer: 3,
+            explanation:
+              "<p>তিনটি বাক্যই সততার পুরস্কার গল্পের মূল শিক্ষার অন্তর্ভুক্ত।</p>",
+          },
+        };
+
+        const contextualSample = {
+          difficulty: "Hard",
+          topics: ["সততার পুরস্কার"],
+          examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+          school: ["গভ. ল্যাবরেটরি হাই স্কুল"],
+          level: "প্রয়োগ",
+          specialSearch: ["অভিন্ন তথ্যভিত্তিক"],
+          mcqData: {
+            mcqType: "Contextual",
+            stem: "<p>রাফিজ একজন গরিব লোককে সাধ্যমতো সাহায্য করল, কিন্তু তার ভাই কালাম তাকে তাড়িয়ে দিল।</p>",
+            questionText:
+              "<p>উদ্দীপকের রাফিজের আচরণের সাথে 'সততার পুরস্কার' গল্পের কোন চরিত্রের মিল রয়েছে?</p>",
+            options: [
+              "<p>তৃতীয় ইহুদি</p>",
+              "<p>প্রথম ইহুদি</p>",
+              "<p>দ্বিতীয় ইহুদি</p>",
+              "<p>ফেরেশতা</p>",
+            ],
+            correctAnswer: 0,
+            explanation:
+              "<p>তৃতীয় ইহুদি অন্ধত্ব দূর হওয়ার পর আল্লাহর প্রতি কৃতজ্ঞ ছিল।</p>",
+          },
+        };
+
+        if (subType === "Simple") {
+          sample = [simpleSample];
+        } else if (subType === "MultipleCompletion") {
+          sample = [multipleCompletionSample];
+        } else if (subType === "Contextual") {
+          sample = [contextualSample];
+        } else {
+          sample = [simpleSample, multipleCompletionSample, contextualSample];
+        }
+      } else if (formCategory === "Creative") {
+        sample = [
+          {
+            difficulty: "Medium",
+            topics: ["উদ্ভিদের শারীরতত্ত্ব"],
+            examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+            school: ["ঢাকা রেসিডেনসিয়াল মডেল কলেজ"],
+            level: "Famous School",
+            specialSearch: ["পরীক্ষায় আসার মতো"],
+            creativeData: {
+              stem: "<p>এখানে মূল উদ্দীপক বা অনুচ্ছেদটি লিখুন...</p>",
+              subQuestions: {
+                cognitiveA: {
+                  text: "<p>'ক' (জ্ঞানমূলক) প্রশ্ন লিখুন...</p>",
+                  answer: "<p>'ক' প্রশ্নের উত্তর...</p>",
+                  marks: 1,
+                },
+                cognitiveB: {
+                  text: "<p>'খ' (অনুধাবনমূলক) প্রশ্ন লিখুন...</p>",
+                  answer: "<p>'খ' প্রশ্নের উত্তর...</p>",
+                  marks: 2,
+                },
+                cognitiveC: {
+                  text: "<p>'গ' (প্রয়োগমূলক) প্রশ্ন লিখুন...</p>",
+                  answer: "<p>'গ' প্রশ্নের উত্তর...</p>",
+                  marks: 3,
+                },
+                cognitiveD: {
+                  text: "<p>'ঘ' (উচ্চতর দক্ষতা) প্রশ্ন লিখুন...</p>",
+                  answer: "<p>'ঘ' প্রশ্নের উত্তর...</p>",
+                  marks: 4,
+                },
+              },
+            },
+          },
+        ];
+      } else {
+        sample = [
+          {
+            difficulty: "Easy",
+            topics: ["সাধারণ জ্ঞান"],
+            examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+            school: ["গভ. ল্যাবরেটরি হাই স্কুল"],
+            level: "Top School",
+            specialSearch: ["সংক্ষিপ্ত প্রশ্ন"],
+            generalData: {
+              questionText: "<p>এখানে সংক্ষিপ্ত প্রশ্নটি লিখুন...</p>",
+              suggestedAnswer: "<p>এখানে উত্তর লিখুন...</p>",
+              marks: 2,
+            },
+          },
+        ];
+      }
+      setRawPastedJsonText(JSON.stringify(sample, null, 2));
+    },
+    [formCategory],
+  );
+
+  // Save pasted raw JSON questions by auto-injecting UI Step 1 & Step 2 metadata
+  const savePastedJsonQuestions = useCallback(async () => {
+    if (
+      !formClass ||
+      !formSubjectId ||
+      !formChapterNumber ||
+      !formCategory ||
+      !formType ||
+      !formLevel
+    ) {
+      toast.error(
+        "দয়া করে আবশ্যকীয় মেটাডাটা ক্ষেত্রসমূহ (Class, Subject, Chapter, Category) পূরণ করুন",
+      );
+      return;
+    }
+
+    const validation = validateCategoryQuestionsJson(
+      rawPastedJsonText,
+      formCategory,
+    );
+    if (
+      !validation.isValid ||
+      !validation.questions ||
+      validation.questions.length === 0
+    ) {
+      toast.error(
+        "JSON ডাটাতে কোনো বৈধ প্রশ্ন পাওয়া যায়নি। দয়া করে এররসমূহ ঠিক করুন।",
+      );
+      return;
+    }
+
+    const cleanedExamHistory = formExamHistory
+      .filter((item) => item.board && item.years && item.years.length > 0)
+      .map((item) => ({ board: item.board, years: item.years }));
+
+    // Inject global metadata into each question object
+    const finalPayloads = validation.questions.map((q) => {
+      const qExamHistory =
+        Array.isArray(q.examHistory) && q.examHistory.length > 0
+          ? q.examHistory
+          : cleanedExamHistory;
+      const qDerivedBoards = Array.from(
+        new Set(qExamHistory.map((item) => item.board)),
+      );
+      const qDerivedYears = Array.from(
+        new Set(qExamHistory.flatMap((item) => item.years)),
+      );
+
+      return {
+        ...q,
+        className: formClass,
+        subjectId: formSubjectId,
+        chapterNumber: Number(formChapterNumber),
+        topics: q.topics || formTopics || [],
+        category: formCategory,
+        difficulty: q.difficulty || formDifficulty || "Medium",
+        institutionType: formType,
+        academicLevel: formLevel,
+        examHistory: qExamHistory,
+        year: qDerivedYears.length > 0 ? qDerivedYears : formYear,
+        board: qDerivedBoards.length > 0 ? qDerivedBoards : formBoard,
+        school: q.school || formSchool || [],
+        level: q.level || formLevelTag || "",
+        specialSearch: q.specialSearch || formSpecialSearch || [],
+      };
+    });
+
+    isSubmittingRef.current = true;
+    try {
+      await addQuestionMutation.mutateAsync(finalPayloads);
+      setRawPastedJsonText("");
+    } catch (err) {
+      console.error("Error saving pasted questions:", err);
+    }
+  }, [
+    formClass,
+    formSubjectId,
+    formChapterNumber,
+    formCategory,
+    formType,
+    formLevel,
+    rawPastedJsonText,
+    formExamHistory,
+    formTopics,
+    formDifficulty,
+    formYear,
+    formBoard,
+    formSchool,
+    formLevelTag,
+    formSpecialSearch,
+    addQuestionMutation,
+  ]);
+
   // Validate and build payload from current editor values
   const buildPayloadFromForm = useCallback(() => {
     if (
@@ -778,10 +1026,10 @@ export function useQuestionManagement(options = {}) {
       }));
 
     const derivedBoards = Array.from(
-      new Set(cleanedExamHistory.map((item) => item.board))
+      new Set(cleanedExamHistory.map((item) => item.board)),
     );
     const derivedYears = Array.from(
-      new Set(cleanedExamHistory.flatMap((item) => item.years))
+      new Set(cleanedExamHistory.flatMap((item) => item.years)),
     );
 
     const payload = {
@@ -1704,5 +1952,13 @@ export function useQuestionManagement(options = {}) {
     formLoading,
     editingQuestion,
     editingPassageGroup,
+
+    // Step 2 Editor Mode & Smart JSON Paste
+    step2EditorMode,
+    setStep2EditorMode,
+    rawPastedJsonText,
+    setRawPastedJsonText,
+    handleInsertSampleCategoryJson,
+    savePastedJsonQuestions,
   };
 }
