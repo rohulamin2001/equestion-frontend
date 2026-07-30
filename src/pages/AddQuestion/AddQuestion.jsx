@@ -928,7 +928,7 @@ export default function AddQuestion() {
                           <span>নমুনা MCQ টাইপ ফিল্টার ও স্ট্রাকচার:</span>
                         </span>
                         <span className="hidden lg:inline-block text-[10px] font-bold text-purple-700 bg-purple-100/90 px-2 py-0.5 rounded-full border border-purple-200/80">
-                          4-Type Grid
+                          5-Type Grid
                         </span>
                       </div>
 
