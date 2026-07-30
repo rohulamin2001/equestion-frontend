@@ -1568,7 +1568,7 @@ export default function AddQuestion() {
                         className="text-xs font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-lg border border-purple-200/60 transition cursor-pointer"
                       >
                         <Plus className="size-3.5" />
-                        <span>বোর্ড ও সাল যোগ করুন</span>
+                        <span>যোগ করুন</span>
                       </button>
                     </div>
 
