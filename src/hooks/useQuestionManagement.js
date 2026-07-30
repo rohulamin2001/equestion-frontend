@@ -1007,6 +1007,23 @@ export function useQuestionManagement(options = {}) {
         new Set(qExamHistory.flatMap((item) => item.years)),
       );
 
+      const parseSchoolSemicolons = (val, fallback = []) => {
+        if (!val || (Array.isArray(val) && val.length === 0)) return fallback;
+        if (typeof val === "string") {
+          return val
+            .split(";")
+            .map((s) => s.trim())
+            .filter(Boolean);
+        }
+        if (Array.isArray(val)) {
+          return val
+            .flatMap((item) => (typeof item === "string" ? item.split(";") : item))
+            .map((s) => (typeof s === "string" ? s.trim() : s))
+            .filter(Boolean);
+        }
+        return fallback;
+      };
+
       return {
         ...q,
         className: formClass,
@@ -1020,7 +1037,7 @@ export function useQuestionManagement(options = {}) {
         examHistory: qExamHistory,
         year: qDerivedYears.length > 0 ? qDerivedYears : formYear,
         board: qDerivedBoards.length > 0 ? qDerivedBoards : formBoard,
-        school: q.school || formSchool || [],
+        school: parseSchoolSemicolons(q.school, formSchool || []),
         level: q.level || formLevelTag || "",
         specialSearch: q.specialSearch || formSpecialSearch || [],
       };
