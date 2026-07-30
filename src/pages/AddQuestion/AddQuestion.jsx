@@ -878,7 +878,7 @@ export default function AddQuestion() {
                     <AlertCircle className="size-5 text-purple-600 shrink-0 mt-0.5" />
                     <div className="space-y-1 text-xs text-purple-900 leading-relaxed">
                       <p className="font-bold text-sm text-purple-950">
-                        💡 স্মার্ট JSON পেস্ট নির্দেশিকা:
+                        স্মার্ট JSON পেস্ট নির্দেশিকা:
                       </p>
                       <p>
                         আপনাকে বারবার{" "}
