@@ -249,7 +249,13 @@ export const RadixSidebar = () => {
           <SidebarMenuItem>
             <div className="flex p-2 items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#4F46E5] to-[#8B5CF6] text-white shadow-md shadow-indigo-500/10 transition-all duration-300">
+                <div
+                  className="flex aspect-square size-9 items-center justify-center rounded-xl text-white transition-all duration-300"
+                  style={{
+                    background: "var(--sidebar-brand-gradient)",
+                    boxShadow: "var(--sidebar-brand-shadow)",
+                  }}
+                >
                   <BookOpen className="size-5" />
                 </div>
                 <div className="grid flex-1 text-left text-[15px] leading-tight group-data-[collapsible=icon]:hidden">
@@ -280,21 +286,39 @@ export const RadixSidebar = () => {
       <SidebarContent className="px-2">
         {filteredNavGroups.map((group) => (
           <SidebarGroup key={group.label} className="py-2">
-            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden text-slate-600 font-bold text-[12px] uppercase tracking-wider mb-2 px-4 font-bengali">
+            <SidebarGroupLabel
+              className="group-data-[collapsible=icon]:hidden font-bold text-[11px] uppercase tracking-widest mb-1.5 px-4 font-bengali"
+              style={{ color: "var(--sidebar-section-label)" }}
+            >
               {group.label}
             </SidebarGroupLabel>
             <SidebarMenu className="gap-1.5">
               {group.items.map((item) => {
                 const isActive = location.pathname === item.url;
                 return (
-                  <SidebarMenuItem key={item.title}>
+                  <SidebarMenuItem key={item.title} className="relative">
+                    {/* Active left indicator bar */}
+                    {isActive && (
+                      <span
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full z-10"
+                        style={{ background: "var(--sidebar-active-indicator)" }}
+                      />
+                    )}
                     <SidebarMenuButton
                       asChild
                       tooltip={item.title}
+                      style={
+                        isActive
+                          ? {
+                              background: "var(--sidebar-active-bg)",
+                              color: "var(--sidebar-active-text)",
+                            }
+                          : undefined
+                      }
                       className={
                         isActive
-                          ? "bg-[#4F46E5]/[0.10] text-[#4F46E5] font-semibold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
-                          : "text-slate-700 hover:text-slate-900 hover:bg-black/[0.03] font-semibold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
+                          ? "font-bold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
+                          : "text-slate-600 hover:text-[var(--sidebar-hover-text)] hover:bg-[var(--sidebar-hover-bg)] font-semibold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
                       }
                     >
                       <Link
@@ -307,11 +331,12 @@ export const RadixSidebar = () => {
                         }}
                       >
                         <item.icon
-                          className={
-                            isActive
-                              ? "text-[#4F46E5] size-[18px]"
-                              : "text-slate-500 group-hover/menu-item:text-slate-800 size-[18px] transition-colors"
-                          }
+                          className="size-[18px] transition-colors"
+                          style={{
+                            color: isActive
+                              ? "var(--sidebar-active-icon)"
+                              : undefined,
+                          }}
                         />
                         <span className="font-sans tracking-tight">
                           {item.title}
@@ -333,14 +358,26 @@ export const RadixSidebar = () => {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
-                  className="data-[state=open]:bg-black/[0.03] data-[state=open]:text-slate-800"
+                  className="data-[state=open]:text-slate-800 transition-all duration-200"
+                  style={{
+                    "--open-bg": "var(--sidebar-active-bg)",
+                  }}
                 >
-                  <Avatar className="h-8 w-8 rounded-lg border border-slate-200">
+                  <Avatar
+                    className="h-8 w-8 rounded-lg"
+                    style={{
+                      border: "1.5px solid var(--sidebar-active-indicator)",
+                      boxShadow: "0 0 0 2px rgba(144,14,176,0.12)",
+                    }}
+                  >
                     <AvatarImage
                       src={user?.imageUrl}
                       alt={user?.fullName || "User"}
                     />
-                    <AvatarFallback className="rounded-lg bg-slate-100 text-slate-800 text-xs font-semibold">
+                    <AvatarFallback
+                      className="rounded-lg text-xs font-semibold text-white"
+                      style={{ background: "var(--sidebar-brand-gradient)" }}
+                    >
                       {userInitials}
                     </AvatarFallback>
                   </Avatar>
@@ -356,7 +393,7 @@ export const RadixSidebar = () => {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl border border-black/[0.05] bg-white/95 backdrop-blur-xl shadow-lg p-1.5 z-50"
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl border border-slate-200/50 bg-glass-elevated backdrop-blur-xl shadow-2xl p-1.5 z-50"
                 side={isMobile ? "bottom" : "right"}
                 align="end"
                 sideOffset={4}
@@ -384,7 +421,7 @@ export const RadixSidebar = () => {
                     <DropdownMenuGroup>
                       <DropdownMenuItem
                         asChild
-                        className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
+                        className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali transition-all duration-150 focus:bg-[var(--sidebar-dropdown-hover-bg)] focus:text-[var(--sidebar-dropdown-hover-text)]"
                       >
                         <Link
                           to="/dashboard/subscription"
@@ -406,7 +443,7 @@ export const RadixSidebar = () => {
                 <DropdownMenuGroup>
                   <DropdownMenuItem
                     asChild
-                    className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
+                    className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali transition-all duration-150 focus:bg-[var(--sidebar-dropdown-hover-bg)] focus:text-[var(--sidebar-dropdown-hover-text)]"
                   >
                     <Link
                       to="/dashboard/profile"
@@ -425,7 +462,7 @@ export const RadixSidebar = () => {
                   {userProfile?.userType === "Institution" && (
                     <DropdownMenuItem
                       asChild
-                      className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
+                      className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali transition-all duration-150 focus:bg-[var(--sidebar-dropdown-hover-bg)] focus:text-[var(--sidebar-dropdown-hover-text)]"
                     >
                       <Link
                         to="/dashboard/institution"
@@ -444,7 +481,7 @@ export const RadixSidebar = () => {
 
                   <DropdownMenuItem
                     asChild
-                    className="focus:bg-black/[0.03] focus:text-[#4F46E5] rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali"
+                    className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali transition-all duration-150 focus:bg-[var(--sidebar-dropdown-hover-bg)] focus:text-[var(--sidebar-dropdown-hover-text)]"
                   >
                     <Link
                       to="/dashboard/support"

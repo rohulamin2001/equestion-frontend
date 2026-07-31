@@ -151,20 +151,50 @@
 
     --radius: 0.625rem;
 
-    --chart-1: var(--purple-600); /* was #4f46e5 — everything else kept distinct for readability */
+    --chart-1: var(
+      --purple-600
+    ); /* was #4f46e5 — everything else kept distinct for readability */
     --chart-2: #10b981;
     --chart-3: #f97316;
     --chart-4: #06b6d4;
     --chart-5: #f43f5e;
 
+    /* ---- Sidebar base ---- */
     --sidebar: rgba(255, 255, 255, 0.3);
     --sidebar-foreground: #1e293b;
     --sidebar-primary: var(--purple-600);
     --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: rgba(144, 14, 176, 0.06); /* was rgba(0,0,0,0.03) — faint purple tint on hover/active */
+    --sidebar-accent: rgba(144, 14, 176, 0.06);
     --sidebar-accent-foreground: var(--purple-800);
     --sidebar-border: rgba(0, 0, 0, 0.05);
     --sidebar-ring: var(--purple-600);
+
+    /* ---- Sidebar brand header ---- */
+    --sidebar-brand-gradient: linear-gradient(
+      135deg,
+      var(--purple-700) 0%,
+      var(--purple-500) 100%
+    );
+    --sidebar-brand-shadow: 0 4px 14px 0 rgba(144, 14, 176, 0.3);
+
+    /* ---- Sidebar section label ---- */
+    --sidebar-section-label: #94a3b8; /* slate-400 – subtle, non-distracting */
+
+    /* ---- Sidebar hover state ---- */
+    --sidebar-hover-bg: rgba(144, 14, 176, 0.05);
+    --sidebar-hover-text: var(--purple-800);
+    --sidebar-hover-icon: var(--purple-700);
+
+    /* ---- Sidebar active state ---- */
+    --sidebar-active-bg: rgba(144, 14, 176, 0.1);
+    --sidebar-active-text: var(--purple-700);
+    --sidebar-active-icon: var(--purple-600);
+    --sidebar-active-indicator: var(--purple-600);
+
+    /* ---- Sidebar footer dropdown ---- */
+    --sidebar-dropdown-bg: rgba(255, 255, 255, 0.95);
+    --sidebar-dropdown-hover-bg: rgba(144, 14, 176, 0.05);
+    --sidebar-dropdown-hover-text: var(--purple-700);
   }
 
   .dark {
@@ -215,8 +245,10 @@
 
     /* ---- Modern-UI additions: shadows, motion, focus ---- */
     --shadow-sm: 0 1px 2px 0 rgba(88, 8, 95, 0.05);
-    --shadow-card: 0 1px 2px 0 rgba(88, 8, 95, 0.04), 0 6px 20px 0 rgba(88, 8, 95, 0.06);
-    --shadow-card-hover: 0 2px 4px 0 rgba(88, 8, 95, 0.06), 0 12px 28px 0 rgba(88, 8, 95, 0.10);
+    --shadow-card:
+      0 1px 2px 0 rgba(88, 8, 95, 0.04), 0 6px 20px 0 rgba(88, 8, 95, 0.06);
+    --shadow-card-hover:
+      0 2px 4px 0 rgba(88, 8, 95, 0.06), 0 12px 28px 0 rgba(88, 8, 95, 0.1);
     --shadow-glow-primary: 0 8px 24px 0 rgba(144, 14, 176, 0.22);
 
     --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
@@ -320,13 +352,18 @@
 
   /* Soft, purple-tinted elevation — use instead of default shadow-md/lg
      for a warmer, on-brand shadow instead of neutral gray shadows */
-  .shadow-soft { box-shadow: var(--shadow-card) !important; }
-  .shadow-soft-hover:hover { box-shadow: var(--shadow-card-hover) !important; }
+  .shadow-soft {
+    box-shadow: var(--shadow-card) !important;
+  }
+  .shadow-soft-hover:hover {
+    box-shadow: var(--shadow-card-hover) !important;
+  }
 
   /* Consistent hover-lift for cards/buttons — subtle motion, not bouncy */
   .hover-lift {
-    transition: transform var(--duration-base) var(--ease-standard),
-                box-shadow var(--duration-base) var(--ease-standard);
+    transition:
+      transform var(--duration-base) var(--ease-standard),
+      box-shadow var(--duration-base) var(--ease-standard);
   }
   .hover-lift:hover {
     transform: translateY(-2px);
