@@ -84,6 +84,9 @@ export function validateQuestionsJson(jsonInput) {
     };
   }
 
+  // Auto-detect and normalize 1-based MCQ indexing (1, 2, 3, 4) -> (0, 1, 2, 3)
+  detectAndNormalizeMcqPayload(questions);
+
   const errors = [];
   const validQuestions = [];
   let mcqCount = 0;
@@ -304,7 +307,10 @@ export function validateQuestionsJson(jsonInput) {
  * Validates raw pasted JSON text for a specific category (without top-level metadata requirements).
  * Top-level metadata (Class, Subject, Chapter, Category, etc.) will be injected automatically from UI state.
  */
-export function validateCategoryQuestionsJson(jsonInput, targetCategory = "MCQ") {
+export function validateCategoryQuestionsJson(
+  jsonInput,
+  targetCategory = "MCQ",
+) {
   if (!jsonInput || typeof jsonInput !== "string" || !jsonInput.trim()) {
     return {
       isValid: false,
@@ -333,7 +339,10 @@ export function validateCategoryQuestionsJson(jsonInput, targetCategory = "MCQ")
     if (!item || typeof item !== "object" || item._instructions) return;
 
     // Handle Grouped MCQ structure (isGroup: true or passageStem with nested questions array)
-    if ((item.isGroup || item.passageStem || item.stem) && Array.isArray(item.questions)) {
+    if (
+      (item.isGroup || item.passageStem || item.stem) &&
+      Array.isArray(item.questions)
+    ) {
       const gId =
         item.passageGroupId ||
         `passage_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -344,7 +353,8 @@ export function validateCategoryQuestionsJson(jsonInput, targetCategory = "MCQ")
             ...gq,
             passageGroupId: gId,
             passageStem: stemText,
-            passageOrder: typeof gq.passageOrder === "number" ? gq.passageOrder : idx,
+            passageOrder:
+              typeof gq.passageOrder === "number" ? gq.passageOrder : idx,
           });
         }
       });
@@ -356,7 +366,11 @@ export function validateCategoryQuestionsJson(jsonInput, targetCategory = "MCQ")
   if (Array.isArray(rawData)) {
     rawData.forEach(processItem);
   } else if (typeof rawData === "object" && rawData !== null) {
-    if (Array.isArray(rawData.questions) && !rawData.passageStem && !rawData.stem) {
+    if (
+      Array.isArray(rawData.questions) &&
+      !rawData.passageStem &&
+      !rawData.stem
+    ) {
       rawData.questions.forEach(processItem);
     } else {
       processItem(rawData);
@@ -372,6 +386,9 @@ export function validateCategoryQuestionsJson(jsonInput, targetCategory = "MCQ")
       totalCount: 0,
     };
   }
+
+  // Auto-detect and normalize 1-based MCQ indexing (1, 2, 3, 4) -> (0, 1, 2, 3)
+  detectAndNormalizeMcqPayload(questionsList);
 
   const errors = [];
   const validQuestions = [];
@@ -401,7 +418,9 @@ export function validateCategoryQuestionsJson(jsonInput, targetCategory = "MCQ")
           );
         }
         if (!Array.isArray(mcq.options) || mcq.options.length < 2) {
-          errors.push(`${prefix} [MCQ]: 'mcqData.options' এ অন্তত ২টি অপশন থাকতে হবে।`);
+          errors.push(
+            `${prefix} [MCQ]: 'mcqData.options' এ অন্তত ২টি অপশন থাকতে হবে।`,
+          );
         } else if (mcq.options.some((opt) => isHtmlEmpty(opt))) {
           errors.push(
             `${prefix} [MCQ]: 'mcqData.options' এর কোনো অপশন খালি রাখা যাবে না।`,
@@ -485,3 +504,69 @@ export function validateCategoryQuestionsJson(jsonInput, targetCategory = "MCQ")
   };
 }
 
+/**
+ * Detects whether an MCQ payload uses 1-based indexing (1, 2, 3, 4)
+ * and automatically normalizes correctAnswer values to 0-based indexing (0, 1, 2, 3).
+ */
+export function detectAndNormalizeMcqPayload(questionsList) {
+  if (!Array.isArray(questionsList)) return;
+
+  const mcqItems = [];
+  const collectMcq = (q) => {
+    if (!q || typeof q !== "object") return;
+    if (q.mcqData && typeof q.mcqData === "object") {
+      mcqItems.push(q.mcqData);
+    }
+    if (Array.isArray(q.questions)) {
+      q.questions.forEach(collectMcq);
+    }
+  };
+
+  questionsList.forEach(collectMcq);
+  if (mcqItems.length === 0) return;
+
+  let hasOutOfBoundsFor0Indexed = false;
+  let hasZero = false;
+  let allInRange1ToN = true;
+  let validMcqCount = 0;
+
+  mcqItems.forEach((mcq) => {
+    if (!mcq || !Array.isArray(mcq.options) || mcq.options.length < 2) return;
+    if (mcq.correctAnswer === undefined || mcq.correctAnswer === null) return;
+    const ans = Number(mcq.correctAnswer);
+    if (isNaN(ans)) return;
+
+    validMcqCount++;
+
+    if (ans === 0) {
+      hasZero = true;
+      allInRange1ToN = false;
+    } else if (ans === mcq.options.length) {
+      hasOutOfBoundsFor0Indexed = true;
+    } else if (ans < 1 || ans > mcq.options.length) {
+      allInRange1ToN = false;
+    }
+  });
+
+  const is1IndexedPayload =
+    hasOutOfBoundsFor0Indexed ||
+    (!hasZero && allInRange1ToN && validMcqCount > 0);
+
+  mcqItems.forEach((mcq) => {
+    if (!mcq || !Array.isArray(mcq.options) || mcq.options.length < 2) return;
+    if (mcq.correctAnswer === undefined || mcq.correctAnswer === null) return;
+    const ans = Number(mcq.correctAnswer);
+    if (isNaN(ans)) return;
+
+    if (is1IndexedPayload) {
+      if (ans >= 1 && ans <= mcq.options.length) {
+        mcq.correctAnswer = ans - 1;
+      }
+    } else {
+      // Safety fallback: if a single question has ans === mcq.options.length (e.g. 4 for 4 options)
+      if (ans === mcq.options.length) {
+        mcq.correctAnswer = ans - 1;
+      }
+    }
+  });
+}

@@ -42,7 +42,7 @@ export default function CreatedQuestions() {
   if (isLoading) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center space-y-3">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--purple-600)]" />
         <p className="text-slate-500 font-bold text-sm font-bengali">
           আপনার তৈরিকৃত প্রশ্নপত্র লোড হচ্ছে...
         </p>
@@ -53,19 +53,19 @@ export default function CreatedQuestions() {
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       {/* Header section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-glass-elevated border border-slate-200/50 p-6 rounded-2xl shadow-sm">
-        <div className="space-y-1.5 text-left">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-glass-elevated border border-slate-200/50 p-6 rounded-2xl shadow-sm relative overflow-hidden">
+        <div className="space-y-1.5 text-left z-10">
           <h2 className="text-xl font-black text-slate-800 font-bengali tracking-tight">
             তৈরিকৃত প্রশ্ন সংগ্রহশালা
           </h2>
-          <p className="text-xs text-slate-400 font-semibold font-bengali">
+          <p className="text-xs text-slate-500 font-semibold font-bengali">
             আপনার এক ক্লিকে জেনারেট করা প্রশ্নপত্রগুলোর ক্লাস-ভিত্তিক তালিকা
             নিচে ফোল্ডার আকারে সাজানো আছে।
           </p>
         </div>
         <Link
           to="/dashboard/generate"
-          className="px-5 py-2.5 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-xl text-xs font-bold font-bengali shadow-md shadow-indigo-600/10 transition-all text-center self-start md:self-auto cursor-pointer"
+          className="px-5 py-2.5 bg-gradient-to-r from-[var(--purple-700)] to-[var(--purple-600)] hover:from-[var(--purple-800)] hover:to-[var(--purple-700)] text-white rounded-xl text-xs font-bold font-bengali shadow-md shadow-[var(--purple-600)]/20 transition-all text-center self-start md:self-auto cursor-pointer z-10"
         >
           নতুন প্রশ্ন জেনারেট করুন
         </Link>
@@ -74,7 +74,7 @@ export default function CreatedQuestions() {
       {/* Category selection tabs - dynamically rendered from activeVersions */}
       {activeVersions.length > 0 && (
         <div className="flex justify-start">
-          <div className="bg-slate-100 p-1.5 rounded-2xl flex flex-wrap gap-1 border border-slate-200/60 shadow-inner relative">
+          <div className="bg-slate-100/80 p-1.5 rounded-2xl flex flex-wrap gap-1 border border-slate-200/60 shadow-inner relative">
             {[
               {
                 id: "Bangla",
@@ -104,14 +104,14 @@ export default function CreatedQuestions() {
                     }}
                     className={`relative px-4 py-2 rounded-xl text-xs font-bold font-bengali transition-colors duration-200 flex items-center gap-2 cursor-pointer select-none z-10 ${
                       isSelected
-                        ? "text-indigo-700"
+                        ? "text-[var(--purple-700)]"
                         : "text-slate-500 hover:text-slate-800"
                     }`}
                   >
                     {isSelected && (
                       <motion.div
                         layoutId="activeCreatedVersionTab"
-                        className="absolute inset-0 bg-white rounded-xl shadow-sm border border-slate-200/50 -z-10"
+                        className="absolute inset-0 bg-white rounded-xl shadow-sm border border-purple-200/50 -z-10"
                         transition={{
                           type: "spring",
                           stiffness: 400,
@@ -123,7 +123,7 @@ export default function CreatedQuestions() {
                     <span
                       className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
                         isSelected
-                          ? "bg-indigo-50 text-indigo-700 font-extrabold"
+                          ? "bg-[var(--purple-50)] text-[var(--purple-700)] font-extrabold"
                           : "bg-slate-200/70 text-slate-500 font-bold"
                       }`}
                     >
@@ -156,8 +156,8 @@ export default function CreatedQuestions() {
                 key={clsName}
                 className={`bg-glass-elevated border rounded-2xl transition-all duration-300 overflow-hidden ${
                   isExpanded
-                    ? "border-indigo-200 shadow-md ring-1 ring-indigo-500/5"
-                    : "border-slate-200/50 shadow-sm hover:border-slate-350"
+                    ? "border-[var(--purple-200)] shadow-md ring-1 ring-[var(--purple-600)]/10"
+                    : "border-slate-200/50 shadow-sm hover:border-purple-200/60 hover:shadow-md"
                 }`}
               >
                 {/* Folder Header */}
@@ -167,10 +167,10 @@ export default function CreatedQuestions() {
                 >
                   <div className="flex items-center gap-4 text-left">
                     <div
-                      className={`p-3 rounded-xl transition ${
+                      className={`p-3 rounded-xl transition-all duration-200 ${
                         isExpanded
-                          ? "bg-indigo-50 text-indigo-600"
-                          : "bg-slate-50 text-slate-500"
+                          ? "bg-[var(--purple-50)] text-[var(--purple-600)] shadow-xs"
+                          : "bg-slate-100/70 text-slate-500 group-hover:bg-purple-50 group-hover:text-purple-600"
                       }`}
                     >
                       {isExpanded ? (
@@ -204,7 +204,7 @@ export default function CreatedQuestions() {
                       transition={{ duration: 0.25, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="border-t border-slate-100 bg-[#FAFAFC]/40 p-5">
+                      <div className="border-t border-purple-100/50 bg-slate-50/50 p-5">
                         {sets.length === 0 ? (
                           <div className="text-center py-8 space-y-2 border border-dashed border-slate-200 rounded-xl bg-white/50">
                             <HelpCircle className="size-8 text-slate-300 mx-auto" />
@@ -218,14 +218,14 @@ export default function CreatedQuestions() {
                               <Link
                                 key={set._id}
                                 to={`/dashboard/questions?setId=${set._id}`}
-                                className="group relative flex items-start gap-4 p-4 border border-slate-200/50 bg-white hover:border-indigo-200 hover:bg-indigo-50/5 rounded-xl shadow-sm hover:shadow transition-all duration-200 text-left"
+                                className="group relative flex items-start gap-4 p-4 border border-slate-200/60 bg-white/90 hover:bg-white hover:border-[var(--purple-200)] hover:shadow-md transition-all duration-200 rounded-xl text-left"
                               >
-                                <div className="p-2.5 bg-indigo-50 text-indigo-500 rounded-xl">
+                                <div className="p-2.5 bg-[var(--purple-50)] text-[var(--purple-600)] rounded-xl group-hover:scale-105 transition-transform">
                                   <FileText className="size-5" />
                                 </div>
 
                                 <div className="space-y-1.5 flex-1 min-w-0 pr-8">
-                                  <h4 className="text-[13px] font-black text-slate-800 font-bengali truncate group-hover:text-indigo-700 transition">
+                                  <h4 className="text-[13px] font-black text-slate-800 font-bengali truncate group-hover:text-[var(--purple-700)] transition">
                                     {set.examName}
                                   </h4>
 
@@ -286,7 +286,7 @@ export default function CreatedQuestions() {
               </p>
               <Link
                 to="/dashboard/subscription"
-                className="inline-block px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold font-bengali shadow mt-2"
+                className="inline-block px-5 py-2 bg-[var(--purple-600)] hover:bg-[var(--purple-700)] text-white rounded-xl text-xs font-bold font-bengali shadow-md shadow-[var(--purple-600)]/20 mt-2 transition-all"
               >
                 সাবস্ক্রিপশন কিনুন
               </Link>
