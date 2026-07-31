@@ -835,7 +835,7 @@ export default function AddQuestion() {
               exit={{ opacity: 0, x: -15 }}
               className="bg-glass p-3.5 sm:p-8 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4 sm:space-y-6"
             >
-              <div className="flex flex-row justify-between items-center gap-2 border-b border-black/[0.05] pb-2.5 sm:pb-3.5">
+              <div className="flex flex-col items-start gap-1.5 sm:gap-2 border-b border-black/[0.05] pb-2.5 sm:pb-3.5">
                 <h3 className="font-bold text-slate-800 text-sm sm:text-lg flex items-center gap-1.5 sm:gap-2">
                   <HelpCircle className="size-4 sm:size-5 text-purple-600" />
                   <span>
@@ -853,19 +853,10 @@ export default function AddQuestion() {
                   const selectedSubject = qm.formSubjects.find(
                     (s) => s._id === qm.formSubjectId,
                   )?.subjectName;
-                  const selectedChapterObj = qm.formChapters?.find(
-                    (ch) =>
-                      String(ch.chapterNumber) === String(qm.formChapterNumber),
-                  );
-                  const chapterText = qm.formChapterNumber
-                    ? selectedChapterObj?.chapterName
-                      ? `অধ্যায় ${qm.formChapterNumber}: ${selectedChapterObj.chapterName}`
-                      : `অধ্যায় ${qm.formChapterNumber}`
-                    : "অধ্যায় সিলেক্ট করা নেই";
 
                   return (
                     <span className="bg-white/80 border border-black/[0.08] backdrop-blur-sm text-slate-700 font-bold text-[11px] sm:text-xs px-3 py-1 rounded-full shrink-0 shadow-2xs">
-                      {selectedClass} • {selectedSubject} • {chapterText}
+                      {selectedClass} • {selectedSubject}
                     </span>
                   );
                 })()}
