@@ -865,16 +865,7 @@ export default function AddQuestion() {
 
                   return (
                     <span className="bg-white/80 border border-black/[0.08] backdrop-blur-sm text-slate-700 font-bold text-[11px] sm:text-xs px-3 py-1 rounded-full shrink-0 shadow-2xs">
-                      {selectedClass} • {selectedSubject} •{" "}
-                      <span
-                        className={
-                          !qm.formChapterNumber
-                            ? "text-amber-700  font-semibold"
-                            : ""
-                        }
-                      >
-                        {chapterText}
-                      </span>
+                      {selectedClass} • {selectedSubject} • {chapterText}
                     </span>
                   );
                 })()}
@@ -930,26 +921,24 @@ export default function AddQuestion() {
                       : "অধ্যায় সিলেক্ট করা নেই";
 
                     return (
-                      <div className="flex items-center gap-2">
-                        <span className="bg-purple-50/90 border border-purple-200/90 backdrop-blur-sm text-purple-950 font-bold text-xs sm:text-sm px-3.5 py-1.5 rounded-xl shadow-2xs flex items-center gap-2 flex-wrap">
-                          <span className="size-2 rounded-full bg-purple-600 animate-pulse shrink-0" />
-                          {selectedClass && <span>{selectedClass}</span>}
-                          {selectedSubject && (
-                            <>
-                              <span>•</span>
-                              <span>{selectedSubject}</span>
-                            </>
-                          )}
-                          <span>•</span>
-                          <span
-                            className={
-                              !qm.formChapterNumber
-                                ? "text-amber-700  font-semibold"
-                                : ""
-                            }
-                          >
-                            {chapterText}
-                          </span>
+                      <div className="w-full bg-purple-50/90 border border-purple-200/90 backdrop-blur-sm text-purple-950 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-2xl shadow-2xs flex items-center gap-2 flex-wrap">
+                        <span className="size-2 rounded-full bg-purple-600 animate-pulse shrink-0" />
+                        {selectedClass && <span>{selectedClass}</span>}
+                        {selectedSubject && (
+                          <>
+                            <span>•</span>
+                            <span>{selectedSubject}</span>
+                          </>
+                        )}
+                        <span>•</span>
+                        <span
+                          className={
+                            !qm.formChapterNumber
+                              ? "text-amber-700 font-semibold"
+                              : ""
+                          }
+                        >
+                          {chapterText}
                         </span>
                       </div>
                     );
