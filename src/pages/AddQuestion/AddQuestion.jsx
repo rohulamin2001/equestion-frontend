@@ -835,7 +835,7 @@ export default function AddQuestion() {
               exit={{ opacity: 0, x: -15 }}
               className="bg-glass p-3.5 sm:p-8 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4 sm:space-y-6"
             >
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-black/[0.05] pb-2.5 sm:pb-3.5">
+              <div className="flex flex-row justify-between items-center gap-2 border-b border-black/[0.05] pb-2.5 sm:pb-3.5">
                 <h3 className="font-bold text-slate-800 text-sm sm:text-lg flex items-center gap-1.5 sm:gap-2">
                   <HelpCircle className="size-4 sm:size-5 text-purple-600" />
                   <span>
@@ -846,7 +846,7 @@ export default function AddQuestion() {
                     }
                   </span>
                 </h3>
-                <span className="bg-white/[0.45] border border-black/[0.06] backdrop-blur-sm text-slate-600 font-bold text-[10px] sm:text-xs px-2.5 py-0.5 sm:py-1 rounded-full">
+                <span className="bg-white/80 border border-black/[0.08] backdrop-blur-sm text-slate-700 font-bold text-[11px] sm:text-xs px-3 py-1 rounded-full shrink-0 shadow-2xs">
                   {CLASSES_MAP.find((c) => c.value === qm.formClass)?.label} •{" "}
                   {
                     qm.formSubjects.find((s) => s._id === qm.formSubjectId)
@@ -885,6 +885,47 @@ export default function AddQuestion() {
 
               {qm.step2EditorMode === "json" ? (
                 <div className="space-y-4 animate-in fade-in duration-200 pt-2">
+                  {/* Selected Class, Subject & Chapter Info Pill for Smart JSON */}
+                  {(() => {
+                    const selectedClass = CLASSES_MAP.find(
+                      (c) => c.value === qm.formClass,
+                    )?.label;
+                    const selectedSubject = qm.formSubjects.find(
+                      (s) => s._id === qm.formSubjectId,
+                    )?.subjectName;
+                    const selectedChapterObj = qm.formChapters?.find(
+                      (ch) =>
+                        String(ch.chapterNumber) ===
+                        String(qm.formChapterNumber),
+                    );
+                    const chapterText = qm.formChapterNumber
+                      ? selectedChapterObj?.chapterName
+                        ? `অধ্যায় ${qm.formChapterNumber}: ${selectedChapterObj.chapterName}`
+                        : `অধ্যায় ${qm.formChapterNumber}`
+                      : "";
+
+                    return (
+                      <div className="flex items-center gap-2">
+                        <span className="bg-purple-50/90 border border-purple-200/90 backdrop-blur-sm text-purple-950 font-bold text-xs sm:text-sm px-3.5 py-1.5 rounded-xl shadow-2xs flex items-center gap-2">
+                          <span className="size-2 rounded-full bg-purple-600 animate-pulse" />
+                          {selectedClass && <span>{selectedClass}</span>}
+                          {selectedSubject && (
+                            <>
+                              <span>•</span>
+                              <span>{selectedSubject}</span>
+                            </>
+                          )}
+                          {chapterText && (
+                            <>
+                              <span>•</span>
+                              <span>{chapterText}</span>
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    );
+                  })()}
+
                   {/* Info Notice */}
                   <div className="p-3.5 sm:p-4 bg-purple-50/80 border border-purple-200/80 rounded-2xl flex items-start gap-3">
                     <AlertCircle className="size-5 text-purple-600 shrink-0 mt-0.5" />
