@@ -77,6 +77,17 @@ const DIFFICULTY_MAP = {
   },
 };
 
+const getFormattedTagValue = (val) => {
+  if (!val) return "";
+  if (Array.isArray(val)) {
+    return val
+      .map((item) => (item != null ? String(item).trim() : ""))
+      .filter(Boolean)
+      .join(", ");
+  }
+  return String(val).trim();
+};
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -1320,44 +1331,33 @@ export default function QuestionBank() {
                           #{q.topics.join(", #")}
                         </span>
                       )}
-                      {q.year &&
-                        (Array.isArray(q.year)
-                          ? q.year.length > 0
-                          : String(q.year).trim()) && (
-                          <span className="bg-amber-50 text-amber-700 border border-amber-202 px-2 py-0.5 rounded">
-                            সাল:{" "}
-                            {Array.isArray(q.year) ? q.year.join(", ") : q.year}
+                      {(() => {
+                        const formattedYear = getFormattedTagValue(q.year);
+                        return formattedYear ? (
+                          <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
+                            সাল: {formattedYear}
                           </span>
-                        )}
-                      {q.board &&
-                        (Array.isArray(q.board)
-                          ? q.board.length > 0
-                          : String(q.board).trim()) && (
+                        ) : null;
+                      })()}
+                      {(() => {
+                        const formattedBoard = getFormattedTagValue(q.board);
+                        return formattedBoard ? (
                           <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
-                            বোর্ড:{" "}
-                            {Array.isArray(q.board)
-                              ? q.board.join(", ")
-                              : q.board}
+                            বোর্ড: {formattedBoard}
                           </span>
-                        )}
-                      {q.school &&
-                        (Array.isArray(q.school)
-                          ? q.school.length > 0
-                          : String(q.school).trim()) && (
+                        ) : null;
+                      })()}
+                      {(() => {
+                        const formattedSchool = getFormattedTagValue(q.school);
+                        return formattedSchool ? (
                           <span
                             className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[150px]"
-                            title={
-                              Array.isArray(q.school)
-                                ? q.school.join(", ")
-                                : q.school
-                            }
+                            title={formattedSchool}
                           >
-                            প্রতিষ্ঠান:{" "}
-                            {Array.isArray(q.school)
-                              ? q.school.join(", ")
-                              : q.school}
+                            প্রতিষ্ঠান: {formattedSchool}
                           </span>
-                        )}
+                        ) : null;
+                      })()}
                       {q.level && String(q.level).trim() && (
                         <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
                           লেভেল: {LEVEL_LABELS[q.level] || q.level}
@@ -1934,48 +1934,33 @@ export default function QuestionBank() {
                       </span>
                     </div>
 
-                    {selectedPreviewQuestion.year &&
-                      (Array.isArray(selectedPreviewQuestion.year)
-                        ? selectedPreviewQuestion.year.length > 0
-                        : String(selectedPreviewQuestion.year).trim()) && (
+                    {(() => {
+                      const formattedYear = getFormattedTagValue(selectedPreviewQuestion.year);
+                      return formattedYear ? (
                         <div className="bg-amber-50 text-amber-700 border border-amber-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
                           <span className="size-1.5 rounded-full bg-amber-500" />
-                          <span>
-                            সাল:{" "}
-                            {Array.isArray(selectedPreviewQuestion.year)
-                              ? selectedPreviewQuestion.year.join(", ")
-                              : selectedPreviewQuestion.year}
-                          </span>
+                          <span>সাল: {formattedYear}</span>
                         </div>
-                      )}
-                    {selectedPreviewQuestion.board &&
-                      (Array.isArray(selectedPreviewQuestion.board)
-                        ? selectedPreviewQuestion.board.length > 0
-                        : String(selectedPreviewQuestion.board).trim()) && (
+                      ) : null;
+                    })()}
+                    {(() => {
+                      const formattedBoard = getFormattedTagValue(selectedPreviewQuestion.board);
+                      return formattedBoard ? (
                         <div className="bg-blue-50 text-blue-700 border border-blue-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
                           <span className="size-1.5 rounded-full bg-blue-500" />
-                          <span>
-                            বোর্ড:{" "}
-                            {Array.isArray(selectedPreviewQuestion.board)
-                              ? selectedPreviewQuestion.board.join(", ")
-                              : selectedPreviewQuestion.board}
-                          </span>
+                          <span>বোর্ড: {formattedBoard}</span>
                         </div>
-                      )}
-                    {selectedPreviewQuestion.school &&
-                      (Array.isArray(selectedPreviewQuestion.school)
-                        ? selectedPreviewQuestion.school.length > 0
-                        : String(selectedPreviewQuestion.school).trim()) && (
+                      ) : null;
+                    })()}
+                    {(() => {
+                      const formattedSchool = getFormattedTagValue(selectedPreviewQuestion.school);
+                      return formattedSchool ? (
                         <div className="bg-purple-50 text-purple-700 border border-purple-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
                           <span className="size-1.5 rounded-full bg-purple-500" />
-                          <span>
-                            শিক্ষা প্রতিষ্ঠান:{" "}
-                            {Array.isArray(selectedPreviewQuestion.school)
-                              ? selectedPreviewQuestion.school.join(", ")
-                              : selectedPreviewQuestion.school}
-                          </span>
+                          <span>শিক্ষা প্রতিষ্ঠান: {formattedSchool}</span>
                         </div>
-                      )}
+                      ) : null;
+                    })()}
                     {selectedPreviewQuestion.level &&
                       String(selectedPreviewQuestion.level).trim() && (
                         <div className="bg-rose-50 text-rose-700 border border-rose-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">

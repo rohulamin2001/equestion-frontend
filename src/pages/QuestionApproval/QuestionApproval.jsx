@@ -95,6 +95,17 @@ const formatBengaliDateTime = (dateString) => {
   return `${day} ${month}, ${year} (সময়: ${time})`;
 };
 
+const getFormattedTagValue = (val) => {
+  if (!val) return "";
+  if (Array.isArray(val)) {
+    return val
+      .map((item) => (item != null ? String(item).trim() : ""))
+      .filter(Boolean)
+      .join(", ");
+  }
+  return String(val).trim();
+};
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -1165,25 +1176,31 @@ export default function QuestionApproval() {
                         <Calendar className="size-3.5 text-slate-400" />
                         <span>তারিখ: {formatBengaliDate(qMeta.createdAt)}</span>
                       </div>
-                      {qMeta.status === "Approved" && qMeta.approvedBy?.fullName && (
-                        <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
-                          <Check className="size-3 text-emerald-600" />
-                          <span>অনুমোদনকারী: {qMeta.approvedBy.fullName}</span>
-                        </div>
-                      )}
-                      {qMeta.status === "Rejected" && qMeta.rejectedBy?.fullName && (
-                        <div className="flex items-center gap-1 text-rose-600 bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/10">
-                          <XCircle className="size-3 text-rose-600" />
-                          <span>বাতিলকারী: {qMeta.rejectedBy.fullName}</span>
-                        </div>
-                      )}
+                      {qMeta.status === "Approved" &&
+                        qMeta.approvedBy?.fullName && (
+                          <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
+                            <Check className="size-3 text-emerald-600" />
+                            <span>
+                              অনুমোদনকারী: {qMeta.approvedBy.fullName}
+                            </span>
+                          </div>
+                        )}
+                      {qMeta.status === "Rejected" &&
+                        qMeta.rejectedBy?.fullName && (
+                          <div className="flex items-center gap-1 text-rose-600 bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/10">
+                            <XCircle className="size-3 text-rose-600" />
+                            <span>বাতিলকারী: {qMeta.rejectedBy.fullName}</span>
+                          </div>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => setSelectedPreviewQuestion(item.questions[0])}
+                        onClick={() =>
+                          setSelectedPreviewQuestion(item.questions[0])
+                        }
                         className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
                       >
                         <Eye className="size-3" />
@@ -1255,44 +1272,33 @@ export default function QuestionApproval() {
                         #{q.topics.join(", #")}
                       </span>
                     )}
-                    {q.year &&
-                      (Array.isArray(q.year)
-                        ? q.year.length > 0
-                        : String(q.year).trim()) && (
+                    {(() => {
+                      const formattedYear = getFormattedTagValue(q.year);
+                      return formattedYear ? (
                         <span className="bg-amber-55 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
-                          সাল:{" "}
-                          {Array.isArray(q.year) ? q.year.join(", ") : q.year}
+                          সাল: {formattedYear}
                         </span>
-                      )}
-                    {q.board &&
-                      (Array.isArray(q.board)
-                        ? q.board.length > 0
-                        : String(q.board).trim()) && (
+                      ) : null;
+                    })()}
+                    {(() => {
+                      const formattedBoard = getFormattedTagValue(q.board);
+                      return formattedBoard ? (
                         <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
-                          বোর্ড:{" "}
-                          {Array.isArray(q.board)
-                            ? q.board.join(", ")
-                            : q.board}
+                          বোর্ড: {formattedBoard}
                         </span>
-                      )}
-                    {q.school &&
-                      (Array.isArray(q.school)
-                        ? q.school.length > 0
-                        : String(q.school).trim()) && (
+                      ) : null;
+                    })()}
+                    {(() => {
+                      const formattedSchool = getFormattedTagValue(q.school);
+                      return formattedSchool ? (
                         <span
                           className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[150px]"
-                          title={
-                            Array.isArray(q.school)
-                              ? q.school.join(", ")
-                              : q.school
-                          }
+                          title={formattedSchool}
                         >
-                          প্রতিষ্ঠান:{" "}
-                          {Array.isArray(q.school)
-                            ? q.school.join(", ")
-                            : q.school}
+                          প্রতিষ্ঠান: {formattedSchool}
                         </span>
-                      )}
+                      ) : null;
+                    })()}
                     {q.level && String(q.level).trim() && (
                       <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
                         লেভেল: {LEVEL_LABELS[q.level] || q.level}
@@ -1934,48 +1940,39 @@ export default function QuestionApproval() {
                       </span>
                     </div>
 
-                    {selectedPreviewQuestion.year &&
-                      (Array.isArray(selectedPreviewQuestion.year)
-                        ? selectedPreviewQuestion.year.length > 0
-                        : String(selectedPreviewQuestion.year).trim()) && (
+                    {(() => {
+                      const formattedYear = getFormattedTagValue(
+                        selectedPreviewQuestion.year,
+                      );
+                      return formattedYear ? (
                         <div className="bg-amber-50 text-amber-700 border border-amber-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
                           <span className="size-1.5 rounded-full bg-amber-500" />
-                          <span>
-                            সাল:{" "}
-                            {Array.isArray(selectedPreviewQuestion.year)
-                              ? selectedPreviewQuestion.year.join(", ")
-                              : selectedPreviewQuestion.year}
-                          </span>
+                          <span>সাল: {formattedYear}</span>
                         </div>
-                      )}
-                    {selectedPreviewQuestion.board &&
-                      (Array.isArray(selectedPreviewQuestion.board)
-                        ? selectedPreviewQuestion.board.length > 0
-                        : String(selectedPreviewQuestion.board).trim()) && (
+                      ) : null;
+                    })()}
+                    {(() => {
+                      const formattedBoard = getFormattedTagValue(
+                        selectedPreviewQuestion.board,
+                      );
+                      return formattedBoard ? (
                         <div className="bg-blue-50 text-blue-700 border border-blue-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
                           <span className="size-1.5 rounded-full bg-blue-500" />
-                          <span>
-                            বোর্ড:{" "}
-                            {Array.isArray(selectedPreviewQuestion.board)
-                              ? selectedPreviewQuestion.board.join(", ")
-                              : selectedPreviewQuestion.board}
-                          </span>
+                          <span>বোর্ড: {formattedBoard}</span>
                         </div>
-                      )}
-                    {selectedPreviewQuestion.school &&
-                      (Array.isArray(selectedPreviewQuestion.school)
-                        ? selectedPreviewQuestion.school.length > 0
-                        : String(selectedPreviewQuestion.school).trim()) && (
+                      ) : null;
+                    })()}
+                    {(() => {
+                      const formattedSchool = getFormattedTagValue(
+                        selectedPreviewQuestion.school,
+                      );
+                      return formattedSchool ? (
                         <div className="bg-purple-50 text-purple-700 border border-purple-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
                           <span className="size-1.5 rounded-full bg-purple-500" />
-                          <span>
-                            শিক্ষা প্রতিষ্ঠান:{" "}
-                            {Array.isArray(selectedPreviewQuestion.school)
-                              ? selectedPreviewQuestion.school.join(", ")
-                              : selectedPreviewQuestion.school}
-                          </span>
+                          <span>শিক্ষা প্রতিষ্ঠান: {formattedSchool}</span>
                         </div>
-                      )}
+                      ) : null;
+                    })()}
                     {selectedPreviewQuestion.level &&
                       String(selectedPreviewQuestion.level).trim() && (
                         <div className="bg-rose-50 text-rose-700 border border-rose-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">

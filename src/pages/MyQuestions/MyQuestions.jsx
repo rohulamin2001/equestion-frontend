@@ -88,6 +88,17 @@ const DIFFICULTY_MAP = {
   },
 };
 
+const getFormattedTagValue = (val) => {
+  if (!val) return "";
+  if (Array.isArray(val)) {
+    return val
+      .map((item) => (item != null ? String(item).trim() : ""))
+      .filter(Boolean)
+      .join(", ");
+  }
+  return String(val).trim();
+};
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -1478,44 +1489,33 @@ export default function MyQuestions() {
                           #{q.topics.join(", #")}
                         </span>
                       )}
-                      {q.year &&
-                        (Array.isArray(q.year)
-                          ? q.year.length > 0
-                          : String(q.year).trim()) && (
+                      {(() => {
+                        const formattedYear = getFormattedTagValue(q.year);
+                        return formattedYear ? (
                           <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
-                            সাল:{" "}
-                            {Array.isArray(q.year) ? q.year.join(", ") : q.year}
+                            সাল: {formattedYear}
                           </span>
-                        )}
-                      {q.board &&
-                        (Array.isArray(q.board)
-                          ? q.board.length > 0
-                          : String(q.board).trim()) && (
+                        ) : null;
+                      })()}
+                      {(() => {
+                        const formattedBoard = getFormattedTagValue(q.board);
+                        return formattedBoard ? (
                           <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
-                            বোর্ড:{" "}
-                            {Array.isArray(q.board)
-                              ? q.board.join(", ")
-                              : q.board}
+                            বোর্ড: {formattedBoard}
                           </span>
-                        )}
-                      {q.school &&
-                        (Array.isArray(q.school)
-                          ? q.school.length > 0
-                          : String(q.school).trim()) && (
+                        ) : null;
+                      })()}
+                      {(() => {
+                        const formattedSchool = getFormattedTagValue(q.school);
+                        return formattedSchool ? (
                           <span
                             className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[150px]"
-                            title={
-                              Array.isArray(q.school)
-                                ? q.school.join(", ")
-                                : q.school
-                            }
+                            title={formattedSchool}
                           >
-                            প্রতিষ্ঠান:{" "}
-                            {Array.isArray(q.school)
-                              ? q.school.join(", ")
-                              : q.school}
+                            প্রতিষ্ঠান: {formattedSchool}
                           </span>
-                        )}
+                        ) : null;
+                      })()}
                       {q.level && String(q.level).trim() && (
                         <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
                           লেভেল: {LEVEL_LABELS[q.level] || q.level}

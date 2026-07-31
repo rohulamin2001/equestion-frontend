@@ -62,6 +62,17 @@ const stripHtml = (html) => {
   }
 };
 
+const getFormattedTagValue = (val) => {
+  if (!val) return "";
+  if (Array.isArray(val)) {
+    return val
+      .map((item) => (item != null ? String(item).trim() : ""))
+      .filter(Boolean)
+      .join(", ");
+  }
+  return String(val).trim();
+};
+
 const getJsonPlaceholder = (category, subType = "All") => {
   if (category === "MCQ") {
     if (subType === "Simple") {
@@ -2499,45 +2510,45 @@ export default function AddQuestion() {
                               >
                                 {diffConfig.label}
                               </span>
-                              {q.year &&
-                                (Array.isArray(q.year)
-                                  ? q.year.length > 0
-                                  : q.year) && (
+                              {(() => {
+                                const formattedYear = getFormattedTagValue(
+                                  q.year,
+                                );
+                                return formattedYear ? (
                                   <>
                                     <span>•</span>
                                     <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
-                                      {Array.isArray(q.year)
-                                        ? q.year.join(", ")
-                                        : q.year}
+                                      {formattedYear}
                                     </span>
                                   </>
-                                )}
-                              {q.board &&
-                                (Array.isArray(q.board)
-                                  ? q.board.length > 0
-                                  : q.board) && (
+                                ) : null;
+                              })()}
+                              {(() => {
+                                const formattedBoard = getFormattedTagValue(
+                                  q.board,
+                                );
+                                return formattedBoard ? (
                                   <>
                                     <span>•</span>
                                     <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
-                                      {Array.isArray(q.board)
-                                        ? q.board.join(", ")
-                                        : q.board}
+                                      {formattedBoard}
                                     </span>
                                   </>
-                                )}
-                              {q.school &&
-                                (Array.isArray(q.school)
-                                  ? q.school.length > 0
-                                  : q.school) && (
+                                ) : null;
+                              })()}
+                              {(() => {
+                                const formattedSchool = getFormattedTagValue(
+                                  q.school,
+                                );
+                                return formattedSchool ? (
                                   <>
                                     <span>•</span>
                                     <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[150px]">
-                                      {Array.isArray(q.school)
-                                        ? q.school.join(", ")
-                                        : q.school}
+                                      {formattedSchool}
                                     </span>
                                   </>
-                                )}
+                                ) : null;
+                              })()}
                               {q.level && (
                                 <>
                                   <span>•</span>
