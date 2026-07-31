@@ -145,6 +145,10 @@ export default function AddQuestion() {
     activeSpecialSearches,
     deleteConfirmId,
     setDeleteConfirmId,
+    clientDuplicates,
+    serverDuplicates,
+    isCheckingServerDuplicates,
+    handleRemoveDuplicateItem,
   } = useAddQuestion();
 
   return (
@@ -1068,6 +1072,87 @@ export default function AddQuestion() {
                     </div>
                   )}
 
+                  {/* Client-Side In-Payload Duplicate Alert Box */}
+                  {clientDuplicates.length > 0 && (
+                    <div className="bg-amber-500/10 backdrop-blur-md border border-amber-500/30 rounded-2xl p-3.5 sm:p-4 shadow-sm space-y-2 font-bengali">
+                      <div className="flex items-center gap-2 text-amber-800 font-bold text-[11px] sm:text-sm">
+                        <AlertCircle className="size-4 text-amber-600 shrink-0" />
+                        <span>
+                          পেস্টকৃত টেক্সটের অভ্যন্তরীণ ডুপ্লিকেট প্রশ্ন (
+                          {clientDuplicates.length}টি)
+                        </span>
+                      </div>
+                      <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        {clientDuplicates.map((dup) => (
+                          <div
+                            key={`client-dup-${dup.index}`}
+                            className="flex items-center justify-between gap-3 bg-white/80 border border-amber-200/60 p-2.5 rounded-xl text-xs text-slate-700 shadow-2xs"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0">
+                                প্রশ্ন #{dup.index}
+                              </span>
+                              <span className="truncate text-slate-600 italic">
+                                "{dup.text}" (প্রশ্ন #{dup.matchedWithIndex} এর
+                                সাথে মিল পাওয়া গেছে)
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleRemoveDuplicateItem(dup.index)
+                              }
+                              className="text-[11px] font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 px-2.5 py-1 rounded-lg border border-rose-200 hover:border-rose-600 transition shrink-0 flex items-center gap-1 cursor-pointer"
+                            >
+                              <Trash2 className="size-3" />
+                              <span>রিমুভ করুন</span>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Server-Side Database Duplicate Alert Box */}
+                  {serverDuplicates.length > 0 && (
+                    <div className="bg-rose-500/10 backdrop-blur-md border border-rose-500/30 rounded-2xl p-3.5 sm:p-4 shadow-sm space-y-2 font-bengali">
+                      <div className="flex items-center gap-2 text-rose-800 font-bold text-[11px] sm:text-sm">
+                        <AlertCircle className="size-4 text-rose-600 shrink-0" />
+                        <span>
+                          ডাটাবেজে ইতিমধ্যে বিদ্যমান ডুপ্লিকেট প্রশ্ন (
+                          {serverDuplicates.length}টি)
+                        </span>
+                      </div>
+                      <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        {serverDuplicates.map((dup) => (
+                          <div
+                            key={`server-dup-${dup.index}`}
+                            className="flex items-center justify-between gap-3 bg-white/80 border border-rose-200/60 p-2.5 rounded-xl text-xs text-slate-700 shadow-2xs"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0">
+                                প্রশ্ন #{dup.index}
+                              </span>
+                              <span className="truncate text-slate-600 italic">
+                                "{dup.text}"
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleRemoveDuplicateItem(dup.index)
+                              }
+                              className="text-[11px] font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 px-2.5 py-1 rounded-lg border border-rose-200 hover:border-rose-600 transition shrink-0 flex items-center gap-1 cursor-pointer"
+                            >
+                              <Trash2 className="size-3" />
+                              <span>রিমুভ করুন</span>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Textarea */}
                   <div className="relative group">
                     <textarea
@@ -1081,6 +1166,12 @@ export default function AddQuestion() {
                       className="w-full p-4 pt-11 font-mono text-xs bg-slate-900 text-slate-100 rounded-2xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500/50 shadow-inner resize-y leading-relaxed"
                     />
                     <div className="absolute top-2.5 right-3 flex items-center gap-1.5 z-10">
+                      {isCheckingServerDuplicates && (
+                        <span className="text-[11px] font-semibold text-amber-300 bg-slate-800/90 px-2.5 py-1 rounded-lg border border-slate-700 flex items-center gap-1.5 backdrop-blur-sm shadow-md">
+                          <Loader2 className="size-3 animate-spin text-amber-400" />
+                          <span>ডুপ্লিকেট চেকিং...</span>
+                        </span>
+                      )}
                       <button
                         type="button"
                         onClick={handlePasteFromClipboard}
@@ -1088,7 +1179,7 @@ export default function AddQuestion() {
                         title="ক্লিপবোর্ড থেকে অটো-পেস্ট করুন"
                       >
                         <ClipboardPaste className="size-3.5 text-emerald-400" />
-                        <span>অটো-পেস্ট</span>
+                        <span>পেস্ট</span>
                       </button>
                       {qm.rawPastedJsonText && (
                         <button
@@ -1165,7 +1256,9 @@ export default function AddQuestion() {
                         !validateCategoryQuestionsJson(
                           qm.rawPastedJsonText,
                           qm.formCategory,
-                        ).isValid
+                        ).isValid ||
+                        clientDuplicates.length > 0 ||
+                        serverDuplicates.length > 0
                       }
                       className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
                     >

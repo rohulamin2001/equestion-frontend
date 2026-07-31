@@ -3,10 +3,46 @@ import { CLASSES_MAP } from "@/constants/classes";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
 import apiClient from "@/lib/apiClient";
 import { useAuth } from "@clerk/react";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+
+const stripHtmlText = (html) => {
+  if (!html || typeof html !== "string") return "";
+  try {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const text = doc.body.textContent || doc.body.innerText || "";
+    return text.replace(/\u00a0/g, " ").trim();
+  } catch {
+    return html
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .trim();
+  }
+};
+
+const extractQuestionStem = (q, category) => {
+  if (!q || typeof q !== "object") return "";
+  if (category === "MCQ") {
+    return (
+      q.mcqData?.questionText ||
+      q.questionText ||
+      q.mcqData?.stem ||
+      q.stem ||
+      ""
+    ).trim();
+  } else if (category === "Creative") {
+    return (q.creativeData?.stem || q.stem || "").trim();
+  } else {
+    return (
+      q.generalData?.questionText ||
+      q.questionText ||
+      q.stem ||
+      ""
+    ).trim();
+  }
+};
 
 // Exported constants used by both hook and UI
 export const TYPE_LABELS = {
@@ -25,8 +61,14 @@ export const LEVEL_LABELS = {
 };
 
 export const DIFFICULTY_MAP = {
-  Easy: { label: "সহজ", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  Medium: { label: "মধ্যম", color: "bg-amber-50 text-amber-700 border-amber-200" },
+  Easy: {
+    label: "সহজ",
+    color: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  },
+  Medium: {
+    label: "মধ্যম",
+    color: "bg-amber-50 text-amber-700 border-amber-200",
+  },
   Hard: { label: "কঠিন", color: "bg-red-50 text-red-700 border-red-200" },
 };
 
@@ -60,7 +102,9 @@ export function useAddQuestion() {
     .filter((m) => m.type === "Year")
     .sort((a, b) => b.name.localeCompare(a.name, undefined, { numeric: true }));
   const activeLevels = metadataList.filter((m) => m.type === "Level");
-  const activeSpecialSearches = metadataList.filter((m) => m.type === "SpecialSearch");
+  const activeSpecialSearches = metadataList.filter(
+    (m) => m.type === "SpecialSearch",
+  );
 
   const editQuestion = location.state?.editQuestion;
 
@@ -72,24 +116,32 @@ export function useAddQuestion() {
     }
   }, [editQuestion, qm.handleOpenEditMode, navigate, location.pathname]);
 
-  const formActiveTypes = Array.from(new Set(qm.allowedClasses.map((c) => c.type)));
+  const formActiveTypes = Array.from(
+    new Set(qm.allowedClasses.map((c) => c.type)),
+  );
   const formActiveLevels = Array.from(
-    new Set(qm.allowedClasses.filter((c) => c.type === qm.formType).map((c) => c.level))
+    new Set(
+      qm.allowedClasses
+        .filter((c) => c.type === qm.formType)
+        .map((c) => c.level),
+    ),
   );
   const formActiveClasses = qm.allowedClasses.filter(
-    (c) => c.type === qm.formType && c.level === qm.formLevel
+    (c) => c.type === qm.formType && c.level === qm.formLevel,
   );
 
   const handleFormTypeChange = (type) => {
     qm.setFormType(type);
     const levels = Array.from(
-      new Set(qm.allowedClasses.filter((c) => c.type === type).map((c) => c.level))
+      new Set(
+        qm.allowedClasses.filter((c) => c.type === type).map((c) => c.level),
+      ),
     );
     if (levels.length > 0) {
       const firstLevel = levels[0];
       qm.setFormLevel(firstLevel);
       const classes = qm.allowedClasses.filter(
-        (c) => c.type === type && c.level === firstLevel
+        (c) => c.type === type && c.level === firstLevel,
       );
       if (classes.length > 0) {
         qm.setFormClass(classes[0].value, type, firstLevel);
@@ -104,7 +156,7 @@ export function useAddQuestion() {
   const handleFormLevelChange = (level) => {
     qm.setFormLevel(level);
     const classes = qm.allowedClasses.filter(
-      (c) => c.type === qm.formType && c.level === level
+      (c) => c.type === qm.formType && c.level === level,
     );
     if (classes.length > 0) {
       qm.setFormClass(classes[0].value, qm.formType, level);
@@ -172,8 +224,162 @@ export function useAddQuestion() {
 
   const handleTopicToggle = (topic) => {
     qm.setFormTopics((prev) =>
-      prev.includes(topic) ? prev.filter((t) => t !== topic) : [...prev, topic]
+      prev.includes(topic) ? prev.filter((t) => t !== topic) : [...prev, topic],
     );
+  };
+
+  // Client & Server Duplicate Detection States
+  const [serverDuplicates, setServerDuplicates] = useState([]);
+  const [isCheckingServerDuplicates, setIsCheckingServerDuplicates] =
+    useState(false);
+
+  // 1. Instant Client-Side Duplicate Check (Derived via useMemo)
+  const clientDuplicates = useMemo(() => {
+    if (
+      qm.activeStep !== 2 ||
+      qm.step2EditorMode !== "json" ||
+      !qm.rawPastedJsonText?.trim()
+    ) {
+      return [];
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(qm.rawPastedJsonText);
+    } catch {
+      return [];
+    }
+
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return [];
+    }
+
+    const clientDups = [];
+    const textMap = new Map();
+
+    parsed.forEach((q, idx) => {
+      const index = idx + 1;
+      const rawText = extractQuestionStem(q, qm.formCategory);
+      const strippedText = stripHtmlText(rawText);
+
+      if (strippedText) {
+        if (textMap.has(strippedText)) {
+          const firstIndex = textMap.get(strippedText);
+          clientDups.push({
+            index,
+            text: strippedText,
+            matchedWithIndex: firstIndex,
+          });
+        } else {
+          textMap.set(strippedText, index);
+        }
+      }
+    });
+
+    return clientDups;
+  }, [
+    qm.rawPastedJsonText,
+    qm.activeStep,
+    qm.step2EditorMode,
+    qm.formCategory,
+  ]);
+
+  // React Query Mutation for backend duplicate check
+  const checkDuplicateMutation = useMutation({
+    mutationFn: async (payload) => {
+      const token = await getToken();
+      const response = await apiClient.post(
+        "/questions/check-duplicates",
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      return response.data;
+    },
+  });
+
+  // 2. Debounced Server-Side Duplicate Check Effect
+  useEffect(() => {
+    if (
+      qm.activeStep !== 2 ||
+      qm.step2EditorMode !== "json" ||
+      !qm.rawPastedJsonText?.trim()
+    ) {
+      const resetTimer = setTimeout(() => {
+        setServerDuplicates([]);
+        setIsCheckingServerDuplicates(false);
+      }, 0);
+      return () => clearTimeout(resetTimer);
+    }
+
+    let parsed = null;
+    try {
+      parsed = JSON.parse(qm.rawPastedJsonText);
+    } catch {
+      const resetTimer = setTimeout(() => {
+        setServerDuplicates([]);
+        setIsCheckingServerDuplicates(false);
+      }, 0);
+      return () => clearTimeout(resetTimer);
+    }
+
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      const resetTimer = setTimeout(() => {
+        setServerDuplicates([]);
+        setIsCheckingServerDuplicates(false);
+      }, 0);
+      return () => clearTimeout(resetTimer);
+    }
+
+    const timer = setTimeout(async () => {
+      setIsCheckingServerDuplicates(true);
+      try {
+        const payload = {
+          className: qm.formClass,
+          subjectId: qm.formSubjectId,
+          chapterNumber: Number(qm.formChapterNumber),
+          category: qm.formCategory,
+          questions: parsed,
+        };
+        const res = await checkDuplicateMutation.mutateAsync(payload);
+        if (res?.success && Array.isArray(res.serverDuplicates)) {
+          setServerDuplicates(res.serverDuplicates);
+        } else {
+          setServerDuplicates([]);
+        }
+      } catch (err) {
+        console.error("Duplicate check failed:", err);
+      } finally {
+        setIsCheckingServerDuplicates(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [
+    qm.rawPastedJsonText,
+    qm.activeStep,
+    qm.step2EditorMode,
+    qm.formClass,
+    qm.formSubjectId,
+    qm.formChapterNumber,
+    qm.formCategory,
+  ]);
+
+  // Handler to remove a specific duplicate question from rawPastedJsonText
+  const handleRemoveDuplicateItem = (itemIndexToRemove) => {
+    try {
+      const parsed = JSON.parse(qm.rawPastedJsonText);
+      if (Array.isArray(parsed)) {
+        const updated = parsed.filter(
+          (_, idx) => idx + 1 !== itemIndexToRemove,
+        );
+        qm.setRawPastedJsonText(JSON.stringify(updated, null, 2));
+        toast.success(`প্রশ্ন #${itemIndexToRemove} রিমুভ করা হয়েছে`);
+      }
+    } catch {
+      toast.error("JSON ফরম্যাট সঠিক নয়");
+    }
   };
 
   return {
@@ -202,5 +408,9 @@ export function useAddQuestion() {
     loadingMetadata,
     deleteConfirmId,
     setDeleteConfirmId,
+    clientDuplicates,
+    serverDuplicates,
+    isCheckingServerDuplicates,
+    handleRemoveDuplicateItem,
   };
 }
