@@ -846,13 +846,38 @@ export default function AddQuestion() {
                     }
                   </span>
                 </h3>
-                <span className="bg-white/80 border border-black/[0.08] backdrop-blur-sm text-slate-700 font-bold text-[11px] sm:text-xs px-3 py-1 rounded-full shrink-0 shadow-2xs">
-                  {CLASSES_MAP.find((c) => c.value === qm.formClass)?.label} •{" "}
-                  {
-                    qm.formSubjects.find((s) => s._id === qm.formSubjectId)
-                      ?.subjectName
-                  }
-                </span>
+                {(() => {
+                  const selectedClass = CLASSES_MAP.find(
+                    (c) => c.value === qm.formClass,
+                  )?.label;
+                  const selectedSubject = qm.formSubjects.find(
+                    (s) => s._id === qm.formSubjectId,
+                  )?.subjectName;
+                  const selectedChapterObj = qm.formChapters?.find(
+                    (ch) =>
+                      String(ch.chapterNumber) === String(qm.formChapterNumber),
+                  );
+                  const chapterText = qm.formChapterNumber
+                    ? selectedChapterObj?.chapterName
+                      ? `অধ্যায় ${qm.formChapterNumber}: ${selectedChapterObj.chapterName}`
+                      : `অধ্যায় ${qm.formChapterNumber}`
+                    : "অধ্যায় সিলেক্ট করা নেই";
+
+                  return (
+                    <span className="bg-white/80 border border-black/[0.08] backdrop-blur-sm text-slate-700 font-bold text-[11px] sm:text-xs px-3 py-1 rounded-full shrink-0 shadow-2xs">
+                      {selectedClass} • {selectedSubject} •{" "}
+                      <span
+                        className={
+                          !qm.formChapterNumber
+                            ? "text-amber-700  font-semibold"
+                            : ""
+                        }
+                      >
+                        {chapterText}
+                      </span>
+                    </span>
+                  );
+                })()}
               </div>
 
               {/* Step 2 Editor Mode Switcher Tab (Form vs JSON Paste) */}
@@ -902,12 +927,12 @@ export default function AddQuestion() {
                       ? selectedChapterObj?.chapterName
                         ? `অধ্যায় ${qm.formChapterNumber}: ${selectedChapterObj.chapterName}`
                         : `অধ্যায় ${qm.formChapterNumber}`
-                      : "";
+                      : "অধ্যায় সিলেক্ট করা নেই";
 
                     return (
                       <div className="flex items-center gap-2">
-                        <span className="bg-purple-50/90 border border-purple-200/90 backdrop-blur-sm text-purple-950 font-bold text-xs sm:text-sm px-3.5 py-1.5 rounded-xl shadow-2xs flex items-center gap-2">
-                          <span className="size-2 rounded-full bg-purple-600 animate-pulse" />
+                        <span className="bg-purple-50/90 border border-purple-200/90 backdrop-blur-sm text-purple-950 font-bold text-xs sm:text-sm px-3.5 py-1.5 rounded-xl shadow-2xs flex items-center gap-2 flex-wrap">
+                          <span className="size-2 rounded-full bg-purple-600 animate-pulse shrink-0" />
                           {selectedClass && <span>{selectedClass}</span>}
                           {selectedSubject && (
                             <>
@@ -915,12 +940,16 @@ export default function AddQuestion() {
                               <span>{selectedSubject}</span>
                             </>
                           )}
-                          {chapterText && (
-                            <>
-                              <span>•</span>
-                              <span>{chapterText}</span>
-                            </>
-                          )}
+                          <span>•</span>
+                          <span
+                            className={
+                              !qm.formChapterNumber
+                                ? "text-amber-700  font-semibold"
+                                : ""
+                            }
+                          >
+                            {chapterText}
+                          </span>
                         </span>
                       </div>
                     );
