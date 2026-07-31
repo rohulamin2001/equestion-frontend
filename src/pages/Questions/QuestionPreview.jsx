@@ -94,7 +94,7 @@ export default function QuestionPreview() {
   if (loadingSets || !activeSet || !layoutSettings) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center space-y-3">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--purple-600)]" />
         <p className="text-xs text-slate-500 font-semibold">
           প্রশ্নপত্র লোড হচ্ছে...
         </p>

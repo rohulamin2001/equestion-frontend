@@ -43,8 +43,8 @@ export default function SettingsSidebar({
       <div
         className="flex p-1 rounded gap-1 shrink-0"
         style={{
-          background: "rgba(109,40,217,0.12)",
-          border: "1.5px solid rgba(109,40,217,0.2)",
+          background: "var(--q-tab-switcher-bg)",
+          border: "1.5px solid var(--q-tab-switcher-border)",
         }}
       >
         {[
@@ -59,7 +59,7 @@ export default function SettingsSidebar({
               onClick={() => setActiveTab(tab.id)}
               className="flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-[13px]  transition-all duration-200 cursor-pointer select-none relative"
               style={{
-                color: isActive ? "#fff" : "rgba(109,40,217,0.7)",
+                color: isActive ? "#fff" : "var(--q-tab-inactive-text)",
                 background: "transparent",
               }}
             >
@@ -68,10 +68,9 @@ export default function SettingsSidebar({
                   layoutId="activeSidebarTabIndicator"
                   className="absolute inset-0 rounded"
                   style={{
-                    background:
-                      "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
+                    background: "var(--q-header-gradient)",
                     boxShadow:
-                      "0 4px 16px rgba(109,40,217,0.35), inset 0 1px 0 rgba(255,255,255,0.2)",
+                      "0 4px 16px rgba(144,14,176,0.30), inset 0 1px 0 rgba(255,255,255,0.2)",
                   }}
                   transition={{
                     type: "spring",
@@ -100,16 +99,16 @@ export default function SettingsSidebar({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className={`p-5 rounded divide-y divide-violet-100/70 space-y-5 ${
+              className={`p-5 rounded divide-y divide-[var(--q-card-border)]/70 space-y-5 ${
                 isMobileDrawer ? "pb-8" : "pb-40"
               }`}
               style={{
-                background: "rgba(255,255,255,0.82)",
+                background: "var(--q-panel-bg)",
                 backdropFilter: "blur(24px) saturate(160%)",
                 WebkitBackdropFilter: "blur(24px) saturate(160%)",
-                border: "1px solid rgba(167,139,250,0.25)",
+                border: "1px solid var(--q-panel-border)",
                 boxShadow:
-                  "0 8px 32px rgba(109,40,217,0.08), 0 2px 8px rgba(0,0,0,0.04)",
+                  "0 8px 32px rgba(144,14,176,0.08), 0 2px 8px rgba(0,0,0,0.04)",
               }}
             >
               {/* Attachment settings card */}
@@ -117,13 +116,11 @@ export default function SettingsSidebar({
                 <h3
                   className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans  relative overflow-hidden"
                   style={{
-                    background:
-                      "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)",
+                    background: "var(--q-header-gradient)",
                     backdropFilter: "blur(20px) saturate(180%)",
                     WebkitBackdropFilter: "blur(20px) saturate(180%)",
-                    boxShadow:
-                      "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)",
-                    border: "1px solid rgba(167,139,250,0.4)",
+                    boxShadow: "var(--q-section-shadow)",
+                    border: "1px solid var(--q-section-border)",
                   }}
                 >
                   <LayoutGrid className="size-4 text-white" />
@@ -149,8 +146,8 @@ export default function SettingsSidebar({
                       key={opt.field}
                       className="flex items-center justify-between px-3 py-2 rounded-xl transition"
                       style={{
-                        background: "rgba(248,246,255,0.85)",
-                        border: "1px solid rgba(167,139,250,0.18)",
+                        background: "var(--q-card-bg)",
+                        border: "1px solid var(--q-card-border-soft)",
                       }}
                     >
                       <span className="text-[14px]  text-slate-700 font-sans tracking-tight">
@@ -168,8 +165,8 @@ export default function SettingsSidebar({
                         className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
                         style={{
                           background: layoutSettings.attachments[opt.field]
-                            ? "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)"
-                            : "rgba(203,213,225,0.8)",
+                            ? "var(--q-toggle-on)"
+                            : "var(--q-toggle-off)",
                         }}
                       >
                         <span
@@ -190,13 +187,11 @@ export default function SettingsSidebar({
                 <h3
                   className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans  relative overflow-hidden"
                   style={{
-                    background:
-                      "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)",
+                    background: "var(--q-header-gradient)",
                     backdropFilter: "blur(20px) saturate(180%)",
                     WebkitBackdropFilter: "blur(20px) saturate(180%)",
-                    boxShadow:
-                      "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)",
-                    border: "1px solid rgba(167,139,250,0.4)",
+                    boxShadow: "var(--q-section-shadow)",
+                    border: "1px solid var(--q-section-border)",
                   }}
                 >
                   <FileText className="size-4 text-white" />
@@ -218,8 +213,8 @@ export default function SettingsSidebar({
                       key={opt.field}
                       className="flex items-center justify-between px-3 py-2 rounded-xl transition"
                       style={{
-                        background: "rgba(248,246,255,0.85)",
-                        border: "1px solid rgba(167,139,250,0.18)",
+                        background: "var(--q-card-bg)",
+                        border: "1px solid var(--q-card-border-soft)",
                       }}
                     >
                       <span className="text-[14px]  text-slate-700 font-sans tracking-tight">
@@ -237,8 +232,8 @@ export default function SettingsSidebar({
                         className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
                         style={{
                           background: layoutSettings.metadata[opt.field]
-                            ? "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)"
-                            : "rgba(203,213,225,0.8)",
+                            ? "var(--q-toggle-on)"
+                            : "var(--q-toggle-off)",
                         }}
                       >
                         <span
@@ -259,13 +254,11 @@ export default function SettingsSidebar({
                 <h3
                   className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans relative overflow-hidden"
                   style={{
-                    background:
-                      "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)",
+                    background: "var(--q-header-gradient)",
                     backdropFilter: "blur(20px) saturate(180%)",
                     WebkitBackdropFilter: "blur(20px) saturate(180%)",
-                    boxShadow:
-                      "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)",
-                    border: "1px solid rgba(167,139,250,0.4)",
+                    boxShadow: "var(--q-section-shadow)",
+                    border: "1px solid var(--q-section-border)",
                   }}
                 >
                   <Sliders className="size-4 text-white" />
@@ -276,8 +269,8 @@ export default function SettingsSidebar({
                   <div
                     className="space-y-1.5 p-3 rounded-xl"
                     style={{
-                      background: "rgba(248,246,255,0.85)",
-                      border: "1px solid rgba(167,139,250,0.2)",
+                      background: "var(--q-card-bg)",
+                      border: "1px solid var(--q-card-border-soft)",
                     }}
                   >
                     <label className="text-[12px] font-extrabold text-slate-700 block font-bengali">
@@ -297,9 +290,9 @@ export default function SettingsSidebar({
                             style={
                               isSelected
                                 ? {
-                                    background: "rgba(109,40,217,0.08)",
-                                    border: "1.5px solid rgba(109,40,217,0.45)",
-                                    color: "rgb(109,40,217)",
+                                    background: "var(--q-selected-bg)",
+                                    border: "1.5px solid var(--q-selected-border)",
+                                    color: "var(--q-selected-text)",
                                   }
                                 : {
                                     background: "white",
@@ -311,7 +304,7 @@ export default function SettingsSidebar({
                             <div className="h-14 w-full flex items-center justify-center bg-slate-50/50 rounded-lg mb-1.5 border border-slate-100 shadow-sm relative overflow-hidden">
                               <div
                                 className={`bg-white border border-slate-300 rounded shadow-sm transition-all ${
-                                  isSelected ? "border-violet-400" : ""
+                                  isSelected ? "border-[var(--purple-400)]" : ""
                                 }`}
                                 style={{
                                   width: `${paper.w}px`,
@@ -334,21 +327,21 @@ export default function SettingsSidebar({
                     onClick={onOpenPageSetup}
                     className="w-full flex items-center justify-between p-3.5 rounded-xl transition cursor-pointer select-none"
                     style={{
-                      background: "rgba(248,246,255,0.85)",
-                      border: "1.5px solid rgba(109,40,217,0.3)",
+                      background: "var(--q-card-bg)",
+                      border: "1.5px solid var(--q-tab-switcher-border)",
                     }}
                   >
                     <div>
                       <span
                         className="text-[13px] font-bold font-bengali"
-                        style={{ color: "rgb(109,40,217)" }}
+                        style={{ color: "var(--q-selected-text)" }}
                       >
                         পেজ সেটাপ (মার্জিন)
                       </span>
                     </div>
                     <Sliders
                       className="size-4"
-                      style={{ color: "rgb(109,40,217)" }}
+                      style={{ color: "var(--q-selected-text)" }}
                     />
                   </button>
 
@@ -356,8 +349,8 @@ export default function SettingsSidebar({
                   <div
                     className="space-y-1.5 p-3 rounded-xl"
                     style={{
-                      background: "rgba(248,246,255,0.85)",
-                      border: "1px solid rgba(167,139,250,0.2)",
+                      background: "var(--q-card-bg)",
+                      border: "1px solid var(--q-card-border-soft)",
                     }}
                   >
                     <label className="text-[12px] font-extrabold text-slate-700 block font-bengali">
@@ -405,9 +398,9 @@ export default function SettingsSidebar({
                             style={
                               isSelected
                                 ? {
-                                    background: "rgba(109,40,217,0.08)",
-                                    border: "1.5px solid rgba(109,40,217,0.45)",
-                                    color: "rgb(109,40,217)",
+                                    background: "var(--q-selected-bg)",
+                                    border: "1.5px solid var(--q-selected-border)",
+                                    color: "var(--q-selected-text)",
                                   }
                                 : {
                                     background: "white",
@@ -452,8 +445,8 @@ export default function SettingsSidebar({
                         className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
                         style={{
                           background: layoutSettings.columnDivider
-                            ? "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)"
-                            : "rgba(203,213,225,0.8)",
+                            ? "var(--q-toggle-on)"
+                            : "var(--q-toggle-off)",
                         }}
                       >
                         <span
@@ -471,7 +464,7 @@ export default function SettingsSidebar({
                       className="rounded-xl p-3 space-y-3"
                       style={{
                         background: "rgba(255,255,255,0.9)",
-                        border: "1px solid rgba(167,139,250,0.15)",
+                        border: "1px solid var(--q-card-border)",
                       }}
                     >
                       {/* Question Bottom Gap slider (Always Visible) */}
@@ -494,7 +487,7 @@ export default function SettingsSidebar({
                               parseInt(e.target.value),
                             )
                           }
-                          className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600 mt-1"
+                          className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--q-slider-accent)] mt-1"
                         />
                       </div>
 
@@ -519,7 +512,7 @@ export default function SettingsSidebar({
                               parseFloat(e.target.value),
                             )
                           }
-                          className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600 mt-1"
+                          className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--q-slider-accent)] mt-1"
                         />
                       </div>
 
@@ -546,7 +539,7 @@ export default function SettingsSidebar({
                                   parseInt(e.target.value),
                                 )
                               }
-                              className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600 mt-1"
+                              className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--q-slider-accent)] mt-1"
                             />
                           </div>
 
@@ -571,7 +564,7 @@ export default function SettingsSidebar({
                                   parseInt(e.target.value),
                                 )
                               }
-                              className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600 mt-1"
+                              className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--q-slider-accent)] mt-1"
                             />
                           </div>
 
@@ -596,7 +589,7 @@ export default function SettingsSidebar({
                                   parseFloat(e.target.value),
                                 )
                               }
-                              className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600 mt-1"
+                              className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--q-slider-accent)] mt-1"
                             />
                           </div>
 
@@ -640,7 +633,7 @@ export default function SettingsSidebar({
                                   className={`h-4 w-4 rounded-full border transition-all ${
                                     (layoutSettings.columnDividerColor ||
                                       "#cbd5e1") === item.color
-                                      ? "ring-2 ring-violet-500 ring-offset-1 scale-110"
+                                      ? "ring-2 ring-[var(--q-ring-color)] ring-offset-1 scale-110"
                                       : "border-slate-200 hover:scale-105"
                                   }`}
                                   style={{ backgroundColor: item.color }}
@@ -658,8 +651,8 @@ export default function SettingsSidebar({
                   <div
                     className="space-y-1.5 p-3 rounded-xl"
                     style={{
-                      background: "rgba(248,246,255,0.85)",
-                      border: "1px solid rgba(167,139,250,0.2)",
+                      background: "var(--q-card-bg)",
+                      border: "1px solid var(--q-card-border-soft)",
                     }}
                   >
                     <label className="text-[12px] font-semibold text-slate-700 block">
@@ -667,7 +660,7 @@ export default function SettingsSidebar({
                     </label>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button className="w-full h-9 px-3 border border-slate-200 bg-white hover:border-violet-400 focus:outline-none transition-all rounded-xl text-xs font-bold text-slate-700 flex justify-between items-center shadow-sm cursor-pointer select-none">
+                        <button className="w-full h-9 px-3 border border-slate-200 bg-white hover:border-[var(--purple-400)] focus:outline-none transition-all rounded-xl text-xs font-bold text-slate-700 flex justify-between items-center shadow-sm cursor-pointer select-none">
                           <span>
                             {FONT_OPTIONS.find((f) => f.value === activeFont)
                               ?.label || activeFont}
@@ -688,15 +681,15 @@ export default function SettingsSidebar({
                                   font.value,
                                 )
                               }
-                              className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-between cursor-pointer focus:bg-violet-50 focus:text-violet-700 hover:bg-slate-50 group ${
+                              className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-between cursor-pointer focus:bg-[var(--q-dropdown-selected-bg)] focus:text-[var(--q-dropdown-selected-text)] hover:bg-slate-50 group ${
                                 isSelected
-                                  ? "bg-violet-50 text-violet-700"
+                                  ? "bg-[var(--q-dropdown-selected-bg)] text-[var(--q-dropdown-selected-text)]"
                                   : "text-slate-700"
                               }`}
                             >
                               <span>{font.label}</span>
                               {isSelected && (
-                                <span className="size-1.5 rounded-full bg-violet-500" />
+                                <span className="size-1.5 rounded-full bg-[var(--purple-600)]" />
                               )}
                             </DropdownMenuItem>
                           );
@@ -709,8 +702,8 @@ export default function SettingsSidebar({
                   <div
                     className="space-y-1.5 p-3 rounded-xl"
                     style={{
-                      background: "rgba(248,246,255,0.85)",
-                      border: "1px solid rgba(167,139,250,0.2)",
+                      background: "var(--q-card-bg)",
+                      border: "1px solid var(--q-card-border-soft)",
                     }}
                   >
                     <label className="text-[12px] font-semibold text-slate-700 block">
@@ -731,9 +724,9 @@ export default function SettingsSidebar({
                             style={
                               isSelected
                                 ? {
-                                    background: "rgba(109,40,217,0.12)",
-                                    border: "1.5px solid rgb(109,40,217)",
-                                    color: "rgb(109,40,217)",
+                                    background: "var(--q-selected-bg)",
+                                    border: "1.5px solid var(--q-selected-border)",
+                                    color: "var(--q-selected-text)",
                                   }
                                 : {
                                     background: "white",
@@ -757,8 +750,8 @@ export default function SettingsSidebar({
                   <div
                     className="space-y-1.5 p-3 rounded-xl"
                     style={{
-                      background: "rgba(248,246,255,0.85)",
-                      border: "1px solid rgba(167,139,250,0.2)",
+                      background: "var(--q-card-bg)",
+                      border: "1px solid var(--q-card-border-soft)",
                     }}
                   >
                     <div className="flex justify-between text-[12px] font-semibold text-slate-700 font-bengali">
@@ -779,7 +772,7 @@ export default function SettingsSidebar({
                           parseInt(e.target.value),
                         )
                       }
-                      className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600 mt-1"
+                      className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--q-slider-accent)] mt-1"
                     />
                   </div>
                 </div>
@@ -790,13 +783,11 @@ export default function SettingsSidebar({
                 <h3
                   className="text-[15px] text-white uppercase tracking-wider flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-sans font-semibold relative overflow-hidden"
                   style={{
-                    background:
-                      "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 50%, rgba(124,58,237,0.88) 100%)",
+                    background: "var(--q-header-gradient)",
                     backdropFilter: "blur(20px) saturate(180%)",
                     WebkitBackdropFilter: "blur(20px) saturate(180%)",
-                    boxShadow:
-                      "0 4px 20px 0 rgba(109,40,217,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.1)",
-                    border: "1px solid rgba(167,139,250,0.4)",
+                    boxShadow: "var(--q-section-shadow)",
+                    border: "1px solid var(--q-section-border)",
                   }}
                 >
                   <Award className="size-4 text-white" />
@@ -814,8 +805,8 @@ export default function SettingsSidebar({
                       key={opt.field}
                       className="flex items-center justify-between px-3 py-2 rounded-xl transition"
                       style={{
-                        background: "rgba(248,246,255,0.85)",
-                        border: "1px solid rgba(167,139,250,0.18)",
+                        background: "var(--q-card-bg)",
+                        border: "1px solid var(--q-card-border-soft)",
                       }}
                     >
                       <span className="text-[13px] font-semibold text-slate-700 font-sans tracking-tight">
@@ -834,8 +825,8 @@ export default function SettingsSidebar({
                           className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
                           style={{
                             background: layoutSettings.branding[opt.field]
-                              ? "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)"
-                              : "rgba(203,213,225,0.8)",
+                              ? "var(--q-toggle-on)"
+                              : "var(--q-toggle-off)",
                           }}
                         >
                           <span
@@ -860,7 +851,7 @@ export default function SettingsSidebar({
                                 onOpenWatermarkSettings();
                               }
                             }}
-                            className="p-1.5 rounded-lg transition-all duration-200 hover:bg-violet-600/10 active:scale-95 cursor-pointer text-violet-600/70 hover:text-violet-700"
+                            className="p-1.5 rounded-lg transition-all duration-200 hover:bg-[var(--q-config-hover-bg)] active:scale-95 cursor-pointer text-[var(--q-config-icon-color)] hover:text-[var(--q-config-icon-hover)]"
                           >
                             <Sliders className="size-4" />
                           </button>
@@ -882,32 +873,31 @@ export default function SettingsSidebar({
               transition={{ duration: 0.2, ease: "easeInOut" }}
               className="p-6 rounded-2xl space-y-4 text-center"
               style={{
-                background: "rgba(255,255,255,0.82)",
+                background: "var(--q-panel-bg)",
                 backdropFilter: "blur(24px) saturate(160%)",
                 WebkitBackdropFilter: "blur(24px) saturate(160%)",
-                border: "1px solid rgba(167,139,250,0.25)",
-                boxShadow: "0 8px 32px rgba(109,40,217,0.08)",
+                border: "1px solid var(--q-panel-border)",
+                boxShadow: "0 8px 32px rgba(144,14,176,0.08)",
               }}
             >
               <div
                 className="p-4 rounded-full w-fit mx-auto"
                 style={{
-                  background:
-                    "linear-gradient(135deg, rgba(109,40,217,0.12) 0%, rgba(79,70,229,0.12) 100%)",
-                  border: "1.5px solid rgba(109,40,217,0.25)",
-                  color: "rgb(109,40,217)",
+                  background: "var(--q-selected-bg)",
+                  border: "1.5px solid var(--q-card-border)",
+                  color: "var(--q-selected-text)",
                 }}
               >
                 <Printer className="size-8" />
               </div>
               <h3
                 className="text-[15px] font-bold font-bengali"
-                style={{ color: "rgb(80,50,180)" }}
+                style={{ color: "var(--purple-800)" }}
               >
                 প্রশ্নপত্র প্রিন্ট অথবা ডাউনলোড করুন
               </h3>
               <p className="text-[12px] text-slate-500 leading-relaxed font-medium font-bengali">
-                আপনার নির্বাচিত সেটিংস অনুযায়ী প্রশ্নপত্রটি ডাউনলোড করতে নিচের
+                আপনার নির্বাচিত সেটিংস অনুযায়ী প্রশ্নপত্রটি ডাউনলোড করতে নিচের
                 বাটনে ক্লিক করুন। প্রিন্ট লেআউটে সাইডবার ও সেটিংস অংশ
                 স্বয়ংক্রিয়ভাবে বাদ পড়বে।
               </p>
@@ -915,10 +905,8 @@ export default function SettingsSidebar({
                 onClick={handlePrint}
                 className="w-full py-3 text-white rounded-xl text-sm font-black flex items-center justify-center gap-1.5 cursor-pointer mt-4 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{
-                  background:
-                    "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 55%, rgba(124,58,237,0.88) 100%)",
-                  boxShadow:
-                    "0 8px 24px rgba(109,40,217,0.4), inset 0 1px 0 rgba(255,255,255,0.2)",
+                  background: "var(--q-header-gradient)",
+                  boxShadow: "var(--q-print-btn-shadow)",
                 }}
               >
                 <Printer className="size-4" />

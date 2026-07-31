@@ -296,34 +296,25 @@ export const RadixSidebar = () => {
               {group.items.map((item) => {
                 const isActive = location.pathname === item.url;
                 return (
-                  <SidebarMenuItem key={item.title} className="relative">
-                    {/* Active left indicator bar */}
-                    {isActive && (
-                      <span
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full z-10"
-                        style={{ background: "var(--sidebar-active-indicator)" }}
-                      />
-                    )}
+                  <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
+                      isActive={isActive}
                       tooltip={item.title}
-                      style={
-                        isActive
-                          ? {
-                              background: "var(--sidebar-active-bg)",
-                              color: "var(--sidebar-active-text)",
-                            }
-                          : undefined
-                      }
                       className={
                         isActive
-                          ? "font-bold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
-                          : "text-slate-600 hover:text-[var(--sidebar-hover-text)] hover:bg-[var(--sidebar-hover-bg)] font-semibold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
+                          ? "bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-text)] font-semibold text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
+                          : "text-slate-600 hover:text-[var(--sidebar-hover-text)] hover:bg-[var(--sidebar-hover-bg)] font-medium text-[14px] h-10 px-4 rounded-xl transition-all duration-200 font-bengali"
                       }
                     >
                       <Link
                         to={item.url}
                         className="flex items-center gap-3 w-full"
+                        style={{
+                          color: isActive
+                            ? "var(--sidebar-active-text)"
+                            : undefined,
+                        }}
                         onClick={() => {
                           if (isMobile) {
                             setOpenMobile(false);
@@ -338,7 +329,14 @@ export const RadixSidebar = () => {
                               : undefined,
                           }}
                         />
-                        <span className="font-sans tracking-tight">
+                        <span
+                          className="font-sans tracking-tight"
+                          style={{
+                            color: isActive
+                              ? "var(--sidebar-active-text)"
+                              : undefined,
+                          }}
+                        >
                           {item.title}
                         </span>
                       </Link>

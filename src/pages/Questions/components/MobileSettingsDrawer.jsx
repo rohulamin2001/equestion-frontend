@@ -55,8 +55,7 @@ export default function MobileSettingsDrawer({
             <div
               className="px-5 py-4 flex items-center justify-between shrink-0 border-b border-white/10 select-none"
               style={{
-                background:
-                  "linear-gradient(135deg, rgba(109,40,217,0.95) 0%, rgba(79,70,229,0.95) 100%)",
+                background: "var(--q-header-gradient)",
               }}
             >
               <div className="flex items-center gap-2.5">

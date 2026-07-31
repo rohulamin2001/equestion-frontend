@@ -87,8 +87,7 @@ export default function WatermarkSettingsDrawer({
               WebkitBackdropFilter: "blur(32px) saturate(180%)",
               border: "1px solid rgba(255,255,255,0.6)",
               borderBottom: "none",
-              boxShadow:
-                "0 -20px 60px -10px rgba(109,40,217,0.22), 0 -4px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+              boxShadow: "var(--q-drawer-shadow)",
             }}
           >
             {/* Fixed Top Section: Gradient header + drag handle */}
@@ -97,22 +96,19 @@ export default function WatermarkSettingsDrawer({
               <div
                 className="relative flex items-center justify-between px-6 pt-5 pb-4 select-none"
                 style={{
-                  background:
-                    "linear-gradient(135deg, rgba(109,40,217,0.90) 0%, rgba(79,70,229,0.90) 55%, rgba(124,58,237,0.85) 100%)",
+                  background: "var(--q-header-gradient)",
                 }}
               >
                 <div
                   className="absolute -top-6 -left-6 w-24 h-24 rounded-full opacity-30 pointer-events-none"
                   style={{
-                    background:
-                      "radial-gradient(circle, rgba(167,139,250,0.8), transparent)",
+                    background: "var(--q-glow-blob-1)",
                   }}
                 />
                 <div
                   className="absolute -bottom-4 right-8 w-16 h-16 rounded-full opacity-20 pointer-events-none"
                   style={{
-                    background:
-                      "radial-gradient(circle, rgba(192,132,252,0.9), transparent)",
+                    background: "var(--q-glow-blob-2)",
                   }}
                 />
                 <div className="flex items-center gap-3 relative z-10">
@@ -157,10 +153,10 @@ export default function WatermarkSettingsDrawer({
               {/* Watermark Type Selector (Text vs Image) */}
               <div className="space-y-2">
                 <label className="text-[13px] font-bold text-slate-700 flex items-center gap-1.5">
-                  <Sliders className="size-4 text-indigo-600" />
+                  <Sliders className="size-4 text-[var(--purple-600)]" />
                   জলছাপের ধরন (Type)
                 </label>
-                <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100/80 rounded-xl border border-slate-200/80">
+                <div className="grid grid-cols-2 gap-2 p-1 rounded-xl border" style={{ background: 'var(--q-card-bg)', borderColor: 'var(--q-card-border-soft)' }}>
                   <button
                     type="button"
                     onClick={() =>
@@ -168,7 +164,7 @@ export default function WatermarkSettingsDrawer({
                     }
                     className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-[13px] font-bold transition cursor-pointer ${
                       watermark.type === "text"
-                        ? "bg-white text-indigo-600 shadow-sm border border-slate-200/60"
+                        ? "bg-white text-[var(--q-watermark-selected-text)] shadow-sm border border-slate-200/60"
                         : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
@@ -182,7 +178,7 @@ export default function WatermarkSettingsDrawer({
                     }
                     className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-[13px] font-bold transition cursor-pointer ${
                       watermark.type === "image"
-                        ? "bg-white text-indigo-600 shadow-sm border border-slate-200/60"
+                        ? "bg-white text-[var(--q-watermark-selected-text)] shadow-sm border border-slate-200/60"
                         : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
@@ -199,7 +195,7 @@ export default function WatermarkSettingsDrawer({
                   <div className="space-y-2">
                     <label className="text-[13px] font-bold text-slate-700 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <AlignLeft className="size-4 text-indigo-600" />
+                        <AlignLeft className="size-4 text-[var(--purple-600)]" />
                         জলছাপের লেখা (Watermark Text)
                       </span>
                     </label>
@@ -214,7 +210,7 @@ export default function WatermarkSettingsDrawer({
                         )
                       }
                       placeholder="যেমন: গভর্নমেন্ট হাই স্কুল"
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300/80 rounded-xl text-[14px] text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 font-medium"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300/80 rounded-xl text-[14px] text-slate-800 focus:outline-none focus:ring-2 focus:ring-[var(--purple-500)]/40 focus:border-[var(--purple-500)] font-medium"
                     />
                   </div>
 
@@ -224,7 +220,7 @@ export default function WatermarkSettingsDrawer({
                       <label className="text-[13px] font-bold text-slate-700">
                         ফন্ট সাইজ (Font Size)
                       </label>
-                      <span className="text-[12px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200/60">
+                      <span className="text-[12px] font-bold text-[var(--q-badge-text)] bg-[var(--q-badge-bg)] px-2 py-0.5 rounded-md border border-[var(--q-badge-border)]">
                         {watermark.fontSize || 48}px
                       </span>
                     </div>
@@ -241,7 +237,7 @@ export default function WatermarkSettingsDrawer({
                           Number(e.target.value),
                         )
                       }
-                      className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                      className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--q-slider-accent)]"
                     />
                   </div>
 
@@ -264,7 +260,7 @@ export default function WatermarkSettingsDrawer({
                           }
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium border transition cursor-pointer ${
                             watermark.color === preset.value
-                              ? "border-indigo-600 bg-indigo-50 text-indigo-700 font-bold"
+                              ? "border-[var(--purple-600)] bg-[var(--q-dropdown-selected-bg)] text-[var(--q-dropdown-selected-text)] font-bold"
                               : "border-slate-200/80 bg-slate-50 text-slate-600 hover:bg-slate-100"
                           }`}
                         >
@@ -287,13 +283,13 @@ export default function WatermarkSettingsDrawer({
                   <div className="space-y-2">
                     <label className="text-[13px] font-bold text-slate-700 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <ImageIcon className="size-4 text-indigo-600" />
+                        <ImageIcon className="size-4 text-[var(--purple-600)]" />
                         জলছাপের ইমেজ / লোগো (Image Upload)
                       </span>
                     </label>
 
                     {watermark.imageUrl ? (
-                      <div className="flex items-center justify-between p-3 bg-indigo-50/60 rounded-xl border border-indigo-200/80">
+                      <div className="flex items-center justify-between p-3 bg-[var(--q-upload-preview-bg)] rounded-xl border border-[var(--q-upload-preview-border)]">
                         <div className="flex items-center gap-3">
                           <img
                             src={watermark.imageUrl}
@@ -325,8 +321,8 @@ export default function WatermarkSettingsDrawer({
                         </button>
                       </div>
                     ) : (
-                      <label className="flex flex-col items-center justify-center p-5 bg-slate-50 hover:bg-indigo-50/40 border-2 border-dashed border-slate-300 hover:border-indigo-400 rounded-xl cursor-pointer transition">
-                        <Upload className="size-6 text-indigo-600 mb-1.5" />
+                      <label className="flex flex-col items-center justify-center p-5 bg-slate-50 hover:bg-[var(--q-dropdown-hover-bg)] border-2 border-dashed border-slate-300 hover:border-[var(--purple-400)] rounded-xl cursor-pointer transition">
+                        <Upload className="size-6 text-[var(--purple-600)] mb-1.5" />
                         <span className="text-[13px] font-bold text-slate-700">
                           ছবি আপলোড করতে ক্লিক করুন
                         </span>
@@ -349,7 +345,7 @@ export default function WatermarkSettingsDrawer({
                       <label className="text-[13px] font-bold text-slate-700">
                         ইমেজের সাইজ / প্রস্থ (Image Width)
                       </label>
-                      <span className="text-[12px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200/60">
+                      <span className="text-[12px] font-bold text-[var(--q-badge-text)] bg-[var(--q-badge-bg)] px-2 py-0.5 rounded-md border border-[var(--q-badge-border)]">
                         {watermark.imageWidth || 200}px
                       </span>
                     </div>
@@ -366,7 +362,7 @@ export default function WatermarkSettingsDrawer({
                           Number(e.target.value),
                         )
                       }
-                      className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                      className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--q-slider-accent)]"
                     />
                   </div>
                 </div>
@@ -378,10 +374,10 @@ export default function WatermarkSettingsDrawer({
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-[13px] font-bold text-slate-700 flex items-center gap-1.5">
-                      <RotateCw className="size-4 text-indigo-600" />
+                      <RotateCw className="size-4 text-[var(--purple-600)]" />
                       রোটেশন / বাঁকানো কোণ (Rotation Angle)
                     </label>
-                    <span className="text-[12px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200/60">
+                    <span className="text-[12px] font-bold text-[var(--q-badge-text)] bg-[var(--q-badge-bg)] px-2 py-0.5 rounded-md border border-[var(--q-badge-border)]">
                       {watermark.rotation ?? -30}°
                     </span>
                   </div>
@@ -398,7 +394,7 @@ export default function WatermarkSettingsDrawer({
                         Number(e.target.value),
                       )
                     }
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--q-slider-accent)]"
                   />
                   {/* Preset angle buttons */}
                   <div className="flex items-center gap-1.5 pt-1">
@@ -415,7 +411,7 @@ export default function WatermarkSettingsDrawer({
                         }
                         className={`flex-1 py-1 rounded text-[11px] font-bold transition border cursor-pointer ${
                           (watermark.rotation ?? -30) === angle
-                            ? "bg-indigo-600 text-white border-indigo-600"
+                            ? "bg-[var(--purple-600)] text-white border-[var(--purple-600)]"
                             : "bg-slate-100 text-slate-600 border-slate-200/80 hover:bg-slate-200"
                         }`}
                       >
@@ -429,10 +425,10 @@ export default function WatermarkSettingsDrawer({
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-[13px] font-bold text-slate-700 flex items-center gap-1.5">
-                      <Eye className="size-4 text-indigo-600" />
+                      <Eye className="size-4 text-[var(--purple-600)]" />
                       অস্বচ্ছতা / স্পষ্টতা (Opacity)
                     </label>
-                    <span className="text-[12px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200/60">
+                    <span className="text-[12px] font-bold text-[var(--q-badge-text)] bg-[var(--q-badge-bg)] px-2 py-0.5 rounded-md border border-[var(--q-badge-border)]">
                       {watermark.opacity ?? 15}%
                     </span>
                   </div>
@@ -449,7 +445,7 @@ export default function WatermarkSettingsDrawer({
                         Number(e.target.value),
                       )
                     }
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--q-slider-accent)]"
                   />
                   {/* Preset opacity buttons */}
                   <div className="flex items-center gap-1.5 pt-1">
@@ -462,7 +458,7 @@ export default function WatermarkSettingsDrawer({
                         }
                         className={`flex-1 py-1 rounded text-[11px] font-bold transition border cursor-pointer ${
                           (watermark.opacity ?? 15) === op
-                            ? "bg-indigo-600 text-white border-indigo-600"
+                            ? "bg-[var(--purple-600)] text-white border-[var(--purple-600)]"
                             : "bg-slate-100 text-slate-600 border-slate-200/80 hover:bg-slate-200"
                         }`}
                       >

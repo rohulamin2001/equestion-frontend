@@ -56,16 +56,16 @@ export default function QuestionPaperPreview({
       <div
         className="w-full max-w-[850px] mb-4 flex items-center justify-between p-1 rounded shrink-0 print:hidden"
         style={{
-          background: "rgba(109,40,217,0.12)",
-          border: "1.5px solid rgba(109,40,217,0.2)",
+          background: "var(--q-tab-switcher-bg)",
+          border: "1.5px solid var(--q-tab-switcher-border)",
         }}
       >
         <div className="flex items-center gap-2 pl-4">
-          <div className="flex items-center gap-1.5 text-violet-800 text-[13px] font-bengali">
-            <Monitor className="size-4 text-violet-600" />
+          <div className="flex items-center gap-1.5 text-[var(--purple-800)] text-[13px] font-bengali">
+            <Monitor className="size-4 text-[var(--purple-600)]" />
             <span>লাইভ প্রিভিউ</span>
           </div>
-          <span className="hidden sm:inline-block text-[11px] text-violet-600/70 font-medium font-bengali">
+          <span className="hidden sm:inline-block text-[11px] text-[var(--purple-600)]/70 font-medium font-bengali">
             (টেক্সটে ক্লিক করে সরাসরি এডিট করুন)
           </span>
         </div>
@@ -76,10 +76,9 @@ export default function QuestionPaperPreview({
               onClick={onOpenMobileSettings}
               className="lg:hidden px-3.5 py-2 text-white rounded text-[13px] transition flex items-center gap-1.5 shadow cursor-pointer font-bengali select-none hover:opacity-95"
               style={{
-                background:
-                  "linear-gradient(135deg, rgba(147,51,234,0.92) 0%, rgba(124,58,237,0.92) 100%)",
+                background: "var(--q-header-gradient)",
                 boxShadow:
-                  "0 4px 16px rgba(124,58,237,0.3), inset 0 1px 0 rgba(255,255,255,0.2)",
+                  "0 4px 16px rgba(144,14,176,0.3), inset 0 1px 0 rgba(255,255,255,0.2)",
               }}
             >
               <Settings className="size-4" />
@@ -91,10 +90,9 @@ export default function QuestionPaperPreview({
             onClick={handleGoBackToSelect}
             className="px-4 py-2 text-white rounded text-[13px] transition flex items-center gap-1.5 shadow cursor-pointer font-bengali select-none hover:opacity-95"
             style={{
-              background:
-                "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
+              background: "var(--q-header-gradient)",
               boxShadow:
-                "0 4px 16px rgba(109,40,217,0.3), inset 0 1px 0 rgba(255,255,255,0.2)",
+                "0 4px 16px rgba(144,14,176,0.3), inset 0 1px 0 rgba(255,255,255,0.2)",
             }}
           >
             <Plus className="size-4" />
@@ -164,7 +162,7 @@ export default function QuestionPaperPreview({
               minHeight: `${layoutSettings.headerSettings?.height || 70}px`,
               background:
                 layoutSettings.headerSettings?.bgColor ||
-                "rgba(109,40,217,0.92)",
+                "var(--purple-600)",
               color: layoutSettings.headerSettings?.textColor || "#ffffff",
               borderRadius: `${layoutSettings.headerSettings?.borderRadius ?? 8}px`,
               alignItems: "center",
@@ -1421,7 +1419,7 @@ export default function QuestionPaperPreview({
             </p>
             <button
               onClick={handleGoBackToSelect}
-              className="mx-auto mt-3 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow"
+              className="mx-auto mt-3 px-4 py-2 bg-[var(--purple-600)] hover:bg-[var(--purple-700)] text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow"
             >
               <Plus className="size-3.5" />
               প্রশ্ন নির্বাচন করুন
@@ -1437,7 +1435,7 @@ export default function QuestionPaperPreview({
               minHeight: `${layoutSettings.footerSettings?.height || 50}px`,
               background:
                 layoutSettings.footerSettings?.bgColor ||
-                "rgba(109,40,217,0.92)",
+                "var(--purple-600)",
               color: layoutSettings.footerSettings?.textColor || "#ffffff",
               borderRadius: `${layoutSettings.footerSettings?.borderRadius ?? 8}px`,
               alignItems: "center",

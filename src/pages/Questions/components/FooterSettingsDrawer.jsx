@@ -62,8 +62,7 @@ export default function FooterSettingsDrawer({
               WebkitBackdropFilter: "blur(32px) saturate(180%)",
               border: "1px solid rgba(255,255,255,0.6)",
               borderBottom: "none",
-              boxShadow:
-                "0 -20px 60px -10px rgba(109,40,217,0.22), 0 -4px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+              boxShadow: "var(--q-drawer-shadow)",
             }}
           >
             {/* Fixed Top Section: Gradient header + drag handle + live banner preview */}
@@ -72,22 +71,19 @@ export default function FooterSettingsDrawer({
               <div
                 className="relative flex items-center justify-between px-6 pt-5 pb-4"
                 style={{
-                  background:
-                    "linear-gradient(135deg, rgba(109,40,217,0.90) 0%, rgba(79,70,229,0.90) 55%, rgba(124,58,237,0.85) 100%)",
+                  background: "var(--q-header-gradient)",
                 }}
               >
                 <div
                   className="absolute -top-6 -left-6 w-24 h-24 rounded-full opacity-30 pointer-events-none"
                   style={{
-                    background:
-                      "radial-gradient(circle, rgba(167,139,250,0.8), transparent)",
+                    background: "var(--q-glow-blob-1)",
                   }}
                 />
                 <div
                   className="absolute -bottom-4 right-8 w-16 h-16 rounded-full opacity-20 pointer-events-none"
                   style={{
-                    background:
-                      "radial-gradient(circle, rgba(192,132,252,0.9), transparent)",
+                    background: "var(--q-glow-blob-2)",
                   }}
                 />
                 <div className="flex items-center gap-3 relative z-10">
@@ -137,7 +133,7 @@ export default function FooterSettingsDrawer({
                   <div className="px-4 pt-3 pb-1.5">
                     <span
                       className="text-[9px] font-bold tracking-widest uppercase font-sans"
-                      style={{ color: "rgba(109,40,217,0.55)" }}
+                      style={{ color: "var(--q-tab-inactive-text)" }}
                     >
                       প্রিভিউ
                     </span>
@@ -148,7 +144,7 @@ export default function FooterSettingsDrawer({
                       minHeight: `${layoutSettings.footerSettings?.height || 50}px`,
                       background:
                         layoutSettings.footerSettings?.bgColor ||
-                        "rgba(109,40,217,0.92)",
+                        "var(--purple-600)",
                       borderRadius: `${layoutSettings.footerSettings?.borderRadius ?? 8}px`,
                       justifyContent:
                         layoutSettings.footerSettings?.align === "left"
@@ -258,7 +254,7 @@ export default function FooterSettingsDrawer({
                       <div className="flex items-center gap-1.5">
                         <Icon
                           className="size-3.5"
-                          style={{ color: "rgb(109,40,217)" }}
+                          style={{ color: "var(--purple-600)" }}
                           strokeWidth={2.5}
                         />
                         <span className="text-[12px] font-bold text-slate-700 font-bengali">
@@ -268,8 +264,8 @@ export default function FooterSettingsDrawer({
                       <span
                         className="text-[11px] font-black font-sans px-2 py-0.5 rounded-lg"
                         style={{
-                          background: "rgba(109,40,217,0.12)",
-                          color: "rgb(109,40,217)",
+                          background: "var(--q-badge-bg)",
+                          color: "var(--q-badge-text)",
                         }}
                       >
                         {value}
@@ -289,7 +285,7 @@ export default function FooterSettingsDrawer({
                         )
                       }
                       className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                      style={{ accentColor: "rgb(109,40,217)" }}
+                      style={{ accentColor: "var(--purple-600)" }}
                     />
                     <div className="flex justify-between text-[9px] font-bold text-slate-400 font-sans">
                       <span>
@@ -317,7 +313,7 @@ export default function FooterSettingsDrawer({
                   <div className="flex items-center gap-1.5">
                     <Move
                       className="size-3.5"
-                      style={{ color: "rgb(109,40,217)" }}
+                      style={{ color: "var(--purple-600)" }}
                       strokeWidth={2.5}
                     />
                     <span className="text-[12px] font-bold text-slate-700 font-bengali">
@@ -327,8 +323,8 @@ export default function FooterSettingsDrawer({
                   <span
                     className="text-[11px] font-black font-sans px-2 py-0.5 rounded-lg"
                     style={{
-                      background: "rgba(109,40,217,0.12)",
-                      color: "rgb(109,40,217)",
+                      background: "var(--q-badge-bg)",
+                      color: "var(--q-badge-text)",
                     }}
                   >
                     {layoutSettings.footerSettings?.borderRadius ?? 8}px
@@ -347,7 +343,7 @@ export default function FooterSettingsDrawer({
                     )
                   }
                   className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                  style={{ accentColor: "rgb(109,40,217)" }}
+                  style={{ accentColor: "var(--purple-600)" }}
                 />
                 <div className="flex justify-between text-[9px] font-bold text-slate-400 font-sans">
                   <span>0px</span>
@@ -368,7 +364,7 @@ export default function FooterSettingsDrawer({
                   <div className="flex items-center gap-1.5">
                     <AlignCenter
                       className="size-3.5"
-                      style={{ color: "rgb(109,40,217)" }}
+                      style={{ color: "var(--purple-600)" }}
                       strokeWidth={2.5}
                     />
                     <span className="text-[12px] font-bold text-slate-700 font-bengali">
@@ -398,13 +394,13 @@ export default function FooterSettingsDrawer({
                           className="flex-1 py-2 rounded-lg flex items-center justify-center transition-all cursor-pointer"
                           style={{
                             background: isActive
-                              ? "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)"
+                              ? "var(--q-header-gradient)"
                               : "transparent",
                             color: isActive
                               ? "#ffffff"
-                              : "rgba(109,40,217,0.65)",
+                              : "var(--q-tab-inactive-text)",
                             boxShadow: isActive
-                              ? "0 2px 8px rgba(109,40,217,0.25)"
+                              ? "0 2px 8px rgba(144,14,176,0.25)"
                               : "none",
                           }}
                         >
@@ -426,7 +422,7 @@ export default function FooterSettingsDrawer({
                   <div className="flex items-center gap-1.5">
                     <Award
                       className="size-3.5"
-                      style={{ color: "rgb(109,40,217)" }}
+                      style={{ color: "var(--purple-600)" }}
                       strokeWidth={2.5}
                     />
                     <span className="text-[12px] font-bold text-slate-700 font-bengali">
@@ -457,14 +453,14 @@ export default function FooterSettingsDrawer({
                         className={`flex-1 py-2 rounded-xl border font-sans text-sm transition-all cursor-pointer ${extraClass}`}
                         style={{
                           background: active
-                            ? "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)"
+                            ? "var(--q-toggle-on)"
                             : "white",
                           color: active ? "#ffffff" : "#64748b",
                           borderColor: active
                             ? "transparent"
                             : "rgba(203,213,225,0.8)",
                           boxShadow: active
-                            ? "0 2px 8px rgba(109,40,217,0.25)"
+                            ? "0 2px 8px rgba(144,14,176,0.25)"
                             : "none",
                         }}
                       >
@@ -486,7 +482,7 @@ export default function FooterSettingsDrawer({
                 <div className="flex items-center gap-1.5">
                   <LayoutGrid
                     className="size-3.5"
-                    style={{ color: "rgb(109,40,217)" }}
+                    style={{ color: "var(--purple-600)" }}
                     strokeWidth={2.5}
                   />
                   <span className="text-[12px] font-bold text-slate-700 font-bengali">
@@ -524,7 +520,7 @@ export default function FooterSettingsDrawer({
                         style={{
                           background: color,
                           boxShadow: isSelected
-                            ? "0 0 0 2.5px white, 0 0 0 4px rgba(109,40,217,0.6)"
+                            ? "0 0 0 2.5px white, 0 0 0 4px var(--purple-600)"
                             : "0 1px 3px rgba(0,0,0,0.2)",
                         }}
                       />
@@ -583,7 +579,7 @@ export default function FooterSettingsDrawer({
                 <div className="flex items-center gap-1.5">
                   <Eye
                     className="size-3.5"
-                    style={{ color: "rgb(109,40,217)" }}
+                    style={{ color: "var(--purple-600)" }}
                     strokeWidth={2.5}
                   />
                   <span className="text-[12px] font-bold text-slate-700 font-bengali">
@@ -619,7 +615,7 @@ export default function FooterSettingsDrawer({
                           background: color,
                           border: `1px solid ${ring}`,
                           boxShadow: isSelected
-                            ? "0 0 0 2.5px rgba(109,40,217,0.5), 0 0 0 4.5px rgba(109,40,217,0.2)"
+                            ? "0 0 0 2.5px var(--purple-600), 0 0 0 4.5px rgba(144,14,176,0.2)"
                             : "0 1px 3px rgba(0,0,0,0.1)",
                         }}
                       />
@@ -678,7 +674,7 @@ export default function FooterSettingsDrawer({
                 <div className="flex items-center gap-1.5">
                   <FileText
                     className="size-3.5"
-                    style={{ color: "rgb(109,40,217)" }}
+                    style={{ color: "var(--purple-600)" }}
                     strokeWidth={2.5}
                   />
                   <span className="text-[12px] font-bold text-slate-700 font-bengali">
@@ -687,7 +683,7 @@ export default function FooterSettingsDrawer({
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="w-full h-10 px-3.5 border border-slate-200 bg-white hover:border-violet-400 focus:outline-none transition-all rounded-xl text-[13px] font-bold text-slate-700 flex justify-between items-center shadow-sm cursor-pointer select-none">
+                    <button className="w-full h-10 px-3.5 border border-slate-200 bg-white hover:border-[var(--purple-400)] focus:outline-none transition-all rounded-xl text-[13px] font-bold text-slate-700 flex justify-between items-center shadow-sm cursor-pointer select-none">
                       <span>
                         {layoutSettings.footerSettings?.fontFamily === "English"
                           ? "Outfit (English)"
@@ -714,15 +710,15 @@ export default function FooterSettingsDrawer({
                               font.value,
                             )
                           }
-                          className={`w-full text-left px-2.5 py-2 rounded-lg text-[13px] font-bold transition flex items-center justify-between cursor-pointer focus:bg-violet-50 focus:text-violet-700 hover:bg-slate-50 ${
+                          className={`w-full text-left px-2.5 py-2 rounded-lg text-[13px] font-bold transition flex items-center justify-between cursor-pointer focus:bg-[var(--q-dropdown-selected-bg)] focus:text-[var(--q-dropdown-selected-text)] hover:bg-slate-50 ${
                             isSelected
-                              ? "bg-violet-50 text-violet-700"
+                              ? "bg-[var(--q-dropdown-selected-bg)] text-[var(--q-dropdown-selected-text)]"
                               : "text-slate-700"
                           }`}
                         >
                           <span>{font.label}</span>
                           {isSelected && (
-                            <span className="size-1.5 rounded-full bg-violet-500" />
+                            <span className="size-1.5 rounded-full bg-[var(--purple-600)]" />
                           )}
                         </DropdownMenuItem>
                       );

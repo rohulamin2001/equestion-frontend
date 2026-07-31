@@ -195,6 +195,64 @@
     --sidebar-dropdown-bg: rgba(255, 255, 255, 0.95);
     --sidebar-dropdown-hover-bg: rgba(144, 14, 176, 0.05);
     --sidebar-dropdown-hover-text: var(--purple-700);
+
+    /* ---- Questions Page / Drawer Tokens ---- */
+    --q-header-gradient: linear-gradient(
+      135deg,
+      var(--purple-800) 0%,
+      var(--purple-700) 55%,
+      var(--purple-600) 100%
+    );
+    --q-section-shadow: 0 4px 20px 0 rgba(144, 14, 176, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    --q-drawer-shadow: 0 -20px 60px -10px rgba(144, 14, 176, 0.22),
+      0 -4px 20px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --q-section-border: rgba(144, 14, 176, 0.35);
+    --q-glow-blob-1: radial-gradient(
+      circle,
+      rgba(212, 0, 230, 0.6),
+      transparent
+    );
+    --q-glow-blob-2: radial-gradient(
+      circle,
+      rgba(176, 16, 202, 0.7),
+      transparent
+    );
+    --q-tab-switcher-bg: rgba(144, 14, 176, 0.1);
+    --q-tab-switcher-border: rgba(144, 14, 176, 0.18);
+    --q-tab-inactive-text: rgba(144, 14, 176, 0.65);
+    --q-card-bg: rgba(248, 246, 255, 0.85);
+    --q-card-border: rgba(144, 14, 176, 0.15);
+    --q-card-border-soft: rgba(144, 14, 176, 0.2);
+    --q-selected-bg: rgba(144, 14, 176, 0.08);
+    --q-selected-border: rgba(144, 14, 176, 0.45);
+    --q-selected-text: var(--purple-700);
+    --q-toggle-on: linear-gradient(
+      135deg,
+      var(--purple-800) 0%,
+      var(--purple-700) 100%
+    );
+    --q-toggle-off: rgba(203, 213, 225, 0.8);
+    --q-panel-bg: rgba(255, 255, 255, 0.82);
+    --q-panel-border: rgba(144, 14, 176, 0.2);
+    --q-dropdown-selected-bg: rgba(144, 14, 176, 0.06);
+    --q-dropdown-selected-text: var(--purple-700);
+    --q-dropdown-hover-bg: rgba(144, 14, 176, 0.04);
+    --q-ring-color: var(--purple-600);
+    --q-print-btn-shadow: 0 8px 24px rgba(144, 14, 176, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    --q-watermark-selected-text: var(--purple-700);
+    --q-slider-accent: var(--purple-600);
+    --q-config-hover-bg: rgba(144, 14, 176, 0.08);
+    --q-config-icon-color: rgba(144, 14, 176, 0.65);
+    --q-config-icon-hover: var(--purple-700);
+    --q-badge-bg: rgba(248, 196, 252, 0.35);
+    --q-badge-text: var(--purple-700);
+    --q-badge-border: rgba(144, 14, 176, 0.2);
+    --q-upload-preview-bg: rgba(248, 196, 252, 0.15);
+    --q-upload-preview-border: rgba(144, 14, 176, 0.25);
   }
 
   .dark {

@@ -58,16 +58,14 @@ export default function LogoSettingsDrawer({
               WebkitBackdropFilter: "blur(32px) saturate(180%)",
               border: "1px solid rgba(255,255,255,0.6)",
               borderBottom: "none",
-              boxShadow:
-                "0 -20px 60px -10px rgba(109,40,217,0.22), 0 -4px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+              boxShadow: "var(--q-drawer-shadow)",
             }}
           >
             {/* Gradient header strip */}
             <div
               className="relative flex items-center justify-between px-6 pt-5 pb-4"
               style={{
-                background:
-                  "linear-gradient(135deg, rgba(109,40,217,0.90) 0%, rgba(79,70,229,0.90) 55%, rgba(124,58,237,0.85) 100%)",
+                background: "var(--q-header-gradient)",
                 backdropFilter: "blur(20px)",
               }}
             >
@@ -75,15 +73,13 @@ export default function LogoSettingsDrawer({
               <div
                 className="absolute -top-6 -left-6 w-24 h-24 rounded-full opacity-30 pointer-events-none"
                 style={{
-                  background:
-                    "radial-gradient(circle, rgba(167,139,250,0.8), transparent)",
+                  background: "var(--q-glow-blob-1)",
                 }}
               />
               <div
                 className="absolute -bottom-4 right-8 w-16 h-16 rounded-full opacity-20 pointer-events-none"
                 style={{
-                  background:
-                    "radial-gradient(circle, rgba(192,132,252,0.9), transparent)",
+                  background: "var(--q-glow-blob-2)",
                 }}
               />
 
@@ -128,8 +124,8 @@ export default function LogoSettingsDrawer({
               <div
                 className="flex p-1 rounded-2xl gap-1"
                 style={{
-                  background: "rgba(109,40,217,0.12)",
-                  border: "1.5px solid rgba(109,40,217,0.2)",
+                  background: "var(--q-tab-switcher-bg)",
+                  border: "1.5px solid var(--q-tab-switcher-border)",
                 }}
               >
                 {/* Tab: সহজ মোড */}
@@ -142,14 +138,13 @@ export default function LogoSettingsDrawer({
                   style={
                     layoutSettings.logoSettings.positionType === "simple"
                       ? {
-                          background:
-                            "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
+                          background: "var(--q-header-gradient)",
                           color: "#fff",
                           boxShadow:
-                            "0 4px 16px rgba(109,40,217,0.35), inset 0 1px 0 rgba(255,255,255,0.2)",
+                            "0 4px 16px rgba(144,14,176,0.35), inset 0 1px 0 rgba(255,255,255,0.2)",
                         }
                       : {
-                          color: "rgba(109,40,217,0.7)",
+                          color: "var(--q-tab-inactive-text)",
                           background: "transparent",
                         }
                   }
@@ -168,14 +163,13 @@ export default function LogoSettingsDrawer({
                   style={
                     layoutSettings.logoSettings.positionType === "drag"
                       ? {
-                          background:
-                            "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
+                          background: "var(--q-header-gradient)",
                           color: "#fff",
                           boxShadow:
-                            "0 4px 16px rgba(109,40,217,0.35), inset 0 1px 0 rgba(255,255,255,0.2)",
+                            "0 4px 16px rgba(144,14,176,0.35), inset 0 1px 0 rgba(255,255,255,0.2)",
                         }
                       : {
-                          color: "rgba(109,40,217,0.7)",
+                          color: "var(--q-tab-inactive-text)",
                           background: "transparent",
                         }
                   }
@@ -226,11 +220,10 @@ export default function LogoSettingsDrawer({
                           style={
                             isActive
                               ? {
-                                  background:
-                                    "linear-gradient(135deg, rgba(109,40,217,0.12) 0%, rgba(79,70,229,0.12) 100%)",
-                                  border: "1.5px solid rgba(109,40,217,0.45)",
-                                  color: "rgb(109,40,217)",
-                                  boxShadow: "0 2px 12px rgba(109,40,217,0.15)",
+                                  background: "var(--q-selected-bg)",
+                                  border: "1.5px solid var(--q-selected-border)",
+                                  color: "var(--q-selected-text)",
+                                  boxShadow: "0 2px 12px rgba(144,14,176,0.15)",
                                 }
                               : {
                                   background: "rgba(248,248,255,0.8)",
@@ -259,14 +252,14 @@ export default function LogoSettingsDrawer({
                   className="space-y-2.5"
                 >
                   <div className="flex items-center gap-2">
-                    <Move className="size-3.5 text-violet-600" />
+                    <Move className="size-3.5 text-[var(--purple-600)]" />
                     <span className="text-[12px] font-bold text-slate-700 font-bengali">
                       অবস্থান ড্র্যাগ করুন
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 font-bengali font-medium">
                     নিচের বক্সে{" "}
-                    <span className="text-violet-600 font-bold">LOGO</span>{" "}
+                    <span className="text-[var(--purple-600)] font-bold">LOGO</span>{" "}
                     ট্যাগটি ড্র্যাগ করে যেকোনো জায়গায় রাখুন।
                   </p>
                   <div
@@ -274,9 +267,9 @@ export default function LogoSettingsDrawer({
                     className="relative w-full h-40 rounded-2xl overflow-hidden cursor-crosshair select-none"
                     style={{
                       background:
-                        "linear-gradient(135deg, rgba(240,237,255,0.9) 0%, rgba(232,240,255,0.9) 100%)",
-                      border: "1.5px solid rgba(167,139,250,0.35)",
-                      boxShadow: "inset 0 2px 12px rgba(109,40,217,0.06)",
+                        "linear-gradient(135deg, rgba(248,246,255,0.9) 0%, rgba(240,235,255,0.9) 100%)",
+                      border: "1.5px solid var(--q-card-border-soft)",
+                      boxShadow: "inset 0 2px 12px rgba(144,14,176,0.06)",
                     }}
                     onMouseMove={handleDragMove}
                     onTouchMove={handleDragTouchMove}
@@ -289,21 +282,21 @@ export default function LogoSettingsDrawer({
                       className="absolute inset-0 opacity-30"
                       style={{
                         backgroundImage:
-                          "radial-gradient(circle, rgba(109,40,217,0.4) 1px, transparent 1px)",
+                          "radial-gradient(circle, rgba(144,14,176,0.4) 1px, transparent 1px)",
                         backgroundSize: "18px 18px",
                       }}
                     />
                     {/* Corner labels */}
-                    <span className="absolute top-2 left-2.5 text-[9px] font-bold text-violet-400/60 font-sans select-none">
+                    <span className="absolute top-2 left-2.5 text-[9px] font-bold text-[var(--purple-400)]/60 font-sans select-none">
                       ↖ TL
                     </span>
-                    <span className="absolute top-2 right-2.5 text-[9px] font-bold text-violet-400/60 font-sans select-none">
+                    <span className="absolute top-2 right-2.5 text-[9px] font-bold text-[var(--purple-400)]/60 font-sans select-none">
                       TR ↗
                     </span>
-                    <span className="absolute bottom-2 left-2.5 text-[9px] font-bold text-violet-400/60 font-sans select-none">
+                    <span className="absolute bottom-2 left-2.5 text-[9px] font-bold text-[var(--purple-400)]/60 font-sans select-none">
                       ↙ BL
                     </span>
-                    <span className="absolute bottom-2 right-2.5 text-[9px] font-bold text-violet-400/60 font-sans select-none">
+                    <span className="absolute bottom-2 right-2.5 text-[9px] font-bold text-[var(--purple-400)]/60 font-sans select-none">
                       BR ↘
                     </span>
                     {/* Draggable badge */}
@@ -312,10 +305,9 @@ export default function LogoSettingsDrawer({
                         left: `${layoutSettings.logoSettings.x}%`,
                         top: `${layoutSettings.logoSettings.y}%`,
                         transform: "translate(-50%, -50%)",
-                        background:
-                          "linear-gradient(135deg, rgba(109,40,217,0.92) 0%, rgba(79,70,229,0.92) 100%)",
+                        background: "var(--q-header-gradient)",
                         border: "1px solid rgba(255,255,255,0.3)",
-                        boxShadow: "0 4px 16px rgba(109,40,217,0.45)",
+                        boxShadow: "0 4px 16px rgba(144,14,176,0.45)",
                       }}
                       className="absolute flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-move shadow-lg active:scale-95 transition-transform select-none"
                       onMouseDown={handleDragStart}
@@ -332,9 +324,9 @@ export default function LogoSettingsDrawer({
                     <span
                       className="text-[11px] font-bold font-sans px-3 py-1 rounded-lg"
                       style={{
-                        background: "rgba(109,40,217,0.1)",
-                        color: "rgb(109,40,217)",
-                        border: "1px solid rgba(109,40,217,0.2)",
+                        background: "var(--q-badge-bg)",
+                        color: "var(--q-badge-text)",
+                        border: "1px solid var(--q-badge-border)",
                       }}
                     >
                       X: {layoutSettings.logoSettings.x}% &nbsp;|&nbsp; Y:{" "}
@@ -348,13 +340,13 @@ export default function LogoSettingsDrawer({
               <div
                 className="space-y-3 p-4 rounded-2xl"
                 style={{
-                  background: "rgba(248,246,255,0.85)",
-                  border: "1px solid rgba(167,139,250,0.2)",
+                  background: "var(--q-card-bg)",
+                  border: "1px solid var(--q-card-border-soft)",
                 }}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Maximize2 className="size-3.5 text-violet-600" />
+                    <Maximize2 className="size-3.5 text-[var(--purple-600)]" />
                     <span className="text-[13px] font-bold text-slate-700 font-bengali">
                       সাইজ
                     </span>
@@ -362,8 +354,8 @@ export default function LogoSettingsDrawer({
                   <span
                     className="text-[12px] font-black font-sans px-2.5 py-0.5 rounded-lg"
                     style={{
-                      background: "rgba(109,40,217,0.12)",
-                      color: "rgb(109,40,217)",
+                      background: "var(--q-badge-bg)",
+                      color: "var(--q-badge-text)",
                     }}
                   >
                     {layoutSettings.logoSettings.size}px
@@ -382,7 +374,7 @@ export default function LogoSettingsDrawer({
                     )
                   }
                   className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                  style={{ accentColor: "rgb(109,40,217)" }}
+                  style={{ accentColor: "var(--purple-600)" }}
                 />
                 <div className="flex justify-between text-[10px] font-bold text-slate-400 font-sans">
                   <span>20px</span>
@@ -394,13 +386,13 @@ export default function LogoSettingsDrawer({
               <div
                 className="space-y-3 p-4 rounded-2xl"
                 style={{
-                  background: "rgba(248,246,255,0.85)",
-                  border: "1px solid rgba(167,139,250,0.2)",
+                  background: "var(--q-card-bg)",
+                  border: "1px solid var(--q-card-border-soft)",
                 }}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Eye className="size-3.5 text-violet-600" />
+                    <Eye className="size-3.5 text-[var(--purple-600)]" />
                     <span className="text-[13px] font-bold text-slate-700 font-bengali">
                       স্বচ্ছতা
                     </span>
@@ -408,8 +400,8 @@ export default function LogoSettingsDrawer({
                   <span
                     className="text-[12px] font-black font-sans px-2.5 py-0.5 rounded-lg"
                     style={{
-                      background: "rgba(109,40,217,0.12)",
-                      color: "rgb(109,40,217)",
+                      background: "var(--q-badge-bg)",
+                      color: "var(--q-badge-text)",
                     }}
                   >
                     {layoutSettings.logoSettings.opacity}%
@@ -428,7 +420,7 @@ export default function LogoSettingsDrawer({
                     )
                   }
                   className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                  style={{ accentColor: "rgb(109,40,217)" }}
+                  style={{ accentColor: "var(--purple-600)" }}
                 />
                 <div className="flex justify-between text-[10px] font-bold text-slate-400 font-sans">
                   <span>10%</span>
@@ -439,7 +431,7 @@ export default function LogoSettingsDrawer({
               {/* ── Logo Image Uploader ── */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <Upload className="size-3.5 text-violet-600" />
+                  <Upload className="size-3.5 text-[var(--purple-600)]" />
                   <span className="text-[13px] font-bold text-slate-700 font-bengali">
                     লোগো ইমেজ
                   </span>
@@ -470,18 +462,15 @@ export default function LogoSettingsDrawer({
                     htmlFor="logo-image-upload"
                     className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-[13px] font-bold transition-all cursor-pointer"
                     style={{
-                      background:
-                        "linear-gradient(135deg, rgba(109,40,217,0.10) 0%, rgba(79,70,229,0.10) 100%)",
-                      border: "1.5px dashed rgba(109,40,217,0.4)",
-                      color: "rgb(109,40,217)",
+                      background: "var(--q-selected-bg)",
+                      border: "1.5px dashed var(--q-selected-border)",
+                      color: "var(--q-selected-text)",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background =
-                        "linear-gradient(135deg, rgba(109,40,217,0.16) 0%, rgba(79,70,229,0.16) 100%)";
+                      e.currentTarget.style.background = "var(--q-config-hover-bg)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background =
-                        "linear-gradient(135deg, rgba(109,40,217,0.10) 0%, rgba(79,70,229,0.10) 100%)";
+                      e.currentTarget.style.background = "var(--q-selected-bg)";
                     }}
                   >
                     <Upload className="size-4" />
@@ -494,8 +483,8 @@ export default function LogoSettingsDrawer({
                       <div
                         className="w-10 h-10 rounded-xl overflow-hidden border"
                         style={{
-                          border: "1.5px solid rgba(109,40,217,0.3)",
-                          boxShadow: "0 2px 8px rgba(109,40,217,0.15)",
+                          border: "1.5px solid var(--q-card-border-soft)",
+                          boxShadow: "0 2px 8px rgba(144,14,176,0.15)",
                         }}
                       >
                         <img

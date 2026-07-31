@@ -50,8 +50,7 @@ export default function PageSetupDrawer({
               WebkitBackdropFilter: "blur(32px) saturate(180%)",
               border: "1px solid rgba(255,255,255,0.6)",
               borderBottom: "none",
-              boxShadow:
-                "0 -20px 60px -10px rgba(109,40,217,0.22), 0 -4px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+              boxShadow: "var(--q-drawer-shadow)",
             }}
           >
             {/* Fixed Top Section: Gradient header + drag handle + live margin diagram */}
@@ -60,22 +59,19 @@ export default function PageSetupDrawer({
               <div
                 className="relative flex items-center justify-between px-6 pt-5 pb-4"
                 style={{
-                  background:
-                    "linear-gradient(135deg, rgba(109,40,217,0.90) 0%, rgba(79,70,229,0.90) 55%, rgba(124,58,237,0.85) 100%)",
+                  background: "var(--q-header-gradient)",
                 }}
               >
                 <div
                   className="absolute -top-6 -left-6 w-24 h-24 rounded-full opacity-30 pointer-events-none"
                   style={{
-                    background:
-                      "radial-gradient(circle, rgba(167,139,250,0.8), transparent)",
+                    background: "var(--q-glow-blob-1)",
                   }}
                 />
                 <div
                   className="absolute -bottom-4 right-8 w-16 h-16 rounded-full opacity-20 pointer-events-none"
                   style={{
-                    background:
-                      "radial-gradient(circle, rgba(192,132,252,0.9), transparent)",
+                    background: "var(--q-glow-blob-2)",
                   }}
                 />
                 <div className="flex items-center gap-3 relative z-10">
@@ -137,38 +133,38 @@ export default function PageSetupDrawer({
                         left: `${Math.round(((layoutSettings.pagePaddingLeft ?? 32) / 100) * 20)}px`,
                         right: `${Math.round(((layoutSettings.pagePaddingRight ?? 32) / 100) * 20)}px`,
                         background:
-                          "linear-gradient(135deg, rgba(109,40,217,0.08) 0%, rgba(79,70,229,0.08) 100%)",
-                        border: "1px dashed rgba(109,40,217,0.3)",
+                          "var(--q-selected-bg)",
+                        border: "1px dashed var(--q-selected-border)",
                       }}
                     />
                     <span
                       className="absolute -top-4 left-1/2 -translate-x-1/2 text-[8px] font-bold font-sans"
-                      style={{ color: "rgb(109,40,217)" }}
+                      style={{ color: "var(--purple-600)" }}
                     >
                       {layoutSettings.pagePaddingTop ?? 32}
                     </span>
                     <span
                       className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-bold font-sans"
-                      style={{ color: "rgb(109,40,217)" }}
+                      style={{ color: "var(--purple-600)" }}
                     >
                       {layoutSettings.pagePaddingBottom ?? 32}
                     </span>
                     <span
                       className="absolute top-1/2 -left-5 -translate-y-1/2 text-[8px] font-bold font-sans"
-                      style={{ color: "rgb(109,40,217)" }}
+                      style={{ color: "var(--purple-600)" }}
                     >
                       {layoutSettings.pagePaddingLeft ?? 32}
                     </span>
                     <span
                       className="absolute top-1/2 -right-5 -translate-y-1/2 text-[8px] font-bold font-sans"
-                      style={{ color: "rgb(109,40,217)" }}
+                      style={{ color: "var(--purple-600)" }}
                     >
                       {layoutSettings.pagePaddingRight ?? 32}
                     </span>
                   </div>
                   <p
                     className="absolute bottom-2 right-3 text-[9px] font-bold font-bengali"
-                    style={{ color: "rgba(109,40,217,0.5)" }}
+                    style={{ color: "var(--q-tab-inactive-text)" }}
                   >
                     লাইভ প্রিভিউ
                   </p>
@@ -202,15 +198,15 @@ export default function PageSetupDrawer({
                     key={field}
                     className="space-y-2.5 p-3.5 rounded-2xl"
                     style={{
-                      background: "rgba(248,246,255,0.85)",
-                      border: "1px solid rgba(167,139,250,0.2)",
+                      background: "var(--q-card-bg)",
+                      border: "1px solid var(--q-card-border-soft)",
                     }}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
                         <Icon
                           className="size-3.5"
-                          style={{ color: "rgb(109,40,217)" }}
+                          style={{ color: "var(--purple-600)" }}
                           strokeWidth={2.5}
                         />
                         <span className="text-[12px] font-bold text-slate-700 font-bengali">
@@ -220,8 +216,8 @@ export default function PageSetupDrawer({
                       <span
                         className="text-[11px] font-black font-sans px-2 py-0.5 rounded-lg"
                         style={{
-                          background: "rgba(109,40,217,0.12)",
-                          color: "rgb(109,40,217)",
+                          background: "var(--q-badge-bg)",
+                          color: "var(--q-badge-text)",
                         }}
                       >
                         {layoutSettings[field] ?? 32}px
@@ -240,7 +236,7 @@ export default function PageSetupDrawer({
                         )
                       }
                       className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                      style={{ accentColor: "rgb(109,40,217)" }}
+                      style={{ accentColor: "var(--purple-600)" }}
                     />
                     <div className="flex justify-between text-[9px] font-bold text-slate-400 font-sans">
                       <span>0px</span>
@@ -253,7 +249,7 @@ export default function PageSetupDrawer({
               {/* Paper size */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <FileText className="size-3.5 text-violet-600" />
+                  <FileText className="size-3.5 text-[var(--purple-600)]" />
                   <span className="text-[13px] font-bold text-slate-700 font-bengali">
                     কাগজের সাইজ
                   </span>
@@ -271,11 +267,10 @@ export default function PageSetupDrawer({
                         style={
                           isSelected
                             ? {
-                                background:
-                                  "linear-gradient(135deg, rgba(109,40,217,0.10) 0%, rgba(79,70,229,0.10) 100%)",
-                                border: "1.5px solid rgba(109,40,217,0.45)",
-                                color: "rgb(109,40,217)",
-                                boxShadow: "0 2px 12px rgba(109,40,217,0.15)",
+                                background: "var(--q-selected-bg)",
+                                border: "1.5px solid var(--q-selected-border)",
+                                color: "var(--q-selected-text)",
+                                boxShadow: "0 2px 12px rgba(144,14,176,0.15)",
                               }
                             : {
                                 background: "rgba(248,248,255,0.8)",
@@ -288,7 +283,7 @@ export default function PageSetupDrawer({
                           className="h-12 w-full flex items-center justify-center rounded-xl mb-1.5 overflow-hidden"
                           style={{
                             background: isSelected
-                              ? "linear-gradient(135deg, rgba(109,40,217,0.06) 0%, rgba(79,70,229,0.06) 100%)"
+                              ? "var(--q-selected-bg)"
                               : "rgba(241,245,249,0.8)",
                           }}
                         >
@@ -299,7 +294,7 @@ export default function PageSetupDrawer({
                               height: `${paper.h}px`,
                               background: "white",
                               border: isSelected
-                                ? "1.5px solid rgba(109,40,217,0.4)"
+                                ? "1.5px solid var(--q-selected-border)"
                                 : "1px solid rgba(203,213,225,0.8)",
                             }}
                           />
