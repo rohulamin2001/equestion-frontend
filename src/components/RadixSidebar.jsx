@@ -287,7 +287,7 @@ export const RadixSidebar = () => {
         {filteredNavGroups.map((group) => (
           <SidebarGroup key={group.label} className="py-2">
             <SidebarGroupLabel
-              className="group-data-[collapsible=icon]:hidden font-bold text-[11px] uppercase tracking-widest mb-1.5 px-4 font-bengali"
+              className="group-data-[collapsible=icon]:hidden  text-[12px] uppercase tracking-widest mb-1.5 px-4 font-bengali"
               style={{ color: "var(--sidebar-section-label)" }}
             >
               {group.label}
