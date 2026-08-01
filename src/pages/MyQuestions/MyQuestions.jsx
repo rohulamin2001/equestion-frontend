@@ -1619,7 +1619,7 @@ export default function MyQuestions() {
                       <div className="space-y-4">
                         {q.mcqData.mcqType === "Contextual" &&
                           q.mcqData.stem && (
-                            <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#900EB0]/60 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-sm italic leading-relaxed text-slate-700 backdrop-blur-sm">
+                            <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#900EB0]/60 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-sm leading-relaxed text-slate-700 backdrop-blur-sm">
                               <strong>উদ্দীপক:</strong>
                               <RichTextRender
                                 content={q.mcqData.stem}
@@ -1897,7 +1897,7 @@ export default function MyQuestions() {
                       q.generalData && (
                         <div className="space-y-3">
                           {q.generalData.stem && (
-                            <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#900EB0]/60 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[15px] italic leading-relaxed text-slate-700 backdrop-blur-sm">
+                            <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#900EB0]/60 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[15px] leading-relaxed text-slate-700 backdrop-blur-sm">
                               <RichTextRender content={q.generalData.stem} />
                             </div>
                           )}

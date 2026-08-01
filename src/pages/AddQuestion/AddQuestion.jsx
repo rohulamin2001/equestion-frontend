@@ -2975,7 +2975,7 @@ export default function AddQuestion() {
                               q.generalData && (
                                 <div className="space-y-4">
                                   {q.generalData.stem && (
-                                    <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm italic font-serif">
+                                    <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm font-serif">
                                       <RichTextRender
                                         content={q.generalData.stem}
                                       />
@@ -3425,7 +3425,7 @@ export default function AddQuestion() {
                         qm.generalQuestionText && (
                           <div className="space-y-4">
                             {qm.generalStem && (
-                              <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm italic font-serif">
+                              <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm font-serif">
                                 <RichTextRender content={qm.generalStem} />
                               </div>
                             )}
