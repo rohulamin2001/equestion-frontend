@@ -273,9 +273,9 @@ export default function MyQuestions() {
           {
             label: "সংক্ষিপ্ত ও অন্যান্য",
             count: otherCount,
-            color: "text-[#900EB0]",
-            bg: "from-[#900EB0]/8 to-[#B010CA]/8",
-            border: "hover:border-[#900EB0]/20",
+            color: "text-[#8B5CF6]",
+            bg: "from-[#8B5CF6]/15 to-[#7C3AED]/15",
+            border: "hover:border-[#8B5CF6]/30",
             icon: HelpCircle,
           },
         ].map((stat, i) => {

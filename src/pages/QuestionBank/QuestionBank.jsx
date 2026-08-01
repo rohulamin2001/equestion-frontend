@@ -250,7 +250,7 @@ export default function QuestionBank() {
             label: "সংক্ষিপ্ত ও অন্যান্য",
             count: otherCount,
             color: "text-[#8B5CF6]",
-            bg: "from-[#8B5CF6]/10 to-[#7C3AED]/10",
+            bg: "from-[#8B5CF6]/15 to-[#7C3AED]/15",
             border: "hover:border-[#8B5CF6]/35",
             icon: HelpCircle,
           },
