@@ -193,20 +193,25 @@ export default function QuestionBank() {
     <div className="space-y-6 pb-12 w-full font-bengali">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">
-            প্রশ্নব্যাংক
-          </h1>
-          <p className="text-slate-500 text-sm mt-1">
-            সকল বিষয়ের অধ্যায়ভিত্তিক সৃজনশীল ও MCQ প্রশ্নভাণ্ডার
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-[#900EB0]/10 border border-[#900EB0]/20 text-[#900EB0] rounded-2xl shrink-0 shadow-xs">
+            <Database className="size-6" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">
+              প্রশ্নব্যাংক
+            </h1>
+            <p className="text-slate-500 text-sm mt-1">
+              সকল বিষয়ের অধ্যায়ভিত্তিক সৃজনশীল ও MCQ প্রশ্নভাণ্ডার
+            </p>
+          </div>
         </div>
         {/* Only Question Creator role is allowed to add questions based on App.jsx guard, 
             but administrators can too or we can just redirect them to page and guard handles it */}
         {role === "Question Creator" && (
           <Button
             onClick={() => navigate("/dashboard/add-question")}
-            className="bg-[#4F46E5] hover:bg-[#4E3FB4] text-white rounded-xl h-11 px-5 flex items-center gap-2 font-semibold shadow-md shadow-purple-500/10 cursor-pointer"
+            className="bg-[#900EB0] hover:bg-[#720A7B] text-white rounded-xl h-11 px-5 flex items-center gap-2 font-semibold shadow-md shadow-[#900EB0]/20 cursor-pointer"
           >
             <Plus className="size-4" />
             প্রশ্ন তৈরি করুন
@@ -225,9 +230,9 @@ export default function QuestionBank() {
           {
             label: "মোট প্রশ্ন",
             count: totalCount,
-            color: "text-[#4F46E5]",
-            bg: "from-[#4F46E5]/10 to-[#8B5CF6]/10",
-            border: "hover:border-[#4F46E5]/35",
+            color: "text-[#900EB0]",
+            bg: "from-[#900EB0]/15 to-[#B010CA]/15",
+            border: "hover:border-[#900EB0]/30",
             icon: Database,
           },
           {
@@ -431,7 +436,7 @@ export default function QuestionBank() {
                   </label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
+                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-[#900EB0]/40 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
                         <span>
                           {TYPE_LABELS[qm.filterType] ||
                             qm.filterType ||
@@ -443,15 +448,15 @@ export default function QuestionBank() {
                     <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                       <DropdownMenuItem
                         onSelect={() => handleFilterTypeChange("")}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                           !qm.filterType
-                            ? "bg-indigo-50 text-indigo-600"
+                            ? "bg-[#900EB0]/8 text-[#900EB0]"
                             : "text-slate-700"
                         }`}
                       >
                         <span>সকল ধরণ</span>
                         {!qm.filterType && (
-                          <span className="size-1 rounded-full bg-indigo-500" />
+                          <span className="size-1 rounded-full bg-[#900EB0]/80" />
                         )}
                       </DropdownMenuItem>
                       {filterActiveTypes.map((type) => {
@@ -460,15 +465,15 @@ export default function QuestionBank() {
                           <DropdownMenuItem
                             key={type}
                             onSelect={() => handleFilterTypeChange(type)}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                               isSelected
-                                ? "bg-indigo-50 text-indigo-600"
+                                ? "bg-[#900EB0]/8 text-[#900EB0]"
                                 : "text-slate-700"
                             }`}
                           >
                             <span>{TYPE_LABELS[type] || type}</span>
                             {isSelected && (
-                              <span className="size-1 rounded-full bg-indigo-500" />
+                              <span className="size-1 rounded-full bg-[#900EB0]/80" />
                             )}
                           </DropdownMenuItem>
                         );
@@ -484,7 +489,7 @@ export default function QuestionBank() {
                   </label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
+                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-[#900EB0]/40 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
                         <span>
                           {LEVEL_LABELS[qm.filterLevel] ||
                             qm.filterLevel ||
@@ -496,15 +501,15 @@ export default function QuestionBank() {
                     <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                       <DropdownMenuItem
                         onSelect={() => handleFilterLevelChange("")}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                           !qm.filterLevel
-                            ? "bg-indigo-50 text-indigo-600"
+                            ? "bg-[#900EB0]/8 text-[#900EB0]"
                             : "text-slate-700"
                         }`}
                       >
                         <span>সকল স্তর</span>
                         {!qm.filterLevel && (
-                          <span className="size-1 rounded-full bg-indigo-500" />
+                          <span className="size-1 rounded-full bg-[#900EB0]/80" />
                         )}
                       </DropdownMenuItem>
                       {filterActiveLevels.map((lvl) => {
@@ -513,15 +518,15 @@ export default function QuestionBank() {
                           <DropdownMenuItem
                             key={lvl}
                             onSelect={() => handleFilterLevelChange(lvl)}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                               isSelected
-                                ? "bg-indigo-50 text-indigo-600"
+                                ? "bg-[#900EB0]/8 text-[#900EB0]"
                                 : "text-slate-700"
                             }`}
                           >
                             <span>{LEVEL_LABELS[lvl] || lvl}</span>
                             {isSelected && (
-                              <span className="size-1 rounded-full bg-indigo-500" />
+                              <span className="size-1 rounded-full bg-[#900EB0]/80" />
                             )}
                           </DropdownMenuItem>
                         );
@@ -537,7 +542,7 @@ export default function QuestionBank() {
                   </label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
+                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-[#900EB0]/40 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
                         <span>
                           {CLASSES_MAP.find((c) => c.value === qm.filterClass)
                             ?.label ||
@@ -554,15 +559,15 @@ export default function QuestionBank() {
                           qm.setFilterSubjectId("");
                           qm.setFilterChapter("");
                         }}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                           !qm.filterClass
-                            ? "bg-indigo-50 text-indigo-600"
+                            ? "bg-[#900EB0]/8 text-[#900EB0]"
                             : "text-slate-700"
                         }`}
                       >
                         <span>সকল শ্রেণী</span>
                         {!qm.filterClass && (
-                          <span className="size-1 rounded-full bg-indigo-500" />
+                          <span className="size-1 rounded-full bg-[#900EB0]/80" />
                         )}
                       </DropdownMenuItem>
                       {filterActiveClasses.map((c) => {
@@ -575,15 +580,15 @@ export default function QuestionBank() {
                               qm.setFilterSubjectId("");
                               qm.setFilterChapter("");
                             }}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                               isSelected
-                                ? "bg-indigo-50 text-indigo-600"
+                                ? "bg-[#900EB0]/8 text-[#900EB0]"
                                 : "text-slate-700"
                             }`}
                           >
                             <span>{c.label}</span>
                             {isSelected && (
-                              <span className="size-1 rounded-full bg-indigo-500" />
+                              <span className="size-1 rounded-full bg-[#900EB0]/80" />
                             )}
                           </DropdownMenuItem>
                         );
@@ -601,7 +606,7 @@ export default function QuestionBank() {
                     <DropdownMenuTrigger asChild>
                       <button
                         disabled={qm.filterClass && filterSubjects.length === 0}
-                        className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
+                        className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-[#900EB0]/40 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
                       >
                         <span>
                           {filterSubjects.find(
@@ -617,15 +622,15 @@ export default function QuestionBank() {
                           qm.setFilterSubjectId("");
                           qm.setFilterChapter("");
                         }}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                           !qm.filterSubjectId
-                            ? "bg-indigo-50 text-indigo-600"
+                            ? "bg-[#900EB0]/8 text-[#900EB0]"
                             : "text-slate-700"
                         }`}
                       >
                         <span>সকল বিষয়</span>
                         {!qm.filterSubjectId && (
-                          <span className="size-1 rounded-full bg-indigo-500" />
+                          <span className="size-1 rounded-full bg-[#900EB0]/80" />
                         )}
                       </DropdownMenuItem>
                       {filterSubjects.map((s) => {
@@ -637,15 +642,15 @@ export default function QuestionBank() {
                               qm.setFilterSubjectId(s._id);
                               qm.setFilterChapter("");
                             }}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                               isSelected
-                                ? "bg-indigo-50 text-indigo-600"
+                                ? "bg-[#900EB0]/8 text-[#900EB0]"
                                 : "text-slate-700"
                             }`}
                           >
                             <span>{s.subjectName}</span>
                             {isSelected && (
-                              <span className="size-1 rounded-full bg-indigo-500" />
+                              <span className="size-1 rounded-full bg-[#900EB0]/80" />
                             )}
                           </DropdownMenuItem>
                         );
@@ -663,7 +668,7 @@ export default function QuestionBank() {
                     <DropdownMenuTrigger asChild>
                       <button
                         disabled={!qm.filterSubjectId}
-                        className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
+                        className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-[#900EB0]/40 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
                       >
                         <span>
                           {(() => {
@@ -683,15 +688,15 @@ export default function QuestionBank() {
                     <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] max-h-56 overflow-y-auto">
                       <DropdownMenuItem
                         onSelect={() => qm.setFilterChapter("")}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                           !qm.filterChapter
-                            ? "bg-indigo-50 text-indigo-600"
+                            ? "bg-[#900EB0]/8 text-[#900EB0]"
                             : "text-slate-700"
                         }`}
                       >
                         <span>সকল অধ্যায়</span>
                         {!qm.filterChapter && (
-                          <span className="size-1 rounded-full bg-indigo-500" />
+                          <span className="size-1 rounded-full bg-[#900EB0]/80" />
                         )}
                       </DropdownMenuItem>
                       {filterChapters.map((ch) => {
@@ -703,9 +708,9 @@ export default function QuestionBank() {
                             onSelect={() =>
                               qm.setFilterChapter(ch.chapterNumber)
                             }
-                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                               isSelected
-                                ? "bg-indigo-50 text-indigo-600"
+                                ? "bg-[#900EB0]/8 text-[#900EB0]"
                                 : "text-slate-700"
                             }`}
                           >
@@ -713,7 +718,7 @@ export default function QuestionBank() {
                               অধ্যায় {ch.chapterNumber}: {ch.chapterName}
                             </span>
                             {isSelected && (
-                              <span className="size-1 rounded-full bg-indigo-500" />
+                              <span className="size-1 rounded-full bg-[#900EB0]/80" />
                             )}
                           </DropdownMenuItem>
                         );
@@ -731,7 +736,7 @@ export default function QuestionBank() {
                     <DropdownMenuTrigger asChild>
                       <button
                         disabled={qm.filterClass && filterSubjects.length === 0}
-                        className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
+                        className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-[#900EB0]/40 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none disabled:bg-slate-100/50 disabled:text-slate-400 disabled:cursor-not-allowed"
                       >
                         <span>
                           {(() => {
@@ -749,15 +754,15 @@ export default function QuestionBank() {
                     <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                       <DropdownMenuItem
                         onSelect={() => qm.setFilterCategory("")}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                           !qm.filterCategory
-                            ? "bg-indigo-50 text-indigo-600"
+                            ? "bg-[#900EB0]/8 text-[#900EB0]"
                             : "text-slate-700"
                         }`}
                       >
                         <span>সকল ধরণ</span>
                         {!qm.filterCategory && (
-                          <span className="size-1 rounded-full bg-indigo-500" />
+                          <span className="size-1 rounded-full bg-[#900EB0]/80" />
                         )}
                       </DropdownMenuItem>
                       {(() => {
@@ -768,15 +773,15 @@ export default function QuestionBank() {
                             <DropdownMenuItem
                               key={cat.value}
                               onSelect={() => qm.setFilterCategory(cat.value)}
-                              className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                              className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                                 isSelected
-                                  ? "bg-indigo-50 text-indigo-600"
+                                  ? "bg-[#900EB0]/8 text-[#900EB0]"
                                   : "text-slate-700"
                               }`}
                             >
                               <span>{cat.label}</span>
                               {isSelected && (
-                                <span className="size-1 rounded-full bg-indigo-500" />
+                                <span className="size-1 rounded-full bg-[#900EB0]/80" />
                               )}
                             </DropdownMenuItem>
                           );
@@ -793,7 +798,7 @@ export default function QuestionBank() {
                   </label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
+                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-[#900EB0]/40 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
                         <span>
                           {qm.filterDifficulty
                             ? DIFFICULTY_MAP[qm.filterDifficulty]?.label ||
@@ -806,15 +811,15 @@ export default function QuestionBank() {
                     <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                       <DropdownMenuItem
                         onSelect={() => qm.setFilterDifficulty("")}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                           !qm.filterDifficulty
-                            ? "bg-indigo-50 text-indigo-600"
+                            ? "bg-[#900EB0]/8 text-[#900EB0]"
                             : "text-slate-700"
                         }`}
                       >
                         <span>সকল কাঠিন্য</span>
                         {!qm.filterDifficulty && (
-                          <span className="size-1 rounded-full bg-indigo-500" />
+                          <span className="size-1 rounded-full bg-[#900EB0]/80" />
                         )}
                       </DropdownMenuItem>
                       {Object.keys(DIFFICULTY_MAP).map((k) => {
@@ -823,15 +828,15 @@ export default function QuestionBank() {
                           <DropdownMenuItem
                             key={k}
                             onSelect={() => qm.setFilterDifficulty(k)}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                               isSelected
-                                ? "bg-indigo-50 text-indigo-600"
+                                ? "bg-[#900EB0]/8 text-[#900EB0]"
                                 : "text-slate-700"
                             }`}
                           >
                             <span>{DIFFICULTY_MAP[k].label}</span>
                             {isSelected && (
-                              <span className="size-1 rounded-full bg-indigo-500" />
+                              <span className="size-1 rounded-full bg-[#900EB0]/80" />
                             )}
                           </DropdownMenuItem>
                         );
@@ -847,7 +852,7 @@ export default function QuestionBank() {
                   </label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
+                      <button className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-[#900EB0]/40 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none">
                         <span>
                           {qm.filterVersion === "Bangla"
                             ? "বাংলা"
@@ -861,15 +866,15 @@ export default function QuestionBank() {
                     <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                       <DropdownMenuItem
                         onSelect={() => qm.setFilterVersion("")}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                           !qm.filterVersion
-                            ? "bg-indigo-50 text-indigo-600"
+                            ? "bg-[#900EB0]/8 text-[#900EB0]"
                             : "text-slate-700"
                         }`}
                       >
                         <span>সকল ভার্সন</span>
                         {!qm.filterVersion && (
-                          <span className="size-1 rounded-full bg-indigo-500" />
+                          <span className="size-1 rounded-full bg-[#900EB0]/80" />
                         )}
                       </DropdownMenuItem>
                       {[
@@ -881,15 +886,15 @@ export default function QuestionBank() {
                           <DropdownMenuItem
                             key={v.value}
                             onSelect={() => qm.setFilterVersion(v.value)}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
                               isSelected
-                                ? "bg-indigo-50 text-indigo-600"
+                                ? "bg-[#900EB0]/8 text-[#900EB0]"
                                 : "text-slate-700"
                             }`}
                           >
                             <span>{v.label}</span>
                             {isSelected && (
-                              <span className="size-1 rounded-full bg-indigo-500" />
+                              <span className="size-1 rounded-full bg-[#900EB0]/80" />
                             )}
                           </DropdownMenuItem>
                         );
@@ -967,7 +972,7 @@ export default function QuestionBank() {
               <span>প্রদর্শন:</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="h-8 px-2.5 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none transition-all rounded-xl text-xs font-bold text-slate-700 flex items-center gap-1 cursor-pointer select-none">
+                  <button className="h-8 px-2.5 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-[#900EB0]/40 focus:outline-none transition-all rounded-xl text-xs font-bold text-slate-700 flex items-center gap-1 cursor-pointer select-none">
                     <span>{pageSize} টি</span>
                     <ChevronDown className="size-3 text-slate-400" />
                   </button>
@@ -980,9 +985,9 @@ export default function QuestionBank() {
                     <DropdownMenuItem
                       key={size}
                       onSelect={() => setPageSize(size)}
-                      className={`text-center px-2 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
+                      className={`text-center px-2 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 ${
                         pageSize === size
-                          ? "text-indigo-600 bg-indigo-50/50"
+                          ? "text-[#900EB0] bg-[#900EB0]/8"
                           : "text-slate-650"
                       }`}
                     >
@@ -1022,7 +1027,7 @@ export default function QuestionBank() {
                           উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ ({item.questions.length}টি
                           প্রশ্ন)
                         </span>
-                        <span className="bg-indigo-50 text-[#4F46E5] border border-indigo-100 px-2 py-0.5 rounded">
+                        <span className="bg-[#900EB0]/8 text-[#4F46E5] border border-[#900EB0]/20 px-2 py-0.5 rounded">
                           {classLabel}
                         </span>
                         <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
@@ -1042,7 +1047,7 @@ export default function QuestionBank() {
                               toggleIndividualAnswer(q._id),
                             );
                           }}
-                          className="p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 bg-indigo-50 text-[#4F46E5] border-indigo-200 hover:bg-indigo-100 text-xs font-semibold px-2.5 gap-1 font-sans"
+                          className="p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 bg-[#900EB0]/8 text-[#4F46E5] border-[#900EB0]/30 hover:bg-[#900EB0]/15 text-xs font-semibold px-2.5 gap-1 font-sans"
                         >
                           <Eye className="size-3.5" />
                           সবগুলোর উত্তর দেখান
@@ -1052,7 +1057,7 @@ export default function QuestionBank() {
 
                     {/* Passage Box */}
                     {item.passageStem && (
-                      <div className="p-4 bg-indigo-50/70 border border-indigo-100 rounded-xl text-slate-800 font-serif text-[14px] leading-relaxed shadow-inner">
+                      <div className="p-4 bg-[#900EB0]/8/70 border border-[#900EB0]/20 rounded-xl text-slate-800 font-serif text-[14px] leading-relaxed shadow-inner">
                         <RichTextRender
                           content={item.passageStem}
                           inline={false}
@@ -1061,7 +1066,7 @@ export default function QuestionBank() {
                     )}
 
                     {/* Sub Questions List */}
-                    <div className="space-y-4 pt-2 border-t border-dashed border-indigo-200/80">
+                    <div className="space-y-4 pt-2 border-t border-dashed border-[#900EB0]/30/80">
                       {item.questions.map((q, qSubIndex) => {
                         const isAnswerVisible =
                           showAnswers || !!expandedAnswerIds[q._id];
@@ -1099,7 +1104,7 @@ export default function QuestionBank() {
                                 <button
                                   type="button"
                                   onClick={() => toggleIndividualAnswer(q._id)}
-                                  className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${isAnswerVisible ? "bg-indigo-50 text-[#4F46E5] border-indigo-200" : "bg-slate-50 text-slate-400 hover:text-slate-600 border-slate-200"}`}
+                                  className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${isAnswerVisible ? "bg-[#900EB0]/8 text-[#4F46E5] border-[#900EB0]/30" : "bg-slate-50 text-slate-400 hover:text-slate-600 border-slate-200"}`}
                                   title={
                                     isAnswerVisible
                                       ? "উত্তর লুকান"
@@ -1253,7 +1258,14 @@ export default function QuestionBank() {
                             <Button
                               type="button"
                               variant="outline"
-                              onClick={() => setDeleteConfirmId({ id: qMeta._id, deleteAllGroup: true, isGroup: true, count: item.questions.length })}
+                              onClick={() =>
+                                setDeleteConfirmId({
+                                  id: qMeta._id,
+                                  deleteAllGroup: true,
+                                  isGroup: true,
+                                  count: item.questions.length,
+                                })
+                              }
                               className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
                             >
                               <Trash2 className="size-3" />
@@ -1317,7 +1329,7 @@ export default function QuestionBank() {
                               : "মাদ্রাসা"}
                         </span>
                       )}
-                      <span className="bg-indigo-50 text-[#4F46E5] border border-indigo-100 px-2 py-0.5 rounded">
+                      <span className="bg-[#900EB0]/8 text-[#4F46E5] border border-[#900EB0]/20 px-2 py-0.5 rounded">
                         {classLabel}
                       </span>
                       <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
@@ -1399,7 +1411,7 @@ export default function QuestionBank() {
                         }}
                         className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${
                           isAnswerVisible
-                            ? "bg-indigo-50 text-[#4F46E5] border-indigo-200"
+                            ? "bg-[#900EB0]/8 text-[#4F46E5] border-[#900EB0]/30"
                             : "bg-slate-50 text-slate-400 hover:text-slate-600 border-slate-200 hover:bg-slate-100"
                         }`}
                         title={isAnswerVisible ? "উত্তর লুকান" : "উত্তর দেখান"}
@@ -1846,8 +1858,8 @@ export default function QuestionBank() {
                     {CLASSES_MAP.find(
                       (c) => c.value === selectedPreviewQuestion.className,
                     ) && (
-                      <div className="bg-indigo-50 text-indigo-700 border border-indigo-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
-                        <span className="size-1.5 rounded-full bg-indigo-500" />
+                      <div className="bg-[#900EB0]/8 text-[#900EB0] border border-[#900EB0]/20/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                        <span className="size-1.5 rounded-full bg-[#900EB0]/80" />
                         <span>
                           শ্রেণী:{" "}
                           {
@@ -1935,7 +1947,9 @@ export default function QuestionBank() {
                     </div>
 
                     {(() => {
-                      const formattedYear = getFormattedTagValue(selectedPreviewQuestion.year);
+                      const formattedYear = getFormattedTagValue(
+                        selectedPreviewQuestion.year,
+                      );
                       return formattedYear ? (
                         <div className="bg-amber-50 text-amber-700 border border-amber-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
                           <span className="size-1.5 rounded-full bg-amber-500" />
@@ -1944,7 +1958,9 @@ export default function QuestionBank() {
                       ) : null;
                     })()}
                     {(() => {
-                      const formattedBoard = getFormattedTagValue(selectedPreviewQuestion.board);
+                      const formattedBoard = getFormattedTagValue(
+                        selectedPreviewQuestion.board,
+                      );
                       return formattedBoard ? (
                         <div className="bg-blue-50 text-blue-700 border border-blue-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
                           <span className="size-1.5 rounded-full bg-blue-500" />
@@ -1953,7 +1969,9 @@ export default function QuestionBank() {
                       ) : null;
                     })()}
                     {(() => {
-                      const formattedSchool = getFormattedTagValue(selectedPreviewQuestion.school);
+                      const formattedSchool = getFormattedTagValue(
+                        selectedPreviewQuestion.school,
+                      );
                       return formattedSchool ? (
                         <div className="bg-purple-50 text-purple-700 border border-purple-100/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
                           <span className="size-1.5 rounded-full bg-purple-500" />
@@ -2391,7 +2409,7 @@ export default function QuestionBank() {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
                     {/* Creator Information Panel */}
                     <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-xl bg-indigo-500/10 text-indigo-650 flex items-center justify-center border border-indigo-500/20 shadow-sm shrink-0">
+                      <div className="size-10 rounded-xl bg-[#900EB0]/80/10 text-indigo-650 flex items-center justify-center border border-indigo-500/20 shadow-sm shrink-0">
                         <User className="size-5" />
                       </div>
                       <div className="space-y-0.5">
@@ -2400,7 +2418,7 @@ export default function QuestionBank() {
                             {selectedPreviewQuestion.creatorId?.fullName ||
                               "Content Creator"}
                           </span>
-                          <span className="text-[9px] font-extrabold text-indigo-600 bg-indigo-500/10 px-1.5 py-0.5 rounded-md border border-indigo-500/20 uppercase font-sans">
+                          <span className="text-[9px] font-extrabold text-[#900EB0] bg-[#900EB0]/80/10 px-1.5 py-0.5 rounded-md border border-indigo-500/20 uppercase font-sans">
                             {selectedPreviewQuestion.creatorId?.role ||
                               "Creator"}
                           </span>
