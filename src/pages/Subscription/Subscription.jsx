@@ -6,25 +6,28 @@ import {
 } from "@/components/ui/dialog";
 import { useAuth } from "@clerk/react";
 import {
+  BookOpen,
+  Building2,
   Calendar,
   Check,
   ChevronRight,
   Copy,
+  CreditCard,
+  Crown,
+  Gift,
+  GraduationCap,
   Grid,
-  Info,
+  Layers,
   Loader2,
   Lock,
   Package,
-  Sparkles,
-  GraduationCap,
-  Layers,
-  Building2,
+  PackageOpen,
   School,
-  BookOpen,
+  ShieldCheck,
 } from "lucide-react";
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { motion } from "motion/react";
 import { translateSubscriptionKey } from "../../constants/subscriptions";
 import { useUserContext } from "../../context/UserContext";
 import apiClient from "../../lib/apiClient";
@@ -318,29 +321,44 @@ export default function Subscription() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12 font-bengali">
       {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight font-sans">
-          সাবস্ক্রিপশন ও প্যাকেজ
-        </h1>
-        <p className="text-sm text-slate-500">
-          আপনার বর্তমান প্যাকেজের স্থিতি, বিলিং তথ্য এবং নতুন প্যাকেজ ক্রয় করুন
-        </p>
+      <div className="flex items-center gap-3">
+        <div
+          className="p-2.5 rounded-xl"
+          style={{ background: "var(--sub-header-gradient)" }}
+        >
+          <Crown className="h-5 w-5 text-white" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight font-sans">
+            সাবস্ক্রিপশন ও প্যাকেজ
+          </h1>
+          <p className="text-sm text-slate-500">
+            আপনার বর্তমান প্যাকেজের স্থিতি, বিলিং তথ্য এবং নতুন প্যাকেজ ক্রয়
+            করুন
+          </p>
+        </div>
       </div>
 
       {/* Current Active Subscriptions Status */}
-      <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+      <div className="bg-glass rounded-2xl p-6 shadow-soft">
         <h2 className="text-base font-bold text-slate-800 flex items-center gap-2 mb-4">
-          <Sparkles className="h-5 w-5 text-indigo-500 animate-pulse" />
+          <ShieldCheck className="h-5 w-5 text-purple-600 animate-pulse" />
           আপনার সক্রিয় লাইসেন্স সমূহ
         </h2>
 
         {subsLoading ? (
           <div className="flex justify-center py-6">
-            <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+            <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
           </div>
         ) : activeSubs.length === 0 ? (
-          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start gap-3">
-            <Info className="h-5 w-5 text-slate-400 mt-0.5" />
+          <div
+            className="p-4 rounded-xl border flex items-start gap-3"
+            style={{
+              background: "var(--sub-active-bg)",
+              borderColor: "var(--sub-active-border)",
+            }}
+          >
+            <PackageOpen className="h-5 w-5 text-purple-400 mt-0.5" />
             <div>
               <p className="text-sm font-semibold text-slate-700">
                 কোনো সক্রিয় লাইসেন্স পাওয়া যায়নি
@@ -356,11 +374,21 @@ export default function Subscription() {
             {activeSubs.map((sub, idx) => (
               <div
                 key={idx}
-                className="border border-indigo-50 bg-indigo-50/10 p-4 rounded-2xl flex items-center justify-between"
+                className="border p-4 rounded-2xl flex items-center justify-between hover-lift transition-all"
+                style={{
+                  background: "var(--sub-active-bg)",
+                  borderColor: "var(--sub-active-border)",
+                }}
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-md">
+                    <span
+                      className="px-2 py-0.5 text-[10px] font-bold rounded-md"
+                      style={{
+                        background: "var(--sub-badge-bg)",
+                        color: "var(--sub-badge-text)",
+                      }}
+                    >
                       {sub.purchaseType === "Package"
                         ? "গ্রুপ প্যাক"
                         : sub.purchaseType === "Class"
@@ -402,7 +430,10 @@ export default function Subscription() {
 
       {/* Active Coupons Showcase - Gorgeous & Animated Banner */}
       {couponsList.length > 0 && (
-        <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 rounded-3xl p-6 text-white shadow-xl shadow-indigo-500/10 overflow-hidden relative group">
+        <div
+          className="rounded-3xl p-6 text-white shadow-xl accent-glow-purple overflow-hidden relative group"
+          style={{ background: "var(--sub-coupon-gradient)" }}
+        >
           {/* Subtle background animated sparkles */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent)] pointer-events-none" />
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:scale-150 transition-all duration-700" />
@@ -410,7 +441,7 @@ export default function Subscription() {
           <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2 max-w-lg text-left">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-black tracking-wider uppercase border border-white/20 animate-pulse">
-                <Sparkles
+                <Gift
                   className="h-3.5 w-3.5 text-yellow-300 animate-spin"
                   style={{ animationDuration: "3s" }}
                 />
@@ -460,7 +491,7 @@ export default function Subscription() {
                       navigator.clipboard.writeText(coupon.code);
                       toast.success(`"${coupon.code}" কুপন কোড কপি করা হয়েছে!`);
                     }}
-                    className="p-2.5 bg-white/10 hover:bg-white text-white hover:text-indigo-600 rounded-xl transition duration-200 active:scale-95 shadow-inner cursor-pointer self-center"
+                    className="p-2.5 bg-white/10 hover:bg-white text-white hover:text-purple-700 rounded-xl transition duration-200 active:scale-95 shadow-inner cursor-pointer self-center"
                     title="কোড কপি করুন"
                   >
                     <Copy className="h-4 w-4" />
@@ -480,7 +511,7 @@ export default function Subscription() {
             onClick={() => setActiveTab("packages")}
             className={`flex-1 relative py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors duration-300 z-10 cursor-pointer ${
               activeTab === "packages"
-                ? "text-indigo-600"
+                ? "text-purple-700"
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
@@ -491,7 +522,9 @@ export default function Subscription() {
                 transition={{ type: "spring", stiffness: 380, damping: 30 }}
               />
             )}
-            <Package className={`h-4 w-4 relative z-10 transition-transform duration-300 ${activeTab === "packages" ? "scale-110" : ""}`} />
+            <Package
+              className={`h-4 w-4 relative z-10 transition-transform duration-300 ${activeTab === "packages" ? "scale-110" : ""}`}
+            />
             <span className="relative z-10">প্যাকেজসমূহ</span>
           </button>
           <button
@@ -499,7 +532,7 @@ export default function Subscription() {
             onClick={() => setActiveTab("subjects")}
             className={`flex-1 relative py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors duration-300 z-10 cursor-pointer ${
               activeTab === "subjects"
-                ? "text-indigo-600"
+                ? "text-purple-700"
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
@@ -510,7 +543,9 @@ export default function Subscription() {
                 transition={{ type: "spring", stiffness: 380, damping: 30 }}
               />
             )}
-            <Grid className={`h-4 w-4 relative z-10 transition-transform duration-300 ${activeTab === "subjects" ? "scale-110" : ""}`} />
+            <Grid
+              className={`h-4 w-4 relative z-10 transition-transform duration-300 ${activeTab === "subjects" ? "scale-110" : ""}`}
+            />
             <span className="relative z-10">বিষয় বাছাই করুন</span>
           </button>
         </div>
@@ -538,11 +573,18 @@ export default function Subscription() {
                   {isActive && (
                     <motion.div
                       layoutId="activeCategoryIndicator"
-                      className="absolute inset-0 bg-indigo-600 rounded-xl shadow-md shadow-indigo-600/20"
-                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                      className="absolute inset-0 rounded-xl shadow-md accent-glow-purple"
+                      style={{ background: "var(--sub-btn-gradient)" }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 25,
+                      }}
                     />
                   )}
-                  <Icon className={`h-4 w-4 relative z-10 transition-transform duration-300 ${isActive ? "scale-110" : ""}`} />
+                  <Icon
+                    className={`h-4 w-4 relative z-10 transition-transform duration-300 ${isActive ? "scale-110" : ""}`}
+                  />
                   <span className="relative z-10">{cat.label}</span>
                 </button>
               );
@@ -572,8 +614,13 @@ export default function Subscription() {
                     {isActive && (
                       <motion.div
                         layoutId="activeVersionIndicator"
-                        className="absolute inset-0 bg-indigo-600 rounded-lg shadow-sm"
-                        transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                        className="absolute inset-0 rounded-lg shadow-sm"
+                        style={{ background: "var(--sub-btn-gradient)" }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 350,
+                          damping: 28,
+                        }}
                       />
                     )}
                     <span className="relative z-10">{ver.label}</span>
@@ -605,7 +652,11 @@ export default function Subscription() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {packagesList
-                .filter((pkg) => pkg.category === selectedCategory && (pkg.version || "Bangla") === selectedVersion)
+                .filter(
+                  (pkg) =>
+                    pkg.category === selectedCategory &&
+                    (pkg.version || "Bangla") === selectedVersion,
+                )
                 .map((pkg) => {
                   const isSubscribed = activeSubs.some(
                     (s) => s.packageId === pkg.id && s.version === pkg.version,
@@ -613,11 +664,16 @@ export default function Subscription() {
                   return (
                     <div
                       key={pkg.id}
-                      className={`bg-white border rounded-2xl p-6 shadow-sm flex flex-col justify-between transition relative overflow-hidden ${
+                      className={`bg-glass border rounded-2xl p-6 shadow-soft hover-lift flex flex-col justify-between transition relative overflow-hidden ${
                         isSubscribed
-                          ? "border-indigo-200 ring-1 ring-indigo-100"
-                          : "border-slate-100 hover:border-indigo-400"
+                          ? "border-purple-300 ring-1 ring-purple-100"
+                          : "hover:border-purple-400"
                       }`}
+                      style={{
+                        borderColor: isSubscribed
+                          ? undefined
+                          : "var(--sub-card-border)",
+                      }}
                     >
                       {pkg.price === 0 && !isSubscribed && (
                         <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-500 to-orange-500 text-white text-[9px] font-black uppercase tracking-wider py-1 px-3.5 rounded-bl-xl shadow-md animate-pulse">
@@ -647,7 +703,7 @@ export default function Subscription() {
                             </>
                           ) : pkg.price !== pkg.originalPrice ? (
                             <>
-                              <span className="text-2xl font-black text-indigo-600 font-sans">
+                              <span className="text-2xl font-black text-purple-700 font-sans">
                                 {pkg.price}/-
                               </span>
                               <span className="text-xs text-slate-400 line-through font-sans">
@@ -661,7 +717,7 @@ export default function Subscription() {
                             </>
                           ) : (
                             <>
-                              <span className="text-2xl font-black text-indigo-600 font-sans">
+                              <span className="text-2xl font-black text-purple-700 font-sans">
                                 {pkg.price}/-
                               </span>
                               <span className="text-xs text-slate-400 font-sans">
@@ -690,8 +746,16 @@ export default function Subscription() {
                         className={`w-full mt-6 py-2.5 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1 ${
                           isSubscribed
                             ? "bg-emerald-50 text-emerald-600 cursor-default"
-                            : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-500/10"
+                            : "text-white shadow-md"
                         }`}
+                        style={
+                          !isSubscribed
+                            ? {
+                                background: "var(--sub-btn-gradient)",
+                                boxShadow: "var(--sub-btn-shadow)",
+                              }
+                            : undefined
+                        }
                       >
                         {isSubscribed ? (
                           <>
@@ -719,7 +783,7 @@ export default function Subscription() {
       {activeTab === "subjects" && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Class selection pane */}
-          <div className="bg-white border border-slate-100 p-4 rounded-2xl shadow-sm space-y-2 h-fit">
+          <div className="bg-glass p-4 rounded-2xl shadow-soft space-y-2 h-fit">
             <h3 className="text-sm font-bold text-slate-800 pb-2 border-b">
               শ্রেণি নির্বাচন করুন
             </h3>
@@ -729,13 +793,13 @@ export default function Subscription() {
                 onClick={() => setSelectedClass(cls.value)}
                 className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold transition flex items-center justify-between ${
                   selectedClass === cls.value
-                    ? "bg-indigo-50 text-indigo-600 font-bold"
+                    ? "bg-purple-50 text-purple-700 font-bold"
                     : "text-slate-600 hover:bg-slate-50"
                 }`}
               >
                 <span>{cls.label}</span>
                 <ChevronRight
-                  className={`h-4 w-4 ${selectedClass === cls.value ? "text-indigo-500" : "text-slate-300"}`}
+                  className={`h-4 w-4 ${selectedClass === cls.value ? "text-purple-600" : "text-slate-300"}`}
                 />
               </button>
             ))}
@@ -743,7 +807,7 @@ export default function Subscription() {
 
           {/* Subjects selection grid */}
           <div className="md:col-span-2 space-y-4">
-            <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm">
+            <div className="bg-glass p-6 rounded-2xl shadow-soft">
               <div className="flex items-center justify-between mb-4 border-b pb-3">
                 <h3 className="text-sm font-bold text-slate-800">
                   {classes.find((c) => c.value === selectedClass)?.label} - বিষয়
@@ -756,7 +820,7 @@ export default function Subscription() {
 
               {subjectsLoading ? (
                 <div className="flex justify-center py-12">
-                  <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+                  <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
                 </div>
               ) : allSubjects.length === 0 ? (
                 <p className="text-xs text-slate-400 py-6 text-center">
@@ -780,8 +844,8 @@ export default function Subscription() {
                           isSubscribed
                             ? "border-slate-100 bg-slate-50/50 cursor-default"
                             : isChecked
-                              ? "border-indigo-400 bg-indigo-50/10"
-                              : "border-slate-100 hover:border-indigo-300"
+                              ? "border-purple-400 bg-purple-50/10"
+                              : "border-slate-100 hover:border-purple-300"
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -794,7 +858,7 @@ export default function Subscription() {
                               type="checkbox"
                               checked={isChecked}
                               readOnly
-                              className="h-4 w-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500/20"
+                              className="h-4 w-4 rounded text-purple-600 border-slate-300 focus:ring-purple-500/20 accent-purple-600"
                             />
                           )}
                           <div>
@@ -821,7 +885,10 @@ export default function Subscription() {
 
             {/* Check out pane */}
             {selectedSubjects.length > 0 && (
-              <div className="bg-indigo-600 text-white p-5 rounded-2xl shadow-lg shadow-indigo-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div
+                className="text-white p-5 rounded-2xl shadow-lg accent-glow-purple flex flex-col sm:flex-row items-center justify-between gap-4"
+                style={{ background: "var(--sub-checkout-bg)" }}
+              >
                 <div>
                   <h4 className="text-xs font-bold opacity-80">
                     নির্বাচনকৃত বিষয়: {selectedSubjects.length} টি
@@ -833,10 +900,10 @@ export default function Subscription() {
                 <button
                   onClick={handleSubjectCheckout}
                   disabled={loading}
-                  className="bg-white text-indigo-700 hover:bg-indigo-50 transition px-6 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow"
+                  className="bg-white text-purple-700 hover:bg-purple-50 transition px-6 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow"
                 >
                   পেমেন্ট করুন ও সচল করুন
-                  <ChevronRight className="h-4 w-4 text-indigo-700" />
+                  <ChevronRight className="h-4 w-4 text-purple-700" />
                 </button>
               </div>
             )}
@@ -861,8 +928,8 @@ export default function Subscription() {
           className="max-w-md p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative"
         >
           <div className="px-6 pt-6 pb-5 border-b border-slate-100 flex items-start gap-4 text-left">
-            <div className="p-2.5 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-xl shrink-0 shadow-sm mt-0.5">
-              <Package className="h-5 w-5" />
+            <div className="p-2.5 bg-purple-50 border border-purple-100 text-purple-700 rounded-xl shrink-0 shadow-sm mt-0.5">
+              <CreditCard className="h-5 w-5" />
             </div>
             <div className="space-y-1">
               <DialogTitle className="font-extrabold text-slate-800 text-base leading-snug">
@@ -898,7 +965,7 @@ export default function Subscription() {
                 </div>
               )}
               {appliedCoupon && (
-                <div className="flex justify-between text-xs text-indigo-600 font-bold">
+                <div className="flex justify-between text-xs text-purple-700 font-bold">
                   <span>কুপন ডিসকাউন্ট ({appliedCoupon.code})</span>
                   <span className="font-semibold font-sans">
                     -{appliedCoupon.discountAmount}/- টাকা
@@ -907,7 +974,7 @@ export default function Subscription() {
               )}
               <div className="flex justify-between text-sm text-slate-800 font-black border-t border-slate-200/60 pt-2.5">
                 <span>পরিশোধযোগ্য মোট মূল্য</span>
-                <span className="font-sans text-indigo-600">
+                <span className="font-sans text-purple-700">
                   {(() => {
                     const finalVal = appliedCoupon
                       ? Math.max(
@@ -927,11 +994,11 @@ export default function Subscription() {
                 <button
                   type="button"
                   onClick={() => setShowCouponInput(!showCouponInput)}
-                  className="flex items-center gap-1 text-xs font-black text-indigo-650 hover:text-indigo-700 transition focus:outline-none cursor-pointer tracking-wide select-none"
+                  className="flex items-center gap-1 text-xs font-black text-purple-600 hover:text-purple-700 transition focus:outline-none cursor-pointer tracking-wide select-none"
                 >
                   <span>কুপন কোড প্রয়োগ করুন</span>
                   <ChevronRight
-                    className={`h-4 w-4 transform transition-transform duration-250 text-indigo-500 ${
+                    className={`h-4 w-4 transform transition-transform duration-250 text-purple-500 ${
                       showCouponInput ? "rotate-90" : "rotate-0"
                     }`}
                   />
@@ -947,7 +1014,7 @@ export default function Subscription() {
                         setCouponCode(e.target.value.toUpperCase())
                       }
                       disabled={appliedCoupon || couponLoading}
-                      className="flex-1 px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all duration-200 text-slate-700 shadow-sm focus:bg-white hover:border-slate-300 uppercase font-sans"
+                      className="flex-1 px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-slate-700 shadow-sm focus:bg-white hover:border-slate-300 uppercase font-sans"
                     />
                     {appliedCoupon ? (
                       <button
@@ -962,7 +1029,7 @@ export default function Subscription() {
                         type="button"
                         onClick={handleApplyCoupon}
                         disabled={couponLoading || !couponCode.trim()}
-                        className="px-4 h-11 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 disabled:bg-slate-50 disabled:text-slate-400 transition rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm border border-indigo-100/30"
+                        className="px-4 h-11 bg-purple-50 text-purple-700 hover:bg-purple-100 disabled:bg-slate-50 disabled:text-slate-400 transition rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm border border-purple-100/30"
                       >
                         {couponLoading && (
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -998,7 +1065,11 @@ export default function Subscription() {
                 type="button"
                 onClick={handleConfirmPurchase}
                 disabled={loading}
-                className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 transition rounded-xl text-xs font-semibold text-white shadow-md shadow-indigo-500/10 flex items-center justify-center gap-1 cursor-pointer"
+                className="flex-1 py-2.5 transition rounded-xl text-xs font-semibold text-white shadow-md flex items-center justify-center gap-1 cursor-pointer"
+                style={{
+                  background: "var(--sub-btn-gradient)",
+                  boxShadow: "var(--sub-btn-shadow)",
+                }}
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {(() => {

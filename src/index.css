@@ -203,12 +203,12 @@
       var(--purple-700) 55%,
       var(--purple-600) 100%
     );
-    --q-section-shadow: 0 4px 20px 0 rgba(144, 14, 176, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.25),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-    --q-drawer-shadow: 0 -20px 60px -10px rgba(144, 14, 176, 0.22),
-      0 -4px 20px rgba(0, 0, 0, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --q-section-shadow:
+      0 4px 20px 0 rgba(144, 14, 176, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    --q-drawer-shadow:
+      0 -20px 60px -10px rgba(144, 14, 176, 0.22),
+      0 -4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
     --q-section-border: rgba(144, 14, 176, 0.35);
     --q-glow-blob-1: radial-gradient(
       circle,
@@ -241,7 +241,8 @@
     --q-dropdown-selected-text: var(--purple-700);
     --q-dropdown-hover-bg: rgba(144, 14, 176, 0.04);
     --q-ring-color: var(--purple-600);
-    --q-print-btn-shadow: 0 8px 24px rgba(144, 14, 176, 0.35),
+    --q-print-btn-shadow:
+      0 8px 24px rgba(144, 14, 176, 0.35),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
     --q-watermark-selected-text: var(--purple-700);
     --q-slider-accent: var(--purple-600);
@@ -253,6 +254,39 @@
     --q-badge-border: rgba(144, 14, 176, 0.2);
     --q-upload-preview-bg: rgba(248, 196, 252, 0.15);
     --q-upload-preview-border: rgba(144, 14, 176, 0.25);
+
+    /* ---- Subscription Page Tokens ---- */
+    --sub-header-gradient: linear-gradient(
+      135deg,
+      var(--purple-800) 0%,
+      var(--purple-600) 50%,
+      var(--purple-500) 100%
+    );
+    --sub-card-bg: rgba(255, 255, 255, 0.65);
+    --sub-card-border: rgba(144, 14, 176, 0.12);
+    --sub-card-hover-border: rgba(144, 14, 176, 0.35);
+    --sub-active-bg: rgba(144, 14, 176, 0.06);
+    --sub-active-border: rgba(144, 14, 176, 0.2);
+    --sub-badge-bg: rgba(144, 14, 176, 0.1);
+    --sub-badge-text: var(--purple-700);
+    --sub-tab-active-text: var(--purple-700);
+    --sub-coupon-gradient: linear-gradient(
+      135deg,
+      var(--purple-900) 0%,
+      var(--purple-700) 50%,
+      var(--purple-600) 100%
+    );
+    --sub-btn-gradient: linear-gradient(
+      135deg,
+      var(--purple-700) 0%,
+      var(--purple-600) 100%
+    );
+    --sub-btn-shadow: 0 6px 20px rgba(144, 14, 176, 0.3);
+    --sub-checkout-bg: linear-gradient(
+      135deg,
+      var(--purple-800) 0%,
+      var(--purple-600) 100%
+    );
   }
 
   .dark {
