@@ -17,19 +17,29 @@ import { useAcademicConfig } from "@/hooks/useAcademicConfig";
 import apiClient from "@/lib/apiClient";
 import { useAuth } from "@clerk/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, ShieldAlert, Sliders } from "lucide-react";
+import {
+  BookOpen,
+  Globe,
+  GraduationCap,
+  Layers,
+  Loader2,
+  Save,
+  School,
+  ShieldAlert,
+  Sliders,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 // Reusable custom checkbox
-function CustomCheck({ checked, color = "indigo" }) {
+function CustomCheck({ checked, color = "purple" }) {
   const colors = {
-    indigo: {
-      box: "bg-indigo-600 border-indigo-600",
+    purple: {
+      box: "bg-primary border-primary",
       empty: "bg-white border-slate-300",
     },
     orange: {
-      box: "bg-orange-500 border-orange-500",
+      box: "bg-purple-600 border-purple-600",
       empty: "bg-white border-slate-300",
     },
     emerald: {
@@ -37,7 +47,7 @@ function CustomCheck({ checked, color = "indigo" }) {
       empty: "bg-white border-slate-300",
     },
   };
-  const c = colors[color] || colors.indigo;
+  const c = colors[color] || colors.purple;
   return (
     <span
       className={`size-4 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${checked ? c.box : c.empty}`}
@@ -57,21 +67,19 @@ function CustomCheck({ checked, color = "indigo" }) {
   );
 }
 
-// Reusable class pill checkboxes — must be defined OUTSIDE the parent component
-function ClassPills({ classes, setClasses, allOptions, color }) {
+// Reusable class pill checkboxes — defined OUTSIDE the parent component
+function ClassPills({ classes, setClasses, allOptions, color = "purple" }) {
   return allOptions.map((cls) => {
     const isChecked = classes.includes(cls.value);
     return (
       <label
         key={cls.value}
-        className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer text-xs font-semibold transition-all ${
+        className={`flex items-center gap-2 p-2 px-3 rounded-xl border cursor-pointer text-xs font-semibold transition-all select-none ${
           isChecked
-            ? color === "orange"
-              ? "bg-orange-50 border-orange-300/50 text-orange-700"
-              : color === "emerald"
-                ? "bg-emerald-50 border-emerald-300/40 text-emerald-700"
-                : "bg-indigo-50 border-indigo-300/40 text-indigo-700"
-            : "bg-white/[0.30] border-black/[0.06] text-slate-600 hover:bg-white/[0.50]"
+            ? color === "emerald"
+              ? "bg-emerald-50 border-emerald-300/60 text-emerald-700 shadow-sm"
+              : "bg-purple-50 border-purple-300/60 text-purple-700 shadow-sm"
+            : "bg-white/60 border-slate-200 text-slate-600 hover:bg-white hover:border-purple-200"
         }`}
       >
         <CustomCheck checked={isChecked} color={color} />
@@ -109,9 +117,6 @@ export default function AcademicSetup() {
     madrasahAlimClasses: DEFAULT_ALIM_CLASSES,
   };
 
-  // Derived state pattern: no useEffect needed.
-  // userEdits = null means "not yet edited by user" → read from config.
-  // Once user edits any field, userEdits holds the full form.
   const [userEdits, setUserEdits] = useState(null);
 
   const form =
@@ -165,8 +170,6 @@ export default function AcademicSetup() {
   const setMadrasahDakhilClasses = setField("madrasahDakhilClasses");
   const setMadrasahAlimClasses = setField("madrasahAlimClasses");
 
-  // ── ALL HOOKS MUST BE BEFORE ANY EARLY RETURN ──────────────────────────────
-
   // Mutation to save config
   const saveMutation = useMutation({
     mutationFn: async (payload) => {
@@ -180,7 +183,7 @@ export default function AcademicSetup() {
       queryClient.invalidateQueries({ queryKey: ["academicConfig"] });
       toast.success("প্রতিষ্ঠান কনফিগারেশন সফলভাবে সংরক্ষিত হয়েছে!");
       refetch();
-      setUserEdits(null); // reset edits so next config load re-populates
+      setUserEdits(null);
     },
     onError: (err) => {
       toast.error(
@@ -191,20 +194,18 @@ export default function AcademicSetup() {
     },
   });
 
-  // ── EARLY RETURNS (after all hooks) ────────────────────────────────────────
-
   if (role !== "Super Admin") {
     return (
-      <div className="bg-glass rounded-2xl border border-red-200/40 backdrop-blur-md shadow-sm p-16 text-center max-w-md mx-auto space-y-4 font-bengali">
+      <div className="bg-glass border border-red-200/40 backdrop-blur-md rounded-2xl shadow-sm p-16 text-center max-w-md mx-auto space-y-4 font-sans">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-600">
           <ShieldAlert className="h-6 w-6" />
         </div>
-        <h2 className="text-xl font-bold text-slate-800">
+        <h2 className="text-xl font-semibold text-slate-800">
           অননুমোদিত অ্যাক্সেস
         </h2>
         <p className="text-slate-500 text-sm leading-relaxed">
-          দুঃখিত, এই পেজটি শুধুমাত্র **সুপার এডমিন** (Super Admin) অ্যাক্সেস
-          করতে পারবেন।
+          দুঃখিত, এই পেজটি শুধুমাত্র <strong>সুপার এডমিন</strong> (Super Admin)
+          অ্যাক্সেস করতে পারবেন।
         </p>
       </div>
     );
@@ -280,35 +281,34 @@ export default function AcademicSetup() {
 
   if (isLoading) {
     return (
-      <div className="bg-glass rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm p-16 flex flex-col items-center justify-center space-y-3 font-bengali">
-        <Loader2 className="size-8 text-[#4F46E5] animate-spin" />
+      <div className="bg-glass border border-slate-200/50 backdrop-blur-md rounded-2xl shadow-sm p-16 flex flex-col items-center justify-center space-y-3 font-sans">
+        <Loader2 className="size-8 text-primary animate-spin" />
         <p className="text-slate-500 text-sm">কনফিগারেশন লোড হচ্ছে...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 w-full font-bengali">
+    <div className="space-y-6 w-full font-sans pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">
-            অ্যাকাডেমিক সেটআপ (সুপার এডমিন)
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
+            <Sliders className="size-6 text-primary" />
+            <span>অ্যাকাডেমিক সেটআপ (সুপার এডমিন)</span>
           </h1>
           <p className="text-slate-500 text-sm mt-1">
             আপনার শিক্ষাপ্রতিষ্ঠানের ধরণ, স্তর এবং ভার্সনসমূহ কনফিগার করুন।
           </p>
         </div>
-        <div className="p-3 bg-[#4F46E5]/10 text-[#4F46E5] rounded-2xl shrink-0">
-          <Sliders className="size-6" />
-        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Step 1: Active Types */}
-        <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4">
-          <h3 className="font-bold text-slate-800 text-lg border-b border-black/[0.05] pb-2">
-            ১. প্রতিষ্ঠানের ধরণ (Institution Types)
+        <div className="bg-glass p-6 rounded-2xl border shadow-sm space-y-4">
+          <h3 className="font-semibold text-slate-800 text-lg border-b pb-3 flex items-center gap-2">
+            <School className="size-5 text-primary" />
+            <span>১. প্রতিষ্ঠানের ধরণ (Institution Types)</span>
           </h3>
           <p className="text-xs text-slate-500 leading-relaxed">
             আপনার প্রতিষ্ঠানে যে যে শিক্ষাব্যবস্থা চালু আছে তা সিলেক্ট করুন
@@ -320,19 +320,29 @@ export default function AcademicSetup() {
                 value: "School",
                 label: "স্কুল (School)",
                 desc: "১ম থেকে ১০ম শ্রেণীর সাধারণ পাঠ্যক্রম",
+                icon: School,
+                activeClass:
+                  "bg-purple-50/60 border-purple-300 ring-2 ring-purple-100",
               },
               {
                 value: "College",
                 label: "কলেজ (College)",
                 desc: "একাদশ ও দ্বাদশ শ্রেণীর পাঠ্যক্রম",
+                icon: GraduationCap,
+                activeClass:
+                  "bg-purple-50/60 border-purple-300 ring-2 ring-purple-100",
               },
               {
                 value: "Madrasah",
                 label: "মাদ্রাসা (Madrasah)",
                 desc: "ইবতেদায়ী, দাখিল ও আলিম পাঠ্যক্রম",
+                icon: BookOpen,
+                activeClass:
+                  "bg-emerald-50/60 border-emerald-300 ring-2 ring-emerald-100",
               },
             ].map((item) => {
               const isChecked = activeTypes.includes(item.value);
+              const IconComp = item.icon;
               return (
                 <button
                   type="button"
@@ -340,25 +350,32 @@ export default function AcademicSetup() {
                   onClick={() => handleTypeToggle(item.value)}
                   className={`p-5 rounded-2xl border text-left transition-all duration-300 hover:shadow-md cursor-pointer flex flex-col justify-between space-y-3 ${
                     isChecked
-                      ? "bg-[#4F46E5]/10 border-[#4F46E5] ring-2 ring-[#4F46E5]/10"
-                      : "bg-white/[0.45] border-black/[0.06] hover:border-black/[0.12] hover:bg-white/[0.60] backdrop-blur-sm"
+                      ? item.activeClass
+                      : "bg-white/45 border-slate-200 hover:border-slate-300 hover:bg-white/70"
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <span className="font-bold text-slate-800 text-[15px]">
-                      {item.label}
-                    </span>
+                    <div className="flex items-center gap-2.5">
+                      <IconComp className="size-4.5 text-primary" />
+                      <span className="font-semibold text-slate-800 text-[15px]">
+                        {item.label}
+                      </span>
+                    </div>
                     <span
                       className={`size-5 rounded-full border flex items-center justify-center text-[10px] font-bold ${
                         isChecked
-                          ? "bg-[#4F46E5] border-[#4F46E5] text-white"
-                          : "border-black/[0.15] text-transparent"
+                          ? item.value === "Madrasah"
+                            ? "bg-emerald-600 border-emerald-600 text-white"
+                            : "bg-primary border-primary text-white"
+                          : "border-slate-300 text-transparent"
                       }`}
                     >
                       ✓
                     </span>
                   </div>
-                  <span className="text-slate-500 text-xs">{item.desc}</span>
+                  <span className="text-slate-500 text-xs font-medium">
+                    {item.desc}
+                  </span>
                 </button>
               );
             })}
@@ -369,24 +386,26 @@ export default function AcademicSetup() {
         {(activeTypes.includes("School") ||
           activeTypes.includes("Madrasah") ||
           activeTypes.includes("College")) && (
-          <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-6">
-            <h3 className="font-bold text-slate-800 text-lg border-b border-black/[0.05] pb-2">
-              ২. স্তরসমূহ কনফিগার করুন (Levels Configuration)
+          <div className="bg-glass p-6 rounded-2xl border shadow-sm space-y-6">
+            <h3 className="font-semibold text-slate-800 text-lg border-b pb-3 flex items-center gap-2">
+              <Layers className="size-5 text-primary" />
+              <span>২. স্তরসমূহ কনফিগার করুন (Levels Configuration)</span>
             </h3>
 
             {/* School levels */}
             {activeTypes.includes("School") && (
-              <div className="space-y-4 p-6 rounded-2xl border border-[#4F46E5]/10 bg-[#4F46E5]/5">
-                <h4 className="font-bold text-[#4F46E5] text-sm">
-                  স্কুল স্তরের সিলেবাসসমূহ ও ক্লাসসমূহ:
+              <div className="space-y-4 p-6 rounded-2xl border border-purple-100 bg-purple-50/20">
+                <h4 className="font-semibold text-primary text-sm flex items-center gap-2">
+                  <School className="size-4" />
+                  <span>স্কুল স্তরের সিলেবাসসমূহ ও ক্লাসসমূহ:</span>
                 </h4>
                 <div className="space-y-4">
                   {/* Primary */}
-                  <div className="p-4 rounded-xl border border-black/[0.05] bg-white/[0.50] backdrop-blur-sm shadow-sm space-y-3">
+                  <div className="p-4 rounded-xl border border-slate-200/60 bg-white/70 shadow-sm space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <CustomCheck
                         checked={schoolLevels.includes("Primary")}
-                        color="indigo"
+                        color="purple"
                       />
                       <input
                         type="checkbox"
@@ -394,13 +413,13 @@ export default function AcademicSetup() {
                         onChange={() => handleSchoolLevelToggle("Primary")}
                         className="sr-only"
                       />
-                      <span className="text-base font-bold text-slate-800">
+                      <span className="text-base font-semibold text-slate-800">
                         প্রাইমারি স্কুল
                       </span>
                     </label>
                     {schoolLevels.includes("Primary") && (
-                      <div className="pl-7 pt-2 border-t border-black/[0.05]">
-                        <p className="text-xs text-slate-500 mb-2">
+                      <div className="pl-7 pt-2 border-t border-slate-100">
+                        <p className="text-xs text-slate-500 mb-2 font-medium">
                           প্রাইমারি স্কুল স্তরের কোন কোন ক্লাস সক্রিয় থাকবে
                           নির্বাচন করুন:
                         </p>
@@ -408,7 +427,7 @@ export default function AcademicSetup() {
                           <ClassPills
                             classes={schoolPrimaryClasses}
                             setClasses={setSchoolPrimaryClasses}
-                            color="indigo"
+                            color="purple"
                             allOptions={CLASSES_MAP.filter(
                               (c) =>
                                 c.type === "School" && c.level === "Primary",
@@ -420,11 +439,11 @@ export default function AcademicSetup() {
                   </div>
 
                   {/* Secondary */}
-                  <div className="p-4 rounded-xl border border-black/[0.05] bg-white/[0.50] backdrop-blur-sm shadow-sm space-y-3">
+                  <div className="p-4 rounded-xl border border-slate-200/60 bg-white/70 shadow-sm space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <CustomCheck
                         checked={schoolLevels.includes("Secondary")}
-                        color="indigo"
+                        color="purple"
                       />
                       <input
                         type="checkbox"
@@ -432,13 +451,13 @@ export default function AcademicSetup() {
                         onChange={() => handleSchoolLevelToggle("Secondary")}
                         className="sr-only"
                       />
-                      <span className="text-base font-bold text-slate-800">
+                      <span className="text-base font-semibold text-slate-800">
                         মাধ্যমিক স্কুল
                       </span>
                     </label>
                     {schoolLevels.includes("Secondary") && (
-                      <div className="pl-7 pt-2 border-t border-black/[0.05]">
-                        <p className="text-xs text-slate-500 mb-2">
+                      <div className="pl-7 pt-2 border-t border-slate-100">
+                        <p className="text-xs text-slate-500 mb-2 font-medium">
                           মাধ্যমিক স্কুল স্তরের কোন কোন ক্লাস সক্রিয় থাকবে
                           নির্বাচন করুন:
                         </p>
@@ -446,7 +465,7 @@ export default function AcademicSetup() {
                           <ClassPills
                             classes={schoolSecondaryClasses}
                             setClasses={setSchoolSecondaryClasses}
-                            color="indigo"
+                            color="purple"
                             allOptions={CLASSES_MAP.filter(
                               (c) =>
                                 c.type === "School" && c.level === "Secondary",
@@ -462,19 +481,20 @@ export default function AcademicSetup() {
 
             {/* College levels */}
             {activeTypes.includes("College") && (
-              <div className="space-y-4 p-6 rounded-2xl border border-[#F97316]/10 bg-[#F97316]/5">
-                <h4 className="font-bold text-[#F97316] text-sm">
-                  কলেজ স্তরের সিলেবাসসমূহ ও ক্লাসসমূহ:
+              <div className="space-y-4 p-6 rounded-2xl border border-purple-100 bg-purple-50/20">
+                <h4 className="font-semibold text-primary text-sm flex items-center gap-2">
+                  <GraduationCap className="size-4" />
+                  <span>কলেজ স্তরের সিলেবাসসমূহ ও ক্লাসসমূহ:</span>
                 </h4>
-                <div className="p-4 rounded-xl border border-black/[0.05] bg-white/[0.50] backdrop-blur-sm shadow-sm space-y-3">
+                <div className="p-4 rounded-xl border border-slate-200/60 bg-white/70 shadow-sm space-y-3">
                   <div className="flex items-center gap-3">
-                    <span className="size-2.5 rounded-full bg-[#F97316]"></span>
-                    <span className="text-base font-bold text-slate-800">
+                    <span className="size-2.5 rounded-full bg-primary"></span>
+                    <span className="text-base font-semibold text-slate-800">
                       উচ্চ মাধ্যমিক
                     </span>
                   </div>
-                  <div className="pl-5 pt-2 border-t border-black/[0.05]">
-                    <p className="text-xs text-slate-500 mb-2">
+                  <div className="pl-5 pt-2 border-t border-slate-100">
+                    <p className="text-xs text-slate-500 mb-2 font-medium">
                       উচ্চ মাধ্যমিক স্তরের কোন কোন ক্লাস সক্রিয় থাকবে নির্বাচন
                       করুন:
                     </p>
@@ -482,7 +502,7 @@ export default function AcademicSetup() {
                       <ClassPills
                         classes={collegeClasses}
                         setClasses={setCollegeClasses}
-                        color="orange"
+                        color="purple"
                         allOptions={CLASSES_MAP.filter(
                           (c) => c.type === "College",
                         )}
@@ -495,13 +515,14 @@ export default function AcademicSetup() {
 
             {/* Madrasah levels */}
             {activeTypes.includes("Madrasah") && (
-              <div className="space-y-4 p-6 rounded-2xl border border-emerald-500/10 bg-emerald-500/5">
-                <h4 className="font-bold text-emerald-600 text-sm">
-                  মাদ্রাসা স্তরের সিলেবাসসমূহ ও ক্লাসসমূহ:
+              <div className="space-y-4 p-6 rounded-2xl border border-emerald-100 bg-emerald-50/20">
+                <h4 className="font-semibold text-emerald-600 text-sm flex items-center gap-2">
+                  <BookOpen className="size-4" />
+                  <span>মাদ্রাসা স্তরের সিলেবাসসমূহ ও ক্লাসসমূহ:</span>
                 </h4>
                 <div className="space-y-4">
                   {/* Ebtedayee */}
-                  <div className="p-4 rounded-xl border border-black/[0.05] bg-white/[0.50] backdrop-blur-sm shadow-sm space-y-3">
+                  <div className="p-4 rounded-xl border border-slate-200/60 bg-white/70 shadow-sm space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <CustomCheck
                         checked={madrasahLevels.includes("Ebtedayee")}
@@ -513,13 +534,13 @@ export default function AcademicSetup() {
                         onChange={() => handleMadrasahLevelToggle("Ebtedayee")}
                         className="sr-only"
                       />
-                      <span className="text-base font-bold text-slate-800">
+                      <span className="text-base font-semibold text-slate-800">
                         ইবতেদায়ী
                       </span>
                     </label>
                     {madrasahLevels.includes("Ebtedayee") && (
-                      <div className="pl-7 pt-2 border-t border-black/[0.05]">
-                        <p className="text-xs text-slate-500 mb-2">
+                      <div className="pl-7 pt-2 border-t border-slate-100">
+                        <p className="text-xs text-slate-500 mb-2 font-medium">
                           ইবতেদায়ী স্তরের কোন কোন ক্লাস সক্রিয় থাকবে নির্বাচন
                           করুন:
                         </p>
@@ -538,7 +559,7 @@ export default function AcademicSetup() {
                   </div>
 
                   {/* Dakhil */}
-                  <div className="p-4 rounded-xl border border-black/[0.05] bg-white/[0.50] backdrop-blur-sm shadow-sm space-y-3">
+                  <div className="p-4 rounded-xl border border-slate-200/60 bg-white/70 shadow-sm space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <CustomCheck
                         checked={madrasahLevels.includes("Dakhil")}
@@ -550,13 +571,13 @@ export default function AcademicSetup() {
                         onChange={() => handleMadrasahLevelToggle("Dakhil")}
                         className="sr-only"
                       />
-                      <span className="text-base font-bold text-slate-800">
+                      <span className="text-base font-semibold text-slate-800">
                         দাখিল
                       </span>
                     </label>
                     {madrasahLevels.includes("Dakhil") && (
-                      <div className="pl-7 pt-2 border-t border-black/[0.05]">
-                        <p className="text-xs text-slate-500 mb-2">
+                      <div className="pl-7 pt-2 border-t border-slate-100">
+                        <p className="text-xs text-slate-500 mb-2 font-medium">
                           দাখিল স্তরের কোন কোন ক্লাস সক্রিয় থাকবে নির্বাচন
                           করুন:
                         </p>
@@ -575,7 +596,7 @@ export default function AcademicSetup() {
                   </div>
 
                   {/* Alim */}
-                  <div className="p-4 rounded-xl border border-black/[0.05] bg-white/[0.50] backdrop-blur-sm shadow-sm space-y-3">
+                  <div className="p-4 rounded-xl border border-slate-200/60 bg-white/70 shadow-sm space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <CustomCheck
                         checked={madrasahLevels.includes("Alim")}
@@ -587,13 +608,13 @@ export default function AcademicSetup() {
                         onChange={() => handleMadrasahLevelToggle("Alim")}
                         className="sr-only"
                       />
-                      <span className="text-base font-bold text-slate-800">
+                      <span className="text-base font-semibold text-slate-800">
                         আলিম
                       </span>
                     </label>
                     {madrasahLevels.includes("Alim") && (
-                      <div className="pl-7 pt-2 border-t border-black/[0.05]">
-                        <p className="text-xs text-slate-500 mb-2">
+                      <div className="pl-7 pt-2 border-t border-slate-100">
+                        <p className="text-xs text-slate-500 mb-2 font-medium">
                           আলিম স্তরের কোন কোন ক্লাস সক্রিয় থাকবে নির্বাচন করুন:
                         </p>
                         <div className="flex flex-wrap gap-3">
@@ -616,11 +637,12 @@ export default function AcademicSetup() {
         )}
 
         {/* Step 3: Versions */}
-        <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4">
-          <h3 className="font-bold text-slate-800 text-lg border-b border-black/[0.05] pb-2">
-            ৩. ভার্সন (Active Versions)
+        <div className="bg-glass p-6 rounded-2xl border shadow-sm space-y-4">
+          <h3 className="font-semibold text-slate-800 text-lg border-b pb-3 flex items-center gap-2">
+            <Globe className="size-5 text-primary" />
+            <span>৩. ভার্সন (Active Versions)</span>
           </h3>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 font-medium">
             আপনার শিক্ষাপ্রতিষ্ঠানে কোন কোন ভার্সন সক্রিয় রয়েছে সিলেক্ট করুন:
           </p>
           <div className="flex flex-wrap gap-4">
@@ -633,20 +655,20 @@ export default function AcademicSetup() {
               return (
                 <label
                   key={ver.value}
-                  className={`flex items-center gap-3 p-4 px-5 rounded-xl border cursor-pointer shadow-sm transition-all backdrop-blur-sm ${
+                  className={`flex items-center gap-3 p-4 px-5 rounded-xl border cursor-pointer shadow-sm transition-all select-none ${
                     isChecked
-                      ? "bg-indigo-50 border-indigo-300 text-indigo-800"
-                      : "bg-white/[0.45] border-black/[0.06] hover:border-indigo-300/60"
+                      ? "bg-purple-50 border-purple-300 text-purple-800 font-semibold"
+                      : "bg-white/50 border-slate-200 text-slate-600 hover:border-purple-200"
                   }`}
                 >
-                  <CustomCheck checked={isChecked} color="indigo" />
+                  <CustomCheck checked={isChecked} color="purple" />
                   <input
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => handleVersionToggle(ver.value)}
                     className="sr-only"
                   />
-                  <span className="text-sm font-bold text-slate-700">
+                  <span className="text-sm font-semibold text-slate-700">
                     {ver.label}
                   </span>
                 </label>
@@ -660,15 +682,18 @@ export default function AcademicSetup() {
           <RippleButton
             type="submit"
             disabled={saveMutation.isPending}
-            className="flex items-center gap-2 px-8 py-6 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-sm shadow-lg shadow-purple-500/10 transition-all duration-200"
+            className="flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white font-semibold text-sm shadow-md shadow-purple-200 transition-all cursor-pointer"
           >
             {saveMutation.isPending ? (
               <>
                 <Loader2 className="size-4 animate-spin text-white" />
-                সংরক্ষণ করা হচ্ছে...
+                <span>সংরক্ষণ করা হচ্ছে...</span>
               </>
             ) : (
-              "কনফিগারেশন সংরক্ষণ করুন"
+              <>
+                <Save className="size-4" />
+                <span>কনফিগারেশন সংরক্ষণ করুন</span>
+              </>
             )}
             <RippleButtonRipples color="rgba(255, 255, 255, 0.3)" />
           </RippleButton>

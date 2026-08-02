@@ -35,6 +35,7 @@ import {
   Plus,
   School,
   Search,
+  Sliders,
   Trash2,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -292,16 +293,19 @@ export default function MetadataSetup() {
   const paginatedMetadata = filteredMetadata.slice(startIndex, endIndex);
 
   return (
-    <div className="space-y-6 pb-12 w-full font-bengali">
+    <div className="space-y-6 pb-12 w-full font-sans">
       {/* Page Header */}
-      <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
-        <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">
-          মেটাডাটা সেটআপ
-        </h1>
-        <p className="text-slate-500 text-sm mt-1">
-          প্রশ্ন তৈরির সময় ব্যবহারের জন্য ডাইনামিক স্কুল, বোর্ড, সাল, লেভেল এবং
-          স্পেশাল সার্চ ট্যাগ কনফিগার করুন।
-        </p>
+      <div className="bg-glass p-6 rounded-2xl border shadow-sm flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
+            <Sliders className="size-6 text-primary" />
+            <span>মেটাডাটা সেটআপ</span>
+          </h1>
+          <p className="text-slate-500 text-sm mt-1">
+            প্রশ্ন তৈরির সময় ব্যবহারের জন্য ডাইনামিক স্কুল, বোর্ড, সাল, লেভেল এবং
+            স্পেশাল সার্চ ট্যাগ কনফিগার করুন।
+          </p>
+        </div>
       </div>
 
       {/* Tabs list */}
@@ -314,13 +318,13 @@ export default function MetadataSetup() {
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
               className={`relative flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition cursor-pointer select-none ${
-                isActive ? "text-white" : "text-slate-650 hover:bg-black/[0.03]"
+                isActive ? "text-white" : "text-slate-600 hover:bg-black/[0.03]"
               }`}
             >
               {isActive && (
                 <motion.div
                   layoutId="activeTabBackground"
-                  className="absolute inset-0 bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] rounded-xl -z-10 shadow-md shadow-purple-500/10"
+                  className="absolute inset-0 bg-gradient-to-r from-purple-600 to-purple-800 rounded-xl -z-10 shadow-md shadow-purple-200"
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
@@ -342,15 +346,15 @@ export default function MetadataSetup() {
           className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start"
         >
           {/* Entry Creation Form */}
-          <div className="bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4">
-            <h2 className="font-bold text-slate-800 text-[16px] border-b border-black/[0.05] pb-2 flex items-center gap-2">
-              <Plus className="size-4 text-[#4F46E5]" />
-              নতুন এন্ট্রি যোগ করুন
+          <div className="bg-glass p-6 rounded-2xl border shadow-sm space-y-4">
+            <h2 className="font-semibold text-slate-800 text-[16px] border-b pb-3 flex items-center gap-2">
+              <Plus className="size-4 text-primary" />
+              <span>নতুন এন্ট্রি যোগ করুন</span>
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide block">
                   {TABS.find((t) => t.id === activeTab)?.label} নাম
                 </label>
                 <Input
@@ -360,13 +364,13 @@ export default function MetadataSetup() {
                   placeholder={
                     TABS.find((t) => t.id === activeTab)?.placeholder
                   }
-                  className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11 text-sm"
+                  className="bg-white/70 border border-slate-200 focus-visible:ring-purple-100 focus-visible:border-primary h-11 text-sm rounded-xl"
                 />
               </div>
 
               {activeTab === "Board" && (
                 <div className="space-y-1.5 animate-in fade-in duration-200">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide block">
                     সংক্ষিপ্ত নাম (যেমন: ঢা বো)
                   </label>
                   <Input
@@ -374,7 +378,7 @@ export default function MetadataSetup() {
                     value={newShortValue}
                     onChange={(e) => setNewShortValue(e.target.value)}
                     placeholder="সংক্ষিপ্ত নাম লিখুন"
-                    className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11 text-sm"
+                    className="bg-white/70 border border-slate-200 focus-visible:ring-purple-100 focus-visible:border-primary h-11 text-sm rounded-xl"
                   />
                 </div>
               )}
@@ -382,23 +386,23 @@ export default function MetadataSetup() {
               <RippleButton
                 type="submit"
                 disabled={createMutation.isPending}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] hover:from-[#4338CA] hover:to-[#7C3AED] text-white font-semibold h-11 rounded-xl shadow-md disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white font-semibold h-11 rounded-xl shadow-md shadow-purple-200 disabled:opacity-50 cursor-pointer transition-all"
               >
                 {createMutation.isPending ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
                   <Plus className="size-4" />
                 )}
-                সংরক্ষণ করুন
+                <span>সংরক্ষণ করুন</span>
                 <RippleButtonRipples color="rgba(255, 255, 255, 0.3)" />
               </RippleButton>
             </form>
           </div>
 
           {/* Paginated Data Table */}
-          <div className="lg:col-span-2 bg-glass rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm overflow-hidden">
-            <div className="p-5 border-b border-black/[0.05] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <h2 className="font-bold text-slate-800 text-[16px] font-sans">
+          <div className="lg:col-span-2 bg-glass rounded-2xl border shadow-sm overflow-hidden">
+            <div className="p-5 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h2 className="font-semibold text-slate-800 text-[16px]">
                 নিবন্ধিত {TABS.find((t) => t.id === activeTab)?.label} তালিকা
               </h2>
 
@@ -413,7 +417,7 @@ export default function MetadataSetup() {
                     setCurrentPage(1);
                   }}
                   placeholder={`${TABS.find((t) => t.id === activeTab)?.label} নাম দিয়ে খুঁজুন...`}
-                  className="pl-9 pr-8 bg-white/[0.55] border-black/[0.08] h-10 text-xs focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] rounded-xl font-sans"
+                  className="pl-9 pr-8 bg-white/70 border border-slate-200 h-10 text-xs focus-visible:ring-purple-100 focus-visible:border-primary rounded-xl"
                 />
                 {searchTerm && (
                   <button
@@ -422,7 +426,7 @@ export default function MetadataSetup() {
                       setSearchTerm("");
                       setCurrentPage(1);
                     }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold transition p-0.5"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-semibold transition p-0.5"
                     title="মুছে ফেলুন"
                   >
                     ✕
@@ -433,7 +437,7 @@ export default function MetadataSetup() {
 
             {isLoading ? (
               <div className="py-20 flex justify-center items-center">
-                <Loader2 className="size-8 text-[#4F46E5] animate-spin" />
+                <Loader2 className="size-8 text-primary animate-spin" />
               </div>
             ) : rawMetadata.length === 0 ? (
               <div className="py-16 text-center text-slate-400 italic text-sm">
@@ -452,7 +456,7 @@ export default function MetadataSetup() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-black/[0.04] bg-black/[0.01] text-xs font-bold text-slate-400 uppercase">
+                    <tr className="border-b border-black/[0.04] bg-black/[0.01] text-xs font-semibold text-slate-400 uppercase">
                       <th className="py-3 px-5 w-16">ক্রম</th>
                       <th className="py-3 px-5">নাম / লেবেল</th>
                       <th className="py-3 px-5 w-32 text-center">স্ট্যাটাস</th>
@@ -465,9 +469,9 @@ export default function MetadataSetup() {
                       return (
                         <tr
                           key={item._id}
-                          className="hover:bg-black/[0.01] text-sm text-slate-700 font-semibold font-sans"
+                          className="hover:bg-black/[0.01] text-sm text-slate-700 font-semibold"
                         >
-                          <td className="py-3.5 px-5 font-bold text-slate-400">
+                          <td className="py-3.5 px-5 font-semibold text-slate-400">
                             {rowNumber}
                           </td>
                           <td className="py-3.5 px-5 text-slate-800">
@@ -483,9 +487,9 @@ export default function MetadataSetup() {
                               <button
                                 type="button"
                                 onClick={() => toggleMutation.mutate(item._id)}
-                                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-200 ${
                                   item.isActive
-                                    ? "bg-[#4F46E5]"
+                                    ? "bg-primary"
                                     : "bg-slate-200"
                                 }`}
                               >
@@ -504,7 +508,7 @@ export default function MetadataSetup() {
                               <button
                                 type="button"
                                 onClick={() => openEditDialog(item)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-[#4F46E5] hover:bg-black/[0.03] transition cursor-pointer"
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-primary hover:bg-purple-50 transition cursor-pointer"
                                 title="সম্পাদন করুন"
                               >
                                 <Edit2 className="size-4" />
@@ -527,7 +531,7 @@ export default function MetadataSetup() {
 
                 {/* Pagination controls */}
                 {totalPages > 1 && (
-                  <div className="px-5 py-4 border-t border-black/[0.04] bg-black/[0.005] flex justify-between items-center text-xs text-slate-500 font-semibold font-sans">
+                  <div className="px-5 py-4 border-t border-black/[0.04] bg-black/[0.005] flex justify-between items-center text-xs text-slate-500 font-semibold">
                     <div>
                       মোট {totalItems}টি এন্ট্রির মধ্যে {startIndex + 1} -{" "}
                       {endIndex} দেখানো হচ্ছে।
@@ -539,12 +543,12 @@ export default function MetadataSetup() {
                           setCurrentPage((p) => Math.max(1, p - 1))
                         }
                         disabled={currentPage === 1}
-                        className="h-8 px-3 rounded-lg border-black/[0.08] hover:bg-black/[0.02] flex items-center gap-1 text-[11px]"
+                        className="h-8 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 flex items-center gap-1 text-[11px] font-semibold"
                       >
                         <ChevronLeft className="size-3.5" />
                         পূর্ববর্তী
                       </Button>
-                      <div className="flex items-center px-2 font-bold text-slate-700">
+                      <div className="flex items-center px-2 font-semibold text-slate-700">
                         পৃষ্ঠা {currentPage} / {totalPages}
                       </div>
                       <Button
@@ -553,7 +557,7 @@ export default function MetadataSetup() {
                           setCurrentPage((p) => Math.min(totalPages, p + 1))
                         }
                         disabled={currentPage === totalPages}
-                        className="h-8 px-3 rounded-lg border-black/[0.08] hover:bg-black/[0.02] flex items-center gap-1 text-[11px]"
+                        className="h-8 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 flex items-center gap-1 text-[11px] font-semibold"
                       >
                         পরবর্তী
                         <ChevronRight className="size-3.5" />
@@ -572,53 +576,54 @@ export default function MetadataSetup() {
         open={!!editingItem}
         onOpenChange={(open) => !open && setEditingItem(null)}
       >
-        <DialogContent className="max-w-md bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-2xl shadow-xl z-50">
+        <DialogContent className="max-w-md bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-2xl shadow-2xl z-50">
           <DialogHeader>
-            <DialogTitle className="font-sans font-bold text-slate-800 text-lg">
-              মেটাডাটা অপশন এডিট করুন
+            <DialogTitle className="font-semibold text-slate-800 text-lg flex items-center gap-2">
+              <Edit2 className="size-4 text-primary" />
+              <span>মেটাডাটা অপশন এডিট করুন</span>
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                 {TABS.find((t) => t.id === activeTab)?.label} নাম
               </label>
               <Input
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11 text-sm font-sans"
+                className="bg-white/70 border border-slate-200 focus-visible:ring-purple-100 focus-visible:border-primary h-11 text-sm rounded-xl"
               />
             </div>
 
             {activeTab === "Board" && (
               <div className="space-y-1.5 animate-in fade-in duration-200">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                   সংক্ষিপ্ত নাম (যেমন: ঢা বো)
                 </label>
                 <Input
                   type="text"
                   value={editShortName}
                   onChange={(e) => setEditShortName(e.target.value)}
-                  className="bg-white/[0.45] border-black/[0.08] backdrop-blur-sm focus-visible:ring-[#4F46E5]/20 focus-visible:border-[#4F46E5] h-11 text-sm font-sans"
+                  className="bg-white/70 border border-slate-200 focus-visible:ring-purple-100 focus-visible:border-primary h-11 text-sm rounded-xl"
                 />
               </div>
             )}
           </div>
 
-          <DialogFooter className="flex gap-2">
+          <DialogFooter className="flex gap-2 justify-end">
             <Button
               variant="outline"
               onClick={() => setEditingItem(null)}
-              className="border-black/[0.10] text-slate-600 hover:bg-black/[0.02] rounded-xl h-10 px-5 font-semibold cursor-pointer"
+              className="border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl h-10 px-5 font-semibold cursor-pointer"
             >
               বাতিল
             </Button>
             <Button
               onClick={handleEditSubmit}
               disabled={editMutation.isPending}
-              className="bg-[#4F46E5] hover:bg-[#4F46E5]/90 text-white rounded-xl h-10 px-5 font-semibold cursor-pointer shadow-md shadow-purple-500/10"
+              className="bg-primary hover:bg-purple-700 text-white rounded-xl h-10 px-5 font-semibold cursor-pointer shadow-md shadow-purple-200"
             >
               {editMutation.isPending && (
                 <Loader2 className="size-4 animate-spin mr-2" />
@@ -634,12 +639,15 @@ export default function MetadataSetup() {
         open={!!deletingItem}
         onOpenChange={(open) => !open && setDeletingItem(null)}
       >
-        <AlertDialogPopup className="max-w-md bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-2xl shadow-xl z-50">
+        <AlertDialogPopup className="max-w-md bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-2xl shadow-2xl z-50">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-sans font-bold text-slate-800 text-lg">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50 mb-3">
+              <Trash2 className="h-6 w-6 text-red-600 animate-bounce" />
+            </div>
+            <AlertDialogTitle className="font-semibold text-slate-900 text-center text-base">
               আপনি কি নিশ্চিত?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm font-semibold text-slate-500">
+            <AlertDialogDescription className="text-xs font-semibold text-slate-500 text-center leading-relaxed">
               আপনি মেটাডাটা অপশন{" "}
               <strong>&ldquo;{deletingItem?.name}&rdquo;</strong> মুছে ফেলতে
               যাচ্ছেন। এটি চিরতরে মুছে যাবে এবং প্রশ্ন তৈরির ড্রপডাউনে আর পাওয়া
@@ -650,7 +658,7 @@ export default function MetadataSetup() {
             <AlertDialogCancel
               onClick={() => setDeletingItem(null)}
               disabled={deleteMutation.isPending}
-              className="border-black/[0.10] text-slate-600 hover:bg-black/[0.02] rounded-xl h-10 px-5 font-semibold cursor-pointer"
+              className="border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl h-10 px-5 font-semibold cursor-pointer text-xs"
             >
               বাতিল
             </AlertDialogCancel>
@@ -660,7 +668,7 @@ export default function MetadataSetup() {
                 if (deletingItem) deleteMutation.mutate(deletingItem._id);
               }}
               disabled={deleteMutation.isPending}
-              className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white rounded-xl h-10 px-5 font-semibold cursor-pointer shadow-md shadow-red-500/20"
+              className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white rounded-xl h-10 px-5 font-semibold cursor-pointer shadow-md shadow-red-200 text-xs"
             >
               {deleteMutation.isPending && (
                 <Loader2 className="size-4 animate-spin mr-2" />
