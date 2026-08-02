@@ -1,4 +1,15 @@
-import { ChevronDown, CreditCard, Loader2, Lock } from "lucide-react";
+import {
+  BookOpen,
+  ChevronDown,
+  CreditCard,
+  FileText,
+  Layers,
+  Loader2,
+  Lock,
+  School,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -98,16 +109,17 @@ export default function Generator() {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto pb-12 font-bengali relative">
+    <div className="space-y-6 max-w-2xl mx-auto pb-12 font-sans relative">
       {/* Header Banner */}
-      <div className="bg-indigo-900 text-white rounded-3xl p-8 text-center relative overflow-hidden shadow-lg shadow-indigo-900/10">
-        <div className="absolute top-2 right-4 text-xs font-sans opacity-40 font-bold">
+      <div className="bg-gradient-to-r from-purple-700 via-purple-800 to-purple-950 text-white rounded-2xl p-8 text-center relative overflow-hidden shadow-lg shadow-purple-900/10">
+        <div className="absolute top-3 right-4 text-xs opacity-40 font-semibold tracking-widest">
           ৪.৩.৩
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">
-          ১ ক্লিকে প্রশ্ন তৈরির সফটওয়্যার !
+        <h1 className="text-2xl font-bold tracking-tight flex items-center justify-center gap-2">
+          <span>১ ক্লিকে প্রশ্ন তৈরির সফটওয়্যার</span>
+          <Sparkles className="size-5 text-yellow-300 animate-pulse" />
         </h1>
-        <p className="text-xs text-indigo-200 mt-2 flex items-center justify-center gap-1 font-semibold">
+        <p className="text-xs text-purple-200 mt-2 flex items-center justify-center gap-1 font-medium">
           শিক্ষা এবং সফটওয়্যার, একসাথে এগিয়ে চলা! 🌱
         </p>
 
@@ -116,31 +128,31 @@ export default function Generator() {
           <div className="mt-5 flex justify-center">
             <button
               onClick={() => navigate("/dashboard/subscription")}
-              className="bg-red-500 hover:bg-red-600 transition text-white px-6 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-md shadow-red-500/20 font-sans cursor-pointer"
+              className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 transition text-white px-6 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-md shadow-red-500/20 cursor-pointer"
             >
-              <CreditCard className="h-4 w-4" />
-              Subscribe Now!
+              <CreditCard className="size-4" />
+              <span>Subscribe Now!</span>
             </button>
           </div>
         )}
       </div>
 
       {/* Main Generator Form Card */}
-      <div className="bg-white border border-slate-100 rounded-3xl p-8 shadow-sm">
+      <div className="bg-glass rounded-2xl border shadow-sm p-8 space-y-5">
         {loadingSubs ? (
           <div className="flex flex-col items-center justify-center py-12 space-y-3 font-sans">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+            <Loader2 className="size-8 animate-spin text-primary" />
             <p className="text-xs text-slate-500 font-medium">
               সাবস্ক্রিপশন চেক করা হচ্ছে...
             </p>
           </div>
         ) : classes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 text-center space-y-4 font-bengali">
+          <div className="flex flex-col items-center justify-center py-8 text-center space-y-4">
             <div className="p-3 bg-amber-50 rounded-full border border-amber-200/60">
-              <Lock className="h-6 w-6 text-amber-600" />
+              <Lock className="size-6 text-amber-600" />
             </div>
             <div className="space-y-1.5 max-w-sm">
-              <h3 className="text-sm font-bold text-slate-800">
+              <h3 className="text-sm font-semibold text-slate-800">
                 কোনো সক্রিয় সাবস্ক্রিপশন নেই
               </h3>
               <p className="text-xs text-slate-500 font-medium leading-relaxed">
@@ -151,7 +163,7 @@ export default function Generator() {
             <button
               type="button"
               onClick={() => navigate("/dashboard/subscription")}
-              className="bg-indigo-600 hover:bg-indigo-700 transition text-white px-6 py-2.5 rounded-xl text-xs font-bold font-sans cursor-pointer shadow-md shadow-indigo-500/10"
+              className="bg-primary hover:bg-purple-700 transition text-white px-6 py-2.5 rounded-xl text-xs font-semibold shadow-md shadow-purple-200 cursor-pointer"
             >
               সাবস্ক্রিপশন কিনুন
             </button>
@@ -159,60 +171,62 @@ export default function Generator() {
         ) : (
           <form onSubmit={handleGenerate} className="space-y-5">
             {/* Exam Name Input */}
-            <div className="space-y-1.5 font-sans">
-              <label className="text-xs font-bold text-slate-700 font-bengali">
-                প্রোগ্রাম/পরীক্ষার নাম লিখুন{" "}
-                <span className="text-red-500 font-sans">*</span>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                <FileText className="size-4 text-primary" />
+                <span>প্রোগ্রাম/পরীক্ষার নাম লিখুন</span>
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={examName}
                 onChange={(e) => setExamName(e.target.value)}
-                placeholder="প্রোগ্রাম/পরীক্ষার নাম লিখুন *"
-                className="w-full h-11 px-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-medium"
+                placeholder="যেমন: অর্ধ-বার্ষিক পরীক্ষা ২০২৬"
+                className="w-full h-11 px-4 rounded-xl border border-slate-200 focus-visible:ring-purple-100 focus-visible:border-primary text-sm font-medium text-slate-800 bg-white/70 shadow-sm"
               />
               {examName === "" && (
-                <p className="text-[10px] text-red-500 font-semibold font-bengali">
+                <p className="text-[10px] text-red-500 font-medium">
                   প্রোগ্রাম/পরীক্ষার নাম লিখুন
                 </p>
               )}
             </div>
 
-            {/* Class Select Dropdown (Modernized to match visual design) */}
-            <div className="space-y-1.5 font-sans">
-              <label className="text-xs font-bold text-slate-700 font-bengali">
-                শ্রেণি
+            {/* Class Select Dropdown */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                <School className="size-4 text-primary" />
+                <span>শ্রেণি</span>
               </label>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="w-full h-11 px-4 rounded-xl border border-slate-200 text-left text-sm flex items-center justify-between hover:border-slate-350 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition bg-white cursor-pointer select-none font-medium text-slate-800"
+                    className="w-full h-11 px-4 rounded-xl border border-slate-200 text-left text-sm flex items-center justify-between hover:border-purple-300 focus-visible:ring-purple-100 focus-visible:border-primary transition bg-white/70 cursor-pointer select-none font-medium text-slate-800 shadow-sm"
                   >
                     <span>
                       {classes.find((cls) => cls.value === selectedClass)
                         ?.label || "শ্রেণি সিলেক্ট করুন"}
                     </span>
-                    <ChevronDown className="h-4 w-4 text-slate-400" />
+                    <ChevronDown className="size-4 text-slate-400" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-slate-200/50 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] max-h-60 overflow-y-auto">
+                <DropdownMenuContent className="bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] max-h-60 overflow-y-auto font-sans">
                   {classes.map((cls) => {
                     const isSelected = selectedClass === cls.value;
                     return (
                       <DropdownMenuItem
                         key={cls.value}
                         onSelect={() => setSelectedClass(cls.value)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-purple-50 focus:text-primary ${
                           isSelected
-                            ? "bg-indigo-50 text-indigo-600"
+                            ? "bg-purple-50 text-primary"
                             : "text-slate-700"
                         }`}
                       >
                         <span>{cls.label}</span>
                         {isSelected && (
-                          <span className="size-1.5 rounded-full bg-indigo-500" />
+                          <span className="size-1.5 rounded-full bg-primary" />
                         )}
                       </DropdownMenuItem>
                     );
@@ -223,11 +237,14 @@ export default function Generator() {
 
             {/* Subject Trigger Button */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">বিষয়</label>
+              <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                <BookOpen className="size-4 text-primary" />
+                <span>বিষয়</span>
+              </label>
               <button
                 type="button"
                 onClick={handleOpenSubjectModal}
-                className="w-full min-h-11 py-2 px-3.5 rounded-xl border border-slate-200 text-left text-sm flex items-center justify-between hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition bg-white cursor-pointer select-none text-slate-800"
+                className="w-full min-h-11 py-2 px-3.5 rounded-xl border border-slate-200 text-left text-sm flex items-center justify-between hover:border-purple-300 focus-visible:ring-purple-100 focus-visible:border-primary transition bg-white/70 cursor-pointer select-none text-slate-800 shadow-sm"
               >
                 <div className="flex-1 flex flex-wrap gap-1.5 items-center min-h-[26px]">
                   {selectedSubjects.length > 0 ? (
@@ -236,7 +253,7 @@ export default function Generator() {
                       return (
                         <span
                           key={itemId}
-                          className="inline-flex items-center gap-1 bg-indigo-50/60 text-indigo-700 border border-indigo-100/80 px-2.5 py-1 rounded-lg text-xs font-semibold"
+                          className="inline-flex items-center gap-1 bg-purple-50 text-purple-700 border border-purple-200/60 px-2.5 py-1 rounded-lg text-xs font-semibold shadow-xs"
                         >
                           <span>
                             {s.subjectName} (
@@ -259,7 +276,6 @@ export default function Generator() {
                                     itemId,
                                 ),
                               );
-                              // Also clear any selected chapters for this subject
                               setSelectedChapters((prev) =>
                                 prev.filter(
                                   (key) => key.split("_")[0] !== itemId,
@@ -283,21 +299,9 @@ export default function Generator() {
                                 );
                               }
                             }}
-                            className="hover:bg-indigo-100/80 p-0.5 rounded-md transition text-indigo-500 hover:text-indigo-700 cursor-pointer ml-0.5 flex items-center justify-center size-4"
+                            className="hover:bg-purple-100/80 p-0.5 rounded-md transition text-purple-500 hover:text-purple-700 cursor-pointer ml-0.5 flex items-center justify-center size-4"
                           >
-                            <svg
-                              className="h-3 w-3"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2.5"
-                                d="M6 18L18 6M6 6l12 12"
-                              />
-                            </svg>
+                            <X className="size-3" />
                           </span>
                         </span>
                       );
@@ -306,21 +310,24 @@ export default function Generator() {
                     <span className="text-slate-400">বিষয় সিলেক্ট করুন</span>
                   )}
                 </div>
-                <ChevronDown className="h-4 w-4 text-slate-400 shrink-0 ml-2" />
+                <ChevronDown className="size-4 text-slate-400 shrink-0 ml-2" />
               </button>
             </div>
 
             {/* Chapter Trigger Button */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">অধ্যায়</label>
+              <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                <Layers className="size-4 text-primary" />
+                <span>অধ্যায়</span>
+              </label>
               <button
                 type="button"
                 disabled={selectedSubjects.length === 0}
                 onClick={() => setShowChapterModal(true)}
-                className={`w-full h-11 px-4 rounded-xl border border-slate-200 text-left text-sm flex items-center justify-between transition bg-white ${
+                className={`w-full h-11 px-4 rounded-xl border border-slate-200 text-left text-sm flex items-center justify-between transition shadow-sm ${
                   selectedSubjects.length === 0
                     ? "bg-slate-50 text-slate-300 cursor-not-allowed border-slate-100"
-                    : "hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 cursor-pointer text-slate-800"
+                    : "bg-white/70 hover:border-purple-300 focus-visible:ring-purple-100 focus-visible:border-primary cursor-pointer text-slate-800"
                 }`}
               >
                 <span
@@ -334,14 +341,14 @@ export default function Generator() {
                     ? `${selectedChapters.length} টি অধ্যায় সিলেক্ট করা হয়েছে`
                     : "অধ্যায় সিলেক্ট করুন"}
                 </span>
-                <ChevronDown className="h-4 w-4 text-slate-400" />
+                <ChevronDown className="size-4 text-slate-400" />
               </button>
             </div>
 
             {/* Type Select & Total Marks inline inputs */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5 font-sans">
-                <label className="text-xs font-bold text-slate-700 font-bengali">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700">
                   টাইপ
                 </label>
                 <div className="relative">
@@ -353,14 +360,14 @@ export default function Generator() {
                       <button
                         disabled={activeCategories.length === 0}
                         type="button"
-                        className="w-full h-11 px-4 border border-slate-200 bg-white hover:border-indigo-500 disabled:bg-slate-50 disabled:border-slate-200 disabled:text-slate-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-800 flex justify-between items-center shadow-sm cursor-pointer select-none"
+                        className="w-full h-11 px-4 border border-slate-200 bg-white/70 hover:border-purple-300 disabled:bg-slate-50 disabled:border-slate-200 disabled:text-slate-400 focus:outline-none transition-all rounded-xl text-xs font-semibold text-slate-800 flex justify-between items-center shadow-sm cursor-pointer select-none"
                       >
                         <span>{getSelectedTypeLabel()}</span>
                         <ChevronDown className="size-4 text-slate-400 pointer-events-none" />
                       </button>
                     </DropdownMenuTrigger>
                     {activeCategories.length > 0 && (
-                      <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                      <DropdownMenuContent className="bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] font-sans">
                         {activeCategories.map((catValue) => {
                           const catObj = CATEGORIES_MAP.find(
                             (c) => c.value === catValue,
@@ -370,30 +377,30 @@ export default function Generator() {
                             <DropdownMenuItem
                               key={catValue}
                               onSelect={() => setQuestionType(catValue)}
-                              className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                              className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-purple-50 focus:text-primary ${
                                 isSelected
-                                  ? "bg-indigo-50 text-indigo-600"
+                                  ? "bg-purple-50 text-primary"
                                   : "text-slate-700"
                               }`}
                             >
                               <span>{catObj ? catObj.label : catValue}</span>
                               {isSelected && (
-                                <span className="size-1 rounded-full bg-indigo-500" />
+                                <span className="size-1.5 rounded-full bg-primary" />
                               )}
                             </DropdownMenuItem>
                           );
                         })}
                         <DropdownMenuItem
                           onSelect={() => setQuestionType("Combined")}
-                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 group ${
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-purple-50 focus:text-primary ${
                             questionType === "Combined"
-                              ? "bg-indigo-50 text-indigo-600"
+                              ? "bg-purple-50 text-primary"
                               : "text-slate-700"
                           }`}
                         >
                           <span>{getCombinedLabel()}</span>
                           {questionType === "Combined" && (
-                            <span className="size-1 rounded-full bg-indigo-500" />
+                            <span className="size-1.5 rounded-full bg-primary" />
                           )}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -402,8 +409,8 @@ export default function Generator() {
                 </div>
               </div>
 
-              <div className="space-y-1.5 font-sans">
-                <label className="text-xs font-bold text-slate-700 font-bengali">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700">
                   মোট নম্বর
                 </label>
                 <input
@@ -411,21 +418,27 @@ export default function Generator() {
                   value={totalMarks}
                   onChange={(e) => setTotalMarks(e.target.value)}
                   placeholder="100"
-                  className="w-full h-11 px-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-medium"
+                  className="w-full h-11 px-4 rounded-xl border border-slate-200 focus-visible:ring-purple-100 focus-visible:border-primary text-sm font-semibold text-slate-800 bg-white/70 shadow-sm"
                 />
               </div>
             </div>
 
-            {/* Generate Button (Color updated to Indigo to match primary branding and outline colors) */}
+            {/* Generate Button */}
             <button
               type="submit"
               disabled={generating || fetchingSyllabus}
-              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white rounded-xl text-sm font-bold transition flex items-center justify-center gap-2 shadow shadow-indigo-500/10 cursor-pointer"
+              className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2 shadow-md shadow-purple-200 cursor-pointer"
             >
               {generating ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <>
+                  <Loader2 className="size-5 animate-spin text-white" />
+                  <span>প্রশ্ন তৈরি করা হচ্ছে...</span>
+                </>
               ) : (
-                "প্রশ্ন তৈরি করুন"
+                <>
+                  <Sparkles className="size-5 text-yellow-300" />
+                  <span>প্রশ্ন তৈরি করুন</span>
+                </>
               )}
             </button>
           </form>
@@ -445,71 +458,50 @@ export default function Generator() {
         <DialogContent
           from="top"
           showCloseButton={true}
-          className="max-w-md p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative"
+          className="max-w-md p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative font-sans"
         >
           {/* Header */}
           <DialogHeader className="p-5 border-b border-slate-100/50 mb-0 flex flex-col justify-start items-start">
-            <DialogTitle className="text-sm font-bold text-slate-800">
-              বিষয় সিলেক্ট করুন
+            <DialogTitle className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+              <BookOpen className="size-4 text-primary" />
+              <span>বিষয় সিলেক্ট করুন</span>
             </DialogTitle>
           </DialogHeader>
 
           {/* Filters (centered badges) */}
           <div className="p-4 bg-slate-50/50 flex justify-center gap-2 flex-wrap border-b border-slate-100/50">
-            <button
-              type="button"
-              onClick={() => setSubjectFilter("all")}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer select-none ${
-                subjectFilter === "all"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/10"
-                  : "bg-white text-slate-600 border border-slate-200/60 hover:bg-slate-50"
-              }`}
-            >
-              সবগুলো
-            </button>
-            <button
-              type="button"
-              onClick={() => setSubjectFilter("bangla")}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer select-none ${
-                subjectFilter === "bangla"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/10"
-                  : "bg-white text-slate-600 border border-slate-200/60 hover:bg-slate-50"
-              }`}
-            >
-              বাংলা ভার্শন
-            </button>
-            <button
-              type="button"
-              onClick={() => setSubjectFilter("english")}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer select-none ${
-                subjectFilter === "english"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/10"
-                  : "bg-white text-slate-600 border border-slate-200/60 hover:bg-slate-50"
-              }`}
-            >
-              English Version
-            </button>
-            <button
-              type="button"
-              onClick={() => setSubjectFilter("madrasah")}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer select-none ${
-                subjectFilter === "madrasah"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/10"
-                  : "bg-white text-slate-600 border border-slate-200/60 hover:bg-slate-50"
-              }`}
-            >
-              মাদ্রাসা
-            </button>
+            {[
+              { id: "all", label: "সবগুলো" },
+              { id: "bangla", label: "বাংলা ভার্সন" },
+              { id: "english", label: "English Version" },
+              { id: "madrasah", label: "মাদ্রাসা" },
+            ].map((f) => {
+              const isActive = subjectFilter === f.id;
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => setSubjectFilter(f.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer select-none ${
+                    isActive
+                      ? "bg-gradient-to-r from-purple-600 to-purple-800 text-white shadow-sm"
+                      : "bg-white text-slate-600 border border-slate-200/60 hover:bg-slate-50"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
           </div>
 
           {/* List */}
           <div className="max-h-[280px] overflow-y-auto p-5 space-y-2">
             {fetchingSyllabus ? (
               <div className="flex justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+                <Loader2 className="size-7 animate-spin text-primary" />
               </div>
             ) : filteredSyllabusList.length === 0 ? (
-              <p className="text-xs text-slate-400 text-center py-8 font-medium">
+              <p className="text-xs text-slate-400 text-center py-8 font-medium italic">
                 কোনো বিষয় পাওয়া যায়নি।
               </p>
             ) : (
@@ -534,8 +526,8 @@ export default function Generator() {
                     }}
                     className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition select-none ${
                       isSelected
-                        ? "border-indigo-400 bg-indigo-50/10"
-                        : "border-slate-100 hover:border-indigo-300 hover:bg-slate-50/30"
+                        ? "border-purple-300 bg-purple-50/60 text-purple-800 shadow-sm"
+                        : "border-slate-200 bg-white/70 hover:border-purple-200"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -543,13 +535,13 @@ export default function Generator() {
                         type="checkbox"
                         checked={isSelected}
                         readOnly
-                        className="h-4 w-4 rounded text-indigo-600 border-slate-350 focus:ring-indigo-500/20 cursor-pointer"
+                        className="size-4 rounded text-primary border-slate-300 focus:ring-purple-100 accent-purple-600 cursor-pointer"
                       />
-                      <span className="text-xs font-bold text-slate-700">
+                      <span className="text-xs font-semibold text-slate-800">
                         {item.subjectName}
                       </span>
                     </div>
-                    <span className="text-[9px] font-sans font-bold text-slate-400 uppercase tracking-wide px-2 py-0.5 bg-slate-100 border rounded-md">
+                    <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide px-2 py-0.5 bg-slate-100 border border-slate-200/60 rounded-md">
                       {item.version === "Bangla"
                         ? "বাংলা"
                         : item.version === "Madrasah"
@@ -568,7 +560,6 @@ export default function Generator() {
               type="button"
               onClick={() => {
                 setSelectedSubjects(tempSelectedSubjects);
-                // Clear any selected chapters that don't belong to the newly selected subjects
                 const selectedIds = tempSelectedSubjects.map(
                   (s) => s.subjectId?._id || s.subjectId,
                 );
@@ -577,7 +568,7 @@ export default function Generator() {
                 );
                 setShowSubjectModal(false);
               }}
-              className="flex-1 h-10 bg-indigo-600 hover:bg-indigo-700 transition rounded-xl text-sm font-semibold text-white shadow-md shadow-indigo-500/10 cursor-pointer"
+              className="flex-1 h-10 bg-primary hover:bg-purple-700 transition rounded-xl text-xs font-semibold text-white shadow-md shadow-purple-200 cursor-pointer"
             >
               সিলেক্ট করুন
             </button>
@@ -586,7 +577,7 @@ export default function Generator() {
               onClick={() => {
                 setShowSubjectModal(false);
               }}
-              className="flex-1 h-10 bg-white border border-slate-200 hover:bg-slate-50 transition rounded-xl text-sm font-semibold text-slate-600 cursor-pointer"
+              className="flex-1 h-10 bg-white border border-slate-200 hover:bg-slate-50 transition rounded-xl text-xs font-semibold text-slate-600 cursor-pointer"
             >
               বন্ধ করুন
             </button>
@@ -599,19 +590,20 @@ export default function Generator() {
         <DialogContent
           from="top"
           showCloseButton={true}
-          className="max-w-md p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative"
+          className="max-w-md p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative font-sans"
         >
           {/* Header */}
           <DialogHeader className="p-5 border-b border-slate-100/50 mb-0 flex flex-col justify-start items-start">
-            <DialogTitle className="text-sm font-bold text-slate-800">
-              অধ্যায় সিলেক্ট করুন
+            <DialogTitle className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+              <Layers className="size-4 text-primary" />
+              <span>অধ্যায় সিলেক্ট করুন</span>
             </DialogTitle>
           </DialogHeader>
 
           {/* List */}
           <div className="max-h-[350px] overflow-y-auto p-5 space-y-4">
             {selectedSubjects.length === 0 ? (
-              <p className="text-xs text-slate-400 text-center py-6">
+              <p className="text-xs text-slate-400 text-center py-6 italic">
                 কোনো বিষয় সিলেক্ট করা নেই।
               </p>
             ) : (
@@ -621,7 +613,7 @@ export default function Generator() {
 
                 return (
                   <div key={subId} className="space-y-2">
-                    <h4 className="text-xs font-bold text-indigo-600 bg-indigo-50/50 px-2 py-1 rounded-lg border border-indigo-100/30">
+                    <h4 className="text-xs font-semibold text-primary bg-purple-50/60 px-2.5 py-1.5 rounded-lg border border-purple-100">
                       {sub.subjectName} (
                       {sub.version === "Bangla"
                         ? "বাংলা"
@@ -661,29 +653,29 @@ export default function Generator() {
                                 isLocked
                                   ? "border-slate-100 bg-slate-50/50 cursor-not-allowed opacity-60"
                                   : isChecked
-                                    ? "border-indigo-400 bg-indigo-50/10 cursor-pointer"
-                                    : "border-slate-100 hover:border-indigo-300 hover:bg-slate-50/30 cursor-pointer"
+                                    ? "border-purple-300 bg-purple-50/60 cursor-pointer shadow-sm text-purple-800"
+                                    : "border-slate-200 bg-white/70 hover:border-purple-200 cursor-pointer text-slate-800"
                               }`}
                             >
                               <div className="flex items-center gap-3">
                                 {isLocked ? (
-                                  <Lock className="h-4 w-4 text-slate-400 shrink-0" />
+                                  <Lock className="size-4 text-slate-400 shrink-0" />
                                 ) : (
                                   <input
                                     type="checkbox"
                                     checked={isChecked}
                                     readOnly
-                                    className="h-4 w-4 rounded text-indigo-600 border-slate-350 focus:ring-indigo-500/20 cursor-pointer shrink-0"
+                                    className="size-4 rounded text-primary border-slate-300 focus:ring-purple-100 accent-purple-600 cursor-pointer shrink-0"
                                   />
                                 )}
                                 <span
-                                  className={`text-xs font-bold ${isLocked ? "text-slate-400" : "text-slate-700"}`}
+                                  className={`text-xs font-semibold ${isLocked ? "text-slate-400" : "text-slate-800"}`}
                                 >
                                   {ch.chapterName}
                                 </span>
                               </div>
                               {isLocked && (
-                                <span className="text-[9px] font-bold text-slate-400 flex items-center gap-0.5 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">
+                                <span className="text-[10px] font-semibold text-slate-400 flex items-center gap-0.5 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200/60">
                                   Locked
                                 </span>
                               )}
@@ -703,7 +695,7 @@ export default function Generator() {
             <button
               type="button"
               onClick={() => setShowChapterModal(false)}
-              className="w-full h-10 bg-indigo-600 hover:bg-indigo-700 transition rounded-xl text-sm font-semibold text-white shadow-md shadow-indigo-500/10 cursor-pointer text-center"
+              className="w-full h-10 bg-primary hover:bg-purple-700 transition rounded-xl text-xs font-semibold text-white shadow-md shadow-purple-200 cursor-pointer text-center"
             >
               ঠিক আছে
             </button>
