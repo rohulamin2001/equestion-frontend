@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useUserContext } from "../../../context/UserContext.jsx";
 import { useQuestions } from "./useQuestions";
+import { CLASSES_MAP } from "../../../constants/classes";
 
 const CATEGORY_ORDER = [
   "Creative",
@@ -223,15 +224,7 @@ export function useQuestionPreview() {
     });
 
     const isCombinedMode = activeSet?.category === "Combined";
-    const targetClasses = [
-      "Class 6",
-      "Class 7",
-      "Class 8",
-      "Class 9",
-      "Class 10",
-      "Class 11",
-      "Class 12",
-    ];
+    const targetClasses = CLASSES_MAP.map((c) => c.value);
     const isTargetClass = targetClasses.includes(activeSet?.className);
 
     let finalOrder = CATEGORY_ORDER;

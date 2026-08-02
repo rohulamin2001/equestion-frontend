@@ -1,3 +1,4 @@
+import { isGroupEnabledClass } from '@/constants/classes';
 import { useUserContext } from '@/context/UserContext';
 import { useAcademicConfig } from '@/hooks/useAcademicConfig';
 import apiClient from '@/lib/apiClient';
@@ -336,7 +337,7 @@ export function useSyllabusManagement() {
           : []
       }));
 
-    const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(formClass);
+    const isClass9to12 = isGroupEnabledClass(formClass);
     const payload = {
       className: formClass,
       subjectId: formSubjectId,

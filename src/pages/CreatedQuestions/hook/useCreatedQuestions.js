@@ -74,7 +74,7 @@ export function useCreatedQuestions() {
       if (end < new Date()) return;
 
       if (sub.packageId && sub.packageId.startsWith("teacher-")) {
-        ["Class 6", "Class 7", "Class 8", "Class 9", "Class 10"].forEach((c) => {
+        ["Class 6", "Class 7", "Class 8", "Class 9-10", "Class 9", "Class 10"].forEach((c) => {
           if (versionClassNames.has(c)) clsSet.add(c);
         });
       } else if (

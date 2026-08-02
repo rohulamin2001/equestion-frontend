@@ -1,4 +1,5 @@
 import { CATEGORIES_MAP } from '@/constants/categories';
+import { isGroupEnabledClass } from '@/constants/classes';
 import { useAcademicConfig } from '@/hooks/useAcademicConfig';
 import apiClient from '@/lib/apiClient';
 import { useAuth } from '@clerk/react';
@@ -234,7 +235,7 @@ export function useSubjectSetup() {
   const handleCreateSubjectSubmit = (e) => {
     e.preventDefault();
     if (!selectedClass) return;
-    const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(selectedClass);
+    const isClass9to12 = isGroupEnabledClass(selectedClass);
 
     addSubjectMutation.mutate({
       className: selectedClass,
@@ -253,7 +254,7 @@ export function useSubjectSetup() {
   const handleEditSubjectSubmit = (e) => {
     e.preventDefault();
     if (!editingSubject) return;
-    const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(editingSubject.className);
+    const isClass9to12 = isGroupEnabledClass(editingSubject.className);
 
     updateSubjectMutation.mutate({
       id: editingSubject._id,
@@ -302,7 +303,7 @@ export function useSubjectSetup() {
     if (cls.length > 0) setSelectedClass(cls[0].value, selectedType, level);
   };
 
-  const isClass9to12 = ['Class 9', 'Class 10', 'Class 11', 'Class 12'].includes(selectedClass);
+  const isClass9to12 = isGroupEnabledClass(selectedClass);
 
   return {
     // Filter state & derived

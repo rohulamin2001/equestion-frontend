@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { isGroupEnabledClass } from "@/constants/classes";
 import { toast } from "sonner";
 import BulkImportModal from "./components/BulkImportModal";
 import {
@@ -593,9 +594,7 @@ export default function AddQuestion() {
                   )}
 
                   {/* Group Selection (Only for Class 9-12) */}
-                  {["Class 9", "Class 10", "Class 11", "Class 12"].includes(
-                    qm.formClass,
-                  ) && (
+                  {isGroupEnabledClass(qm.formClass) && (
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                         গ্রুপ / বিভাগ

@@ -1,3 +1,5 @@
+import { CLASSES_MAP } from "./classes";
+
 export const PACKAGE_CATEGORIES_MAP = [
   { id: "tutor", label: "ব্যক্তিগত শিক্ষক সংস্করণ" },
   { id: "bundle", label: "শ্রেণিভিত্তিক বান্ডেল সংস্করণ" },
@@ -5,20 +7,14 @@ export const PACKAGE_CATEGORIES_MAP = [
   { id: "school", label: "প্রাতিষ্ঠানিক স্কুল সংস্করণ" },
 ];
 
+// Dynamically generate class translation entries from CLASSES_MAP
+const classTranslations = CLASSES_MAP.reduce((acc, curr) => {
+  acc[curr.value] = curr.label;
+  return acc;
+}, {});
+
 export const SUBSCRIPTION_TRANSLATION_MAP = {
-  // Classes
-  "Class 1": "১ম শ্রেণি",
-  "Class 2": "২য় শ্রেণি",
-  "Class 3": "৩য় শ্রেণি",
-  "Class 4": "৪র্থ শ্রেণি",
-  "Class 5": "৫ম শ্রেণি",
-  "Class 6": "৬ষ্ঠ শ্রেণি",
-  "Class 7": "৭ম শ্রেণি",
-  "Class 8": "৮ম শ্রেণি",
-  "Class 9": "৯ম শ্রেণি",
-  "Class 10": "১০ম শ্রেণি",
-  "Class 11": "১১শ শ্রেণি",
-  "Class 12": "দ্বাদশ শ্রেণি",
+  ...classTranslations,
   // Packages
   "class-3-to-5": "৩য় - ৫ম শ্রেণি বান্ডেল প্যাকেজ",
   "class-6-to-10": "৬ষ্ঠ - ১০ম শ্রেণি বান্ডেল প্যাকেজ",
@@ -32,21 +28,29 @@ export const SUBSCRIPTION_TRANSLATION_MAP = {
   "teacher-islam-6-10": "ধর্ম শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম)",
   "teacher-agriculture-6-10": "কৃষি শিক্ষা শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম)",
   // Madrasah Mappings
-  "Madrasah": "মাদ্রাসা",
+  Madrasah: "মাদ্রাসা",
   "class-3-to-5-madrasah": "৩য় - ৫ম শ্রেণি বান্ডেল প্যাকেজ (মাদ্রাসা)",
   "class-6-to-10-madrasah": "৬ষ্ঠ - ১০ম শ্রেণি বান্ডেল প্যাকেজ (মাদ্রাসা)",
   "all-classes-madrasah": "সকল শ্রেণি বান্ডেল প্যাকেজ (মাদ্রাসা)",
-  "teacher-bangla-6-10-madrasah": "বাংলা শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম) (মাদ্রাসা)",
+  "teacher-bangla-6-10-madrasah":
+    "বাংলা শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম) (মাদ্রাসা)",
   "teacher-math-6-10-madrasah": "গণিত শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম) (মাদ্রাসা)",
-  "teacher-science-6-10-madrasah": "বিজ্ঞান শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম) (মাদ্রাসা)",
-  "teacher-english-6-10-madrasah": "ইংরেজি শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম) (মাদ্রাসা)",
+  "teacher-science-6-10-madrasah":
+    "বিজ্ঞান শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম) (মাদ্রাসা)",
+  "teacher-english-6-10-madrasah":
+    "ইংরেজি শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম) (মাদ্রাসা)",
   "teacher-ict-6-10-madrasah": "আইসিটি শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম) (মাদ্রাসা)",
   "teacher-bgs-6-10-madrasah": "বাওবি শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম) (মাদ্রাসা)",
   "teacher-islam-6-10-madrasah": "ধর্ম শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম) (মাদ্রাসা)",
-  "teacher-agriculture-6-10-madrasah": "কৃষি শিক্ষা শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম) (মাদ্রাসা)",
+  "teacher-agriculture-6-10-madrasah":
+    "কৃষি শিক্ষা শিক্ষক সংস্করণ (৬ষ্ঠ - ১০ম) (মাদ্রাসা)",
 };
 
 export const translateSubscriptionKey = (key) => {
   if (!key) return "";
-  return SUBSCRIPTION_TRANSLATION_MAP[key] || SUBSCRIPTION_TRANSLATION_MAP[key.trim()] || key;
+  return (
+    SUBSCRIPTION_TRANSLATION_MAP[key] ||
+    SUBSCRIPTION_TRANSLATION_MAP[key.trim()] ||
+    key
+  );
 };

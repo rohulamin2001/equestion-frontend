@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { isGroupEnabledClass } from "@/constants/classes";
 import {
   RippleButton,
   RippleButtonRipples,
@@ -761,9 +762,7 @@ export default function SubjectSetup() {
                 </div>
 
                 {/* Group Selection in Edit (if applicable) */}
-                {["Class 9", "Class 10", "Class 11", "Class 12"].includes(
-                  editingSubject.className,
-                ) && (
+                {isGroupEnabledClass(editingSubject.className) && (
                   <div className="space-y-2">
                     <label className="text-xs font-semibold text-slate-600 block">
                       বিভাগ / গ্রুপ

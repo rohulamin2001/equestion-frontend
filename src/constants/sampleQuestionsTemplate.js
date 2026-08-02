@@ -2,6 +2,8 @@
  * Sample JSON Template for Bulk Importing Questions (MCQ & Creative)
  */
 
+import { CLASSES_MAP } from "./classes";
+
 export const ALLOWED_IMPORT_VALUES = {
   institutionType: ["School", "College", "Madrasah"],
   academicLevel: [
@@ -13,20 +15,7 @@ export const ALLOWED_IMPORT_VALUES = {
     "Alim",
   ],
   version: ["Bangla", "English"],
-  className: [
-    "Class 1",
-    "Class 2",
-    "Class 3",
-    "Class 4",
-    "Class 5",
-    "Class 6",
-    "Class 7",
-    "Class 8",
-    "Class 9",
-    "Class 10",
-    "Class 11",
-    "Class 12",
-  ],
+  className: CLASSES_MAP.map((c) => c.value),
   category: [
     "MCQ",
     "Creative",

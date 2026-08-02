@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { GENERATOR_CLASSES as classes } from "../../../constants/classes";
 import apiClient from "../../../lib/apiClient";
 
 export const useGenerator = () => {
@@ -22,19 +23,6 @@ export const useGenerator = () => {
   const [showSubjectModal, setShowSubjectModal] = useState(false);
   const [showChapterModal, setShowChapterModal] = useState(false);
   const [subjectFilter, setSubjectFilter] = useState("all"); // 'all', 'bangla', 'english', 'madrasah'
-
-  const classes = [
-    { value: "Class 3", label: "৩য় শ্রেণী" },
-    { value: "Class 4", label: "৪র্থ শ্রেণী" },
-    { value: "Class 5", label: "৫ম শ্রেণী" },
-    { value: "Class 6", label: "৬ষ্ঠ শ্রেণী" },
-    { value: "Class 7", label: "৭ম শ্রেণী" },
-    { value: "Class 8", label: "৮ম শ্রেণী" },
-    { value: "Class 9", label: "৯ম শ্রেণী" },
-    { value: "Class 10", label: "১০ম শ্রেণী" },
-    { value: "Class 11", label: "একাদশ শ্রেণী" },
-    { value: "Class 12", label: "দ্বাদশ শ্রেণী" },
-  ];
 
   // Fetch active subscriptions using React Query
   const mySubscriptionsQuery = useQuery({
@@ -60,9 +48,14 @@ export const useGenerator = () => {
         return;
       }
       if (sub.packageId && sub.packageId.startsWith("teacher-")) {
-        ["Class 6", "Class 7", "Class 8", "Class 9", "Class 10"].forEach((c) =>
-          clsSet.add(c),
-        );
+        [
+          "Class 6",
+          "Class 7",
+          "Class 8",
+          "Class 9-10",
+          "Class 9",
+          "Class 10",
+        ].forEach((c) => clsSet.add(c));
       } else if (
         sub.purchaseType === "Package" ||
         sub.purchaseType === "Class"
@@ -180,6 +173,7 @@ export const useGenerator = () => {
           "Class 6",
           "Class 7",
           "Class 8",
+          "Class 9-10",
           "Class 9",
           "Class 10",
         ];

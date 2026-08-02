@@ -1,3 +1,4 @@
+import { isGroupEnabledClass } from "@/constants/classes";
 import apiClient from "@/lib/apiClient";
 import { validateCategoryQuestionsJson } from "@/lib/jsonQuestionValidator";
 import { useAuth } from "@clerk/react";
@@ -226,12 +227,7 @@ export function useQuestionManagement(options = {}) {
 
     const syllabusVersion = s.version || "Bangla";
     if (syllabusVersion !== formVersion) return false;
-    const isClass9to12 = [
-      "Class 9",
-      "Class 10",
-      "Class 11",
-      "Class 12",
-    ].includes(formClass);
+    const isClass9to12 = isGroupEnabledClass(formClass);
     if (isClass9to12) {
       // Show subjects matching selected group OR general group
       return s.group === formGroup || s.group === "General" || !s.group;
