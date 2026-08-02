@@ -23,21 +23,28 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { isGroupEnabledClass } from "@/constants/classes";
 import {
   RippleButton,
   RippleButtonRipples,
 } from "@/components/ui/ripple-button";
+import { isGroupEnabledClass } from "@/constants/classes";
 import {
+  Award,
   BookOpen,
+  Calendar,
   ChevronRight,
   Code,
   Edit,
+  Globe,
   GraduationCap,
+  Grid,
+  Hash,
+  Layers,
   Loader2,
   Plus,
   School,
   Sliders,
+  Tag,
   Trash2,
 } from "lucide-react";
 import {
@@ -56,19 +63,19 @@ const TYPE_ICONS = {
 
 const TYPE_COLORS = {
   School: {
-    bg: "bg-indigo-50/40 border-indigo-200 text-indigo-700 shadow-indigo-100",
+    bg: "bg-indigo-50/40 border-indigo-200/60 text-indigo-700 shadow-indigo-100/50",
     activeBg:
       "bg-indigo-600 border-indigo-600 text-white shadow-indigo-200 shadow-md",
     glow: "from-indigo-500 to-indigo-600",
   },
   College: {
-    bg: "bg-amber-50/40 border-amber-200 text-amber-700 shadow-amber-100",
+    bg: "bg-purple-50/40 border-purple-200/60 text-purple-700 shadow-purple-100/50",
     activeBg:
-      "bg-amber-500 border-amber-500 text-white shadow-amber-200 shadow-md",
-    glow: "from-amber-400 to-amber-500",
+      "bg-primary border-primary text-white shadow-purple-200 shadow-md",
+    glow: "from-purple-500 to-purple-700",
   },
   Madrasah: {
-    bg: "bg-emerald-50/40 border-emerald-200 text-emerald-700 shadow-emerald-100",
+    bg: "bg-emerald-50/40 border-emerald-200/60 text-emerald-700 shadow-emerald-100/50",
     activeBg:
       "bg-emerald-600 border-emerald-600 text-white shadow-emerald-200 shadow-md",
     glow: "from-emerald-500 to-emerald-600",
@@ -125,11 +132,11 @@ export default function SubjectSetup() {
   const activeColor = TYPE_COLORS[selectedType] || TYPE_COLORS.School;
 
   return (
-    <div className="space-y-6 pb-12 w-full">
+    <div className="space-y-6 pb-12 w-full font-sans">
       {/* Header section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
             <Sliders className="size-6 text-primary" />
             সাবজেক্ট ও কোড সেটআপ
           </h1>
@@ -144,8 +151,8 @@ export default function SubjectSetup() {
       <div className="relative w-full bg-glass p-6 rounded-2xl border shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Column 1: Type Selection */}
         <div className="space-y-3.5">
-          <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider pl-1 flex items-center gap-1.5 font-sans">
-            <span className="size-2 rounded-full bg-indigo-500"></span>
+          <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider pl-1 flex items-center gap-1.5 font-sans">
+            <span className="size-2 rounded-full bg-primary"></span>
             প্রতিষ্ঠানের ধরণ (Type)
           </h4>
           <div className="flex flex-col gap-2.5">
@@ -164,7 +171,7 @@ export default function SubjectSetup() {
                 >
                   <div className="flex items-center gap-2.5">
                     <IconComp className="size-4.5" />
-                    <span className="font-bold text-[13px]">
+                    <span className="font-semibold text-[13px]">
                       {TYPE_LABELS[type] || type}
                     </span>
                   </div>
@@ -177,8 +184,8 @@ export default function SubjectSetup() {
 
         {/* Column 2: Level Selection */}
         <div className="space-y-3.5">
-          <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider pl-1 flex items-center gap-1.5 font-sans">
-            <span className="size-2 rounded-full bg-indigo-500"></span>
+          <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider pl-1 flex items-center gap-1.5 font-sans">
+            <span className="size-2 rounded-full bg-primary"></span>
             শিক্ষার স্তর (Level)
           </h4>
           <div className="flex flex-col gap-2.5">
@@ -191,10 +198,10 @@ export default function SubjectSetup() {
                   className={`p-3 px-4 rounded-xl border text-left flex items-center justify-between transition-all duration-200 cursor-pointer ${
                     isActive
                       ? activeColor.activeBg
-                      : "bg-white/45 border-slate-200/50 text-slate-700 hover:border-slate-350 hover:bg-white/70 shadow-sm"
+                      : "bg-white/45 border-slate-200/50 text-slate-700 hover:border-purple-300 hover:bg-white/70 shadow-sm"
                   }`}
                 >
-                  <span className="font-bold text-[13px]">
+                  <span className="font-semibold text-[13px]">
                     {LEVEL_LABELS[level] || level}
                   </span>
                   {isActive && <ChevronRight className="size-3.5 text-white" />}
@@ -206,8 +213,8 @@ export default function SubjectSetup() {
 
         {/* Column 3: Class Selection */}
         <div className="space-y-3.5">
-          <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider pl-1 flex items-center gap-1.5 font-sans">
-            <span className="size-2 rounded-full bg-emerald-500"></span>
+          <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider pl-1 flex items-center gap-1.5 font-sans">
+            <span className="size-2 rounded-full bg-purple-500"></span>
             শ্রেণী নির্বাচন (Class)
           </h4>
           <div className="p-4 rounded-xl border border-black/[0.04] bg-black/[0.01] min-h-[120px] flex items-center justify-center">
@@ -220,13 +227,13 @@ export default function SubjectSetup() {
                     onClick={() =>
                       setSelectedClass(cls.value, selectedType, selectedLevel)
                     }
-                    className={`p-2.5 py-3 rounded-lg text-center text-xs font-bold transition-all duration-200 cursor-pointer ${
+                    className={`p-2.5 py-3 rounded-lg text-center text-xs font-semibold transition-all duration-200 cursor-pointer ${
                       isActive
-                        ? "bg-emerald-600 border-emerald-600 text-white shadow-sm"
-                        : "bg-white/45 border border-slate-200/50 text-slate-600 hover:border-slate-350 hover:bg-white/70 shadow-sm"
+                        ? "bg-primary border-primary text-white shadow-sm"
+                        : "bg-white/45 border border-slate-200/50 text-slate-600 hover:border-purple-300 hover:bg-white/70 shadow-sm"
                     }`}
                   >
-                    <span className="font-extrabold">{cls.label}</span>
+                    <span>{cls.label}</span>
                   </button>
                 );
               })}
@@ -239,16 +246,19 @@ export default function SubjectSetup() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left Side: Create Subject Form (1 col) */}
         <div className="bg-glass p-6 rounded-2xl border shadow-sm space-y-5">
-          <h3 className="font-bold text-slate-800 text-base border-b pb-3 flex items-center gap-2">
-            <Plus className="size-4.5 text-indigo-500" />
+          <h3 className="font-semibold text-slate-800 text-base border-b pb-3 flex items-center gap-2">
+            <Plus className="size-4.5 text-primary" />
             <span>নতুন বিষয় যোগ করুন ({currentClassLabel})</span>
           </h3>
 
           <form onSubmit={handleCreateSubjectSubmit} className="space-y-5">
             {/* Subject Name */}
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
-                বিষয়ের নাম <span className="text-indigo-400">*</span>
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+                <Tag className="size-3.5 text-primary" />
+                <span>
+                  বিষয়ের নাম <span className="text-primary">*</span>
+                </span>
               </label>
               <Input
                 required
@@ -256,27 +266,36 @@ export default function SubjectSetup() {
                 value={subjectName}
                 onChange={(e) => setSubjectName(e.target.value)}
                 disabled={addSubjectMutation.isPending}
-                className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
+                className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-purple-100 transition-all"
               />
             </div>
 
             {/* Subject Code + পূর্ণমান — side by side */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
-                  বিষয় কোড <span className="text-slate-400 font-normal lowercase">(ঐচ্ছিক)</span>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide flex items-center gap-1">
+                  <Hash className="size-3 text-slate-400" />
+                  <span>
+                    বিষয় কোড{" "}
+                    <span className="text-slate-400 font-normal lowercase">
+                      (ঐচ্ছিক)
+                    </span>
+                  </span>
                 </label>
                 <Input
                   placeholder="যেমন: ১০১"
                   value={subjectCode}
                   onChange={(e) => setSubjectCode(e.target.value)}
                   disabled={addSubjectMutation.isPending}
-                  className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
+                  className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-purple-100 transition-all"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
-                  পূর্ণমান <span className="text-indigo-400">*</span>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide flex items-center gap-1">
+                  <Award className="size-3 text-primary" />
+                  <span>
+                    পূর্ণমান <span className="text-primary">*</span>
+                  </span>
                 </label>
                 <Input
                   required
@@ -285,7 +304,7 @@ export default function SubjectSetup() {
                   value={subjectTotalMarks}
                   onChange={(e) => setSubjectTotalMarks(e.target.value)}
                   disabled={addSubjectMutation.isPending}
-                  className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
+                  className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-purple-100 transition-all"
                 />
               </div>
             </div>
@@ -293,8 +312,9 @@ export default function SubjectSetup() {
             {/* Group Selection (Only for Class 9-12) */}
             {isClass9to12 && (
               <div className="space-y-2.5">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
-                  বিভাগ / গ্রুপ
+                <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+                  <Layers className="size-3.5 text-primary" />
+                  <span>বিভাগ / গ্রুপ</span>
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
@@ -305,10 +325,10 @@ export default function SubjectSetup() {
                   ].map((grp) => (
                     <label
                       key={grp.value}
-                      className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all duration-200 ${
+                      className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all duration-200 ${
                         subjectGroup === grp.value
-                          ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200"
-                          : "bg-white/60 border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600"
+                          ? "bg-primary border-primary text-white shadow-md shadow-purple-200"
+                          : "bg-white/60 border-slate-200 text-slate-600 hover:border-purple-300 hover:text-primary"
                       }`}
                     >
                       <input
@@ -328,8 +348,11 @@ export default function SubjectSetup() {
 
             {/* Version Selection */}
             <div className="space-y-2.5">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
-                ভার্সন <span className="text-indigo-400">*</span>
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+                <Globe className="size-3.5 text-primary" />
+                <span>
+                  ভার্সন <span className="text-primary">*</span>
+                </span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -337,14 +360,17 @@ export default function SubjectSetup() {
                   { value: "English", label: "ইংরেজি" },
                   { value: "Madrasah", label: "মাদ্রাসা" },
                 ]
-                  .filter((ver) => !config?.versions || config.versions.includes(ver.value))
+                  .filter(
+                    (ver) =>
+                      !config?.versions || config.versions.includes(ver.value),
+                  )
                   .map((ver) => (
                     <label
                       key={ver.value}
-                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all duration-200 ${
+                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all duration-200 ${
                         subjectVersion === ver.value
-                          ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200"
-                          : "bg-white/60 border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600"
+                          ? "bg-primary border-primary text-white shadow-md shadow-purple-200"
+                          : "bg-white/60 border-slate-200 text-slate-600 hover:border-purple-300 hover:text-primary"
                       }`}
                     >
                       <input
@@ -363,8 +389,9 @@ export default function SubjectSetup() {
 
             {/* Active Years */}
             <div className="space-y-3">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
-                সক্রিয় শিক্ষাবর্ষ
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+                <Calendar className="size-3.5 text-primary" />
+                <span>সক্রিয় শিক্ষাবর্ষ</span>
               </label>
               <div className="flex gap-2">
                 <Input
@@ -372,7 +399,7 @@ export default function SubjectSetup() {
                   id="new-year-setup-input"
                   placeholder="বছর (যেমন: ২০২৬)"
                   disabled={addSubjectMutation.isPending}
-                  className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
+                  className="h-11 px-4 rounded-xl border border-slate-200 bg-white/70 text-sm text-slate-800 placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-purple-100 transition-all"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
@@ -396,7 +423,7 @@ export default function SubjectSetup() {
                       input.value = "";
                     }
                   }}
-                  className="h-11 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+                  className="h-11 px-5 rounded-xl bg-primary hover:bg-purple-700 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
                 >
                   <Plus className="size-3.5" />
                 </Button>
@@ -410,14 +437,14 @@ export default function SubjectSetup() {
                 {subjectYears.map((yr) => (
                   <span
                     key={yr}
-                    className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 font-bold text-xs px-3 py-1.5 rounded-full border border-amber-200 shadow-sm"
+                    className="inline-flex items-center gap-1.5 bg-purple-50 text-purple-700 font-semibold text-xs px-3 py-1.5 rounded-full border border-purple-200/60 shadow-sm"
                   >
                     {yr}
                     <button
                       type="button"
                       disabled={addSubjectMutation.isPending}
                       onClick={() => handleRemoveYear(yr)}
-                      className="size-4 rounded-full flex items-center justify-center bg-amber-200/60 hover:bg-amber-300 text-amber-700 font-black leading-none cursor-pointer transition-colors"
+                      className="size-4 rounded-full flex items-center justify-center bg-purple-200/60 hover:bg-purple-300 text-purple-700 leading-none cursor-pointer transition-colors"
                     >
                       ×
                     </button>
@@ -428,8 +455,9 @@ export default function SubjectSetup() {
 
             {/* Question Categories */}
             <div className="space-y-2.5">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">
-                প্রশ্নের ক্যাটাগরি
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+                <Grid className="size-3.5 text-primary" />
+                <span>প্রশ্নের ক্যাটাগরি</span>
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {PREDEFINED_CATEGORIES.map((cat) => {
@@ -439,14 +467,14 @@ export default function SubjectSetup() {
                       key={cat.value}
                       className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all duration-150 ${
                         isChecked
-                          ? "bg-indigo-50 border-indigo-300 text-indigo-700 shadow-sm"
+                          ? "bg-purple-50 border-purple-300 text-purple-700 shadow-sm"
                           : "bg-white/60 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-white/80"
                       }`}
                     >
                       <span
                         className={`size-4 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
                           isChecked
-                            ? "bg-indigo-600 border-indigo-600"
+                            ? "bg-primary border-primary"
                             : "bg-white border-slate-300"
                         }`}
                       >
@@ -483,7 +511,7 @@ export default function SubjectSetup() {
             <RippleButton
               type="submit"
               disabled={addSubjectMutation.isPending}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold h-12 rounded-xl shadow-md shadow-indigo-200 cursor-pointer transition-all"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white font-semibold h-12 rounded-xl shadow-md shadow-purple-200 cursor-pointer transition-all"
             >
               {addSubjectMutation.isPending ? (
                 <>
@@ -503,8 +531,8 @@ export default function SubjectSetup() {
 
         <div className="lg:col-span-2 space-y-4">
           <div className="bg-glass p-5 rounded-2xl border shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h3 className="font-bold text-slate-800 text-base flex items-center gap-2">
-              <BookOpen className="size-5 text-emerald-500" />
+            <h3 className="font-semibold text-slate-800 text-base flex items-center gap-2">
+              <BookOpen className="size-5 text-primary" />
               <span>বিষয়ের তালিকা ({currentClassLabel})</span>
             </h3>
             <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
@@ -519,9 +547,9 @@ export default function SubjectSetup() {
                     <button
                       key={tab.value}
                       onClick={() => setListVersionFilter(tab.value)}
-                      className={`px-2.5 py-1 text-[11px] font-extrabold rounded-md transition-all cursor-pointer ${
+                      className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-all cursor-pointer ${
                         listVersionFilter === tab.value
-                          ? "bg-white text-indigo-700 shadow-sm"
+                          ? "bg-white text-primary shadow-sm"
                           : "text-slate-500 hover:text-slate-700"
                       }`}
                     >
@@ -530,7 +558,7 @@ export default function SubjectSetup() {
                   ))}
                 </div>
               )}
-              <span className="text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full whitespace-nowrap">
+              <span className="text-xs font-semibold bg-purple-50 text-purple-700 px-3 py-1 rounded-full whitespace-nowrap border border-purple-200/50">
                 মোট {subjects.length} টি বিষয় কনফিগারড
               </span>
             </div>
@@ -566,7 +594,7 @@ export default function SubjectSetup() {
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex flex-wrap gap-1.5 items-center">
                         {sub.subjectCode ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-extrabold rounded-lg">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 border border-purple-200/60 text-purple-700 text-[11px] font-semibold rounded-lg">
                             <Code className="size-3.5" />
                             কোড: {sub.subjectCode}
                           </span>
@@ -577,12 +605,12 @@ export default function SubjectSetup() {
                         )}
                         {(!config?.versions || config.versions.length > 1) && (
                           <span
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md border ${
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-md border ${
                               sub.version === "English"
-                                ? "bg-amber-50 border-amber-200 text-amber-700 shadow-sm"
+                                ? "bg-purple-50 border-purple-200 text-purple-700 shadow-sm"
                                 : sub.version === "Madrasah"
                                   ? "bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm"
-                                  : "bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm"
+                                  : "bg-purple-50 border-purple-200 text-purple-700 shadow-sm"
                             }`}
                           >
                             {sub.version === "English"
@@ -599,7 +627,7 @@ export default function SubjectSetup() {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleOpenEditModal(sub)}
-                          className="h-8 w-8 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-100 shadow-sm"
+                          className="h-8 w-8 rounded-lg text-slate-600 hover:text-primary hover:bg-purple-50 border border-slate-100 shadow-sm"
                           title="সম্পাদনা করুন"
                         >
                           <Edit className="size-3.5" />
@@ -618,10 +646,10 @@ export default function SubjectSetup() {
 
                     {/* Subject Details */}
                     <div>
-                      <h4 className="font-extrabold text-slate-800 text-[16px] leading-snug">
+                      <h4 className="font-semibold text-slate-800 text-[15px] leading-snug">
                         {sub.subjectName}
                       </h4>
-                      <p className="text-[11px] text-slate-400 mt-1 uppercase font-semibold">
+                      <p className="text-[11px] text-slate-500 mt-1 font-medium">
                         শ্রেণী: {currentClassLabel}
                         {sub.group &&
                           sub.group !== "General" &&
@@ -633,15 +661,15 @@ export default function SubjectSetup() {
                   </div>
 
                   {/* Active Years badges */}
-                  <div className=" border-t border-slate-50 flex flex-wrap gap-1 items-center">
-                    <span className="text-[11px] font-bold text-slate-400 mr-1 uppercase">
+                  <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-1 items-center">
+                    <span className="text-[11px] font-semibold text-slate-400 mr-1 uppercase">
                       শিক্ষাবর্ষ:
                     </span>
                     {sub.years &&
                       sub.years.map((yr) => (
                         <span
                           key={yr}
-                          className="bg-amber-50 border border-amber-100 text-amber-700 font-extrabold text-[11px] px-2 py-0.5 rounded-md"
+                          className="bg-purple-50/80 border border-purple-100 text-purple-700 font-semibold text-[11px] px-2 py-0.5 rounded-md"
                         >
                           {yr}
                         </span>
@@ -650,14 +678,14 @@ export default function SubjectSetup() {
 
                   {/* Configured Categories badges */}
                   <div className="flex flex-wrap gap-1 items-center">
-                    <span className="text-[11px] font-bold text-slate-400 mr-1 uppercase">
+                    <span className="text-[11px] font-semibold text-slate-400 mr-1 uppercase">
                       ক্যাটাগরি:
                     </span>
                     {sub.categories && sub.categories.length > 0 ? (
                       sub.categories.map((cat) => (
                         <span
                           key={cat}
-                          className="bg-indigo-50 border border-indigo-100 text-indigo-700 font-extrabold text-[11px] px-2 py-0.5 rounded-md"
+                          className="bg-purple-50/80 border border-purple-100 text-purple-700 font-semibold text-[11px] px-2 py-0.5 rounded-md"
                         >
                           {PREDEFINED_CATEGORIES.find((c) => c.value === cat)
                             ?.label ?? cat}
@@ -688,8 +716,9 @@ export default function SubjectSetup() {
       >
         <DialogContent className="max-w-md p-0 bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-2xl relative shadow-2xl flex flex-col max-h-[90vh]">
           <DialogHeader className="text-left px-6 pt-5 pb-3 border-b border-slate-100 shrink-0">
-            <DialogTitle className="font-bold text-slate-800 text-[16px] tracking-tight">
-              বিষয় তথ্য সংশোধন
+            <DialogTitle className="font-semibold text-slate-800 text-[16px] tracking-tight flex items-center gap-2">
+              <Edit className="size-4 text-primary" />
+              <span>বিষয় তথ্য সংশোধন</span>
             </DialogTitle>
             <DialogDescription className="text-slate-500 text-xs mt-0.5">
               বিষয়ের বিবরণ, বিষয় কোড এবং সক্রিয় শিক্ষাবর্ষ সংশোধন করুন।
@@ -718,7 +747,7 @@ export default function SubjectSetup() {
                       })
                     }
                     disabled={updateSubjectMutation.isPending}
-                    className="h-10 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                    className="h-10 rounded-xl border border-slate-200 text-sm focus:border-primary focus:ring-2 focus:ring-purple-100"
                   />
                 </div>
 
@@ -726,7 +755,10 @@ export default function SubjectSetup() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-slate-600 block">
-                      বিষয় কোড <span className="text-slate-400 font-normal text-[11px]">(ঐচ্ছিক)</span>
+                      বিষয় কোড{" "}
+                      <span className="text-slate-400 font-normal text-[11px]">
+                        (ঐচ্ছিক)
+                      </span>
                     </label>
                     <Input
                       value={editingSubject.subjectCode}
@@ -737,12 +769,12 @@ export default function SubjectSetup() {
                         })
                       }
                       disabled={updateSubjectMutation.isPending}
-                      className="h-10 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                      className="h-10 rounded-xl border border-slate-200 text-sm focus:border-primary focus:ring-2 focus:ring-purple-100"
                     />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-slate-600 block">
-                      পূর্ণমান <span className="text-indigo-400">*</span>
+                      পূর্ণমান <span className="text-primary">*</span>
                     </label>
                     <Input
                       required
@@ -756,7 +788,7 @@ export default function SubjectSetup() {
                         })
                       }
                       disabled={updateSubjectMutation.isPending}
-                      className="h-10 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                      className="h-10 rounded-xl border border-slate-200 text-sm focus:border-primary focus:ring-2 focus:ring-purple-100"
                     />
                   </div>
                 </div>
@@ -776,10 +808,10 @@ export default function SubjectSetup() {
                       ].map((grp) => (
                         <label
                           key={grp.value}
-                          className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all duration-200 ${
+                          className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all duration-200 ${
                             editingSubject.group === grp.value
-                              ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200"
-                              : "bg-white/60 border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600"
+                              ? "bg-primary border-primary text-white shadow-md shadow-purple-200"
+                              : "bg-white/60 border-slate-200 text-slate-600 hover:border-purple-300 hover:text-primary"
                           }`}
                         >
                           <input
@@ -813,14 +845,18 @@ export default function SubjectSetup() {
                       { value: "English", label: "ইংরেজি" },
                       { value: "Madrasah", label: "মাদ্রাসা" },
                     ]
-                      .filter((ver) => !config?.versions || config.versions.includes(ver.value))
+                      .filter(
+                        (ver) =>
+                          !config?.versions ||
+                          config.versions.includes(ver.value),
+                      )
                       .map((ver) => (
                         <label
                           key={ver.value}
-                          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all duration-200 ${
+                          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all duration-200 ${
                             editingSubject.version === ver.value
-                              ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200"
-                              : "bg-white/60 border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600"
+                              ? "bg-primary border-primary text-white shadow-md shadow-purple-200"
+                              : "bg-white/60 border-slate-200 text-slate-600 hover:border-purple-300 hover:text-primary"
                           }`}
                         >
                           <input
@@ -843,7 +879,7 @@ export default function SubjectSetup() {
                 </div>
 
                 {/* Edit Years setup */}
-                <div className="space-y-2 p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                <div className="space-y-2 p-3 bg-purple-50/40 border border-purple-100/60 rounded-xl">
                   <label className="text-xs font-semibold text-slate-600 block">
                     সক্রিয় শিক্ষাবর্ষ
                   </label>
@@ -853,7 +889,7 @@ export default function SubjectSetup() {
                       id="edit-year-input"
                       placeholder="বছর (যেমন: ২০২৬)"
                       disabled={updateSubjectMutation.isPending}
-                      className="h-9 rounded-xl border border-slate-200 px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                      className="h-9 rounded-xl border border-slate-200 px-3 text-sm focus:border-primary focus:ring-2 focus:ring-purple-100"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -877,7 +913,7 @@ export default function SubjectSetup() {
                           input.value = "";
                         }
                       }}
-                      className="h-9 px-4 rounded-xl text-xs font-bold border border-slate-200 text-slate-600 hover:bg-slate-100"
+                      className="h-9 px-4 rounded-xl text-xs font-semibold border border-slate-200 text-slate-600 hover:bg-purple-100/60"
                     >
                       যোগ
                     </Button>
@@ -886,13 +922,13 @@ export default function SubjectSetup() {
                     {editingSubject.years.map((yr) => (
                       <span
                         key={yr}
-                        className="inline-flex items-center gap-1 bg-amber-500/10 text-amber-800 font-semibold text-xs px-2.5 py-0.5 rounded-md border border-amber-100"
+                        className="inline-flex items-center gap-1 bg-purple-100/80 text-purple-800 font-semibold text-xs px-2.5 py-0.5 rounded-md border border-purple-200/50"
                       >
                         {yr}
                         <button
                           type="button"
                           onClick={() => handleRemoveYear(yr, true)}
-                          className="text-amber-500 font-bold hover:text-amber-700"
+                          className="text-purple-600 hover:text-purple-800 font-bold"
                         >
                           ×
                         </button>
@@ -916,14 +952,14 @@ export default function SubjectSetup() {
                           key={cat.value}
                           className={`flex items-center gap-2.5 px-3 py-2 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all duration-150 ${
                             isChecked
-                              ? "bg-indigo-50 border-indigo-300 text-indigo-700 shadow-sm"
+                              ? "bg-purple-50 border-purple-300 text-purple-700 shadow-sm"
                               : "bg-white/60 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-white/80"
                           }`}
                         >
                           <span
                             className={`size-4 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
                               isChecked
-                                ? "bg-indigo-600 border-indigo-600"
+                                ? "bg-primary border-primary"
                                 : "bg-white border-slate-300"
                             }`}
                           >
@@ -993,9 +1029,9 @@ export default function SubjectSetup() {
         <AlertDialogPopup>
           <AlertDialogHeader>
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50 mb-3">
-              <Trash2 className="h-6 w-6 text-red-650 animate-bounce" />
+              <Trash2 className="h-6 w-6 text-red-600 animate-bounce" />
             </div>
-            <AlertDialogTitle className="text-center font-bold text-slate-900 text-base">
+            <AlertDialogTitle className="text-center font-semibold text-slate-900 text-base">
               আপনি কি নিশ্চিত?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-center text-slate-500 text-xs mt-1.5 leading-relaxed">
