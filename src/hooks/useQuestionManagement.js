@@ -361,31 +361,34 @@ export function useQuestionManagement(options = {}) {
   const [rawPastedJsonText, setRawPastedJsonText] = useState("");
 
   // Reset Form
-  const resetForm = useCallback(() => {
-    setActiveStep(1);
-    setFormType(filterType);
-    setFormLevel(filterLevel);
-    setFormClass(filterClass);
-    setUserFormVersion(null);
-    setFormSubjectId("");
-    setFormGroup("General");
-    setFormChapterNumber("");
-    setFormTopics([]);
-    setFormCategory("MCQ");
-    setFormDifficulty("Medium");
+  const resetForm = useCallback((resetStepAndMeta = false) => {
+    if (resetStepAndMeta) {
+      setActiveStep(1);
+      setFormType(filterType);
+      setFormLevel(filterLevel);
+      setFormClass(filterClass);
+      setUserFormVersion(null);
+      setFormSubjectId("");
+      setFormGroup("General");
+      setFormChapterNumber("");
+      setFormTopics([]);
+      setFormCategory("MCQ");
+      setFormDifficulty("Medium");
+
+      // Reset metadata
+      setFormYear([]);
+      setFormBoard([]);
+      setFormExamHistory([{ board: "", years: [] }]);
+      setFormSchool([]);
+      setFormLevelTag("");
+      setFormSpecialSearch([]);
+    }
+
     setQuestionsList([]);
     setEditingDraftId(null);
     setEditingPassageGroup(null);
     setStep2EditorMode("form");
     setRawPastedJsonText("");
-
-    // Reset new metadata
-    setFormYear([]);
-    setFormBoard([]);
-    setFormExamHistory([{ board: "", years: [] }]);
-    setFormSchool([]);
-    setFormLevelTag("");
-    setFormSpecialSearch([]);
 
     setIsGroupedMcq(false);
     setMcqGroupQuestions([

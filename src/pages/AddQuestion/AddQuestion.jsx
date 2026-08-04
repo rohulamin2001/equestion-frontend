@@ -13,6 +13,7 @@ import {
   RippleButton,
   RippleButtonRipples,
 } from "@/components/ui/ripple-button";
+import { isGroupEnabledClass } from "@/constants/classes";
 import { validateCategoryQuestionsJson } from "@/lib/jsonQuestionValidator";
 import {
   AlertCircle,
@@ -38,7 +39,6 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { isGroupEnabledClass } from "@/constants/classes";
 import { toast } from "sonner";
 import BulkImportModal from "./components/BulkImportModal";
 import {
@@ -179,7 +179,7 @@ export default function AddQuestion() {
             </Button>
             <Button
               variant="outline"
-              onClick={qm.resetForm}
+              onClick={() => qm.resetForm(true)}
               className="border-black/[0.08] text-slate-600 hover:bg-black/[0.03] rounded-xl bg-white/[0.45] backdrop-blur-sm shadow-sm h-7 sm:h-9 text-[11px] sm:text-xs font-semibold px-2.5 sm:px-4 shrink-0"
             >
               রিসেট ফর্ম
@@ -1400,11 +1400,13 @@ export default function AddQuestion() {
                           <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                             নির্দিষ্ট টপিক সিলেক্ট করুন (ঐচ্ছিক)
                           </label>
-                          {((qm.formChapters.find(
-                            (c) =>
-                              c.chapterNumber.toString() ===
-                              qm.formChapterNumber,
-                          )?.topics) || []).length > 0 && (
+                          {(
+                            qm.formChapters.find(
+                              (c) =>
+                                c.chapterNumber.toString() ===
+                                qm.formChapterNumber,
+                            )?.topics || []
+                          ).length > 0 && (
                             <button
                               type="button"
                               onClick={() => {
