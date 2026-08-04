@@ -14,10 +14,35 @@ export function useMyQuestions() {
 
   // Personal stats query for currently logged-in user
   const { data: personalStatsData } = useQuery({
-    queryKey: ["personalQuestionStats"],
+    queryKey: [
+      "personalQuestionStats",
+      qm.filterType,
+      qm.filterLevel,
+      qm.filterClass,
+      qm.filterSubjectId,
+      qm.filterChapter,
+      qm.filterCategory,
+      qm.filterDifficulty,
+      qm.filterSearch,
+      qm.filterVersion,
+      qm.filterStatus,
+    ],
     queryFn: async () => {
       const token = await getToken();
+      const params = {};
+      if (qm.filterType) params.institutionType = qm.filterType;
+      if (qm.filterLevel) params.academicLevel = qm.filterLevel;
+      if (qm.filterClass) params.className = qm.filterClass;
+      if (qm.filterSubjectId) params.subjectId = qm.filterSubjectId;
+      if (qm.filterChapter) params.chapterNumber = qm.filterChapter;
+      if (qm.filterCategory) params.category = qm.filterCategory;
+      if (qm.filterDifficulty) params.difficulty = qm.filterDifficulty;
+      if (qm.filterSearch) params.search = qm.filterSearch;
+      if (qm.filterVersion) params.version = qm.filterVersion;
+      if (qm.filterStatus) params.status = qm.filterStatus;
+
       const response = await apiClient.get("/questions/personal-stats", {
+        params,
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -72,11 +97,17 @@ export function useMyQuestions() {
   const filterActiveLevels = qm.filterType
     ? Array.from(new Set(qm.allowedClasses.filter(c => c.type === qm.filterType).map(c => c.level)))
     : Array.from(new Set(qm.allowedClasses.map(c => c.level)));
-  const filterActiveClasses = qm.allowedClasses.filter(c => {
-    const typeMatch = !qm.filterType || c.type === qm.filterType;
-    const levelMatch = !qm.filterLevel || c.level === qm.filterLevel;
-    return typeMatch && levelMatch;
-  });
+  const filterActiveClasses = Array.from(
+    new Map(
+      qm.allowedClasses
+        .filter((c) => {
+          const typeMatch = !qm.filterType || c.type === qm.filterType;
+          const levelMatch = !qm.filterLevel || c.level === qm.filterLevel;
+          return typeMatch && levelMatch;
+        })
+        .map((c) => [c.value, c])
+    ).values()
+  );
 
   const handleFilterTypeChange = (type) => {
     qm.setFilterType(type);

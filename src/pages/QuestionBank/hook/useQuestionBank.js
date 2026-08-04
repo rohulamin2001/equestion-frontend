@@ -75,11 +75,17 @@ export function useQuestionBank() {
         ),
       )
     : Array.from(new Set(qm.allowedClasses.map((c) => c.level)));
-  const filterActiveClasses = qm.allowedClasses.filter((c) => {
-    const typeMatch = !qm.filterType || c.type === qm.filterType;
-    const levelMatch = !qm.filterLevel || c.level === qm.filterLevel;
-    return typeMatch && levelMatch;
-  });
+  const filterActiveClasses = Array.from(
+    new Map(
+      qm.allowedClasses
+        .filter((c) => {
+          const typeMatch = !qm.filterType || c.type === qm.filterType;
+          const levelMatch = !qm.filterLevel || c.level === qm.filterLevel;
+          return typeMatch && levelMatch;
+        })
+        .map((c) => [c.value, c])
+    ).values()
+  );
 
   const handleFilterTypeChange = (type) => {
     qm.setFilterType(type);
