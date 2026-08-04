@@ -22,6 +22,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ClipboardPaste,
+  Copy,
   Database,
   FileText,
   HelpCircle,
@@ -100,6 +101,7 @@ export default function AddQuestion() {
   const [schoolSearchQuery, setSchoolSearchQuery] = useState("");
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [jsonMcqSubType, setJsonMcqSubType] = useState("All");
+  const [copiedTopics, setCopiedTopics] = useState(false);
 
   const handlePasteFromClipboard = async () => {
     try {
@@ -1394,9 +1396,43 @@ export default function AddQuestion() {
                     {/* Topics tags multi selection */}
                     {qm.formChapterNumber && (
                       <div className="md:col-span-2 space-y-2 pt-2 border-t border-black/[0.03] animate-in fade-in duration-300">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                          নির্দিষ্ট টপিক সিলেক্ট করুন (ঐচ্ছিক)
-                        </label>
+                        <div className="flex justify-between items-center">
+                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                            নির্দিষ্ট টপিক সিলেক্ট করুন (ঐচ্ছিক)
+                          </label>
+                          {((qm.formChapters.find(
+                            (c) =>
+                              c.chapterNumber.toString() ===
+                              qm.formChapterNumber,
+                          )?.topics) || []).length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const currentTopics =
+                                  qm.formChapters.find(
+                                    (c) =>
+                                      c.chapterNumber.toString() ===
+                                      qm.formChapterNumber,
+                                  )?.topics || [];
+                                const textToCopy = currentTopics
+                                  .map((t) => t.replace(/^#/, "").trim())
+                                  .join(";");
+                                navigator.clipboard.writeText(textToCopy);
+                                setCopiedTopics(true);
+                                toast.success("টপিকসমূহ কপি করা হয়েছে!");
+                                setTimeout(() => setCopiedTopics(false), 2000);
+                              }}
+                              title="সকল টপিক কপি করুন (topic;topic;topic)"
+                              className="p-1 rounded-lg text-slate-400 hover:text-purple-600 hover:bg-purple-50 transition-colors cursor-pointer flex items-center gap-1"
+                            >
+                              {copiedTopics ? (
+                                <Check className="size-4 text-emerald-600" />
+                              ) : (
+                                <Copy className="size-4" />
+                              )}
+                            </button>
+                          )}
+                        </div>
                         <div className="flex flex-wrap gap-2">
                           {(
                             qm.formChapters.find(
