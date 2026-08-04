@@ -445,7 +445,7 @@ export default function QuestionBank() {
                         <ChevronDown className="size-3.5 text-slate-400" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] max-h-56 overflow-y-auto">
                       <DropdownMenuItem
                         onSelect={() => handleFilterTypeChange("")}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
@@ -498,7 +498,7 @@ export default function QuestionBank() {
                         <ChevronDown className="size-3.5 text-slate-400" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] max-h-56 overflow-y-auto">
                       <DropdownMenuItem
                         onSelect={() => handleFilterLevelChange("")}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
@@ -552,7 +552,7 @@ export default function QuestionBank() {
                         <ChevronDown className="size-3.5 text-slate-400" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] max-h-56 overflow-y-auto">
                       <DropdownMenuItem
                         onSelect={() => {
                           qm.setFilterClass("");
@@ -616,7 +616,7 @@ export default function QuestionBank() {
                         <ChevronDown className="size-3.5 text-slate-400" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] max-h-56 overflow-y-auto">
                       <DropdownMenuItem
                         onSelect={() => {
                           qm.setFilterSubjectId("");
@@ -751,7 +751,7 @@ export default function QuestionBank() {
                         <ChevronDown className="size-3.5 text-slate-400" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] max-h-56 overflow-y-auto">
                       <DropdownMenuItem
                         onSelect={() => qm.setFilterCategory("")}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
@@ -808,7 +808,7 @@ export default function QuestionBank() {
                         <ChevronDown className="size-3.5 text-slate-400" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] max-h-56 overflow-y-auto">
                       <DropdownMenuItem
                         onSelect={() => qm.setFilterDifficulty("")}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
@@ -863,7 +863,7 @@ export default function QuestionBank() {
                         <ChevronDown className="size-3.5 text-slate-400" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
+                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] max-h-56 overflow-y-auto">
                       <DropdownMenuItem
                         onSelect={() => qm.setFilterVersion("")}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 group ${
