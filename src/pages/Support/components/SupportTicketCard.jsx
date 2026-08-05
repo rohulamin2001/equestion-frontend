@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { MessageSquare } from "lucide-react";
+import { Check, Copy, MessageSquare } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export function SupportTicketCard({
   ticket,
@@ -8,17 +10,39 @@ export function SupportTicketCard({
   categoryLabels,
   onSelectTicket,
 }) {
+  const [copied, setCopied] = useState(false);
   const statusInfo = statusConfig[ticket.status] || statusConfig.Open;
   const priorityInfo = priorityConfig[ticket.priority] || priorityConfig.Medium;
   const StatusIcon = statusInfo.icon;
+
+  const handleCopyTicketId = (e) => {
+    e.stopPropagation();
+    if (!ticket.ticketId) return;
+    navigator.clipboard.writeText(ticket.ticketId);
+    setCopied(true);
+    toast.success("টিকেট ID কপি করা হয়েছে!");
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div className="bg-white/[0.5] hover:bg-white/[0.7] p-3.5 sm:p-5 rounded-2xl border border-black/[0.05] shadow-sm hover:shadow-md transition duration-200 space-y-2.5 sm:space-y-3 flex flex-col justify-between">
       <div className="space-y-1.5 sm:space-y-2">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="text-[11px] sm:text-xs font-mono font-bold text-purple-600 bg-purple-600/10 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg">
-              {ticket.ticketId}
+            <span className="text-[11px] sm:text-xs font-mono font-bold text-purple-600 bg-purple-600/10  py-0.5 sm:py-1 rounded-lg flex items-center gap-1">
+              <span>{ticket.ticketId}</span>
+              <button
+                type="button"
+                onClick={handleCopyTicketId}
+                className="text-purple-600 hover:text-purple-800 p-0.5 rounded transition cursor-pointer shrink-0"
+                title="টিকেট ID কপি করুন"
+              >
+                {copied ? (
+                  <Check className="size-3 text-emerald-600" />
+                ) : (
+                  <Copy className="size-3" />
+                )}
+              </button>
             </span>
             <span
               className={`text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full border ${priorityInfo.color}`}
