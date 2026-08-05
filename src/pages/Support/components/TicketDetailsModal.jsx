@@ -178,7 +178,7 @@ export function TicketDetailsModal({
                   <Button
                     type="submit"
                     disabled={isReplyPending || !replyMessage.trim()}
-                    className="bg-purple-600 hover:bg-purple-800 text-white rounded-xl h-10 px-4 text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0"
+                    className="bg-purple-600 hover:bg-purple-800 text-white rounded-xl h-10 px-4 text-xs  flex items-center gap-1 cursor-pointer shrink-0"
                   >
                     {isReplyPending ? (
                       <Loader2 className="size-4 animate-spin" />
