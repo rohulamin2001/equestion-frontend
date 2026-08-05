@@ -19,6 +19,7 @@ import {
   LifeBuoy,
   Loader2,
   Paperclip,
+  Plus,
   Send,
   Trash2,
 } from "lucide-react";
@@ -131,9 +132,9 @@ export function CreateTicketModal({
               <button
                 type="button"
                 onClick={handleAddAttachmentUrl}
-                className="text-xs font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 cursor-pointer"
+                className="size-5 rounded-full bg-purple-50 text-purple-600 font-bold hover:text-purple-800 flex items-center justify-center gap-1 cursor-pointer"
               >
-                + লিংক যোগ করুন
+                <Plus className="size-3" />
               </button>
             </div>
 

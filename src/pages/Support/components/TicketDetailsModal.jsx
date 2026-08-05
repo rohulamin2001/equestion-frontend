@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Loader2, Paperclip, Send, Star, Trash2, X } from "lucide-react";
+import { Loader2, Paperclip, Plus, Send, Star, Trash2, X } from "lucide-react";
 import { TicketMessageThread } from "./TicketMessageThread";
 
 export function TicketDetailsModal({
@@ -51,7 +51,9 @@ export function TicketDetailsModal({
         {isTicketDetailsLoading || !ticketDetails ? (
           <>
             <DialogTitle className="sr-only">টিকেট লোড হচ্ছে</DialogTitle>
-            <DialogDescription className="sr-only">টিকেট লোড করা হচ্ছে</DialogDescription>
+            <DialogDescription className="sr-only">
+              টিকেট লোড করা হচ্ছে
+            </DialogDescription>
             <div className="p-12 flex flex-col items-center justify-center gap-3">
               <Loader2 className="size-8 animate-spin text-purple-600" />
               <span className="text-sm font-semibold text-slate-600">
@@ -191,14 +193,16 @@ export function TicketDetailsModal({
                 <div className="space-y-1.5 pt-1">
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1">
-                      <Paperclip className="size-3 text-purple-600" /> ফাইল/ছবি অ্যাটাচমেন্ট লিংকসমূহ (ঐচ্ছিক):
+                      <Paperclip className="size-3 text-purple-600" /> ফাইল/ছবি
+                      অ্যাটাচমেন্ট লিংকসমূহ (ঐচ্ছিক):
                     </span>
+
                     <button
                       type="button"
                       onClick={handleAddReplyAttachment}
-                      className="text-[11px] font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 cursor-pointer"
+                      className="size-5 rounded-full bg-purple-50 text-purple-600 font-bold flex items-center justify-center gap-1 cursor-pointer"
                     >
-                      + লিংক যোগ করুন
+                      <Plus className="size-3" />
                     </button>
                   </div>
 
