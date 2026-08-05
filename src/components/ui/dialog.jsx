@@ -4,16 +4,28 @@ import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 
-const DialogContext = React.createContext({ open: false, setOpen: () => {}, overlayClassName: "" });
+const DialogContext = React.createContext({
+  open: false,
+  setOpen: () => {},
+  overlayClassName: "",
+});
 
-const Dialog = ({ open, onOpenChange, overlayClassName, children, ...props }) => {
+const Dialog = ({
+  open,
+  onOpenChange,
+  overlayClassName,
+  children,
+  ...props
+}) => {
   const [internalOpen, setInternalOpen] = React.useState(false);
   const isOpen = open !== undefined ? open : internalOpen;
   const setIsOpen = onOpenChange !== undefined ? onOpenChange : setInternalOpen;
 
   return (
     <DialogPrimitive.Root open={isOpen} onOpenChange={setIsOpen} {...props}>
-      <DialogContext.Provider value={{ open: isOpen, setOpen: setIsOpen, overlayClassName }}>
+      <DialogContext.Provider
+        value={{ open: isOpen, setOpen: setIsOpen, overlayClassName }}
+      >
         {children}
       </DialogContext.Provider>
     </DialogPrimitive.Root>
@@ -34,10 +46,10 @@ const DialogPortal = ({ children, ...props }) => {
 const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay asChild ref={ref}>
     <motion.div
-      initial={{ opacity: 0, filter: 'blur(4px)' }}
-      animate={{ opacity: 1, filter: 'blur(0px)' }}
-      exit={{ opacity: 0, filter: 'blur(4px)' }}
-      transition={{ duration: 0.12, ease: 'easeInOut' }}
+      initial={{ opacity: 0, filter: "blur(4px)" }}
+      animate={{ opacity: 1, filter: "blur(0px)" }}
+      exit={{ opacity: 0, filter: "blur(4px)" }}
+      transition={{ duration: 0.12, ease: "easeInOut" }}
       className={cn(
         "fixed inset-0 z-50 bg-black/40 backdrop-blur-sm",
         className,
@@ -64,24 +76,24 @@ const DialogContent = React.forwardRef(
   ) => {
     const animationVariants = {
       top: {
-        initial: { opacity: 0, y: -24, scale: 0.95, filter: 'blur(4px)' },
-        animate: { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' },
-        exit: { opacity: 0, y: -24, scale: 0.95, filter: 'blur(4px)' },
+        initial: { opacity: 0, y: -24, scale: 0.95, filter: "blur(4px)" },
+        animate: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" },
+        exit: { opacity: 0, y: -24, scale: 0.95, filter: "blur(4px)" },
       },
       bottom: {
-        initial: { opacity: 0, y: 24, scale: 0.95, filter: 'blur(4px)' },
-        animate: { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' },
-        exit: { opacity: 0, y: 24, scale: 0.95, filter: 'blur(4px)' },
+        initial: { opacity: 0, y: 24, scale: 0.95, filter: "blur(4px)" },
+        animate: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" },
+        exit: { opacity: 0, y: 24, scale: 0.95, filter: "blur(4px)" },
       },
       left: {
-        initial: { opacity: 0, x: -24, scale: 0.95, filter: 'blur(4px)' },
-        animate: { opacity: 1, x: 0, scale: 1, filter: 'blur(0px)' },
-        exit: { opacity: 0, x: -24, scale: 0.95, filter: 'blur(4px)' },
+        initial: { opacity: 0, x: -24, scale: 0.95, filter: "blur(4px)" },
+        animate: { opacity: 1, x: 0, scale: 1, filter: "blur(0px)" },
+        exit: { opacity: 0, x: -24, scale: 0.95, filter: "blur(4px)" },
       },
       right: {
-        initial: { opacity: 0, x: 24, scale: 0.95, filter: 'blur(4px)' },
-        animate: { opacity: 1, x: 0, scale: 1, filter: 'blur(0px)' },
-        exit: { opacity: 0, x: 24, scale: 0.95, filter: 'blur(4px)' },
+        initial: { opacity: 0, x: 24, scale: 0.95, filter: "blur(4px)" },
+        animate: { opacity: 1, x: 0, scale: 1, filter: "blur(0px)" },
+        exit: { opacity: 0, x: 24, scale: 0.95, filter: "blur(4px)" },
       },
     };
 
@@ -113,7 +125,7 @@ const DialogContent = React.forwardRef(
               {children}
               {showCloseButton && (
                 <DialogPrimitive.Close asChild>
-                  <button className="absolute right-6 top-6 rounded-lg p-1.5 text-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-100">
+                  <button className="absolute right-3.5 top-3.5 sm:right-4 sm:top-4 z-50 rounded-xl p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-200/50 dark:hover:bg-white/20 transition-all duration-150 focus:outline-none cursor-pointer">
                     <X className="size-4" />
                     <span className="sr-only">Close</span>
                   </button>

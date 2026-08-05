@@ -40,6 +40,7 @@ import {
   Monitor,
   PlusCircle,
   ScanLine,
+  ShieldAlert,
   Sliders,
   Sparkles,
   Sparkles as SparklesIcon,
@@ -186,10 +187,10 @@ const DATA = {
       ],
     },
     {
-      label: "সহায়তা",
+      label: "সহায়তা ও কাস্টমার কেয়ার",
       items: [
         {
-          title: "যোগাযোগ ও সাপোর্ট",
+          title: "সহায়তা ও সাপোর্ট সেন্টার",
           url: "/dashboard/support",
           icon: HelpCircle,
           roles: [
@@ -200,6 +201,12 @@ const DATA = {
             "Support Team",
             "Subscriber",
           ],
+        },
+        {
+          title: "এডমিন সাপোর্ট হেল্পডেস্ক",
+          url: "/dashboard/support-management",
+          icon: ShieldAlert,
+          roles: ["Super Admin", "Admin", "Content Manager", "Support Team"],
         },
       ],
     },

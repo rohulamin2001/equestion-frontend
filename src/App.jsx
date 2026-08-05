@@ -26,7 +26,8 @@ import Signup from "./pages/Signup/Signup";
 import StaffManagement from "./pages/Staff/StaffManagement";
 import SubjectSetup from "./pages/SubjectSetup/SubjectSetup";
 import Subscription from "./pages/Subscription/Subscription";
-import Support from "./pages/Support/Support";
+import AdminSupportCenter from "./pages/Support/AdminSupportCenter";
+import SupportDesk from "./pages/Support/SupportDesk";
 import SyllabusManagement from "./pages/Syllabus/SyllabusManagement";
 
 export default function App() {
@@ -235,7 +236,23 @@ export default function App() {
                   "Subscriber",
                 ]}
               >
-                <Support />
+                <SupportDesk />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
+            path="support-management"
+            element={
+              <RoleRouteGuard
+                allowedRoles={[
+                  "Super Admin",
+                  "Admin",
+                  "Content Manager",
+                  "Support Team",
+                ]}
+              >
+                <AdminSupportCenter />
               </RoleRouteGuard>
             }
           />
