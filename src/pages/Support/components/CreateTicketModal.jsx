@@ -6,8 +6,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, LifeBuoy, Loader2, Paperclip, Send } from "lucide-react";
+import { CheckCircle2, ChevronDown, LifeBuoy, Loader2, Paperclip, Send } from "lucide-react";
 
 export function CreateTicketModal({
   isOpen,
@@ -44,20 +50,38 @@ export function CreateTicketModal({
             <label className="text-xs font-bold text-slate-600">
               সমস্যার ক্যাটাগরি *
             </label>
-            <div className="relative">
-              <select
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-                className="w-full h-10 pl-3.5 pr-10 border border-slate-200/80 bg-white/80 hover:bg-white rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 appearance-none cursor-pointer transition shadow-2xs"
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="w-full h-10 px-3.5 border border-slate-200/80 bg-white/80 hover:bg-white rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none backdrop-blur-md transition shadow-2xs flex items-center justify-between cursor-pointer group"
+                >
+                  <span>{categoryLabels[newCategory] || newCategory}</span>
+                  <ChevronDown className="size-4 text-slate-400 group-hover:text-slate-600 transition-transform duration-200" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                className="bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-full min-w-[240px] font-bengali"
               >
                 {categoryOptions.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {categoryLabels[cat] || cat}
-                  </option>
+                  <DropdownMenuItem
+                    key={cat}
+                    onSelect={() => setNewCategory(cat)}
+                    className={`w-full px-3 py-2 rounded-lg text-xs sm:text-sm font-medium cursor-pointer flex items-center justify-between transition ${
+                      newCategory === cat
+                        ? "bg-purple-50 text-purple-700 font-semibold"
+                        : "text-slate-700 hover:bg-slate-50"
+                    }`}
+                  >
+                    <span>{categoryLabels[cat] || cat}</span>
+                    {newCategory === cat && (
+                      <CheckCircle2 className="size-4 text-purple-600" />
+                    )}
+                  </DropdownMenuItem>
                 ))}
-              </select>
-              <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
-            </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="space-y-1">

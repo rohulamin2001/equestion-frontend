@@ -254,7 +254,7 @@ export default function SupportDesk() {
             কোনো সাপোর্ট টিকেট পাওয়া যায়নি
           </h3>
           <p className="text-[11px] sm:text-xs text-slate-500 max-w-sm mx-auto">
-            আপনার কোনো সমস্যা থাকলে ওপরের "নতুন টিকেট খুলুন" বাটনে ক্লিক করুন।
+            আপনার কোনো সমস্যা থাকলে ওপরের "টিকেট খুলুন" বাটনে ক্লিক করুন।
           </p>
         </div>
       ) : (

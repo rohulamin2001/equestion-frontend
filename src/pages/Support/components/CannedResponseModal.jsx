@@ -6,8 +6,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, Sparkles, Trash2 } from "lucide-react";
+import { CheckCircle2, ChevronDown, Sparkles, Trash2 } from "lucide-react";
 
 export function CannedResponseModal({
   isOpen,
@@ -47,20 +53,40 @@ export function CannedResponseModal({
               className="h-9 text-xs bg-white rounded-xl border-black/[0.08]"
               required
             />
-            <div className="relative">
-              <select
-                value={cannedCategory}
-                onChange={(e) => setCannedCategory(e.target.value)}
-                className="w-full h-9 text-xs bg-white rounded-xl border border-black/[0.08] pl-3 pr-8 text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 appearance-none cursor-pointer shadow-2xs"
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="w-full h-9 px-3 border border-black/[0.08] bg-white rounded-xl text-xs font-semibold text-slate-700 focus:outline-none transition shadow-2xs flex items-center justify-between cursor-pointer group"
+                >
+                  <span>
+                    {categoryLabels[cannedCategory] || cannedCategory}
+                  </span>
+                  <ChevronDown className="size-3.5 text-slate-400 group-hover:text-slate-600 transition-transform duration-200" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                className="bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] min-w-[180px] font-bengali"
               >
                 {Object.entries(categoryLabels).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
+                  <DropdownMenuItem
+                    key={key}
+                    onSelect={() => setCannedCategory(key)}
+                    className={`w-full px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer flex items-center justify-between transition ${
+                      cannedCategory === key
+                        ? "bg-purple-50 text-purple-700 font-semibold"
+                        : "text-slate-700 hover:bg-slate-50"
+                    }`}
+                  >
+                    <span>{label}</span>
+                    {cannedCategory === key && (
+                      <CheckCircle2 className="size-3.5 text-purple-600" />
+                    )}
+                  </DropdownMenuItem>
                 ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none" />
-            </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <textarea
             placeholder="টেমপ্লেট উত্তরের বিষয়বস্তু..."
