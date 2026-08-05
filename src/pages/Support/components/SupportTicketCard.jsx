@@ -51,11 +51,12 @@ export function SupportTicketCard({
           </strong>
         </span>
         <Button
+          variant="outline"
           onClick={() => onSelectTicket(ticket._id)}
-          className="h-8 px-3 rounded-xl border-purple-600/20 text-purple-600 hover:bg-purple-600/10 text-xs font-bold flex items-center gap-1 cursor-pointer"
+          className="h-8 px-3 rounded-xl border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold flex items-center gap-1 cursor-pointer shadow-2xs"
         >
-          <MessageSquare className="size-3.5" />
-          দেখুন ({ticket.messages?.length || 1})
+          <MessageSquare className="size-3.5 text-purple-600" />
+          <span>দেখুন ({ticket.messages?.length || 1})</span>
         </Button>
       </div>
     </div>

@@ -13,7 +13,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, ChevronDown, LifeBuoy, Loader2, Paperclip, Send } from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronDown,
+  LifeBuoy,
+  Loader2,
+  Paperclip,
+  Send,
+  Trash2,
+} from "lucide-react";
 
 export function CreateTicketModal({
   isOpen,
@@ -24,8 +32,10 @@ export function CreateTicketModal({
   setNewSubject,
   newDescription,
   setNewDescription,
-  newAttachmentUrl,
-  setNewAttachmentUrl,
+  newAttachmentUrls = [""],
+  handleAttachmentUrlChange,
+  handleAddAttachmentUrl,
+  handleRemoveAttachmentUrl,
   onSubmit,
   isPending,
   categoryOptions,
@@ -111,16 +121,48 @@ export function CreateTicketModal({
             />
           </div>
 
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-600 flex items-center gap-1">
-              <Paperclip className="size-3.5" /> ফাইল / স্ক্রিনশট লিংক (ঐচ্ছিক)
-            </label>
-            <Input
-              placeholder="https://drive.google.com/... বা স্ক্রিনশটের ড্রাইভ লিংক"
-              value={newAttachmentUrl}
-              onChange={(e) => setNewAttachmentUrl(e.target.value)}
-              className="h-9 text-xs bg-white/[0.6] rounded-xl border-black/[0.08]"
-            />
+          {/* Multiple Attachment Links */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-slate-600 flex items-center gap-1">
+                <Paperclip className="size-3.5 text-purple-600" /> ফাইল / ছবি /
+                ড্রাইভ লিংকসমূহ (ঐচ্ছিক)
+              </label>
+              <button
+                type="button"
+                onClick={handleAddAttachmentUrl}
+                className="text-xs font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 cursor-pointer"
+              >
+                + লিংক যোগ করুন
+              </button>
+            </div>
+
+            {newAttachmentUrls.map((url, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <Input
+                  placeholder={
+                    index === 0
+                      ? "https://drive.google.com/... বা ১ম ফাইল লিংক"
+                      : `ফাইল/ছবি লিংক ${index + 1}...`
+                  }
+                  value={url}
+                  onChange={(e) =>
+                    handleAttachmentUrlChange(index, e.target.value)
+                  }
+                  className="h-9 text-xs bg-white/[0.6] rounded-xl border-black/[0.08] flex-1"
+                />
+                {newAttachmentUrls.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAttachmentUrl(index)}
+                    className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg cursor-pointer transition shrink-0"
+                    title="রিমুভ করুন"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
 
           <div className="pt-3 flex items-center justify-end gap-2">

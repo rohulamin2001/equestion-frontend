@@ -108,15 +108,51 @@ export default function SupportDesk() {
   const [newCategory, setNewCategory] = useState("Billing & Subscription");
   const [newSubject, setNewSubject] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  const [newAttachmentUrl, setNewAttachmentUrl] = useState("");
+  const [newAttachmentUrls, setNewAttachmentUrls] = useState([""]);
 
   // Reply Form State
   const [replyMessage, setReplyMessage] = useState("");
-  const [replyAttachmentUrl, setReplyAttachmentUrl] = useState("");
+  const [replyAttachmentUrls, setReplyAttachmentUrls] = useState([""]);
 
   // CSAT Rating State
   const [ratingScore, setRatingScore] = useState(5);
   const [feedbackComment, setFeedbackComment] = useState("");
+
+  const handleAddAttachmentUrl = () => {
+    setNewAttachmentUrls((prev) => [...prev, ""]);
+  };
+
+  const handleRemoveAttachmentUrl = (index) => {
+    setNewAttachmentUrls((prev) =>
+      prev.length === 1 ? [""] : prev.filter((_, i) => i !== index)
+    );
+  };
+
+  const handleAttachmentUrlChange = (index, value) => {
+    setNewAttachmentUrls((prev) => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
+  };
+
+  const handleAddReplyAttachment = () => {
+    setReplyAttachmentUrls((prev) => [...prev, ""]);
+  };
+
+  const handleRemoveReplyAttachment = (index) => {
+    setReplyAttachmentUrls((prev) =>
+      prev.length === 1 ? [""] : prev.filter((_, i) => i !== index)
+    );
+  };
+
+  const handleReplyAttachmentChange = (index, value) => {
+    setReplyAttachmentUrls((prev) => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
+  };
 
   const formatBengaliDateTime = (dateStr) => {
     if (!dateStr) return "";
@@ -138,9 +174,12 @@ export default function SupportDesk() {
       return;
     }
 
-    const attachments = newAttachmentUrl.trim()
-      ? [{ fileName: "Attachment", fileUrl: newAttachmentUrl.trim() }]
-      : [];
+    const attachments = newAttachmentUrls
+      .filter((url) => url && url.trim().length > 0)
+      .map((url, i) => ({
+        fileName: `অ্যাটাচমেন্ট ${i + 1}`,
+        fileUrl: url.trim(),
+      }));
 
     try {
       await createTicketMutation.mutateAsync({
@@ -153,7 +192,7 @@ export default function SupportDesk() {
       setIsCreateModalOpen(false);
       setNewSubject("");
       setNewDescription("");
-      setNewAttachmentUrl("");
+      setNewAttachmentUrls([""]);
     } catch {
       toast.error("টিকেট সাবমিট করতে ব্যর্থ হয়েছে");
     }
@@ -163,9 +202,12 @@ export default function SupportDesk() {
     e.preventDefault();
     if (!replyMessage.trim() || !activeTicketId) return;
 
-    const attachments = replyAttachmentUrl.trim()
-      ? [{ fileName: "Attachment", fileUrl: replyAttachmentUrl.trim() }]
-      : [];
+    const attachments = replyAttachmentUrls
+      .filter((url) => url && url.trim().length > 0)
+      .map((url, i) => ({
+        fileName: `সংযুক্ত ফাইল ${i + 1}`,
+        fileUrl: url.trim(),
+      }));
 
     try {
       await addMessageMutation.mutateAsync({
@@ -174,7 +216,7 @@ export default function SupportDesk() {
         attachments,
       });
       setReplyMessage("");
-      setReplyAttachmentUrl("");
+      setReplyAttachmentUrls([""]);
       toast.success("উত্তরটি সফলভাবে পাঠানো হয়েছে!");
     } catch {
       toast.error("মেসেজ পাঠাতে সমস্যা হয়েছে");
@@ -282,8 +324,10 @@ export default function SupportDesk() {
         setNewSubject={setNewSubject}
         newDescription={newDescription}
         setNewDescription={setNewDescription}
-        newAttachmentUrl={newAttachmentUrl}
-        setNewAttachmentUrl={setNewAttachmentUrl}
+        newAttachmentUrls={newAttachmentUrls}
+        handleAttachmentUrlChange={handleAttachmentUrlChange}
+        handleAddAttachmentUrl={handleAddAttachmentUrl}
+        handleRemoveAttachmentUrl={handleRemoveAttachmentUrl}
         onSubmit={handleCreateSubmit}
         isPending={createTicketMutation.isPending}
         categoryOptions={CATEGORY_OPTIONS}
@@ -298,8 +342,10 @@ export default function SupportDesk() {
         isTicketDetailsLoading={isTicketDetailsLoading}
         replyMessage={replyMessage}
         setReplyMessage={setReplyMessage}
-        replyAttachmentUrl={replyAttachmentUrl}
-        setReplyAttachmentUrl={setReplyAttachmentUrl}
+        replyAttachmentUrls={replyAttachmentUrls}
+        handleReplyAttachmentChange={handleReplyAttachmentChange}
+        handleAddReplyAttachment={handleAddReplyAttachment}
+        handleRemoveReplyAttachment={handleRemoveReplyAttachment}
         handleReplySubmit={handleReplySubmit}
         isReplyPending={addMessageMutation.isPending}
         ratingScore={ratingScore}

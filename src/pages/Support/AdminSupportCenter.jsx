@@ -102,7 +102,25 @@ export default function AdminSupportCenter() {
   // Reply Form State
   const [replyMessage, setReplyMessage] = useState("");
   const [isInternalNote, setIsInternalNote] = useState(false);
-  const [replyAttachmentUrl, setReplyAttachmentUrl] = useState("");
+  const [replyAttachmentUrls, setReplyAttachmentUrls] = useState([""]);
+
+  const handleAddReplyAttachment = () => {
+    setReplyAttachmentUrls((prev) => [...prev, ""]);
+  };
+
+  const handleRemoveReplyAttachment = (index) => {
+    setReplyAttachmentUrls((prev) =>
+      prev.length === 1 ? [""] : prev.filter((_, i) => i !== index),
+    );
+  };
+
+  const handleReplyAttachmentChange = (index, value) => {
+    setReplyAttachmentUrls((prev) => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
+  };
 
   // New Canned Response Modal State
   const [showCannedModal, setShowCannedModal] = useState(false);
@@ -116,9 +134,12 @@ export default function AdminSupportCenter() {
     e.preventDefault();
     if (!replyMessage.trim() || !activeTicketId) return;
 
-    const attachments = replyAttachmentUrl.trim()
-      ? [{ fileName: "Attachment", fileUrl: replyAttachmentUrl.trim() }]
-      : [];
+    const attachments = replyAttachmentUrls
+      .filter((url) => url && url.trim().length > 0)
+      .map((url, i) => ({
+        fileName: `সংযুক্ত ফাইল ${i + 1}`,
+        fileUrl: url.trim(),
+      }));
 
     try {
       await addMessageMutation.mutateAsync({
@@ -128,7 +149,7 @@ export default function AdminSupportCenter() {
         attachments,
       });
       setReplyMessage("");
-      setReplyAttachmentUrl("");
+      setReplyAttachmentUrls([""]);
       toast.success(
         isInternalNote
           ? "আভ্যন্তরীণ নোট সেভ করা হয়েছে"
@@ -298,8 +319,10 @@ export default function AdminSupportCenter() {
         setReplyMessage={setReplyMessage}
         isInternalNote={isInternalNote}
         setIsInternalNote={setIsInternalNote}
-        replyAttachmentUrl={replyAttachmentUrl}
-        setReplyAttachmentUrl={setReplyAttachmentUrl}
+        replyAttachmentUrls={replyAttachmentUrls}
+        handleReplyAttachmentChange={handleReplyAttachmentChange}
+        handleAddReplyAttachment={handleAddReplyAttachment}
+        handleRemoveReplyAttachment={handleRemoveReplyAttachment}
         handleReplySubmit={handleReplySubmit}
         isReplyPending={addMessageMutation.isPending}
         handleStatusChange={handleStatusChange}

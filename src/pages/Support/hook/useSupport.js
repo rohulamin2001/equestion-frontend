@@ -76,13 +76,10 @@ export function useSupport() {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userTickets"] });
       queryClient.invalidateQueries({ queryKey: ["supportStats"] });
       setIsCreateModalOpen(false);
-      if (data?.ticket?._id) {
-        setActiveTicketId(data.ticket._id);
-      }
     },
   });
 

@@ -1,7 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Loader2, Paperclip, Send, Star, X } from "lucide-react";
+import { Loader2, Paperclip, Send, Star, Trash2, X } from "lucide-react";
 import { TicketMessageThread } from "./TicketMessageThread";
 
 export function TicketDetailsModal({
@@ -11,8 +16,10 @@ export function TicketDetailsModal({
   isTicketDetailsLoading,
   replyMessage,
   setReplyMessage,
-  replyAttachmentUrl,
-  setReplyAttachmentUrl,
+  replyAttachmentUrls = [""],
+  handleReplyAttachmentChange,
+  handleAddReplyAttachment,
+  handleRemoveReplyAttachment,
   handleReplySubmit,
   isReplyPending,
   ratingScore,
@@ -42,51 +49,60 @@ export function TicketDetailsModal({
         className="max-w-3xl p-0 border border-slate-200/50 bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative overflow-hidden font-bengali max-h-[90vh] flex flex-col"
       >
         {isTicketDetailsLoading || !ticketDetails ? (
-          <div className="p-12 flex flex-col items-center justify-center gap-3">
-            <Loader2 className="size-8 animate-spin text-purple-600" />
-            <span className="text-sm font-semibold text-slate-600">
-              টিকেট লোড হচ্ছে...
-            </span>
-          </div>
+          <>
+            <DialogTitle className="sr-only">টিকেট লোড হচ্ছে</DialogTitle>
+            <DialogDescription className="sr-only">টিকেট লোড করা হচ্ছে</DialogDescription>
+            <div className="p-12 flex flex-col items-center justify-center gap-3">
+              <Loader2 className="size-8 animate-spin text-purple-600" />
+              <span className="text-sm font-semibold text-slate-600">
+                টিকেট লোড হচ্ছে...
+              </span>
+            </div>
+          </>
         ) : (
           <>
             {/* Modal Header */}
-            <div className="p-4 sm:p-5 bg-white/70 border-b border-black/[0.05] space-y-2 shrink-0">
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-mono font-bold text-purple-600 bg-purple-600/10 px-2.5 py-1 rounded-lg">
-                    {ticketDetails.ticketId}
-                  </span>
-                  <span
-                    className={`text-xs px-2.5 py-0.5 rounded-full border font-semibold ${statusInfo.color}`}
-                  >
-                    {statusInfo.label}
-                  </span>
-                  <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full border ${priorityInfo.color}`}
-                  >
-                    {priorityInfo.label}
-                  </span>
-                </div>
+            <div className="p-3.5 sm:p-5 bg-white/70 border-b border-black/[0.05] space-y-2 shrink-0">
+              <DialogDescription className="sr-only">
+                সাপোর্ট টিকেটের বার্তার থ্রেড এবং বিস্তারিত উত্তর
+              </DialogDescription>
 
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-slate-400">
-                    খোলার তারিখ:{" "}
-                    {formatBengaliDateTime(ticketDetails.createdAt)}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="h-7 w-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition cursor-pointer shrink-0"
-                    title="বন্ধ করুন"
-                  >
-                    <X className="size-4" />
-                  </button>
-                </div>
+              {/* Row 1: Date on Left, Close Button on Far Right */}
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] sm:text-xs text-slate-500 font-medium">
+                  {formatBengaliDateTime(ticketDetails.createdAt)}
+                </span>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="h-7 w-7 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition cursor-pointer shrink-0"
+                  title="বন্ধ করুন"
+                >
+                  <X className="size-4" />
+                </button>
               </div>
-              <h2 className="text-base sm:text-lg font-bold text-slate-800">
+
+              {/* Row 2: Ticket ID, Status Badge, Priority Badge */}
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <span className="text-[11px] sm:text-xs font-mono font-bold text-purple-600 bg-purple-600/10  py-1 rounded-lg">
+                  {ticketDetails.ticketId}
+                </span>
+                <span
+                  className={`text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full border font-semibold ${statusInfo.color}`}
+                >
+                  {statusInfo.label}
+                </span>
+                <span
+                  className={`text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full border ${priorityInfo.color}`}
+                >
+                  {priorityInfo.label}
+                </span>
+              </div>
+
+              {/* Row 3: Subject */}
+              <DialogTitle className="text-sm sm:text-base font-bold text-slate-800 pt-0.5">
                 {ticketDetails.subject}
-              </h2>
+              </DialogTitle>
             </div>
 
             {/* Conversation Thread */}
@@ -172,14 +188,42 @@ export function TicketDetailsModal({
                   </Button>
                 </div>
 
-                <div className="flex items-center gap-1.5">
-                  <Paperclip className="size-3 text-slate-400" />
-                  <Input
-                    placeholder="প্রয়োজনে অ্যাটাচমেন্ট বা ফাইল/ছবি লিংক যোগ করুন..."
-                    value={replyAttachmentUrl}
-                    onChange={(e) => setReplyAttachmentUrl(e.target.value)}
-                    className="h-8 text-[11px] bg-slate-50/70 border-black/[0.05] rounded-lg"
-                  />
+                <div className="space-y-1.5 pt-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1">
+                      <Paperclip className="size-3 text-purple-600" /> ফাইল/ছবি অ্যাটাচমেন্ট লিংকসমূহ (ঐচ্ছিক):
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleAddReplyAttachment}
+                      className="text-[11px] font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 cursor-pointer"
+                    >
+                      + লিংক যোগ করুন
+                    </button>
+                  </div>
+
+                  {replyAttachmentUrls.map((url, index) => (
+                    <div key={index} className="flex items-center gap-1.5">
+                      <Input
+                        placeholder={`ফাইল/ছবি লিংক ${index + 1}...`}
+                        value={url}
+                        onChange={(e) =>
+                          handleReplyAttachmentChange(index, e.target.value)
+                        }
+                        className="h-8 text-[11px] bg-slate-50/70 border-black/[0.05] rounded-lg flex-1"
+                      />
+                      {replyAttachmentUrls.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveReplyAttachment(index)}
+                          className="p-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-md cursor-pointer shrink-0"
+                          title="রিমুভ করুন"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </form>
             )}

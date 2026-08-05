@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +20,7 @@ import {
   Paperclip,
   Send,
   Sparkles,
+  Trash2,
   X,
 } from "lucide-react";
 import { TicketMessageThread } from "./TicketMessageThread";
@@ -28,8 +34,10 @@ export function AdminTicketManageModal({
   setReplyMessage,
   isInternalNote,
   setIsInternalNote,
-  replyAttachmentUrl,
-  setReplyAttachmentUrl,
+  replyAttachmentUrls = [""],
+  handleReplyAttachmentChange,
+  handleAddReplyAttachment,
+  handleRemoveReplyAttachment,
   handleReplySubmit,
   isReplyPending,
   handleStatusChange,
@@ -50,32 +58,42 @@ export function AdminTicketManageModal({
         className="max-w-4xl p-0 border border-slate-200/50 bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative overflow-hidden font-bengali max-h-[92vh] flex flex-col"
       >
         {isTicketDetailsLoading || !ticketDetails ? (
-          <div className="p-12 flex flex-col items-center justify-center gap-3">
-            <Loader2 className="size-8 animate-spin text-purple-600" />
-            <span className="text-sm font-semibold text-slate-600">
-              টিকেট বিবরণ লোড হচ্ছে...
-            </span>
-          </div>
+          <>
+            <DialogTitle className="sr-only">টিকেট লোড হচ্ছে</DialogTitle>
+            <DialogDescription className="sr-only">টিকেট লোড হচ্ছে</DialogDescription>
+            <div className="p-12 flex flex-col items-center justify-center gap-3">
+              <Loader2 className="size-8 animate-spin text-purple-600" />
+              <span className="text-sm font-semibold text-slate-600">
+                টিকেট বিবরণ লোড হচ্ছে...
+              </span>
+            </div>
+          </>
         ) : (
           <>
             {/* Customer Subscription Summary Header */}
-            <div className="p-4 bg-gradient-to-r from-purple-900 to-indigo-900 text-white space-y-2 shrink-0">
+            <div className="p-3 sm:p-4 bg-gradient-to-r from-purple-900 to-indigo-900 text-white space-y-2 shrink-0">
+              <DialogTitle className="sr-only">
+                টিকেট ব্যবস্থাপনা - {ticketDetails.ticketId}
+              </DialogTitle>
+              <DialogDescription className="sr-only">
+                টিকেট উত্তর প্রদান ও স্ট্যাটাস ব্যবস্থাপনা
+              </DialogDescription>
               <div className="flex items-center justify-between gap-2 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold bg-white/20 px-2.5 py-1 rounded-lg">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="text-[11px] sm:text-xs font-mono font-bold bg-white/20 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg">
                     {ticketDetails.ticketId}
                   </span>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-white/10 font-bold border border-white/20">
+                  <span className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 rounded-full bg-white/10 font-bold border border-white/20">
                     {ticketDetails.category}
                   </span>
                 </div>
 
                 {/* Quick Controls */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   {/* Status Dropdown */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="h-8 px-3 bg-white/15 hover:bg-white/25 text-white border border-white/25 rounded-xl text-xs font-semibold backdrop-blur-md transition flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                      <button className="h-7 sm:h-8 px-2 sm:px-3 bg-white/15 hover:bg-white/25 text-white border border-white/25 rounded-xl text-[11px] sm:text-xs font-semibold backdrop-blur-md transition flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-2xs">
                         <span>
                           {statusConfig[ticketDetails.status]?.label ||
                             ticketDetails.status}
@@ -109,7 +127,7 @@ export function AdminTicketManageModal({
                   {/* Priority Dropdown */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="h-8 px-3 bg-white/15 hover:bg-white/25 text-white border border-white/25 rounded-xl text-xs font-semibold backdrop-blur-md transition flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                      <button className="h-7 sm:h-8 px-2 sm:px-3 bg-white/15 hover:bg-white/25 text-white border border-white/25 rounded-xl text-[11px] sm:text-xs font-semibold backdrop-blur-md transition flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-2xs">
                         <span>
                           {priorityConfig[ticketDetails.priority]?.label ||
                             ticketDetails.priority}
@@ -144,15 +162,15 @@ export function AdminTicketManageModal({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="h-8 w-8 rounded-xl bg-white/15 hover:bg-white/30 text-white border border-white/25 flex items-center justify-center transition cursor-pointer shadow-2xs shrink-0"
+                    className="h-7 w-7 sm:h-8 sm:w-8 rounded-xl bg-white/15 hover:bg-white/30 text-white border border-white/25 flex items-center justify-center transition cursor-pointer shadow-2xs shrink-0"
                     title="বন্ধ করুন"
                   >
-                    <X className="size-4" />
+                    <X className="size-3.5 sm:size-4" />
                   </button>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-purple-100 gap-4 flex-wrap pt-1">
+              <div className="flex items-center justify-between text-[11px] sm:text-xs text-purple-100 gap-2 sm:gap-4 flex-wrap pt-1">
                 <div>
                   👤 গ্রাহক:{" "}
                   <strong className="text-white">
@@ -183,14 +201,42 @@ export function AdminTicketManageModal({
               onSubmit={handleReplySubmit}
               className="p-4 bg-white border-t border-black/[0.05] space-y-3 shrink-0"
             >
-              <div className="flex items-center gap-2">
-                <Paperclip className="size-3.5 text-slate-400" />
-                <Input
-                  placeholder="সংযুক্তির ইউআরএল/লিংক (ঐচ্ছিক)..."
-                  value={replyAttachmentUrl}
-                  onChange={(e) => setReplyAttachmentUrl(e.target.value)}
-                  className="h-8 text-[11px] bg-slate-50 border-black/[0.05] rounded-lg"
-                />
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1">
+                    <Paperclip className="size-3 text-purple-600" /> ফাইল/ছবি অ্যাটাচমেন্ট লিংকসমূহ (ঐচ্ছিক):
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleAddReplyAttachment}
+                    className="text-[11px] font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 cursor-pointer"
+                  >
+                    + লিংক যোগ করুন
+                  </button>
+                </div>
+
+                {replyAttachmentUrls.map((url, index) => (
+                  <div key={index} className="flex items-center gap-1.5">
+                    <Input
+                      placeholder={`সংযুক্তির লিংক ${index + 1}...`}
+                      value={url}
+                      onChange={(e) =>
+                        handleReplyAttachmentChange(index, e.target.value)
+                      }
+                      className="h-8 text-[11px] bg-slate-50 border-black/[0.05] rounded-lg flex-1"
+                    />
+                    {replyAttachmentUrls.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveReplyAttachment(index)}
+                        className="p-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-md cursor-pointer shrink-0"
+                        title="রিমুভ করুন"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
 
               {cannedResponses.length > 0 && (
