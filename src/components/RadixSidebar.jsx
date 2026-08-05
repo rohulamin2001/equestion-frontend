@@ -187,10 +187,10 @@ const DATA = {
       ],
     },
     {
-      label: "সহায়তা ও কাস্টমার কেয়ার",
+      label: "সহায়তা",
       items: [
         {
-          title: "সহায়তা ও সাপোর্ট সেন্টার",
+          title: "সাপোর্ট সেন্টার",
           url: "/dashboard/support",
           icon: HelpCircle,
           roles: [
@@ -203,7 +203,7 @@ const DATA = {
           ],
         },
         {
-          title: "এডমিন সাপোর্ট হেল্পডেস্ক",
+          title: "সাপোর্ট হেল্পডেস্ক",
           url: "/dashboard/support-management",
           icon: ShieldAlert,
           roles: ["Super Admin", "Admin", "Content Manager", "Support Team"],

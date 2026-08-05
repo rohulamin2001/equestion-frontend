@@ -505,7 +505,7 @@ export default function SupportDesk() {
                     className="h-8 px-3 rounded-xl border-[#900EB0]/20 text-[#900EB0] hover:bg-[#900EB0]/10 text-xs font-bold flex items-center gap-1 cursor-pointer"
                   >
                     <MessageSquare className="size-3.5" />
-                    থ্রেড দেখুন ({ticket.messages?.length || 1})
+                    দেখুন ({ticket.messages?.length || 1})
                   </Button>
                 </div>
               </div>
