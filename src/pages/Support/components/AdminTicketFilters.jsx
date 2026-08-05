@@ -43,7 +43,7 @@ export function AdminTicketFilters({
         )}
       </div>
 
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap w-full sm:w-auto">
         {/* Status Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

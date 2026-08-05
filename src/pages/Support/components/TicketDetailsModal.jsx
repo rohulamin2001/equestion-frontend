@@ -43,7 +43,7 @@ export function TicketDetailsModal({
       >
         {isTicketDetailsLoading || !ticketDetails ? (
           <div className="p-12 flex flex-col items-center justify-center gap-3">
-            <Loader2 className="size-8 animate-spin text-[#900EB0]" />
+            <Loader2 className="size-8 animate-spin text-purple-600" />
             <span className="text-sm font-semibold text-slate-600">
               টিকেট লোড হচ্ছে...
             </span>
@@ -54,7 +54,7 @@ export function TicketDetailsModal({
             <div className="p-4 sm:p-5 bg-white/70 border-b border-black/[0.05] space-y-2 shrink-0">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-mono font-bold text-[#900EB0] bg-[#900EB0]/10 px-2.5 py-1 rounded-lg">
+                  <span className="text-xs font-mono font-bold text-purple-600 bg-purple-600/10 px-2.5 py-1 rounded-lg">
                     {ticketDetails.ticketId}
                   </span>
                   <span
@@ -160,7 +160,7 @@ export function TicketDetailsModal({
                   <Button
                     type="submit"
                     disabled={isReplyPending || !replyMessage.trim()}
-                    className="bg-[#900EB0] hover:bg-[#720A7B] text-white rounded-xl h-10 px-4 text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0"
+                    className="bg-purple-600 hover:bg-purple-800 text-white rounded-xl h-10 px-4 text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0"
                   >
                     {isReplyPending ? (
                       <Loader2 className="size-4 animate-spin" />

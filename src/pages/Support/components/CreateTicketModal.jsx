@@ -30,8 +30,8 @@ export function CreateTicketModal({
       <DialogContent className="max-w-xl p-6 border border-slate-200/50 bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative font-bengali">
         <DialogHeader className="space-y-1 text-left">
           <DialogTitle className="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2 font-sans">
-            <LifeBuoy className="size-5 text-[#900EB0]" />
-            নতুন সাপোর্ট টিকেট সাবমিট করুন
+            <LifeBuoy className="size-5 text-purple-600" />
+            নতুন সাপোর্ট টিকেট
           </DialogTitle>
           <DialogDescription className="text-xs text-slate-500">
             আপনার সমস্যটি বিস্তারিত লিখুন। আমাদের সাপোর্ট টিম দ্রুত সমাধান
@@ -82,7 +82,7 @@ export function CreateTicketModal({
               value={newDescription}
               onChange={(e) => setNewDescription(e.target.value)}
               rows={4}
-              className="w-full p-3 text-xs sm:text-sm bg-white/[0.6] rounded-xl border border-black/[0.08] focus:outline-none focus:ring-2 focus:ring-[#900EB0]/20 font-sans"
+              className="w-full p-3 text-xs sm:text-sm bg-white/[0.6] rounded-xl border border-black/[0.08] focus:outline-none focus:ring-2 focus:ring-purple-600/20 font-sans"
               required
             />
           </div>
@@ -111,17 +111,17 @@ export function CreateTicketModal({
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-[#900EB0] hover:bg-[#720A7B] text-white rounded-xl h-10 px-5 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#900EB0]/20 cursor-pointer"
+              className="bg-purple-600 hover:bg-purple-800 text-white rounded-xl h-10 px-5 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-purple-600/20 cursor-pointer"
             >
               {isPending ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  টিকেট তৈরি হচ্ছে...
+                  তৈরি হচ্ছে...
                 </>
               ) : (
                 <>
                   <Send className="size-4" />
-                  টিকেট সাবমিট করুন
+                  সাবমিট করুন
                 </>
               )}
             </Button>

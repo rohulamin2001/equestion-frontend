@@ -213,17 +213,17 @@ export default function AdminSupportCenter() {
   return (
     <div className="space-y-6 pb-12 w-full font-bengali">
       {/* Header Banner */}
-      <div className="bg-glass p-4 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-2">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-purple-600/10 text-purple-700 shrink-0">
-              <ShieldAlert className="size-6" />
+      <div className="bg-glass p-3.5 sm:p-5 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-purple-600/10 text-purple-700 shrink-0">
+              <ShieldAlert className="size-4 sm:size-6" />
             </div>
             <div>
-              <h1 className="text-lg sm:text-2xl font-bold text-slate-800 tracking-tight font-sans flex items-center gap-2">
-                এডমিন হেল্পডেস্ক (Admin Support Center)
+              <h1 className="text-base sm:text-xl font-bold text-slate-800 tracking-tight font-sans">
+                সাপোর্ট হেল্পডেস্ক
               </h1>
-              <p className="text-slate-500 text-xs sm:text-sm">
+              <p className="hidden sm:block text-slate-500 text-xs">
                 গ্রাহকদের সাপোর্ট টিকেট সমাধান, অ্যাসাইনমেন্ট ও ক্যানড রেসপন্স
                 টেমপ্লেট ড্যাশবোর্ড
               </p>
@@ -233,10 +233,11 @@ export default function AdminSupportCenter() {
           <Button
             onClick={() => setShowCannedModal(true)}
             variant="outline"
-            className="border-purple-200 text-purple-700 hover:bg-purple-50 rounded-xl h-9 sm:h-10 px-3.5 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+            className="border-purple-200 text-purple-700 hover:bg-purple-50 rounded-xl h-8 sm:h-10 px-2.5 sm:px-3.5 text-xs font-semibold flex items-center gap-1 sm:gap-1.5 cursor-pointer shrink-0"
           >
-            <Sparkles className="size-4" />
-            ক্যানড টেমপ্লেট সেটিং
+            <Sparkles className="size-3.5 sm:size-4" />
+            <span className="hidden sm:inline">ক্যানড টেমপ্লেট সেটিং</span>
+            <span className="sm:hidden">টেমপ্লেট</span>
           </Button>
         </div>
       </div>
@@ -266,9 +267,9 @@ export default function AdminSupportCenter() {
           <span className="text-sm font-semibold">সকল টিকেট লোড হচ্ছে...</span>
         </div>
       ) : tickets.length === 0 ? (
-        <div className="p-12 bg-white/[0.3] rounded-2xl border border-black/[0.05] text-center space-y-2">
-          <HelpCircle className="size-10 text-slate-300 mx-auto" />
-          <h3 className="text-base font-bold text-slate-700">
+        <div className="p-6 sm:p-10 bg-white/[0.3] rounded-2xl border border-black/[0.05] text-center space-y-2">
+          <HelpCircle className="size-7 sm:size-9 text-slate-300 mx-auto" />
+          <h3 className="text-xs sm:text-sm font-bold text-slate-700">
             কোনো সাপোর্ট টিকেট পাওয়া যায়নি
           </h3>
         </div>

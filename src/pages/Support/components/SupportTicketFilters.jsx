@@ -28,7 +28,7 @@ export function SupportTicketFilters({
           placeholder="টিকেট আইডি বা বিষয়বস্তু দিয়ে খুঁজুন..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 h-10 text-xs sm:text-sm bg-white/[0.45] border-black/[0.08] focus-visible:ring-[#900EB0]/15 rounded-xl font-semibold"
+          className="pl-10 h-10 text-xs sm:text-sm bg-white/[0.45] border-black/[0.08] focus-visible:ring-purple-600/15 rounded-xl font-semibold"
         />
         {searchQuery && (
           <button
@@ -42,7 +42,7 @@ export function SupportTicketFilters({
       </div>
 
       {/* Filter Dropdowns & Reset */}
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap w-full sm:w-auto">
         {/* Status Filter Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

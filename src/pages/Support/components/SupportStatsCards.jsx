@@ -33,26 +33,26 @@ export function SupportStatsCards({ stats, isStatsLoading }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
       {cards.map((stat, i) => {
         const IconComp = stat.icon;
         return (
           <div
             key={i}
-            className="bg-white/[0.45] hover:bg-white/[0.65] p-4 rounded-2xl border border-black/[0.04] backdrop-blur-md shadow-soft transition flex items-center justify-between"
+            className="bg-white/[0.45] hover:bg-white/[0.65] p-3 sm:p-4 rounded-2xl border border-black/[0.04] backdrop-blur-md shadow-soft transition flex items-center justify-between"
           >
             <div className="space-y-0.5">
-              <span className="text-[11px] sm:text-xs font-semibold text-slate-500 block uppercase tracking-wider font-sans">
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 block uppercase tracking-wider font-sans">
                 {stat.label}
               </span>
-              <span className="text-lg sm:text-2xl font-bold text-slate-800 block font-sans">
+              <span className="text-base sm:text-2xl font-bold text-slate-800 block font-sans">
                 {isStatsLoading ? "..." : stat.count}
               </span>
             </div>
             <div
-              className={`size-10 sm:size-11 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center shrink-0 shadow-2xs`}
+              className={`size-8 sm:size-11 rounded-xl sm:rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center shrink-0 shadow-2xs`}
             >
-              <IconComp className="size-5" />
+              <IconComp className="size-4 sm:size-5" />
             </div>
           </div>
         );

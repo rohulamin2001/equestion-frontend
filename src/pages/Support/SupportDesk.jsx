@@ -198,17 +198,17 @@ export default function SupportDesk() {
   return (
     <div className="space-y-6 pb-12 w-full font-bengali">
       {/* Header Banner */}
-      <div className="bg-glass p-4 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-2">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#900EB0]/10 text-[#900EB0] shrink-0">
-              <LifeBuoy className="size-6" />
+      <div className="bg-glass p-3.5 sm:p-5 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-purple-600/10 text-purple-600 shrink-0">
+              <LifeBuoy className="size-4 sm:size-6" />
             </div>
             <div>
-              <h1 className="text-lg sm:text-2xl font-bold text-slate-800 tracking-tight font-sans flex items-center gap-2">
-                সহায়তা ও সাপোর্ট কেন্দ্র (Support Desk)
+              <h1 className="text-base sm:text-xl font-bold text-slate-800 tracking-tight font-sans">
+                সাপোর্ট সেন্টার
               </h1>
-              <p className="text-slate-500 text-xs sm:text-sm">
+              <p className="hidden sm:block text-slate-500 text-xs">
                 আপনার প্রশ্ন, টেকনিক্যাল সমস্যা বা নতুন ফিচারের পরামর্শের জন্য
                 টিকেট জমা দিন
               </p>
@@ -217,10 +217,10 @@ export default function SupportDesk() {
 
           <Button
             onClick={() => setIsCreateModalOpen(true)}
-            className="bg-[#900EB0] hover:bg-[#720A7B] text-white rounded-xl h-9 sm:h-10 px-4 text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-md shadow-[#900EB0]/20 cursor-pointer shrink-0"
+            className="bg-purple-600 hover:bg-purple-800 text-white rounded-xl h-8 sm:h-10 px-3 sm:px-4 text-xs font-bold flex items-center gap-1 sm:gap-1.5 shadow-md shadow-purple-600/20 cursor-pointer shrink-0"
           >
-            <PlusCircle className="size-4" />
-            নতুন টিকেট খুলুন
+            <PlusCircle className="size-3.5 sm:size-4" />
+            <span>টিকেট খুলুন</span>
           </Button>
         </div>
       </div>
@@ -244,18 +244,17 @@ export default function SupportDesk() {
       {/* Tickets Grid */}
       {isTicketsLoading ? (
         <div className="p-12 flex flex-col items-center justify-center text-slate-400 gap-3">
-          <Loader2 className="size-8 animate-spin text-[#900EB0]" />
+          <Loader2 className="size-8 animate-spin text-purple-600" />
           <span className="text-sm font-semibold">টিকেটসমূহ লোড হচ্ছে...</span>
         </div>
       ) : tickets.length === 0 ? (
-        <div className="p-12 bg-white/[0.3] rounded-2xl border border-black/[0.05] text-center space-y-3">
-          <HelpCircle className="size-10 text-slate-300 mx-auto" />
-          <h3 className="text-base font-bold text-slate-700">
+        <div className="p-6 sm:p-10 bg-white/[0.3] rounded-2xl border border-black/[0.05] text-center space-y-2">
+          <HelpCircle className="size-7 sm:size-9 text-slate-300 mx-auto" />
+          <h3 className="text-xs sm:text-sm font-bold text-slate-700">
             কোনো সাপোর্ট টিকেট পাওয়া যায়নি
           </h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            আপনার কোনো সমস্যা বা জিজ্ঞাসা থাকলে ওপরের "নতুন টিকেট খুলুন" বাটনে
-            ক্লিক করে প্রশ্ন সাবমিট করুন।
+          <p className="text-[11px] sm:text-xs text-slate-500 max-w-sm mx-auto">
+            আপনার কোনো সমস্যা থাকলে ওপরের "নতুন টিকেট খুলুন" বাটনে ক্লিক করুন।
           </p>
         </div>
       ) : (
