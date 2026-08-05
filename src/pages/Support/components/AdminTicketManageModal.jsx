@@ -60,7 +60,9 @@ export function AdminTicketManageModal({
         {isTicketDetailsLoading || !ticketDetails ? (
           <>
             <DialogTitle className="sr-only">টিকেট লোড হচ্ছে</DialogTitle>
-            <DialogDescription className="sr-only">টিকেট লোড হচ্ছে</DialogDescription>
+            <DialogDescription className="sr-only">
+              টিকেট লোড হচ্ছে
+            </DialogDescription>
             <div className="p-12 flex flex-col items-center justify-center gap-3">
               <Loader2 className="size-8 animate-spin text-purple-600" />
               <span className="text-sm font-semibold text-slate-600">
@@ -204,7 +206,8 @@ export function AdminTicketManageModal({
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1">
-                    <Paperclip className="size-3 text-purple-600" /> ফাইল/ছবি অ্যাটাচমেন্ট লিংকসমূহ (ঐচ্ছিক):
+                    <Paperclip className="size-3 text-purple-600" /> ফাইল/ছবি
+                    অ্যাটাচমেন্ট লিংকসমূহ (ঐচ্ছিক):
                   </span>
                   <button
                     type="button"
@@ -291,11 +294,7 @@ export function AdminTicketManageModal({
                         type="button"
                         className="h-7 px-2.5 rounded-lg text-xs font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 transition flex items-center gap-1.5 cursor-pointer border border-purple-200/60 shadow-2xs"
                       >
-                        <Sparkles className="size-3.5 text-purple-600" />
-                        <span>
-                          ক্যানড টেমপ্লেট ব্যবহার করুন ({cannedResponses.length}
-                          )
-                        </span>
+                        <span>টেমপ্লেট ({cannedResponses.length})</span>
                         <ChevronDown className="size-3 text-purple-500" />
                       </button>
                     </DropdownMenuTrigger>

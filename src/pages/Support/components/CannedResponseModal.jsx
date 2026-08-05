@@ -36,10 +36,10 @@ export function CannedResponseModal({
         <DialogHeader className="space-y-1 text-left">
           <DialogTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
             <Sparkles className="size-5 text-purple-600" />
-            ক্যানড রেসপন্স টেমপ্লেট সেটিংস
+            টেমপ্লেট সেটিংস
           </DialogTitle>
           <DialogDescription className="text-xs text-slate-500">
-            ঘনঘন আসা প্রশ্নের দ্রুত উত্তরের জন্য ক্যানড টেমপ্লেট সেভ করে রাখুন।
+            ঘনঘন আসা প্রশ্নের দ্রুত উত্তরের জন্য টেমপ্লেট সেভ করে রাখুন।
           </DialogDescription>
         </DialogHeader>
 

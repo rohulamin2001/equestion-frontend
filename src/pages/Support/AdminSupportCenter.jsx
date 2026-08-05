@@ -7,8 +7,8 @@ import {
   Clock3,
   HelpCircle,
   Loader2,
+  Settings,
   ShieldAlert,
-  Sparkles,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -203,7 +203,7 @@ export default function AdminSupportCenter() {
       setCannedCategory("Billing & Subscription");
       setCannedContent("");
       setShowCannedModal(false);
-      toast.success("ক্যানড রেসপন্স টেমপ্লেট সংরক্ষিত হয়েছে");
+      toast.success("টেমপ্লেট সংরক্ষিত হয়েছে");
     } catch {
       toast.error("টেমপ্লেট তৈরি করতে সমস্যা হয়েছে");
     }
@@ -245,8 +245,8 @@ export default function AdminSupportCenter() {
                 সাপোর্ট হেল্পডেস্ক
               </h1>
               <p className="hidden sm:block text-slate-500 text-xs">
-                গ্রাহকদের সাপোর্ট টিকেট সমাধান, অ্যাসাইনমেন্ট ও ক্যানড রেসপন্স
-                টেমপ্লেট ড্যাশবোর্ড
+                গ্রাহকদের সাপোর্ট টিকেট সমাধান, অ্যাসাইনমেন্ট ও টেমপ্লেট
+                ড্যাশবোর্ড
               </p>
             </div>
           </div>
@@ -256,8 +256,8 @@ export default function AdminSupportCenter() {
             variant="outline"
             className="border-purple-200 text-purple-700 hover:bg-purple-50 rounded-xl h-8 sm:h-10 px-2.5 sm:px-3.5 text-xs font-semibold flex items-center gap-1 sm:gap-1.5 cursor-pointer shrink-0"
           >
-            <Sparkles className="size-3.5 sm:size-4" />
-            <span className="hidden sm:inline">ক্যানড টেমপ্লেট সেটিং</span>
+            <Settings className="size-3.5 sm:size-4" />
+            <span className="hidden sm:inline">টেমপ্লেট সেটিংস</span>
             <span className="sm:hidden">টেমপ্লেট</span>
           </Button>
         </div>
