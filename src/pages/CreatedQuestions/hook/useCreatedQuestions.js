@@ -6,6 +6,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+// Helper to extract numerical grade order from class names like "Class 9-10", "Class 6", "HSC"
+const getClassNumber = (c) => {
+  if (!c) return 0;
+  if (c === "HSC") return 11;
+  const match = c.match(/\d+/);
+  return match ? parseInt(match[0], 10) : 0;
+};
+
 export function useCreatedQuestions() {
   const { role, userProfile } = useUserContext();
   const { getToken } = useAuth();
@@ -16,7 +24,11 @@ export function useCreatedQuestions() {
 
   // System active versions (fallback to ["Bangla", "English", "Madrasah"])
   const activeVersions = useMemo(() => {
-    if (config?.versions && Array.isArray(config.versions) && config.versions.length > 0) {
+    if (
+      config?.versions &&
+      Array.isArray(config.versions) &&
+      config.versions.length > 0
+    ) {
       return config.versions;
     }
     return ["Bangla", "English", "Madrasah"];
@@ -38,74 +50,6 @@ export function useCreatedQuestions() {
     setUserSelectedVersion(ver);
   };
 
-  // Parse active classes from system config & user subscription for the selected version
-  const activeClasses = useMemo(() => {
-    if (!systemAllowedClasses || systemAllowedClasses.length === 0) {
-      return [];
-    }
-
-    // Filter system allowed classes by selected version type (Madrasah vs School/College)
-    const allowedForVersion = systemAllowedClasses.filter((c) => {
-      if (selectedVersion === "Madrasah") {
-        return c.type === "Madrasah";
-      }
-      return c.type === "School" || c.type === "College";
-    });
-
-    const versionClassNames = new Set(allowedForVersion.map((c) => c.value));
-
-    if (currentRole === "Super Admin" || currentRole === "Admin") {
-      const sorted = Array.from(versionClassNames)
-        .filter((c) => {
-          const num = parseInt(c.replace(/\D/g, "")) || 0;
-          return num >= 1 && num <= 12;
-        })
-        .sort((a, b) => {
-          const getNum = (str) => parseInt(str.replace(/\D/g, "")) || 0;
-          return getNum(a) - getNum(b);
-        });
-      return sorted;
-    }
-
-    const clsSet = new Set();
-    userProfile?.subscriptions?.forEach((sub) => {
-      if (sub.isSuspended || !sub.isActive) return;
-      const end = new Date(sub.endDate);
-      if (end < new Date()) return;
-
-      if (sub.packageId && sub.packageId.startsWith("teacher-")) {
-        ["Class 6", "Class 7", "Class 8", "Class 9-10", "Class 9", "Class 10"].forEach((c) => {
-          if (versionClassNames.has(c)) clsSet.add(c);
-        });
-      } else if (
-        sub.purchaseType === "Package" ||
-        sub.purchaseType === "Class"
-      ) {
-        sub.classNames?.forEach((c) => {
-          if (versionClassNames.has(c)) clsSet.add(c);
-        });
-      } else if (sub.purchaseType === "Subject") {
-        sub.subjectIds?.forEach((s) => {
-          const clsName = s?.className;
-          if (clsName && versionClassNames.has(clsName)) {
-            clsSet.add(clsName);
-          }
-        });
-      }
-    });
-
-    const sorted = Array.from(clsSet)
-      .filter((c) => {
-        const num = parseInt(c.replace(/\D/g, "")) || 0;
-        return num >= 1 && num <= 12;
-      })
-      .sort((a, b) => {
-        const getNum = (str) => parseInt(str.replace(/\D/g, "")) || 0;
-        return getNum(a) - getNum(b);
-      });
-    return sorted;
-  }, [userProfile, currentRole, systemAllowedClasses, selectedVersion]);
-
   // Fetch question sets
   const questionSetsQuery = useQuery({
     queryKey: ["createdQuestionSets"],
@@ -120,8 +64,121 @@ export function useCreatedQuestions() {
     enabled: !!userProfile,
   });
 
-  const questionSets = useMemo(() => questionSetsQuery.data || [], [questionSetsQuery.data]);
+  const questionSets = useMemo(
+    () => questionSetsQuery.data || [],
+    [questionSetsQuery.data],
+  );
   const isLoading = questionSetsQuery.isLoading;
+
+  // Group question sets by class name and category version
+  const questionSetsByClass = useMemo(() => {
+    const map = {};
+    (questionSets || []).forEach((set) => {
+      const instType = set.subjectId?.institutionType;
+      const ver = set.subjectId?.version;
+
+      const matches =
+        selectedVersion === "Madrasah"
+          ? instType === "Madrasah"
+          : selectedVersion === "English"
+            ? instType !== "Madrasah" && ver === "English"
+            : instType !== "Madrasah" && ver !== "English";
+
+      if (matches) {
+        const cls = set.className;
+        if (!cls) return;
+        if (!map[cls]) map[cls] = [];
+        map[cls].push(set);
+      }
+    });
+    return map;
+  }, [questionSets, selectedVersion]);
+
+  // Parse active classes from system config & user subscription for the selected version
+  const activeClasses = useMemo(() => {
+    if (!systemAllowedClasses || systemAllowedClasses.length === 0) {
+      return Object.keys(questionSetsByClass).sort(
+        (a, b) => getClassNumber(a) - getClassNumber(b),
+      );
+    }
+
+    // Filter system allowed classes by selected version type (Madrasah vs School/College)
+    const allowedForVersion = systemAllowedClasses.filter((c) => {
+      if (selectedVersion === "Madrasah") {
+        return c.type === "Madrasah";
+      }
+      return c.type === "School" || c.type === "College";
+    });
+
+    const versionClassNames = new Set(allowedForVersion.map((c) => c.value));
+    const clsSet = new Set();
+
+    if (currentRole === "Super Admin" || currentRole === "Admin") {
+      versionClassNames.forEach((c) => clsSet.add(c));
+    } else {
+      userProfile?.subscriptions?.forEach((sub) => {
+        if (sub.isSuspended || !sub.isActive) return;
+        const end = new Date(sub.endDate);
+        if (end < new Date()) return;
+
+        if (sub.packageId && sub.packageId.startsWith("teacher-")) {
+          [
+            "Class 1",
+            "Class 2",
+            "Class 3",
+            "Class 4",
+            "Class 5",
+            "Class 6",
+            "Class 7",
+            "Class 8",
+            "Class 9-10",
+            "Class 9",
+            "Class 10",
+            "Class 11-12",
+            "HSC",
+          ].forEach((c) => {
+            if (versionClassNames.has(c)) clsSet.add(c);
+          });
+        } else if (
+          sub.purchaseType === "Package" ||
+          sub.purchaseType === "Class"
+        ) {
+          sub.classNames?.forEach((c) => {
+            if (versionClassNames.has(c)) clsSet.add(c);
+          });
+        } else if (sub.purchaseType === "Subject") {
+          sub.subjectIds?.forEach((s) => {
+            const clsName = s?.className;
+            if (clsName && versionClassNames.has(clsName)) {
+              clsSet.add(clsName);
+            }
+          });
+        }
+      });
+    }
+
+    // Always include any classes that have existing question sets for current version
+    Object.keys(questionSetsByClass).forEach((cls) => {
+      if (questionSetsByClass[cls] && questionSetsByClass[cls].length > 0) {
+        clsSet.add(cls);
+      }
+    });
+
+    const sorted = Array.from(clsSet)
+      .filter((c) => {
+        const num = getClassNumber(c);
+        return (num >= 1 && num <= 12) || c === "HSC";
+      })
+      .sort((a, b) => getClassNumber(a) - getClassNumber(b));
+
+    return sorted;
+  }, [
+    userProfile,
+    currentRole,
+    systemAllowedClasses,
+    selectedVersion,
+    questionSetsByClass,
+  ]);
 
   // Delete question set mutation
   const deleteMutation = useMutation({
@@ -168,29 +225,6 @@ export function useCreatedQuestions() {
     });
     return { bangla, english, madrasah };
   }, [questionSets]);
-
-  // Group question sets by class name and category version
-  const questionSetsByClass = useMemo(() => {
-    const map = {};
-    (questionSets || []).forEach((set) => {
-      const instType = set.subjectId?.institutionType;
-      const ver = set.subjectId?.version;
-
-      const matches =
-        selectedVersion === "Madrasah"
-          ? instType === "Madrasah"
-          : selectedVersion === "English"
-            ? instType !== "Madrasah" && ver === "English"
-            : instType !== "Madrasah" && ver !== "English";
-
-      if (matches) {
-        const cls = set.className;
-        if (!map[cls]) map[cls] = [];
-        map[cls].push(set);
-      }
-    });
-    return map;
-  }, [questionSets, selectedVersion]);
 
   return {
     expandedClass,
