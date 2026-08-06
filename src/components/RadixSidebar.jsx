@@ -206,7 +206,7 @@ const DATA = {
           title: "সাপোর্ট হেল্পডেস্ক",
           url: "/dashboard/support-management",
           icon: ShieldAlert,
-          roles: ["Super Admin", "Admin", "Content Manager", "Support Team"],
+          roles: ["Super Admin", "Admin", "Support Team"],
         },
       ],
     },

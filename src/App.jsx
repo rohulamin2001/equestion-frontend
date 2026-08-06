@@ -248,7 +248,6 @@ export default function App() {
                 allowedRoles={[
                   "Super Admin",
                   "Admin",
-                  "Content Manager",
                   "Support Team",
                 ]}
               >
