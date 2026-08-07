@@ -76,10 +76,20 @@ export function useStaffManagement() {
   const handleAddStaff = async (e) => {
     e.preventDefault();
 
+    if (!phoneNumber || !/^(\+88)?01[3-9]\d{8}$/.test(phoneNumber.trim())) {
+      toast.error("সঠিক বাংলাদেশি ফোন নম্বর দিন (যেমন: 017XXXXXXXX)।");
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      toast.error("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।");
+      return;
+    }
+
     addStaffMutation.mutate({
       firstName,
       lastName,
-      phoneNumber,
+      phoneNumber: phoneNumber.trim(),
       password,
       role,
     });

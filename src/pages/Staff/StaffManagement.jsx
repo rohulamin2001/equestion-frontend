@@ -435,11 +435,11 @@ export default function StaffManagement() {
                   <Input
                     required
                     type={showPassword ? "text" : "password"}
-                    placeholder="নূন্যতম ৮ অক্ষরের পাসওয়ার্ড"
+                    placeholder="কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={formLoading}
-                    minLength={8}
+                    minLength={6}
                     className="pl-4 pr-11 py-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus-visible:bg-white focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-50/50 focus-visible:ring-offset-0 h-11 transition-all shadow-sm text-slate-700 text-xs font-semibold w-full"
                   />
                   <button
