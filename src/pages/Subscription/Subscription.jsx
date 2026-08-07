@@ -4,7 +4,6 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useAuth } from "@clerk/react";
 import {
   BookOpen,
   Building2,
@@ -36,7 +35,6 @@ import { useSubscription } from "./hook/useSubscription";
 
 export default function Subscription() {
   const { refreshProfile } = useUserContext();
-  const { getToken } = useAuth();
 
   const {
     packages: packagesList,
@@ -206,10 +204,7 @@ export default function Subscription() {
   const fetchClassSubjects = async (className) => {
     try {
       setSubjectsLoading(true);
-      const token = await getToken();
-      const res = await apiClient.get(`/subjects?className=${className}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.get(`/subjects?className=${className}`);
       setAllSubjects(res.data.subjects || []);
       setSelectedSubjects([]);
     } catch (err) {
@@ -226,7 +221,6 @@ export default function Subscription() {
         fetchClassSubjects(selectedClass);
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, selectedClass]);
 
   const handleToggleSubject = (subId) => {

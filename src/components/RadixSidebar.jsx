@@ -23,7 +23,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserContext } from "@/context/UserContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { SignOutButton, useUser } from "@clerk/react";
 import {
   BadgeCheck,
   Bell,
@@ -216,15 +215,14 @@ const DATA = {
 export const RadixSidebar = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
-  const { user } = useUser();
   const { toggleSidebar, setOpenMobile } = useSidebar();
-  const { role, userProfile } = useUserContext();
+  const { role, userProfile, logout } = useUserContext();
   const currentRole = role || "Subscriber";
 
   const isInstitution = userProfile?.userType === "Institution";
   const displayName = isInstitution
-    ? userProfile?.institutionName || user?.fullName || "প্রতিষ্ঠান"
-    : userProfile?.fullName || user?.fullName || "ব্যবহারকারী";
+    ? userProfile?.institutionName || userProfile?.fullName || "প্রতিষ্ঠান"
+    : userProfile?.fullName || "ব্যবহারকারী";
 
   const userInitials = displayName
     ? displayName
@@ -375,10 +373,7 @@ export const RadixSidebar = () => {
                       boxShadow: "0 0 0 2px rgba(144,14,176,0.12)",
                     }}
                   >
-                    <AvatarImage
-                      src={user?.imageUrl}
-                      alt={user?.fullName || "User"}
-                    />
+                    <AvatarImage src={userProfile?.avatar} alt={displayName} />
                     <AvatarFallback
                       className="rounded-lg text-xs font-semibold text-white"
                       style={{ background: "var(--sidebar-brand-gradient)" }}
@@ -391,7 +386,7 @@ export const RadixSidebar = () => {
                       {displayName}
                     </span>
                     <span className="truncate text-xs text-slate-500">
-                      {user?.primaryEmailAddress?.emailAddress || ""}
+                      {userProfile?.phoneNumber || currentRole}
                     </span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
@@ -406,7 +401,10 @@ export const RadixSidebar = () => {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-2.5 py-2 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={user?.imageUrl} alt={displayName} />
+                      <AvatarImage
+                        src={userProfile?.avatar}
+                        alt={displayName}
+                      />
                       <AvatarFallback className="rounded-lg bg-slate-100">
                         {userInitials}
                       </AvatarFallback>
@@ -416,7 +414,7 @@ export const RadixSidebar = () => {
                         {displayName}
                       </span>
                       <span className="truncate text-xs text-slate-400">
-                        {user?.primaryEmailAddress?.emailAddress || ""}
+                        {userProfile?.phoneNumber || currentRole}
                       </span>
                     </div>
                   </div>
@@ -504,12 +502,13 @@ export const RadixSidebar = () => {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator className="bg-black/[0.04]" />
                 <DropdownMenuItem className="p-0 focus:bg-transparent">
-                  <SignOutButton>
-                    <button className="flex w-full items-center gap-2 px-2.5 py-2 text-[13px] font-semibold text-red-650 hover:bg-red-500/10 rounded-lg transition-colors font-bengali">
-                      <LogOut className="size-4" />
-                      লগ আউট
-                    </button>
-                  </SignOutButton>
+                  <button
+                    onClick={logout}
+                    className="flex w-full items-center gap-2 px-2.5 py-2 text-[13px] font-semibold text-red-650 hover:bg-red-500/10 rounded-lg transition-colors font-bengali cursor-pointer"
+                  >
+                    <LogOut className="size-4" />
+                    লগ আউট
+                  </button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

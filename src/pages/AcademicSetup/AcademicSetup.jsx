@@ -15,7 +15,6 @@ import {
 import { useUserContext } from "@/context/UserContext";
 import { useAcademicConfig } from "@/hooks/useAcademicConfig";
 import apiClient from "@/lib/apiClient";
-import { useAuth } from "@clerk/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   BookOpen,
@@ -99,7 +98,6 @@ function ClassPills({ classes, setClasses, allOptions, color = "purple" }) {
 }
 
 export default function AcademicSetup() {
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
   const { role } = useUserContext();
   const { config, isLoading, refetch } = useAcademicConfig();
@@ -173,10 +171,7 @@ export default function AcademicSetup() {
   // Mutation to save config
   const saveMutation = useMutation({
     mutationFn: async (payload) => {
-      const token = await getToken();
-      const response = await apiClient.post("/academic-config", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.post("/academic-config", payload);
       return response.data;
     },
     onSuccess: () => {

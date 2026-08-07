@@ -22,7 +22,6 @@ import {
   RippleButtonRipples,
 } from "@/components/ui/ripple-button";
 import apiClient from "@/lib/apiClient";
-import { useAuth } from "@clerk/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Award,
@@ -61,7 +60,6 @@ const TABS = [
 ];
 
 export default function MetadataSetup() {
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("School");
   const [newValue, setNewValue] = useState("");
@@ -90,10 +88,8 @@ export default function MetadataSetup() {
   const { data: rawMetadata = [], isLoading } = useQuery({
     queryKey: ["metadataOptions", activeTab],
     queryFn: async () => {
-      const token = await getToken();
       const response = await apiClient.get("/question-metadata", {
         params: { type: activeTab },
-        headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.metadata || [];
     },
@@ -102,10 +98,7 @@ export default function MetadataSetup() {
   // Create metadata mutation
   const createMutation = useMutation({
     mutationFn: async (payload) => {
-      const token = await getToken();
-      const response = await apiClient.post("/question-metadata", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.post("/question-metadata", payload);
       return response.data;
     },
     onSuccess: () => {
@@ -126,14 +119,10 @@ export default function MetadataSetup() {
   // Edit metadata mutation
   const editMutation = useMutation({
     mutationFn: async ({ id, name, shortName }) => {
-      const token = await getToken();
-      const response = await apiClient.put(
-        `/question-metadata/${id}`,
-        { name, shortName },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const response = await apiClient.put(`/question-metadata/${id}`, {
+        name,
+        shortName,
+      });
       return response.data;
     },
     onSuccess: () => {
@@ -155,13 +144,9 @@ export default function MetadataSetup() {
   // Toggle status mutation
   const toggleMutation = useMutation({
     mutationFn: async (id) => {
-      const token = await getToken();
       const response = await apiClient.patch(
         `/question-metadata/${id}/toggle`,
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
       );
       return response.data;
     },
@@ -183,10 +168,7 @@ export default function MetadataSetup() {
   // Delete metadata mutation
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
-      const token = await getToken();
-      await apiClient.delete(`/question-metadata/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await apiClient.delete(`/question-metadata/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -302,8 +284,8 @@ export default function MetadataSetup() {
             <span>মেটাডাটা সেটআপ</span>
           </h1>
           <p className="text-slate-500 text-sm mt-1">
-            প্রশ্ন তৈরির সময় ব্যবহারের জন্য ডাইনামিক স্কুল, বোর্ড, সাল, লেভেল এবং
-            স্পেশাল সার্চ ট্যাগ কনফিগার করুন।
+            প্রশ্ন তৈরির সময় ব্যবহারের জন্য ডাইনামিক স্কুল, বোর্ড, সাল, লেভেল
+            এবং স্পেশাল সার্চ ট্যাগ কনফিগার করুন।
           </p>
         </div>
       </div>
@@ -488,9 +470,7 @@ export default function MetadataSetup() {
                                 type="button"
                                 onClick={() => toggleMutation.mutate(item._id)}
                                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-200 ${
-                                  item.isActive
-                                    ? "bg-primary"
-                                    : "bg-slate-200"
+                                  item.isActive ? "bg-primary" : "bg-slate-200"
                                 }`}
                               >
                                 <span

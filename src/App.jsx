@@ -9,6 +9,7 @@ import Generator from "./pages/Generator/Generator";
 import Home from "./pages/Home/Home";
 import Institution from "./pages/Institution/Institution";
 //login file
+import AuthDrawer from "./components/AuthDrawer";
 import CreatedQuestions from "./pages/CreatedQuestions/CreatedQuestions";
 import Login from "./pages/Login/Login";
 import MetadataSetup from "./pages/MetadataSetup/MetadataSetup";
@@ -34,6 +35,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Toaster richColors position="top-center" />
+      <AuthDrawer />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login/*" element={<Login />} />
@@ -245,11 +247,7 @@ export default function App() {
             path="support-management"
             element={
               <RoleRouteGuard
-                allowedRoles={[
-                  "Super Admin",
-                  "Admin",
-                  "Support Team",
-                ]}
+                allowedRoles={["Super Admin", "Admin", "Support Team"]}
               >
                 <AdminSupportCenter />
               </RoleRouteGuard>

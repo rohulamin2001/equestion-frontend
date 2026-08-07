@@ -1,16 +1,15 @@
-import { SignUp } from "@clerk/react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUserContext } from "../../context/UserContext";
 
 export default function Signup() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-slate-100 to-blue-50/50 p-4">
-      <SignUp
-        routing="path"
-        path="/signup"
-        signInUrl="/login"
-        fallbackRedirectUrl="/dashboard"
-        forceRedirectUrl="/dashboard"
-      />
-    </div>
-  );
-}
+  const { openAuthDrawer } = useUserContext();
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    openAuthDrawer("register");
+    navigate("/", { replace: true });
+  }, [openAuthDrawer, navigate]);
+
+  return null;
+}

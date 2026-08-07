@@ -1,11 +1,11 @@
-import { useAuth } from "@clerk/react";
 import { ArrowRight, BookOpen, CheckCircle, Shield } from "lucide-react";
-import { Link, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { useUserContext } from "../../context/UserContext";
 
 export default function Home() {
-  const { isSignedIn } = useAuth();
+  const { userProfile, openAuthDrawer } = useUserContext();
 
-  if (isSignedIn) {
+  if (userProfile) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -23,18 +23,18 @@ export default function Home() {
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <Link
-              to="/login"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition"
+            <button
+              onClick={() => openAuthDrawer("login")}
+              className="text-sm font-bold text-slate-600 hover:text-slate-900 transition font-bengali cursor-pointer"
             >
               লগইন
-            </Link>
-            <Link
-              to="/signup"
-              className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/95 transition shadow-sm"
+            </button>
+            <button
+              onClick={() => openAuthDrawer("register")}
+              className="inline-flex items-center justify-center rounded-xl bg-amber-400 hover:bg-amber-500 font-bold px-4 py-2 text-sm text-slate-950 transition shadow-sm font-bengali cursor-pointer"
             >
               নিবন্ধন করুন
-            </Link>
+            </button>
           </div>
         </div>
       </header>
@@ -43,7 +43,7 @@ export default function Home() {
       <main className="flex-1 flex items-center justify-center py-20 px-4">
         <div className="max-w-4xl text-center space-y-8">
           <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-sm font-semibold">
-            <Shield className="h-4 w-4" /> এপ্রোশ্নব্যাংক - ক্লাস ৩ থেকে ১২ এর
+            <Shield className="h-4 w-4" /> প্রশ্নব্যাংক - ক্লাস ৩ থেকে ১২ এর
             প্রশ্ন জেনারেটর
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -52,24 +52,24 @@ export default function Home() {
               মানসম্মত পরীক্ষার প্রশ্নপত্র
             </span>
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed font-bengali">
             শিক্ষকদের মূল্যবান সময় বাঁচাতে আমাদের স্বয়ংক্রিয় প্রশ্ন জেনারেটর
             ইঞ্জিন। সহজে সিলেবাস, অধ্যায় এবং কাঠামোগত প্রশ্ন নির্বাচন করে
             আকর্ষণীয় ও সৃজনশীল প্রশ্নপত্র তৈরি করুন।
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link
-              to="/signup"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-semibold text-white hover:bg-primary/95 transition shadow-lg shadow-blue-500/20"
+            <button
+              onClick={() => openAuthDrawer("register")}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-amber-400 hover:bg-amber-500 font-black px-8 py-4 text-base text-slate-950 transition shadow-lg shadow-amber-500/20 font-bengali cursor-pointer"
             >
               শুরু করুন <ArrowRight className="h-5 w-5" />
-            </Link>
-            <Link
-              to="/login"
-              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 px-8 py-4 text-base font-semibold text-slate-700 hover:bg-slate-50 transition"
+            </button>
+            <button
+              onClick={() => openAuthDrawer("login")}
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 px-8 py-4 text-base font-bold text-slate-700 hover:bg-slate-50 transition font-bengali cursor-pointer"
             >
-              ডেমো দেখুন
-            </Link>
+              লগইন করুন
+            </button>
           </div>
 
           {/* Features Grid */}

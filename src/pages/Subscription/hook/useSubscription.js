@@ -1,9 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@clerk/react";
 import apiClient from "../../../lib/apiClient";
 
 export const useSubscription = () => {
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
 
   // Fetch packages & coupons
@@ -22,10 +20,7 @@ export const useSubscription = () => {
   const mySubscriptionsQuery = useQuery({
     queryKey: ["mySubscriptions"],
     queryFn: async () => {
-      const token = await getToken();
-      const res = await apiClient.get("/subscriptions/my-subscriptions", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.get("/subscriptions/my-subscriptions");
       return res.data.subscriptions || [];
     },
   });
@@ -33,11 +28,9 @@ export const useSubscription = () => {
   // Validate coupon code
   const validateCouponMutation = useMutation({
     mutationFn: async ({ code, packageId, version, cartTotal }) => {
-      const token = await getToken();
       const res = await apiClient.post(
         "/subscriptions/validate-coupon",
         { code, packageId, version, cartTotal },
-        { headers: { Authorization: `Bearer ${token}` } }
       );
       return res.data.coupon;
     },
@@ -46,11 +39,9 @@ export const useSubscription = () => {
   // Purchase subscription
   const purchaseSubscriptionMutation = useMutation({
     mutationFn: async (payload) => {
-      const token = await getToken();
       const res = await apiClient.post(
         "/subscriptions/purchase",
         payload,
-        { headers: { Authorization: `Bearer ${token}` } }
       );
       return res.data;
     },

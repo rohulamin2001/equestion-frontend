@@ -1,10 +1,8 @@
 import apiClient from "@/lib/apiClient";
-import { useAuth } from "@clerk/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 export function useAdminSupport() {
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
 
   // Filters State
@@ -19,10 +17,7 @@ export function useAdminSupport() {
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
     queryKey: ["adminSupportStats"],
     queryFn: async () => {
-      const token = await getToken();
-      const response = await apiClient.get("/tickets/stats", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get("/tickets/stats");
       return response.data;
     },
   });
@@ -43,7 +38,6 @@ export function useAdminSupport() {
       searchQuery,
     ],
     queryFn: async () => {
-      const token = await getToken();
       const params = {};
       if (statusFilter) params.status = statusFilter;
       if (priorityFilter) params.priority = priorityFilter;
@@ -51,10 +45,7 @@ export function useAdminSupport() {
       if (assignedFilter) params.assignedTo = assignedFilter;
       if (searchQuery) params.search = searchQuery;
 
-      const response = await apiClient.get("/tickets/admin/all", {
-        params,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get("/tickets/admin/all", { params });
       return response.data;
     },
   });
@@ -68,10 +59,7 @@ export function useAdminSupport() {
     queryKey: ["adminTicketDetails", activeTicketId],
     queryFn: async () => {
       if (!activeTicketId) return null;
-      const token = await getToken();
-      const response = await apiClient.get(`/tickets/${activeTicketId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get(`/tickets/${activeTicketId}`);
       return response.data;
     },
     enabled: Boolean(activeTicketId),
@@ -81,10 +69,7 @@ export function useAdminSupport() {
   const { data: cannedResponsesData, isLoading: isCannedLoading } = useQuery({
     queryKey: ["cannedResponses"],
     queryFn: async () => {
-      const token = await getToken();
-      const response = await apiClient.get("/canned-responses", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get("/canned-responses");
       return response.data;
     },
   });
@@ -92,12 +77,11 @@ export function useAdminSupport() {
   // Add Message / Reply / Internal Note Mutation
   const addMessageMutation = useMutation({
     mutationFn: async ({ ticketId, message, isInternalNote, attachments }) => {
-      const token = await getToken();
-      const response = await apiClient.post(
-        `/tickets/${ticketId}/messages`,
-        { message, isInternalNote, attachments },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const response = await apiClient.post(`/tickets/${ticketId}/messages`, {
+        message,
+        isInternalNote,
+        attachments,
+      });
       return response.data;
     },
     onSuccess: (_, variables) => {
@@ -112,12 +96,11 @@ export function useAdminSupport() {
   // Update Status / Priority / Assignment Mutation
   const updateTicketStatusMutation = useMutation({
     mutationFn: async ({ ticketId, status, priority, assignedTo }) => {
-      const token = await getToken();
-      const response = await apiClient.patch(
-        `/tickets/${ticketId}/status`,
-        { status, priority, assignedTo },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const response = await apiClient.patch(`/tickets/${ticketId}/status`, {
+        status,
+        priority,
+        assignedTo,
+      });
       return response.data;
     },
     onSuccess: (_, variables) => {
@@ -132,10 +115,7 @@ export function useAdminSupport() {
   // Create Canned Response Mutation
   const createCannedResponseMutation = useMutation({
     mutationFn: async (payload) => {
-      const token = await getToken();
-      const response = await apiClient.post("/canned-responses", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.post("/canned-responses", payload);
       return response.data;
     },
     onSuccess: () => {
@@ -146,10 +126,7 @@ export function useAdminSupport() {
   // Delete Canned Response Mutation
   const deleteCannedResponseMutation = useMutation({
     mutationFn: async (id) => {
-      const token = await getToken();
-      const response = await apiClient.delete(`/canned-responses/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.delete(`/canned-responses/${id}`);
       return response.data;
     },
     onSuccess: () => {

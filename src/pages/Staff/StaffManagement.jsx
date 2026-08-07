@@ -185,7 +185,7 @@ export default function StaffManagement() {
                         .toUpperCase()
                     : "US";
 
-                  const isSelf = member.clerkId === userProfile?.clerkId;
+                  const isSelf = member._id === userProfile?._id;
                   // Restrict updating roles to Super Admin only, and cannot modify oneself
                   const canModifyRole =
                     userProfile?.role === "Super Admin" && !isSelf;

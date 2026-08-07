@@ -1,19 +1,26 @@
-import { useState, useEffect, useRef } from "react";
-import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@clerk/react";
-import apiClient from "@/lib/apiClient";
-import { toast } from "sonner";
-import { useQuestionManagement } from "@/hooks/useQuestionManagement";
 import { CATEGORIES_MAP } from "@/constants/categories";
+import { useQuestionManagement } from "@/hooks/useQuestionManagement";
+import apiClient from "@/lib/apiClient";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export function useQuestionApproval() {
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
   const [filterStatus, setFilterStatus] = useState("Pending");
   const [pageSize, setPageSize] = useState(10);
-  
-  const qm = useQuestionManagement({ isPersonalOnly: false, pageSize, skipFetch: true });
-  
+
+  const qm = useQuestionManagement({
+    isPersonalOnly: false,
+    pageSize,
+    skipFetch: true,
+  });
+
   const [showFilters, setShowFilters] = useState(false);
   const [selectedPreviewQuestion, setSelectedPreviewQuestion] = useState(null);
 
@@ -21,15 +28,17 @@ export function useQuestionApproval() {
   const { data: statsData, refetch: refetchStats } = useQuery({
     queryKey: ["questionStats"],
     queryFn: async () => {
-      const token = await getToken();
-      const response = await apiClient.get("/questions/stats", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get("/questions/stats");
       return response.data;
     },
   });
 
-  const stats = statsData?.stats || { total: 0, pending: 0, approved: 0, rejected: 0 };
+  const stats = statsData?.stats || {
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+  };
 
   // Infinite query for questions matching 8 parameters of Question Bank
   const {
@@ -57,7 +66,6 @@ export function useQuestionApproval() {
     ],
     initialPageParam: 1,
     queryFn: async ({ pageParam = 1 }) => {
-      const token = await getToken();
       const params = {
         page: pageParam,
         limit: pageSize,
@@ -73,10 +81,7 @@ export function useQuestionApproval() {
       if (qm.filterSearch) params.search = qm.filterSearch;
       if (qm.filterVersion) params.version = qm.filterVersion;
 
-      const response = await apiClient.get("/questions", {
-        params,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get("/questions", { params });
       return response.data;
     },
     getNextPageParam: (lastPage) => {
@@ -88,10 +93,18 @@ export function useQuestionApproval() {
   const questions = questionsData?.pages
     ? questionsData.pages.flatMap((p) => p.questions)
     : [];
-  const filterActiveTypes = Array.from(new Set(qm.allowedClasses.map(c => c.type)));
+  const filterActiveTypes = Array.from(
+    new Set(qm.allowedClasses.map((c) => c.type)),
+  );
   const filterActiveLevels = qm.filterType
-    ? Array.from(new Set(qm.allowedClasses.filter(c => c.type === qm.filterType).map(c => c.level)))
-    : Array.from(new Set(qm.allowedClasses.map(c => c.level)));
+    ? Array.from(
+        new Set(
+          qm.allowedClasses
+            .filter((c) => c.type === qm.filterType)
+            .map((c) => c.level),
+        ),
+      )
+    : Array.from(new Set(qm.allowedClasses.map((c) => c.level)));
   const filterActiveClasses = Array.from(
     new Map(
       qm.allowedClasses
@@ -100,8 +113,8 @@ export function useQuestionApproval() {
           const levelMatch = !qm.filterLevel || c.level === qm.filterLevel;
           return typeMatch && levelMatch;
         })
-        .map((c) => [c.value, c])
-    ).values()
+        .map((c) => [c.value, c]),
+    ).values(),
   );
 
   const handleFilterTypeChange = (type) => {
@@ -113,11 +126,17 @@ export function useQuestionApproval() {
       qm.setFilterChapter("");
       return;
     }
-    const levels = Array.from(new Set(qm.allowedClasses.filter(c => c.type === type).map(c => c.level)));
+    const levels = Array.from(
+      new Set(
+        qm.allowedClasses.filter((c) => c.type === type).map((c) => c.level),
+      ),
+    );
     if (levels.length > 0) {
       const firstLevel = levels[0];
       qm.setFilterLevel(firstLevel);
-      const classes = qm.allowedClasses.filter(c => c.type === type && c.level === firstLevel);
+      const classes = qm.allowedClasses.filter(
+        (c) => c.type === type && c.level === firstLevel,
+      );
       if (classes.length > 0) {
         qm.setFilterClass(classes[0].value, type, firstLevel);
         qm.setFilterSubjectId("");
@@ -134,7 +153,9 @@ export function useQuestionApproval() {
       qm.setFilterChapter("");
       return;
     }
-    const classes = qm.allowedClasses.filter(c => c.type === qm.filterType && c.level === level);
+    const classes = qm.allowedClasses.filter(
+      (c) => c.type === qm.filterType && c.level === level,
+    );
     if (classes.length > 0) {
       qm.setFilterClass(classes[0].value, qm.filterType, level);
       qm.setFilterSubjectId("");
@@ -148,18 +169,18 @@ export function useQuestionApproval() {
     const classMatch = !qm.filterClass || s.className === qm.filterClass;
     return typeMatch && levelMatch && classMatch;
   });
-  const selectedSyllabusObj = qm.syllabusList.find((s) => s._id === qm.filterSubjectId);
+  const selectedSyllabusObj = qm.syllabusList.find(
+    (s) => s._id === qm.filterSubjectId,
+  );
   const filterChapters = selectedSyllabusObj?.chapters || [];
 
   // Status update mutation (Approve/Reject)
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status, rejectionReason }) => {
-      const token = await getToken();
-      const response = await apiClient.patch(
-        `/questions/${id}/status`,
-        { status, rejectionReason },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await apiClient.patch(`/questions/${id}/status`, {
+        status,
+        rejectionReason,
+      });
       return response.data;
     },
     onSuccess: () => {
@@ -172,7 +193,9 @@ export function useQuestionApproval() {
     },
     onError: (err) => {
       toast.error(
-        err.response?.data?.error || err.message || "স্ট্যাটাস আপডেট করতে ব্যর্থ হয়েছে"
+        err.response?.data?.error ||
+          err.message ||
+          "স্ট্যাটাস আপডেট করতে ব্যর্থ হয়েছে",
       );
     },
   });
@@ -191,7 +214,7 @@ export function useQuestionApproval() {
           fetchNextPage();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
     observer.observe(observerRef.current);
     return () => observer.disconnect();
@@ -227,26 +250,29 @@ export function useQuestionApproval() {
     if (qm.filterSubjectId && selectedSyllabusObj) {
       const subjectCats = selectedSyllabusObj?.subjectId?.categories || [];
       if (subjectCats.length > 0) {
-        return subjectCats.map(catVal => {
-          const matched = CATEGORIES_MAP.find(c => c.value === catVal);
+        return subjectCats.map((catVal) => {
+          const matched = CATEGORIES_MAP.find((c) => c.value === catVal);
           return matched || { value: catVal, label: catVal };
         });
       }
     }
 
     const activeSyllabuses = qm.syllabusList.filter(
-      (s) => s.className === qm.filterClass && s.institutionType === qm.filterType && s.academicLevel === qm.filterLevel
+      (s) =>
+        s.className === qm.filterClass &&
+        s.institutionType === qm.filterType &&
+        s.academicLevel === qm.filterLevel,
     );
 
     const catSet = new Set();
-    activeSyllabuses.forEach(s => {
+    activeSyllabuses.forEach((s) => {
       const cats = s.subjectId?.categories || [];
-      cats.forEach(c => catSet.add(c));
+      cats.forEach((c) => catSet.add(c));
     });
 
     if (catSet.size > 0) {
-      return Array.from(catSet).map(catVal => {
-        const matched = CATEGORIES_MAP.find(c => c.value === catVal);
+      return Array.from(catSet).map((catVal) => {
+        const matched = CATEGORIES_MAP.find((c) => c.value === catVal);
         return matched || { value: catVal, label: catVal };
       });
     }
@@ -268,7 +294,7 @@ export function useQuestionApproval() {
         ];
   };
 
-  const hasActiveFilters = 
+  const hasActiveFilters =
     qm.filterType ||
     qm.filterLevel ||
     qm.filterClass ||

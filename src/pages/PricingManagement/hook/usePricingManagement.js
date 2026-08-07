@@ -1,10 +1,8 @@
-import { useAuth } from "@clerk/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import apiClient from "../../../lib/apiClient";
 
 export const usePricingManagement = () => {
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
 
   const [subscribersPage, setSubscribersPage] = useState(1);
@@ -26,10 +24,7 @@ export const usePricingManagement = () => {
   const discountsQuery = useQuery({
     queryKey: ["adminDiscounts"],
     queryFn: async () => {
-      const token = await getToken();
-      const res = await apiClient.get("/subscriptions/admin/discounts", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.get("/subscriptions/admin/discounts");
       return res.data.discounts || [];
     },
   });
@@ -37,14 +32,12 @@ export const usePricingManagement = () => {
   // Update Package (Price or Status)
   const updatePackageMutation = useMutation({
     mutationFn: async ({ id, basePrice, isActive }) => {
-      const token = await getToken();
       const payload = {};
       if (basePrice !== undefined) payload.basePrice = basePrice;
       if (isActive !== undefined) payload.isActive = isActive;
       const res = await apiClient.put(
         `/subscriptions/admin/packages/${id}`,
         payload,
-        { headers: { Authorization: `Bearer ${token}` } },
       );
       return res.data;
     },
@@ -56,19 +49,16 @@ export const usePricingManagement = () => {
   // Save (Create or Update) Discount
   const saveDiscountMutation = useMutation({
     mutationFn: async ({ id, payload }) => {
-      const token = await getToken();
       if (id) {
         const res = await apiClient.put(
           `/subscriptions/admin/discounts/${id}`,
           payload,
-          { headers: { Authorization: `Bearer ${token}` } },
         );
         return res.data;
       } else {
         const res = await apiClient.post(
           "/subscriptions/admin/discounts",
           payload,
-          { headers: { Authorization: `Bearer ${token}` } },
         );
         return res.data;
       }
@@ -82,10 +72,8 @@ export const usePricingManagement = () => {
   // Delete Discount
   const deleteDiscountMutation = useMutation({
     mutationFn: async (id) => {
-      const token = await getToken();
       const res = await apiClient.delete(
         `/subscriptions/admin/discounts/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } },
       );
       return res.data;
     },
@@ -99,14 +87,12 @@ export const usePricingManagement = () => {
   const subscribersQuery = useQuery({
     queryKey: ["subscribers", subscribersPage, subscribersSearch],
     queryFn: async () => {
-      const token = await getToken();
       const res = await apiClient.get("/subscriptions/subscribers", {
         params: {
           page: subscribersPage,
           limit: 10,
           search: subscribersSearch,
         },
-        headers: { Authorization: `Bearer ${token}` },
       });
       return {
         subscribers: res.data.subscribers || [],
@@ -120,11 +106,9 @@ export const usePricingManagement = () => {
   // Toggle subscription suspension (for admin)
   const toggleSuspensionMutation = useMutation({
     mutationFn: async ({ userId, subscriptionId, isSuspended }) => {
-      const token = await getToken();
       const res = await apiClient.put(
         `/subscriptions/subscribers/${userId}/suspend`,
         { subscriptionId, isSuspended },
-        { headers: { Authorization: `Bearer ${token}` } }
       );
       return res.data;
     },
@@ -136,10 +120,8 @@ export const usePricingManagement = () => {
   // Remove subscription (for super admin)
   const removeSubscriptionMutation = useMutation({
     mutationFn: async ({ userId, subscriptionId }) => {
-      const token = await getToken();
       const res = await apiClient.delete(
         `/subscriptions/subscribers/${userId}/remove/${subscriptionId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
       );
       return res.data;
     },

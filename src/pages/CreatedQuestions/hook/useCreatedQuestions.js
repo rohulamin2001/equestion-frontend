@@ -1,7 +1,6 @@
-import { useAcademicConfig } from "@/hooks/useAcademicConfig";
 import { useUserContext } from "@/context/UserContext";
+import { useAcademicConfig } from "@/hooks/useAcademicConfig";
 import apiClient from "@/lib/apiClient";
-import { useAuth } from "@clerk/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -16,7 +15,6 @@ const getClassNumber = (c) => {
 
 export function useCreatedQuestions() {
   const { role, userProfile } = useUserContext();
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
   const { allowedClasses: systemAllowedClasses, config } = useAcademicConfig();
 
@@ -54,11 +52,7 @@ export function useCreatedQuestions() {
   const questionSetsQuery = useQuery({
     queryKey: ["createdQuestionSets"],
     queryFn: async () => {
-      const token = await getToken();
-      if (!token) return [];
-      const res = await apiClient.get("/question-sets", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.get("/question-sets");
       return res.data.questionSets || [];
     },
     enabled: !!userProfile,
@@ -183,10 +177,7 @@ export function useCreatedQuestions() {
   // Delete question set mutation
   const deleteMutation = useMutation({
     mutationFn: async (setId) => {
-      const token = await getToken();
-      await apiClient.delete(`/question-sets/${setId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await apiClient.delete(`/question-sets/${setId}`);
     },
     onSuccess: () => {
       toast.success("প্রশ্ন সেটটি সফলভাবে মুছে ফেলা হয়েছে");

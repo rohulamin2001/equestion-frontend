@@ -1,4 +1,3 @@
-import { useAuth } from "@clerk/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +7,6 @@ import apiClient from "../../../lib/apiClient";
 
 export const useGenerator = () => {
   const navigate = useNavigate();
-  const { getToken } = useAuth();
 
   // Form states
   const [examName, setExamName] = useState("");
@@ -28,10 +26,7 @@ export const useGenerator = () => {
   const mySubscriptionsQuery = useQuery({
     queryKey: ["mySubscriptions"],
     queryFn: async () => {
-      const token = await getToken();
-      const res = await apiClient.get("/subscriptions/my-subscriptions", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.get("/subscriptions/my-subscriptions");
       return res.data.subscriptions || [];
     },
   });
@@ -93,10 +88,7 @@ export const useGenerator = () => {
   const syllabusQuery = useQuery({
     queryKey: ["syllabus", selectedClass],
     queryFn: async () => {
-      const token = await getToken();
-      const res = await apiClient.get(`/syllabus?className=${selectedClass}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.get(`/syllabus?className=${selectedClass}`);
       const fetchedSyllabus = res.data.syllabus || [];
       // Sort: Bangla version first, English version second, Madrasah version third
       return [...fetchedSyllabus].sort((a, b) => {
@@ -251,8 +243,6 @@ export const useGenerator = () => {
       questionType,
       totalMarks,
     }) => {
-      const token = await getToken();
-
       const promises = selectedSubjects.map(async (subject) => {
         const subId = subject.subjectId?._id || subject.subjectId;
         const subjectChapters = selectedChapters
@@ -265,20 +255,14 @@ export const useGenerator = () => {
           );
         }
 
-        return apiClient.post(
-          "/question-sets",
-          {
-            examName,
-            className: selectedClass,
-            subjectId: subId,
-            chapters: subjectChapters,
-            category: questionType,
-            totalMarks: parseInt(totalMarks, 10) || 100,
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        return apiClient.post("/question-sets", {
+          examName,
+          className: selectedClass,
+          subjectId: subId,
+          chapters: subjectChapters,
+          category: questionType,
+          totalMarks: parseInt(totalMarks, 10) || 100,
+        });
       });
 
       return Promise.all(promises);

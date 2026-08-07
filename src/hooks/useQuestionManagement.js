@@ -1,7 +1,6 @@
 import { isGroupEnabledClass } from "@/constants/classes";
 import apiClient from "@/lib/apiClient";
 import { validateCategoryQuestionsJson } from "@/lib/jsonQuestionValidator";
-import { useAuth } from "@clerk/react";
 import {
   useInfiniteQuery,
   useMutation,
@@ -44,7 +43,6 @@ export const isHtmlEmpty = (html) => {
 export function useQuestionManagement(options = {}) {
   const isSubmittingRef = useRef(false);
   const { isPersonalOnly = false, skipFetch = false, pageSize = 10 } = options;
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
   const {
     allowedClasses,
@@ -211,10 +209,7 @@ export function useQuestionManagement(options = {}) {
   const { data: syllabusList = [], isLoading: loadingSyllabus } = useQuery({
     queryKey: ["globalSyllabusList"],
     queryFn: async () => {
-      const token = await getToken();
-      const response = await apiClient.get("/syllabus", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get("/syllabus");
       return response.data.syllabus;
     },
   });
@@ -361,81 +356,84 @@ export function useQuestionManagement(options = {}) {
   const [rawPastedJsonText, setRawPastedJsonText] = useState("");
 
   // Reset Form
-  const resetForm = useCallback((resetStepAndMeta = false) => {
-    if (resetStepAndMeta) {
-      setActiveStep(1);
-      setFormType(filterType);
-      setFormLevel(filterLevel);
-      setFormClass(filterClass);
-      setUserFormVersion(null);
-      setFormSubjectId("");
-      setFormGroup("General");
-      setFormChapterNumber("");
-      setFormTopics([]);
-      setFormCategory("MCQ");
-      setFormDifficulty("Medium");
+  const resetForm = useCallback(
+    (resetStepAndMeta = false) => {
+      if (resetStepAndMeta) {
+        setActiveStep(1);
+        setFormType(filterType);
+        setFormLevel(filterLevel);
+        setFormClass(filterClass);
+        setUserFormVersion(null);
+        setFormSubjectId("");
+        setFormGroup("General");
+        setFormChapterNumber("");
+        setFormTopics([]);
+        setFormCategory("MCQ");
+        setFormDifficulty("Medium");
 
-      // Reset metadata
-      setFormYear([]);
-      setFormBoard([]);
-      setFormExamHistory([{ board: "", years: [] }]);
-      setFormSchool([]);
-      setFormLevelTag("");
-      setFormSpecialSearch([]);
-    }
+        // Reset metadata
+        setFormYear([]);
+        setFormBoard([]);
+        setFormExamHistory([{ board: "", years: [] }]);
+        setFormSchool([]);
+        setFormLevelTag("");
+        setFormSpecialSearch([]);
+      }
 
-    setQuestionsList([]);
-    setEditingDraftId(null);
-    setEditingPassageGroup(null);
-    setStep2EditorMode("form");
-    setRawPastedJsonText("");
+      setQuestionsList([]);
+      setEditingDraftId(null);
+      setEditingPassageGroup(null);
+      setStep2EditorMode("form");
+      setRawPastedJsonText("");
 
-    setIsGroupedMcq(false);
-    setMcqGroupQuestions([
-      {
-        mcqType: "Simple",
-        mcqQuestionText: "",
-        mcqStatements: ["", "", ""],
-        mcqOptions: ["", "", "", ""],
-        mcqCorrectAnswer: 0,
-        mcqExplanation: "",
-      },
-      {
-        mcqType: "Simple",
-        mcqQuestionText: "",
-        mcqStatements: ["", "", ""],
-        mcqOptions: ["", "", "", ""],
-        mcqCorrectAnswer: 0,
-        mcqExplanation: "",
-      },
-    ]);
+      setIsGroupedMcq(false);
+      setMcqGroupQuestions([
+        {
+          mcqType: "Simple",
+          mcqQuestionText: "",
+          mcqStatements: ["", "", ""],
+          mcqOptions: ["", "", "", ""],
+          mcqCorrectAnswer: 0,
+          mcqExplanation: "",
+        },
+        {
+          mcqType: "Simple",
+          mcqQuestionText: "",
+          mcqStatements: ["", "", ""],
+          mcqOptions: ["", "", "", ""],
+          mcqCorrectAnswer: 0,
+          mcqExplanation: "",
+        },
+      ]);
 
-    setMcqType("Simple");
-    setMcqStem("");
-    setMcqQuestionText("");
-    setMcqStatements(["", "", ""]);
-    setMcqOptions(["", "", "", ""]);
-    setMcqCorrectAnswer(0);
-    setMcqExplanation("");
+      setMcqType("Simple");
+      setMcqStem("");
+      setMcqQuestionText("");
+      setMcqStatements(["", "", ""]);
+      setMcqOptions(["", "", "", ""]);
+      setMcqCorrectAnswer(0);
+      setMcqExplanation("");
 
-    setCreativeStem("");
-    setCreativeCognitiveA("");
-    setCreativeCognitiveA_Answer("");
-    setCreativeCognitiveB("");
-    setCreativeCognitiveB_Answer("");
-    setCreativeCognitiveC("");
-    setCreativeCognitiveC_Answer("");
-    setCreativeCognitiveD("");
-    setCreativeCognitiveD_Answer("");
+      setCreativeStem("");
+      setCreativeCognitiveA("");
+      setCreativeCognitiveA_Answer("");
+      setCreativeCognitiveB("");
+      setCreativeCognitiveB_Answer("");
+      setCreativeCognitiveC("");
+      setCreativeCognitiveC_Answer("");
+      setCreativeCognitiveD("");
+      setCreativeCognitiveD_Answer("");
 
-    setGeneralQuestionText("");
-    setGeneralStem("");
-    setGeneralSubQuestions([]);
-    setGeneralSuggestedAnswer("");
-    setGeneralMarks(1);
+      setGeneralQuestionText("");
+      setGeneralStem("");
+      setGeneralSubQuestions([]);
+      setGeneralSuggestedAnswer("");
+      setGeneralMarks(1);
 
-    setEditingQuestion(null);
-  }, [filterClass, filterType, filterLevel]);
+      setEditingQuestion(null);
+    },
+    [filterClass, filterType, filterLevel],
+  );
 
   // Set form values from existing question for editing
   const handleOpenEditMode = useCallback((target) => {
@@ -652,7 +650,6 @@ export function useQuestionManagement(options = {}) {
     enabled: !skipFetch,
     initialPageParam: 1,
     queryFn: async ({ pageParam = 1 }) => {
-      const token = await getToken();
       const params = {
         className: filterClass,
         personal: filterPersonal ? "true" : "false",
@@ -675,10 +672,7 @@ export function useQuestionManagement(options = {}) {
         params.status = "Approved";
       }
 
-      const response = await apiClient.get("/questions", {
-        params,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get("/questions", { params });
       return response.data;
     },
     getNextPageParam: (lastPage) => {
@@ -690,10 +684,7 @@ export function useQuestionManagement(options = {}) {
   // Add Question Mutation
   const addQuestionMutation = useMutation({
     mutationFn: async (payload) => {
-      const token = await getToken();
-      const response = await apiClient.post("/questions", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.post("/questions", payload);
       return response.data;
     },
     onSuccess: () => {
@@ -718,10 +709,7 @@ export function useQuestionManagement(options = {}) {
   // Update Question Mutation
   const updateQuestionMutation = useMutation({
     mutationFn: async ({ id, payload }) => {
-      const token = await getToken();
-      const response = await apiClient.put(`/questions/${id}`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.put(`/questions/${id}`, payload);
       return response.data;
     },
     onSuccess: () => {
@@ -746,16 +734,13 @@ export function useQuestionManagement(options = {}) {
   // Delete Question Mutation
   const deleteQuestionMutation = useMutation({
     mutationFn: async (target) => {
-      const token = await getToken();
       const id = typeof target === "object" ? target.id : target;
       const deleteAllGroup =
         typeof target === "object" ? target.deleteAllGroup : false;
       const url = deleteAllGroup
         ? `/questions/${id}?deleteAllGroup=true`
         : `/questions/${id}`;
-      await apiClient.delete(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await apiClient.delete(url);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["myQuestionsList"] });
@@ -1745,7 +1730,6 @@ export function useQuestionManagement(options = {}) {
       }
 
       try {
-        const token = await getToken();
         const basePayload = {
           className: formClass,
           institutionType: formType,
@@ -1799,9 +1783,7 @@ export function useQuestionManagement(options = {}) {
 
           if (mq._id && originalIds.has(mq._id)) {
             updatePromises.push(
-              apiClient.put(`/questions/${mq._id}`, itemPayload, {
-                headers: { Authorization: `Bearer ${token}` },
-              }),
+              apiClient.put(`/questions/${mq._id}`, itemPayload),
             );
           } else {
             newPayloads.push(itemPayload);
@@ -1811,20 +1793,12 @@ export function useQuestionManagement(options = {}) {
         const deletePromises = [];
         for (const qId of originalIds) {
           if (!currentIds.has(qId)) {
-            deletePromises.push(
-              apiClient.delete(`/questions/${qId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-              }),
-            );
+            deletePromises.push(apiClient.delete(`/questions/${qId}`));
           }
         }
 
         if (newPayloads.length > 0) {
-          updatePromises.push(
-            apiClient.post("/questions", newPayloads, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-          );
+          updatePromises.push(apiClient.post("/questions", newPayloads));
         }
 
         await Promise.all([...updatePromises, ...deletePromises]);

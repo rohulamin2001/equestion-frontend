@@ -10,7 +10,6 @@ import {
 import { downloadSampleJsonFile } from "@/constants/sampleQuestionsTemplate";
 import apiClient from "@/lib/apiClient";
 import { validateQuestionsJson } from "@/lib/jsonQuestionValidator";
-import { useAuth } from "@clerk/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -29,7 +28,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export default function BulkImportModal({ open, onOpenChange, onSuccess }) {
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
 
   const [rawJsonText, setRawJsonText] = useState("");
@@ -88,10 +86,7 @@ export default function BulkImportModal({ open, onOpenChange, onSuccess }) {
   // Bulk Submit Mutation
   const bulkMutation = useMutation({
     mutationFn: async (questionsPayload) => {
-      const token = await getToken();
-      const response = await apiClient.post("/questions", questionsPayload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.post("/questions", questionsPayload);
       return response.data;
     },
     onSuccess: (data) => {

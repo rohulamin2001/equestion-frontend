@@ -1,4 +1,3 @@
-import { useAuth } from "@clerk/react";
 import { useQuery } from "@tanstack/react-query";
 import {
   CLASSES_MAP,
@@ -10,10 +9,11 @@ import {
   DEFAULT_SECONDARY_CLASSES,
   MADRASAH_CLASSES_MAP,
 } from "../constants/classes";
+import { useUserContext } from "../context/UserContext";
 import apiClient from "../lib/apiClient";
 
 export function useAcademicConfig() {
-  const { getToken, isSignedIn } = useAuth();
+  const { userProfile } = useUserContext();
 
   const {
     data: config,
@@ -22,15 +22,10 @@ export function useAcademicConfig() {
   } = useQuery({
     queryKey: ["academicConfig"],
     queryFn: async () => {
-      const token = await getToken();
-      const response = await apiClient.get("/academic-config", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiClient.get("/academic-config");
       return response.data.config;
     },
-    enabled: isSignedIn,
+    enabled: !!userProfile,
     staleTime: 10 * 60 * 1000, // Cache for 10 minutes
   });
 

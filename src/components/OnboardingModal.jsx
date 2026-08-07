@@ -1,4 +1,3 @@
-import { useAuth, useUser } from "@clerk/react";
 import confetti from "canvas-confetti";
 import {
   ArrowLeft,
@@ -92,16 +91,14 @@ function CustomSelect({
 }
 
 export default function OnboardingModal() {
-  const { refreshProfile } = useUserContext();
-  const { getToken } = useAuth();
-  const { user } = useUser();
+  const { userProfile, refreshProfile } = useUserContext();
   const [step, setStep] = useState(1); // 1: Selection, 2: Form
   const [userType, setUserType] = useState(null); // 'Teacher' or 'Institution'
   const [loading, setLoading] = useState(false);
 
   // Form States
-  const [firstName, setFirstName] = useState(user?.firstName || "");
-  const [lastName, setLastName] = useState(user?.lastName || "");
+  const [firstName, setFirstName] = useState(userProfile?.firstName || "");
+  const [lastName, setLastName] = useState(userProfile?.lastName || "");
   const [designation, setDesignation] = useState("");
   const [institutionName, setInstitutionName] = useState("");
 
@@ -216,12 +213,7 @@ export default function OnboardingModal() {
         };
       }
 
-      const token = await getToken();
-      const response = await apiClient.put("/users/onboard", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiClient.put("/users/onboard", payload);
       if (response.data.success) {
         toast.success("অনবোর্ডিং সফলভাবে সম্পন্ন হয়েছে!");
 
@@ -414,7 +406,7 @@ export default function OnboardingModal() {
                       <input
                         type="text"
                         disabled
-                        value={user?.primaryPhoneNumber?.phoneNumber || ""}
+                        value={userProfile?.phoneNumber || ""}
                         className="w-full h-10 px-3 rounded-xl border border-slate-100 bg-slate-50 text-slate-400 text-sm font-sans font-medium"
                       />
                     </div>

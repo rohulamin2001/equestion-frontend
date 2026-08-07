@@ -2,22 +2,17 @@ import { CATEGORIES_MAP } from "@/constants/categories";
 import { useUserContext } from "@/context/UserContext";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
 import apiClient from "@/lib/apiClient";
-import { useAuth } from "@clerk/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function useQuestionBank() {
-  const { getToken } = useAuth();
 
   // Fetch stats from backend
   const { data: statsData } = useQuery({
     queryKey: ["questionStats"],
     queryFn: async () => {
-      const token = await getToken();
-      const response = await apiClient.get("/questions/stats", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get("/questions/stats");
       return response.data;
     },
   });

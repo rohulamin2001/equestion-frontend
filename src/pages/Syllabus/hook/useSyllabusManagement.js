@@ -2,13 +2,11 @@ import { isGroupEnabledClass } from '@/constants/classes';
 import { useUserContext } from '@/context/UserContext';
 import { useAcademicConfig } from '@/hooks/useAcademicConfig';
 import apiClient from '@/lib/apiClient';
-import { useAuth } from '@clerk/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 export function useSyllabusManagement() {
-  const { getToken } = useAuth();
   const { role: userRole } = useUserContext();
   const queryClient = useQueryClient();
   const { allowedClasses, config, isLoading: configLoading } = useAcademicConfig();
@@ -124,15 +122,13 @@ export function useSyllabusManagement() {
   const { data: formSubjects = [], isLoading: subjectsLoading } = useQuery({
     queryKey: ['subjects-form', formType, formLevel, formClass, formVersion],
     queryFn: async () => {
-      const token = await getToken();
       const response = await apiClient.get('/subjects', {
         params: {
           className: formClass,
           institutionType: formType,
           academicLevel: formLevel,
           version: formVersion
-        },
-        headers: { Authorization: `Bearer ${token}` }
+        }
       });
       return response.data.subjects;
     },
@@ -160,16 +156,12 @@ export function useSyllabusManagement() {
   } = useQuery({
     queryKey: ['syllabusList', selectedType, selectedLevel, selectedClass],
     queryFn: async () => {
-      const token = await getToken();
       const response = await apiClient.get('/syllabus', {
         params: { 
           className: selectedClass,
           institutionType: selectedType,
           academicLevel: selectedLevel
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        }
       });
       return response.data.syllabus;
     },
@@ -182,12 +174,7 @@ export function useSyllabusManagement() {
   // Add Syllabus mutation
   const addSyllabusMutation = useMutation({
     mutationFn: async (payload) => {
-      const token = await getToken();
-      const response = await apiClient.post('/syllabus', payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiClient.post('/syllabus', payload);
       return response.data;
     },
     onSuccess: () => {
@@ -204,12 +191,7 @@ export function useSyllabusManagement() {
   // Edit Syllabus mutation
   const updateSyllabusMutation = useMutation({
     mutationFn: async ({ id, payload }) => {
-      const token = await getToken();
-      const response = await apiClient.put(`/syllabus/${id}`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiClient.put(`/syllabus/${id}`, payload);
       return response.data;
     },
     onSuccess: () => {
@@ -226,12 +208,7 @@ export function useSyllabusManagement() {
   // Delete Syllabus mutation
   const deleteSyllabusMutation = useMutation({
     mutationFn: async (id) => {
-      const token = await getToken();
-      await apiClient.delete(`/syllabus/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await apiClient.delete(`/syllabus/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['syllabusList'] });

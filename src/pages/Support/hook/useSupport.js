@@ -1,10 +1,8 @@
 import apiClient from "@/lib/apiClient";
-import { useAuth } from "@clerk/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 export function useSupport() {
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
 
   // Filters State
@@ -18,10 +16,7 @@ export function useSupport() {
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
     queryKey: ["supportStats"],
     queryFn: async () => {
-      const token = await getToken();
-      const response = await apiClient.get("/tickets/stats", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get("/tickets/stats");
       return response.data;
     },
   });
@@ -35,16 +30,12 @@ export function useSupport() {
   } = useQuery({
     queryKey: ["userTickets", statusFilter, categoryFilter, searchQuery],
     queryFn: async () => {
-      const token = await getToken();
       const params = {};
       if (statusFilter) params.status = statusFilter;
       if (categoryFilter) params.category = categoryFilter;
       if (searchQuery) params.search = searchQuery;
 
-      const response = await apiClient.get("/tickets/user", {
-        params,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get("/tickets/user", { params });
       return response.data;
     },
   });
@@ -58,10 +49,7 @@ export function useSupport() {
     queryKey: ["ticketDetails", activeTicketId],
     queryFn: async () => {
       if (!activeTicketId) return null;
-      const token = await getToken();
-      const response = await apiClient.get(`/tickets/${activeTicketId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get(`/tickets/${activeTicketId}`);
       return response.data;
     },
     enabled: Boolean(activeTicketId),
@@ -70,10 +58,7 @@ export function useSupport() {
   // Create Ticket Mutation
   const createTicketMutation = useMutation({
     mutationFn: async (payload) => {
-      const token = await getToken();
-      const response = await apiClient.post("/tickets", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.post("/tickets", payload);
       return response.data;
     },
     onSuccess: () => {
@@ -86,12 +71,10 @@ export function useSupport() {
   // Add Message / Reply Mutation
   const addMessageMutation = useMutation({
     mutationFn: async ({ ticketId, message, attachments }) => {
-      const token = await getToken();
-      const response = await apiClient.post(
-        `/tickets/${ticketId}/messages`,
-        { message, attachments },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const response = await apiClient.post(`/tickets/${ticketId}/messages`, {
+        message,
+        attachments,
+      });
       return response.data;
     },
     onSuccess: (_, variables) => {
@@ -105,12 +88,10 @@ export function useSupport() {
   // Submit Rating Mutation
   const submitRatingMutation = useMutation({
     mutationFn: async ({ ticketId, satisfactionRating, feedbackComment }) => {
-      const token = await getToken();
-      const response = await apiClient.post(
-        `/tickets/${ticketId}/rate`,
-        { satisfactionRating, feedbackComment },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const response = await apiClient.post(`/tickets/${ticketId}/rate`, {
+        satisfactionRating,
+        feedbackComment,
+      });
       return response.data;
     },
     onSuccess: (_, variables) => {

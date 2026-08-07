@@ -16,7 +16,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useUserContext } from "@/context/UserContext";
-import { useAuth } from "@clerk/react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 const ROUTE_TITLES = {
@@ -46,11 +45,10 @@ const ROUTE_TITLES = {
 };
 
 export default function DashboardLayout() {
-  const { isSignedIn, isLoaded } = useAuth();
   const { userProfile, role, loading: profileLoading } = useUserContext();
   const location = useLocation();
 
-  if (!isLoaded || (isSignedIn && profileLoading)) {
+  if (profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-55">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-650"></div>
@@ -58,8 +56,8 @@ export default function DashboardLayout() {
     );
   }
 
-  // Redirect to login if not signed in
-  if (!isSignedIn) {
+  // Redirect to login if not authenticated
+  if (!userProfile) {
     return <Navigate to="/login" replace />;
   }
 

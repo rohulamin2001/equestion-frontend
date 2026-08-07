@@ -1,4 +1,3 @@
-import { useAuth } from "@clerk/react";
 import {
   useInfiniteQuery,
   useMutation,
@@ -10,7 +9,6 @@ import { useSearchParams } from "react-router-dom";
 import apiClient from "../../../lib/apiClient";
 
 export function useQuestions() {
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
 
@@ -35,11 +33,8 @@ export function useQuestions() {
   const questionSetsQuery = useQuery({
     queryKey: ["questionSets", setIds],
     queryFn: async () => {
-      const token = await getToken();
       const promises = setIds.map(async (id) => {
-        const res = await apiClient.get(`/question-sets/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await apiClient.get(`/question-sets/${id}`);
         return res.data.questionSet;
       });
       return Promise.all(promises);
@@ -54,10 +49,7 @@ export function useQuestions() {
   const syllabusListQuery = useQuery({
     queryKey: ["syllabusList"],
     queryFn: async () => {
-      const token = await getToken();
-      const res = await apiClient.get("/syllabus", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.get("/syllabus");
       return res.data.syllabus || [];
     },
   });
@@ -68,10 +60,7 @@ export function useQuestions() {
   const allQuestionSetsQuery = useQuery({
     queryKey: ["allQuestionSets"],
     queryFn: async () => {
-      const token = await getToken();
-      const res = await apiClient.get("/question-sets", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.get("/question-sets");
       return res.data.questionSets || [];
     },
     enabled: uniqueMode,
@@ -106,8 +95,6 @@ export function useQuestions() {
     enabled: !!activeSetId && !!activeSet,
     initialPageParam: 1,
     queryFn: async ({ pageParam = 1 }) => {
-      const token = await getToken();
-
       const params = {
         className: activeSet.className,
         category: activeSet.category,
@@ -122,10 +109,7 @@ export function useQuestions() {
       const targetSubId = activeSet.subjectId?._id || activeSet.subjectId;
       if (targetSubId) params.subjectId = targetSubId;
 
-      const res = await apiClient.get("/questions", {
-        params,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.get("/questions", { params });
 
       let questionsList = res.data.questions || [];
 
@@ -188,10 +172,7 @@ export function useQuestions() {
   // Update mutation (PUT /api/question-sets/:id)
   const updateQuestionSetMutation = useMutation({
     mutationFn: async ({ id, payload }) => {
-      const token = await getToken();
-      const res = await apiClient.put(`/question-sets/${id}`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.put(`/question-sets/${id}`, payload);
       return res.data;
     },
     onSuccess: () => {
@@ -202,10 +183,7 @@ export function useQuestions() {
   // Update Question Mutation (PUT /api/questions/:id)
   const updateQuestionMutation = useMutation({
     mutationFn: async ({ id, payload }) => {
-      const token = await getToken();
-      const res = await apiClient.put(`/questions/${id}`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.put(`/questions/${id}`, payload);
       return res.data;
     },
     onSuccess: () => {
@@ -216,10 +194,7 @@ export function useQuestions() {
   // Create Question Mutation (POST /api/questions)
   const createQuestionMutation = useMutation({
     mutationFn: async (payload) => {
-      const token = await getToken();
-      const res = await apiClient.post("/questions", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.post("/questions", payload);
       return res.data.question;
     },
   });

@@ -2,7 +2,6 @@ import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
 import apiClient from "@/lib/apiClient";
-import { useAuth } from "@clerk/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -75,7 +74,6 @@ export const DIFFICULTY_MAP = {
 export { CATEGORIES_MAP, CLASSES_MAP };
 
 export function useAddQuestion() {
-  const { getToken } = useAuth();
   const qm = useQuestionManagement({ skipFetch: true });
   const location = useLocation();
   const navigate = useNavigate();
@@ -87,10 +85,8 @@ export function useAddQuestion() {
   const { data: metadataList = [], isLoading: loadingMetadata } = useQuery({
     queryKey: ["activeMetadataList"],
     queryFn: async () => {
-      const token = await getToken();
       const response = await apiClient.get("/question-metadata", {
         params: { activeOnly: "true" },
-        headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.metadata || [];
     },
@@ -287,13 +283,9 @@ export function useAddQuestion() {
   // React Query Mutation for backend duplicate check
   const checkDuplicateMutation = useMutation({
     mutationFn: async (payload) => {
-      const token = await getToken();
       const response = await apiClient.post(
         "/questions/check-duplicates",
         payload,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
       );
       return response.data;
     },
