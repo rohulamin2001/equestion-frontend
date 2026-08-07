@@ -25,15 +25,9 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => openAuthDrawer("login")}
-              className="text-sm font-bold text-slate-600 hover:text-slate-900 transition font-bengali cursor-pointer"
-            >
-              লগইন
-            </button>
-            <button
-              onClick={() => openAuthDrawer("register")}
               className="inline-flex items-center justify-center rounded-xl bg-amber-400 hover:bg-amber-500 font-bold px-4 py-2 text-sm text-slate-950 transition shadow-sm font-bengali cursor-pointer"
             >
-              নিবন্ধন করুন
+              লগইন
             </button>
           </div>
         </div>
