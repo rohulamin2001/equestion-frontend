@@ -18,7 +18,7 @@ export const UserProvider = ({ children }) => {
         if (response.data?.accessToken) {
           setAccessToken(response.data.accessToken);
         }
-      } catch (err) {
+      } catch {
         // No active session or cookie expired
         setAccessToken(null);
       } finally {
@@ -77,6 +77,7 @@ export const UserProvider = ({ children }) => {
     } catch (err) {
       console.error("Logout error:", err);
     } finally {
+      setIsAuthDrawerOpen(false);
       setAccessToken(null);
       queryClient.setQueryData(["userProfile", null], null);
       queryClient.invalidateQueries();
@@ -103,6 +104,7 @@ export const UserProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useUserContext = () => {
   const context = useContext(UserContext);
   if (!context) {

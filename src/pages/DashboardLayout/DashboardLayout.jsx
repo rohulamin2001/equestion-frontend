@@ -56,9 +56,9 @@ export default function DashboardLayout() {
     );
   }
 
-  // Redirect to login if not authenticated
+  // Redirect to home if not authenticated
   if (!userProfile) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   const currentTitle = ROUTE_TITLES[location.pathname] || "ড্যাশবোর্ড";
