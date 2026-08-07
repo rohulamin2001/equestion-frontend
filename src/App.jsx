@@ -9,7 +9,7 @@ import Generator from "./pages/Generator/Generator";
 import Home from "./pages/Home/Home";
 import Institution from "./pages/Institution/Institution";
 //login file
-import AuthDrawer from "./components/AuthDrawer";
+import AuthDrawer from "./pages/Login/AuthDrawer";
 import CreatedQuestions from "./pages/CreatedQuestions/CreatedQuestions";
 import Login from "./pages/Login/Login";
 import MetadataSetup from "./pages/MetadataSetup/MetadataSetup";
