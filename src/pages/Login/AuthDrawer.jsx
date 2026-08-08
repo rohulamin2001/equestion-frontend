@@ -116,14 +116,14 @@ export default function AuthDrawer() {
             className="absolute inset-0 bg-slate-950/75 backdrop-blur-md"
           />
 
-          {/* Drawer */}
+          {/* Responsive Animated Drawer Container */}
           <motion.div
             variants={drawerVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
             onClick={(e) => e.stopPropagation()}
-            className="relative z-10 w-full overflow-y-auto max-h-[92vh] sm:max-h-full sm:h-full sm:w-[440px] sm:max-w-full rounded-t-3xl sm:rounded-none sm:rounded-l-3xl flex flex-col"
+            className="relative z-10 w-full overflow-hidden max-h-[92vh] sm:max-h-full sm:h-full sm:w-[440px] sm:max-w-full rounded-t-3xl sm:rounded-none sm:rounded-l-3xl flex flex-col"
             style={{
               background:
                 "linear-gradient(160deg, rgba(58,7,89,0.97) 0%, rgba(30,7,60,0.99) 50%, rgba(10,5,30,1) 100%)",
@@ -133,23 +133,25 @@ export default function AuthDrawer() {
               borderTop: "1px solid rgba(255,255,255,0.1)",
             }}
           >
-            {/* Decorative glow blobs inside drawer */}
-            <div
-              className="absolute top-0 right-0 w-72 h-72 rounded-full pointer-events-none"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(144,14,176,0.22) 0%, transparent 70%)",
-                transform: "translate(30%, -30%)",
-              }}
-            />
-            <div
-              className="absolute bottom-1/4 left-0 w-56 h-56 rounded-full pointer-events-none"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(219,39,119,0.12) 0%, transparent 70%)",
-                transform: "translate(-30%, 0%)",
-              }}
-            />
+            {/* Decorative glow blobs inside drawer (clipped to boundary) */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-t-3xl sm:rounded-none sm:rounded-l-3xl">
+              <div
+                className="absolute top-0 right-0 w-72 h-72 rounded-full"
+                style={{
+                  background:
+                    "radial-gradient(circle, rgba(144,14,176,0.22) 0%, transparent 70%)",
+                  transform: "translate(30%, -30%)",
+                }}
+              />
+              <div
+                className="absolute bottom-1/4 left-0 w-56 h-56 rounded-full"
+                style={{
+                  background:
+                    "radial-gradient(circle, rgba(219,39,119,0.12) 0%, transparent 70%)",
+                  transform: "translate(-30%, 0%)",
+                }}
+              />
+            </div>
 
             {/* ── Header ── */}
             <div
@@ -219,7 +221,7 @@ export default function AuthDrawer() {
             </div>
 
             {/* ── Scrollable Content ── */}
-            <div className="flex-1 overflow-y-auto px-6 pt-6 pb-6 sm:px-8 sm:pb-8 flex flex-col justify-between min-h-0">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 pt-6 pb-6 sm:px-8 sm:pb-8 flex flex-col justify-between min-h-0">
               <div>
                 {/* Tab Switcher */}
                 {mode === "auth" && (
