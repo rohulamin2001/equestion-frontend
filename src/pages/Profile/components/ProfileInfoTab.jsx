@@ -74,19 +74,19 @@ export default function ProfileInfoTab({ profile }) {
   } = profile;
 
   return (
-    <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm space-y-8">
+    <div className="bg-glass-elevated backdrop-blur-xl p-6 md:p-8 rounded-2xl border border-slate-200/60 shadow-soft space-y-8">
       {/* Custom Avatar Upload Section */}
-      <div className="flex flex-col items-center space-y-4 border-b border-slate-100 pb-6">
+      <div className="flex flex-col items-center space-y-4 border-b border-slate-200/60 pb-6">
         <div
           onClick={imageUploading ? undefined : handleImageClick}
-          className={`relative h-24 w-24 rounded-full border border-slate-200 bg-slate-50 overflow-hidden group shadow-sm flex items-center justify-center transition-all duration-300 ${
+          className={`relative h-28 w-28 rounded-full border-2 border-purple-200/70 bg-purple-50/50 overflow-hidden group shadow-md flex items-center justify-center transition-all duration-300 ring-4 ring-purple-500/15 ${
             imageUploading
               ? "cursor-not-allowed opacity-80 pointer-events-none"
-              : "cursor-pointer"
+              : "cursor-pointer hover:border-[var(--purple-600)] hover:shadow-purple-500/20"
           }`}
         >
           {imageUploading ? (
-            <Loader2 className="h-8 w-8 text-indigo-600 animate-spin" />
+            <Loader2 className="h-8 w-8 text-[var(--purple-600)] animate-spin" />
           ) : userProfile?.imageUrl ? (
             <img
               src={userProfile.imageUrl}
@@ -94,11 +94,11 @@ export default function ProfileInfoTab({ profile }) {
               className="h-full w-full object-cover group-hover:scale-105 transition-all duration-300"
             />
           ) : (
-            <GraduationCap className="h-10 w-10 text-slate-400" />
+            <GraduationCap className="h-12 w-12 text-purple-400" />
           )}
           {!imageUploading && (
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200">
-              <Camera className="h-5 w-5 text-white" />
+            <div className="absolute inset-0 bg-purple-950/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 backdrop-blur-[2px]">
+              <Camera className="h-6 w-6 text-white" />
             </div>
           )}
         </div>
@@ -126,11 +126,11 @@ export default function ProfileInfoTab({ profile }) {
         {/* Management/Personal Profile Form */}
         {!isSubscriber && (
           <div className="space-y-4 font-bengali">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2 border-b border-slate-200/60 pb-3">
               <span className="text-xs font-semibold text-slate-500">
                 আপনার রোল:
               </span>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-650 border border-indigo-100 font-sans">
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-100/60 text-[var(--purple-700)] border border-purple-200/60 font-sans">
                 {roleLabels[role] || role}
               </span>
             </div>
@@ -688,11 +688,7 @@ export default function ProfileInfoTab({ profile }) {
           <button
             type="submit"
             disabled={loading}
-            className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white shadow-lg transition-all duration-300 ${
-              isTeacher
-                ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/25"
-                : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/25"
-            } disabled:opacity-50 cursor-pointer`}
+            className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[var(--purple-800)] to-[var(--purple-600)] shadow-md shadow-purple-600/25 hover:shadow-lg hover:shadow-purple-600/35 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
               <>
