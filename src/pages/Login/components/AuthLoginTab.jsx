@@ -1,5 +1,35 @@
-import { ChevronRight, Eye, EyeOff, Loader2, Lock, Phone } from "lucide-react";
+import {
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+  Smartphone,
+} from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+
+// ── Shared dark-glass design tokens ──
+const inputClass =
+  "w-full rounded-xl text-sm text-white font-sans transition-all duration-200 outline-none border"
+  + " bg-white/5 border-white/15 focus:border-purple-400/80 focus:ring-2 focus:ring-purple-400/20 placeholder:text-purple-300/40";
+
+const labelClass =
+  "text-xs font-semibold uppercase tracking-wider font-bengali block mb-1.5"
+  + " text-purple-200";
+
+const ctaClass = (disabled) =>
+  `w-full py-3.5 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 font-bengali text-white border border-white/20 ${
+    disabled
+      ? "opacity-50 cursor-not-allowed"
+      : "hover:opacity-90 active:scale-[0.99] cursor-pointer"
+  }`;
+
+const ctaStyle = {
+  background: "linear-gradient(135deg, #7e22ce 0%, #be185d 100%)",
+  boxShadow: "0 6px 24px rgba(126,34,206,0.35)",
+};
+
+const iconStyle = { color: "rgba(192,132,252,0.7)" };
 
 export function AuthLoginTab({
   loginStep,
@@ -19,7 +49,7 @@ export function AuthLoginTab({
   setForgotStep,
 }) {
   return (
-    <div>
+    <div className="space-y-5">
       <AnimatePresence mode="wait">
         {loginStep === 1 ? (
           <motion.form
@@ -29,33 +59,28 @@ export function AuthLoginTab({
             exit={{ opacity: 0, x: 10 }}
             transition={{ duration: 0.2 }}
             onSubmit={handleLoginNext}
-            className="space-y-4"
+            className="space-y-5"
           >
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 font-bengali">
-                ফোন নম্বর
-              </label>
+            <div>
+              <label className={labelClass}>ফোন নম্বর</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Phone className="h-4 w-4" />
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <Smartphone className="h-[18px] w-[18px]" style={iconStyle} />
                 </div>
                 <input
                   type="text"
                   required
                   value={loginPhone}
                   onChange={(e) => setLoginPhone(e.target.value)}
-                  placeholder="ফোন নম্বর"
-                  className="w-full h-12 pl-10 pr-4 bg-white border border-slate-200 rounded-2xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-sans shadow-sm"
+                  placeholder="01XXXXXXXXX"
+                  className={inputClass + " h-12 pl-11 pr-4"}
                 />
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="w-full h-12 bg-amber-400 hover:bg-amber-500 text-slate-950 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 transition-all duration-200 font-bengali text-base cursor-pointer"
-            >
+            <button type="submit" className={ctaClass(false)} style={ctaStyle}>
               <span>এগিয়ে যাই</span>
-              <ChevronRight className="h-5 w-5 stroke-[2.5]" />
+              <ArrowRight className="h-[18px] w-[18px]" />
             </button>
           </motion.form>
         ) : (
@@ -66,41 +91,48 @@ export function AuthLoginTab({
             exit={{ opacity: 0, x: -10 }}
             transition={{ duration: 0.2 }}
             onSubmit={handleLoginSubmit}
-            className="space-y-4"
+            className="space-y-5"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 font-sans">
+            {/* Phone chip */}
+            <div
+              className="flex items-center justify-between px-3.5 py-2.5 rounded-xl"
+              style={{
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
+            >
+              <span className="text-xs font-bold font-sans text-white/80">
                 {loginPhone}
               </span>
               <button
                 type="button"
                 onClick={() => setLoginStep(1)}
-                className="text-xs font-bold text-amber-600 hover:underline font-bengali cursor-pointer"
+                className="text-xs font-bold font-bengali cursor-pointer transition-colors"
+                style={{ color: "#c084fc" }}
               >
-                নম্বর পরিবর্তন করুন
+                পরিবর্তন করুন
               </button>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 font-bengali">
-                পাসওয়ার্ড
-              </label>
+            <div>
+              <label className={labelClass}>পাসওয়ার্ড</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="h-4 w-4" />
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <Lock className="h-[18px] w-[18px]" style={iconStyle} />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
                   required
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="পাসওয়ার্ড দিন"
-                  className="w-full h-12 pl-10 pr-10 bg-white border border-slate-200 rounded-2xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-sans shadow-sm"
+                  placeholder="পাসওয়ার্ড দিন"
+                  className={inputClass + " h-12 pl-11 pr-11"}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center cursor-pointer transition-colors"
+                  style={{ color: "rgba(192,132,252,0.5)" }}
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -114,17 +146,18 @@ export function AuthLoginTab({
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 bg-amber-400 hover:bg-amber-500 disabled:opacity-50 text-slate-950 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 transition-all duration-200 font-bengali text-base cursor-pointer"
+              className={ctaClass(loading)}
+              style={ctaStyle}
             >
               {loading ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin text-slate-950" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                   <span>লগইন হচ্ছে...</span>
                 </>
               ) : (
                 <>
                   <span>লগইন করুন</span>
-                  <ChevronRight className="h-5 w-5 stroke-[2.5]" />
+                  <ArrowRight className="h-[18px] w-[18px]" />
                 </>
               )}
             </button>
@@ -133,27 +166,23 @@ export function AuthLoginTab({
       </AnimatePresence>
 
       {/* Bottom Links */}
-      <div className="mt-6 text-center text-xs font-semibold text-slate-500 font-bengali flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-2 text-xs font-semibold font-bengali pt-1"
+        style={{ color: "rgba(216,180,254,0.7)" }}>
         <button
           type="button"
-          onClick={() => {
-            setActiveTab("register");
-            setRegStep(1);
-          }}
-          className="hover:text-slate-800 transition cursor-pointer"
+          onClick={() => { setActiveTab("register"); setRegStep(1); }}
+          className="hover:text-white transition-colors cursor-pointer"
         >
           নতুন একাউন্ট
         </button>
-        <span>•</span>
+        <span className="opacity-40">•</span>
         <button
           type="button"
-          onClick={() => {
-            setMode("forgotPassword");
-            setForgotStep(1);
-          }}
-          className="hover:text-amber-600 transition cursor-pointer"
+          onClick={() => { setMode("forgotPassword"); setForgotStep(1); }}
+          className="font-bold cursor-pointer transition-colors hover:text-white"
+          style={{ color: "#c084fc" }}
         >
-          পাসওয়ার্ড ভুলে গেছেন
+          পাসওয়ার্ড ভুলে গেছেন?
         </button>
       </div>
     </div>
