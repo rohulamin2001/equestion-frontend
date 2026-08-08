@@ -1,27 +1,28 @@
+import { useUserContext } from "@/context/UserContext";
+import apiClient from "@/lib/apiClient";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useUserContext } from "../../../context/UserContext";
-import apiClient from "../../../lib/apiClient";
 
 export function useAuthDrawer() {
-  const { isAuthDrawerOpen, closeAuthDrawer, drawerDefaultTab, login } =
-    useUserContext();
+  const {
+    isAuthDrawerOpen,
+    closeAuthDrawer,
+    drawerDefaultTab,
+    login: loginContext,
+  } = useUserContext();
 
-  // Mode: 'auth' (login/register tabs) | 'forgotPassword'
-  const [mode, setMode] = useState("auth");
+  const [mode, setMode] = useState("auth"); // 'auth' | 'forgotPassword'
   const [activeTab, setActiveTab] = useState("login"); // 'login' | 'register'
-
-  // Common State
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Login Flow States
+  // Login States
   const [loginStep, setLoginStep] = useState(1); // 1: Phone, 2: Password
   const [loginPhone, setLoginPhone] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
-  // Register Flow States
-  const [regStep, setRegStep] = useState(1); // 1: Phone, 2: OTP, 3: Details & Password
+  // Register States
+  const [regStep, setRegStep] = useState(1); // 1: Phone, 2: OTP, 3: Password & Name
   const [regPhone, setRegPhone] = useState("");
   const [regOtp, setRegOtp] = useState("");
   const [regFullName, setRegFullName] = useState("");
@@ -31,13 +32,16 @@ export function useAuthDrawer() {
   const [otpToken, setOtpToken] = useState(null);
 
   // Forgot Password States
-  const [forgotStep, setForgotStep] = useState(1); // 1: Phone, 2: OTP & New Password
+  const [forgotStep, setForgotStep] = useState(1); // 1: Phone, 2: OTP, 3: Passwords
   const [forgotPhone, setForgotPhone] = useState("");
   const [forgotOtp, setForgotOtp] = useState("");
+  const [resetToken, setResetToken] = useState(null);
   const [forgotNewPassword, setForgotNewPassword] = useState("");
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState("");
 
-  // Timer State for OTP Resend
+  // Timer State for OTP Resend (Register & Forgot)
   const [timer, setTimer] = useState(0);
+  const [forgotTimer, setForgotTimer] = useState(0);
 
   // Track drawer state for resetting state during render transition
   const [prevIsOpen, setPrevIsOpen] = useState(false);
@@ -61,7 +65,10 @@ export function useAuthDrawer() {
       setForgotStep(1);
       setForgotPhone("");
       setForgotOtp("");
+      setResetToken(null);
       setForgotNewPassword("");
+      setForgotConfirmPassword("");
+      setForgotTimer(0);
       setLoading(false);
       setShowPassword(false);
     }
@@ -74,6 +81,14 @@ export function useAuthDrawer() {
     }
     return () => clearInterval(interval);
   }, [timer]);
+
+  useEffect(() => {
+    let interval;
+    if (forgotTimer > 0) {
+      interval = setInterval(() => setForgotTimer((t) => t - 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [forgotTimer]);
 
   // --- LOGIN HANDLERS ---
   const handleLoginNext = (e) => {
@@ -98,23 +113,29 @@ export function useAuthDrawer() {
 
     setLoading(true);
     try {
-      const res = await login(loginPhone.trim(), loginPassword);
-      if (res?.code === "PHONE_NOT_VERIFIED") {
-        toast.info(res.message);
+      const data = await loginContext(loginPhone.trim(), loginPassword);
+      if (data?.code === "PHONE_NOT_VERIFIED") {
+        toast.info("আপনার মোবাইল নম্বরটি এখনও ভেরিফাই করা হয়নি।");
         setRegPhone(loginPhone.trim());
+        setMode("auth");
         setActiveTab("register");
         setRegStep(2);
         setTimer(60);
-      } else {
-        toast.success("সফলভাবে লগইন হয়েছে!");
-        closeAuthDrawer();
+
+        try {
+          await apiClient.post("/auth/resend-otp", {
+            phoneNumber: loginPhone.trim(),
+          });
+          toast.success("একটি নতুন OTP আপনার নম্বরে পাঠানো হয়েছে!");
+        } catch {
+          // ignore resend error
+        }
       }
     } catch (err) {
       console.error("Login error:", err);
       toast.error(
         err.response?.data?.message ||
-          err.response?.data?.error ||
-          "লগইন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।",
+          "লগইন করতে ব্যর্থ হয়েছে। নম্বর ও পাসওয়ার্ড আবার চেক করুন।",
       );
     } finally {
       setLoading(false);
@@ -230,11 +251,17 @@ export function useAuthDrawer() {
     }
   };
 
-  // --- FORGOT PASSWORD HANDLERS ---
+  // --- FORGOT PASSWORD HANDLERS (3-Step Interactive Flow) ---
+  // Step 1: Send OTP
   const handleForgotSendOtp = async (e) => {
     e.preventDefault();
     if (!forgotPhone.trim()) {
       toast.error("ফোন নম্বর প্রদান করুন।");
+      return;
+    }
+
+    if (!/^(\+88)?01[3-9]\d{8}$/.test(forgotPhone.trim())) {
+      toast.error("সঠিক বাংলাদেশি ফোন নম্বর দিন (যেমন: 017XXXXXXXX)।");
       return;
     }
 
@@ -245,7 +272,7 @@ export function useAuthDrawer() {
       });
       toast.success(res.data.message || "OTP পাঠানো হয়েছে!");
       setForgotStep(2);
-      setTimer(60);
+      setForgotTimer(60);
     } catch (err) {
       toast.error(err.response?.data?.message || "OTP পাঠাতে ব্যর্থ হয়েছে।");
     } finally {
@@ -253,14 +280,58 @@ export function useAuthDrawer() {
     }
   };
 
-  const handleResetPasswordSubmit = async (e) => {
+  // Step 2 Resend OTP
+  const handleForgotResendOtp = async () => {
+    if (forgotTimer > 0) return;
+    setLoading(true);
+    try {
+      const res = await apiClient.post("/auth/forgot-password", {
+        phoneNumber: forgotPhone.trim(),
+      });
+      toast.success(res.data.message || "নতুন OTP পাঠানো হয়েছে!");
+      setForgotTimer(60);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "OTP রিকোয়েস্ট ব্যর্থ হয়েছে।");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Step 2: Verify OTP -> Receive resetToken -> Step 3
+  const handleForgotVerifyOtp = async (e) => {
     e.preventDefault();
     if (!forgotOtp || forgotOtp.trim().length !== 6) {
       toast.error("৬ ডিজিটের OTP প্রদান করুন।");
       return;
     }
+
+    setLoading(true);
+    try {
+      const res = await apiClient.post("/auth/verify-forgot-otp", {
+        phoneNumber: forgotPhone.trim(),
+        otp: forgotOtp.trim(),
+      });
+      if (res.data.resetToken) {
+        setResetToken(res.data.resetToken);
+      }
+      toast.success(res.data.message || "OTP সফলভাবে যাচাই করা হয়েছে!");
+      setForgotStep(3);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "ভুল OTP প্রদান করা হয়েছে।");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Step 3: Submit New Password & Confirm Password
+  const handleResetPasswordSubmit = async (e) => {
+    e.preventDefault();
     if (!forgotNewPassword || forgotNewPassword.length < 6) {
       toast.error("নতুন পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।");
+      return;
+    }
+    if (forgotNewPassword !== forgotConfirmPassword) {
+      toast.error("নতুন পাসওয়ার্ড ও কনফার্ম পাসওয়ার্ড মিলছে না।");
       return;
     }
 
@@ -268,7 +339,7 @@ export function useAuthDrawer() {
     try {
       const res = await apiClient.post("/auth/reset-password", {
         phoneNumber: forgotPhone.trim(),
-        otp: forgotOtp.trim(),
+        resetToken,
         newPassword: forgotNewPassword,
       });
       toast.success(
@@ -336,9 +407,15 @@ export function useAuthDrawer() {
     setForgotPhone,
     forgotOtp,
     setForgotOtp,
+    resetToken,
     forgotNewPassword,
     setForgotNewPassword,
+    forgotConfirmPassword,
+    setForgotConfirmPassword,
+    forgotTimer,
     handleForgotSendOtp,
+    handleForgotResendOtp,
+    handleForgotVerifyOtp,
     handleResetPasswordSubmit,
   };
 }

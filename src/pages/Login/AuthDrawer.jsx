@@ -56,7 +56,12 @@ export default function AuthDrawer() {
     setForgotOtp,
     forgotNewPassword,
     setForgotNewPassword,
+    forgotConfirmPassword,
+    setForgotConfirmPassword,
+    forgotTimer,
     handleForgotSendOtp,
+    handleForgotResendOtp,
+    handleForgotVerifyOtp,
     handleResetPasswordSubmit,
   } = useAuthDrawer();
 
@@ -379,14 +384,22 @@ export default function AuthDrawer() {
                     >
                       <AuthForgotPasswordMode
                         forgotStep={forgotStep}
+                        setForgotStep={setForgotStep}
                         forgotPhone={forgotPhone}
                         setForgotPhone={setForgotPhone}
                         forgotOtp={forgotOtp}
                         setForgotOtp={setForgotOtp}
                         forgotNewPassword={forgotNewPassword}
                         setForgotNewPassword={setForgotNewPassword}
+                        forgotConfirmPassword={forgotConfirmPassword}
+                        setForgotConfirmPassword={setForgotConfirmPassword}
+                        showPassword={showPassword}
+                        setShowPassword={setShowPassword}
+                        forgotTimer={forgotTimer}
                         loading={loading}
                         handleForgotSendOtp={handleForgotSendOtp}
+                        handleForgotResendOtp={handleForgotResendOtp}
+                        handleForgotVerifyOtp={handleForgotVerifyOtp}
                         handleResetPasswordSubmit={handleResetPasswordSubmit}
                         setMode={setMode}
                       />
