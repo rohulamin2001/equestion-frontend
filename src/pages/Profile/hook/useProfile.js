@@ -171,17 +171,20 @@ export function useProfile() {
 
   // Custom Profile/Logo Image uploader
   const handleImageClick = () => {
+    if (imageUploading) return;
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
   const handleImageChange = async (e) => {
+    if (imageUploading) return;
     const file = e.target.files[0];
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
       toast.error("দয়া করে একটি সঠিক ইমেজ ফাইল নির্বাচন করুন।");
+      if (e.target) e.target.value = "";
       return;
     }
 
@@ -219,6 +222,7 @@ export function useProfile() {
       });
     } finally {
       setImageUploading(false);
+      if (e.target) e.target.value = "";
     }
   };
 

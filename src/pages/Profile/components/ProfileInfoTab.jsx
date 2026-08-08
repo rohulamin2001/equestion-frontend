@@ -78,8 +78,12 @@ export default function ProfileInfoTab({ profile }) {
       {/* Custom Avatar Upload Section */}
       <div className="flex flex-col items-center space-y-4 border-b border-slate-100 pb-6">
         <div
-          onClick={handleImageClick}
-          className="relative h-24 w-24 rounded-full border border-slate-200 bg-slate-50 cursor-pointer overflow-hidden group shadow-sm flex items-center justify-center transition-all duration-300"
+          onClick={imageUploading ? undefined : handleImageClick}
+          className={`relative h-24 w-24 rounded-full border border-slate-200 bg-slate-50 overflow-hidden group shadow-sm flex items-center justify-center transition-all duration-300 ${
+            imageUploading
+              ? "cursor-not-allowed opacity-80 pointer-events-none"
+              : "cursor-pointer"
+          }`}
         >
           {imageUploading ? (
             <Loader2 className="h-8 w-8 text-indigo-600 animate-spin" />
@@ -92,14 +96,17 @@ export default function ProfileInfoTab({ profile }) {
           ) : (
             <GraduationCap className="h-10 w-10 text-slate-400" />
           )}
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200">
-            <Camera className="h-5 w-5 text-white" />
-          </div>
+          {!imageUploading && (
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200">
+              <Camera className="h-5 w-5 text-white" />
+            </div>
+          )}
         </div>
         <input
           type="file"
           ref={fileInputRef}
           onChange={handleImageChange}
+          disabled={imageUploading}
           className="hidden"
           accept="image/*"
         />
