@@ -373,7 +373,10 @@ export const RadixSidebar = () => {
                       boxShadow: "0 0 0 2px rgba(144,14,176,0.12)",
                     }}
                   >
-                    <AvatarImage src={userProfile?.avatar} alt={displayName} />
+                    <AvatarImage
+                      src={userProfile?.imageUrl || userProfile?.avatar}
+                      alt={displayName}
+                    />
                     <AvatarFallback
                       className="rounded-lg text-xs font-semibold text-white"
                       style={{ background: "var(--sidebar-brand-gradient)" }}
@@ -402,7 +405,7 @@ export const RadixSidebar = () => {
                   <div className="flex items-center gap-2 px-2.5 py-2 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
-                        src={userProfile?.avatar}
+                        src={userProfile?.imageUrl || userProfile?.avatar}
                         alt={displayName}
                       />
                       <AvatarFallback className="rounded-lg bg-slate-100">

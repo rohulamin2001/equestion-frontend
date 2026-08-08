@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Laptop, Smartphone, Tablet } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -6,6 +6,7 @@ import { useUserContext } from "../../../context/UserContext";
 import apiClient, { getAccessToken } from "../../../lib/apiClient";
 
 export function useProfile() {
+  const queryClient = useQueryClient();
   const { userProfile, role, refreshProfile, logout } = useUserContext();
 
   // Extract current sessionId from JWT access token
@@ -197,8 +198,16 @@ export function useProfile() {
 
       const uploadedUrl = uploadRes.data?.url;
       if (uploadedUrl) {
-        await apiClient.put("/users/profile", { imageUrl: uploadedUrl });
+        const updateRes = await apiClient.put("/users/profile", {
+          imageUrl: uploadedUrl,
+        });
         toast.success("ছবিটি সফলভাবে আপডেট করা হয়েছে!", { id: toastId });
+        if (updateRes.data?.user) {
+          queryClient.setQueryData(
+            ["userProfile", getAccessToken()],
+            updateRes.data.user,
+          );
+        }
         await refreshProfile();
       } else {
         throw new Error("ইমেজ আপলোড করতে সমস্যা হয়েছে।");
