@@ -105,7 +105,7 @@ export default function AuthDrawer() {
       ? "নিবন্ধিত নম্বর দিয়ে পাসওয়ার্ড পুনরুদ্ধার করুন"
       : activeTab === "login"
         ? "আপনার ড্যাশবোর্ডে স্বাগতম"
-        : "আজই শুরু করুন — বিনামূল্যে";
+        : "এখনই শুরু করুন";
 
   return (
     <AnimatePresence>
