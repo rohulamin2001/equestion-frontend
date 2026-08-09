@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   CheckCircle2,
   Eye,
@@ -6,6 +5,7 @@ import {
   KeyRound,
   Laptop,
   Loader2,
+  Lock,
   LogOut,
   MoreHorizontal,
   Save,
@@ -13,6 +13,7 @@ import {
   Smartphone,
   Sparkles,
 } from "lucide-react";
+import { useState } from "react";
 import Sms2FADisableModal from "../../../components/auth/Sms2FADisableModal";
 import Sms2FASetupModal from "../../../components/auth/Sms2FASetupModal";
 import {
@@ -240,13 +241,20 @@ export default function ProfileSecurityTab({ profile }) {
         </h3>
 
         <div className="flex items-center justify-between gap-3 p-3.5 bg-purple-50/40 rounded-xl border border-purple-100/80">
-          <div>
-            <p className="text-xs sm:text-sm font-bold text-slate-800 font-sans tracking-tight">
-              JWT এবং HTTP-Only Cookie নিরাপত্তা
-            </p>
-            <p className="text-[10px] sm:text-xs text-slate-500 font-bengali mt-0.5">
-              আপনার অ্যাকাউন্টটি এনক্রিপ্টেড টোকেন এবং বহু-ডিভাইস সুরক্ষা ব্যবস্থার মাধ্যমে সুরক্ষিত।
-            </p>
+          <div className="flex gap-3">
+            <div className="p-2 bg-green-100/60 text-[var(--green-700)] rounded-lg shrink-0 mt-0.5">
+              <Lock className="size-4.5" />
+            </div>
+            <div>
+              {" "}
+              <p className="text-xs sm:text-sm font-bold text-slate-800 font-sans tracking-tight">
+                এনক্রিপ্টেড
+              </p>
+              <p className="text-[10px] sm:text-xs text-slate-500 font-bengali mt-0.5">
+                আপনার অ্যাকাউন্টটি এনক্রিপ্টেড টোকেন এবং বহু-ডিভাইস সুরক্ষা
+                ব্যবস্থার মাধ্যমে সুরক্ষিত।
+              </p>
+            </div>
           </div>
           <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200/60 whitespace-nowrap shrink-0">
             <CheckCircle2 className="size-3 sm:size-3.5" />
@@ -276,7 +284,8 @@ export default function ProfileSecurityTab({ profile }) {
                 </span>
               </div>
               <p className="text-[10px] sm:text-xs text-slate-500 font-bengali mt-0.5">
-                লগইনের সময় নিবন্ধিত ফোন নম্বরে পাঠানো ৬ ডিজিটের OTP ব্যবহার করে দ্বিস্তরী নিরাপত্তা প্রদান করে।
+                লগইনের সময় নিবন্ধিত ফোন নম্বরে পাঠানো ৬ ডিজিটের OTP ব্যবহার করে
+                দ্বিস্তরী নিরাপত্তা প্রদান করে।
               </p>
             </div>
           </div>
@@ -415,7 +424,10 @@ export default function ProfileSecurityTab({ profile }) {
                           <MoreHorizontal className="size-4" />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="rounded-xl border border-slate-200/50 bg-glass-elevated backdrop-blur-xl shadow-2xl p-1 z-50">
+                      <DropdownMenuContent
+                        align="end"
+                        className="rounded-xl border border-slate-200/50 bg-glass-elevated backdrop-blur-xl shadow-2xl p-1 z-50"
+                      >
                         <DropdownMenuItem
                           onClick={() => setSessionToRevoke(session)}
                           variant="destructive"
@@ -441,7 +453,8 @@ export default function ProfileSecurityTab({ profile }) {
             <AlertDialogHeader>
               <AlertDialogTitle>ডিভাইস লগ আউট করুন</AlertDialogTitle>
               <AlertDialogDescription>
-                আপনি কি নিশ্চিতভাবে এই ডিভাইসটি থেকে আপনার অ্যাকাউন্ট লগ আউট করতে চান?
+                আপনি কি নিশ্চিতভাবে এই ডিভাইসটি থেকে আপনার অ্যাকাউন্ট লগ আউট
+                করতে চান?
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
