@@ -2,6 +2,7 @@ import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
 import apiClient from "@/lib/apiClient";
+import { validateCategoryQuestionsJson } from "@/lib/jsonQuestionValidator";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -239,21 +240,23 @@ export function useAddQuestion() {
       return [];
     }
 
-    let parsed;
-    try {
-      parsed = JSON.parse(qm.rawPastedJsonText);
-    } catch {
-      return [];
-    }
+    const validation = validateCategoryQuestionsJson(
+      qm.rawPastedJsonText,
+      qm.formCategory,
+    );
 
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+    if (
+      !validation.isValid ||
+      !Array.isArray(validation.questions) ||
+      validation.questions.length === 0
+    ) {
       return [];
     }
 
     const clientDups = [];
     const textMap = new Map();
 
-    parsed.forEach((q, idx) => {
+    validation.questions.forEach((q, idx) => {
       const index = idx + 1;
       const rawText = extractQuestionStem(q, qm.formCategory);
       const strippedText = stripHtmlText(rawText);
@@ -305,18 +308,16 @@ export function useAddQuestion() {
       return () => clearTimeout(resetTimer);
     }
 
-    let parsed = null;
-    try {
-      parsed = JSON.parse(qm.rawPastedJsonText);
-    } catch {
-      const resetTimer = setTimeout(() => {
-        setServerDuplicates([]);
-        setIsCheckingServerDuplicates(false);
-      }, 0);
-      return () => clearTimeout(resetTimer);
-    }
+    const validation = validateCategoryQuestionsJson(
+      qm.rawPastedJsonText,
+      qm.formCategory,
+    );
 
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+    if (
+      !validation.isValid ||
+      !Array.isArray(validation.questions) ||
+      validation.questions.length === 0
+    ) {
       const resetTimer = setTimeout(() => {
         setServerDuplicates([]);
         setIsCheckingServerDuplicates(false);
@@ -332,7 +333,7 @@ export function useAddQuestion() {
           subjectId: qm.formSubjectId,
           chapterNumber: Number(qm.formChapterNumber),
           category: qm.formCategory,
-          questions: parsed,
+          questions: validation.questions,
         };
         const res = await checkDuplicateMutation.mutateAsync(payload);
         if (res?.success && Array.isArray(res.serverDuplicates)) {
@@ -363,9 +364,30 @@ export function useAddQuestion() {
     try {
       const parsed = JSON.parse(qm.rawPastedJsonText);
       if (Array.isArray(parsed)) {
-        const updated = parsed.filter(
-          (_, idx) => idx + 1 !== itemIndexToRemove,
-        );
+        let flatIndex = 0;
+        const updated = [];
+        for (const item of parsed) {
+          if (
+            (item?.isGroup || item?.passageStem || item?.stem) &&
+            Array.isArray(item?.questions)
+          ) {
+            const remainingSubQuestions = [];
+            for (const subQ of item.questions) {
+              flatIndex++;
+              if (flatIndex !== itemIndexToRemove) {
+                remainingSubQuestions.push(subQ);
+              }
+            }
+            if (remainingSubQuestions.length > 0) {
+              updated.push({ ...item, questions: remainingSubQuestions });
+            }
+          } else {
+            flatIndex++;
+            if (flatIndex !== itemIndexToRemove) {
+              updated.push(item);
+            }
+          }
+        }
         qm.setRawPastedJsonText(JSON.stringify(updated, null, 2));
         toast.success(`প্রশ্ন #${itemIndexToRemove} রিমুভ করা হয়েছে`);
       }
