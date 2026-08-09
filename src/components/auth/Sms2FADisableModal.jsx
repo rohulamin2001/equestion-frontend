@@ -91,17 +91,17 @@ export default function Sms2FADisableModal({ open, onOpenChange, onSuccess }) {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md p-6 border border-slate-200/50 bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative font-bengali">
-        <DialogHeader className="space-y-2 text-center sm:text-left">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-red-100 text-red-600 rounded-xl border border-red-200/60 shrink-0">
-              <Lock className="size-6" />
+      <DialogContent className="w-[92vw] max-w-md max-h-[90vh] overflow-y-auto p-4 sm:p-6 border border-slate-200/50 bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative font-bengali">
+        <DialogHeader className="space-y-2 text-left">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="p-2 sm:p-2.5 bg-red-100 text-red-600 rounded-xl border border-red-200/60 shrink-0">
+              <Lock className="size-5 sm:size-6" />
             </div>
             <div>
-              <DialogTitle className="text-lg font-bold text-slate-900 font-sans tracking-tight">
+              <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 font-sans tracking-tight">
                 SMS ২-স্টেপ সিকিউরিটি নিষ্ক্রিয়করণ
               </DialogTitle>
-              <DialogDescription className="text-xs text-slate-500 font-bengali mt-0.5">
+              <DialogDescription className="text-[11px] sm:text-xs text-slate-500 font-bengali mt-0.5 leading-relaxed">
                 {step === 1
                   ? "নিরাপত্তার স্বার্থে আপনার বর্তমান পাসওয়ার্ড প্রদান করুন।"
                   : `${phoneNumberMasked || "নিবন্ধিত নম্বরে"} পাঠানো ৬ ডিজিটের OTP প্রবেশ করুন।`}
@@ -111,9 +111,9 @@ export default function Sms2FADisableModal({ open, onOpenChange, onSuccess }) {
         </DialogHeader>
 
         {step === 1 ? (
-          <form onSubmit={handlePasswordSubmit} className="space-y-4 pt-2">
+          <form onSubmit={handlePasswordSubmit} className="space-y-3.5 sm:space-y-4 pt-2">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700">
+              <label className="text-[11px] sm:text-xs font-semibold text-slate-700">
                 বর্তমান পাসওয়ার্ড <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -123,12 +123,12 @@ export default function Sms2FADisableModal({ open, onOpenChange, onSuccess }) {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="আপনার বর্তমান পাসওয়ার্ড টাইপ করুন"
-                  className="w-full h-11 pl-3 pr-10 rounded-xl border border-slate-200 bg-white/80 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans shadow-sm transition-all"
+                  className="w-full h-10 sm:h-11 pl-3 pr-10 rounded-xl border border-slate-200 bg-white/80 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-xs sm:text-sm font-sans shadow-sm transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3.5 text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer"
+                  className="absolute right-3 top-3 sm:top-3.5 text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer"
                 >
                   {showPassword ? (
                     <EyeOff className="size-4" />
@@ -139,27 +139,27 @@ export default function Sms2FADisableModal({ open, onOpenChange, onSuccess }) {
               </div>
             </div>
 
-            <div className="pt-2 flex justify-end gap-2">
+            <div className="pt-2 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={handleClose}
-                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+                className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
               >
                 বাতিল
               </button>
               <button
                 type="submit"
                 disabled={!currentPassword || sendDisableOtp.isPending}
-                className="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-red-600 to-rose-600 shadow-md hover:shadow-lg disabled:opacity-50 transition-all cursor-pointer flex items-center gap-2"
+                className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-bold text-white bg-gradient-to-r from-red-600 to-rose-600 shadow-md hover:shadow-lg disabled:opacity-50 transition-all cursor-pointer flex items-center gap-1.5 sm:gap-2"
               >
                 {sendDisableOtp.isPending ? (
                   <>
-                    <Loader2 className="size-4 animate-spin" />
+                    <Loader2 className="size-3.5 sm:size-4 animate-spin" />
                     পাসওয়ার্ড যাচাই হচ্ছে...
                   </>
                 ) : (
                   <>
-                    <KeyRound className="size-4" />
+                    <KeyRound className="size-3.5 sm:size-4" />
                     পরবর্তী ধাপ (OTP)
                   </>
                 )}
@@ -167,9 +167,9 @@ export default function Sms2FADisableModal({ open, onOpenChange, onSuccess }) {
             </div>
           </form>
         ) : (
-          <form onSubmit={handleOtpSubmit} className="space-y-4 pt-2">
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
+          <form onSubmit={handleOtpSubmit} className="space-y-3.5 sm:space-y-4 pt-2">
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-[11px] sm:text-xs font-semibold text-slate-700 flex items-center justify-between">
                 <span>
                   ৬ ডিজিটের OTP কোড লিখুন{" "}
                   <span className="text-red-500">*</span>
@@ -186,13 +186,13 @@ export default function Sms2FADisableModal({ open, onOpenChange, onSuccess }) {
                   }
                   placeholder="• • • • • •"
                   autoFocus
-                  className="w-full h-12 text-center text-xl font-bold tracking-[0.4em] font-sans rounded-xl border border-slate-200 bg-white/80 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-600 shadow-sm transition-all"
+                  className="w-full h-11 sm:h-12 text-center text-lg sm:text-xl font-bold tracking-[0.25em] sm:tracking-[0.4em] font-sans rounded-xl border border-slate-200 bg-white/80 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-600 shadow-sm transition-all pl-9 pr-3 sm:pl-10"
                 />
-                <Smartphone className="absolute left-3.5 top-3.5 size-5 text-slate-400 pointer-events-none" />
+                <Smartphone className="absolute left-3 top-3 sm:top-3.5 size-4 sm:size-5 text-slate-400 pointer-events-none" />
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-xs pt-1">
+            <div className="flex flex-wrap items-center justify-between text-[11px] sm:text-xs gap-1 pt-0.5">
               <span className="text-slate-500">কোড পাননি?</span>
               <button
                 type="button"
@@ -201,7 +201,7 @@ export default function Sms2FADisableModal({ open, onOpenChange, onSuccess }) {
                 className="font-bold text-red-600 hover:text-red-800 disabled:text-slate-400 transition flex items-center gap-1 cursor-pointer"
               >
                 <RefreshCw
-                  className={`size-3.5 ${sendDisableOtp.isPending ? "animate-spin" : ""}`}
+                  className={`size-3 sm:size-3.5 ${sendDisableOtp.isPending ? "animate-spin" : ""}`}
                 />
                 {cooldown > 0
                   ? `পুনরায় পাঠান (${cooldown} সে)`
@@ -209,22 +209,22 @@ export default function Sms2FADisableModal({ open, onOpenChange, onSuccess }) {
               </button>
             </div>
 
-            <div className="pt-2 flex justify-end gap-2">
+            <div className="pt-2 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+                className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
               >
                 আগের ধাপ
               </button>
               <button
                 type="submit"
                 disabled={otp.length !== 6 || confirmDisable.isPending}
-                className="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-red-600 to-rose-600 shadow-md hover:shadow-lg disabled:opacity-50 transition-all cursor-pointer flex items-center gap-2"
+                className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-bold text-white bg-gradient-to-r from-red-600 to-rose-600 shadow-md hover:shadow-lg disabled:opacity-50 transition-all cursor-pointer flex items-center gap-1.5 sm:gap-2"
               >
                 {confirmDisable.isPending ? (
                   <>
-                    <Loader2 className="size-4 animate-spin" />
+                    <Loader2 className="size-3.5 sm:size-4 animate-spin" />
                     বন্ধ করা হচ্ছে...
                   </>
                 ) : (
