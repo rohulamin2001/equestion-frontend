@@ -1,20 +1,22 @@
 import confetti from "canvas-confetti";
 import {
   ArrowLeft,
+  ArrowRight,
   ChevronDown,
   Globe,
   GraduationCap,
   Landmark,
   Loader2,
   Mail,
-  MapPin,
   Phone,
-  Sparkles,
+  X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { useUserContext } from "../context/UserContext";
 import apiClient from "../lib/apiClient";
+import BdAddressSelect from "./BdAddressSelect";
 
 function CustomSelect({
   value,
@@ -25,18 +27,64 @@ function CustomSelect({
   isEmerald = false,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [coords, setCoords] = useState({
+    top: 0,
+    left: 0,
+    width: 0,
+    dropUp: false,
+  });
+  const containerRef = useRef(null);
 
   const selectedOpt = options.find((o) => o.value === value);
 
+  const updatePosition = () => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const menuHeight = 240; // max-h-60
+      const dropUp = spaceBelow < menuHeight && rect.top > menuHeight;
+
+      setCoords({
+        top: dropUp ? rect.top - 6 : rect.bottom + 6,
+        left: rect.left,
+        width: rect.width,
+        dropUp,
+      });
+    }
+  };
+
+  const handleToggle = () => {
+    if (!isOpen) {
+      updatePosition();
+    }
+    setIsOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleScrollOrResize = () => {
+      updatePosition();
+    };
+
+    window.addEventListener("scroll", handleScrollOrResize, true);
+    window.addEventListener("resize", handleScrollOrResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollOrResize, true);
+      window.removeEventListener("resize", handleScrollOrResize);
+    };
+  }, [isOpen]);
+
   return (
-    <div className="relative w-full">
+    <div ref={containerRef} className="relative w-full">
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className={`w-full px-3 h-10 border border-slate-200 rounded-xl text-xs bg-white hover:bg-slate-50/50 focus:outline-none transition-all duration-200 font-semibold text-slate-700 flex justify-between items-center cursor-pointer shadow-sm ${
           isEmerald
             ? "hover:border-emerald-400 focus:ring-emerald-500/20"
-            : "hover:border-indigo-400 focus:ring-indigo-500/20"
+            : "hover:border-purple-400 focus:ring-purple-500/20"
         } ${className}`}
       >
         <span className={value ? "text-slate-800" : "text-slate-400"}>
@@ -47,45 +95,61 @@ function CustomSelect({
         />
       </button>
 
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-          />
-          <div className="absolute top-full left-0 right-0 mt-1.5 bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-xl shadow-2xl p-1.5 space-y-0.5 z-50 animate-in fade-in-0 zoom-in-95 duration-100 max-h-60 overflow-y-auto">
-            {options.map((opt) => {
-              const isSelected = opt.value === value;
-              return (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => {
-                    onChange(opt.value);
-                    setIsOpen(false);
-                  }}
-                  className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-between cursor-pointer ${
-                    isEmerald
-                      ? isSelected
-                        ? "bg-emerald-50 text-emerald-600"
-                        : "text-slate-700 hover:bg-emerald-50/40"
-                      : isSelected
-                        ? "bg-indigo-50 text-indigo-600"
-                        : "text-slate-700 hover:bg-indigo-50/40"
-                  }`}
-                >
-                  <span>{opt.label}</span>
-                  {isSelected && (
-                    <span
-                      className={`size-1.5 rounded-full ${isEmerald ? "bg-emerald-500" : "bg-indigo-500"}`}
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </>
-      )}
+      {isOpen &&
+        createPortal(
+          <>
+            <div
+              className="fixed inset-0 z-[10000]"
+              onClick={() => setIsOpen(false)}
+            />
+            <div
+              style={{
+                position: "fixed",
+                left: `${coords.left}px`,
+                width: `${coords.width}px`,
+                ...(coords.dropUp
+                  ? { bottom: `${window.innerHeight - coords.top}px` }
+                  : { top: `${coords.top}px` }),
+              }}
+              className="z-[10001] bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-xl shadow-2xl p-1.5 space-y-0.5 animate-in fade-in-0 zoom-in-95 duration-100 max-h-60 overflow-y-auto font-bengali"
+            >
+              {options.map((opt) => {
+                const isSelected = opt.value === value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => {
+                      onChange(opt.value);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-between cursor-pointer ${
+                      isEmerald
+                        ? isSelected
+                          ? "bg-emerald-50 text-emerald-600"
+                          : "text-slate-700 hover:bg-emerald-50/40"
+                        : isSelected
+                          ? "bg-purple-50 text-[var(--purple-700)]"
+                          : "text-slate-700 hover:bg-purple-50/40"
+                    }`}
+                  >
+                    <span>{opt.label}</span>
+                    {isSelected && (
+                      <span
+                        className={`size-1.5 rounded-full ${
+                          isEmerald
+                            ? "bg-emerald-500"
+                            : "bg-[var(--purple-600)]"
+                        }`}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </>,
+          document.body,
+        )}
     </div>
   );
 }
@@ -118,23 +182,13 @@ export default function OnboardingModal() {
   const [division, setDivision] = useState("");
   const [district, setDistrict] = useState("");
   const [upazila, setUpazila] = useState("");
-  const [postOffice, setPostOffice] = useState("");
+  const [union, setUnion] = useState("");
   const [fullAddress, setFullAddress] = useState("");
 
-  const divisions = [
-    "ঢাকা",
-    "চট্টগ্রাম",
-    "রাজশাহী",
-    "খুলনা",
-    "বরিশাল",
-    "সিলেট",
-    "রংপুর",
-    "ময়মনসিংহ",
-  ];
   const studentRanges = [
     { value: "1-100", label: "১–১০০ জন" },
     { value: "101-300", label: "১০১–৩০০ জন" },
-    { value: "301-500", label: "৩০১–৫০০ জন" },
+    { value: "301-500", label: "৩০১–৫০১ জন" },
     { value: "501-1,000", label: "৫০১–১,০০০ জন" },
     { value: "1,001-2,000", label: "১,০০১–২,০০০ জন" },
     { value: "2,001-5,000", label: "২,০০১–৫,০০০ জন" },
@@ -143,12 +197,10 @@ export default function OnboardingModal() {
 
   const handleSelectRole = (role) => {
     setUserType(role);
-    setStep(2);
   };
 
   const handleBack = () => {
     setStep(1);
-    setUserType(null);
   };
 
   const handleSubmit = async (e) => {
@@ -183,7 +235,7 @@ export default function OnboardingModal() {
           !division ||
           !district.trim() ||
           !upazila.trim() ||
-          !postOffice.trim() ||
+          !union.trim() ||
           !fullAddress.trim()
         ) {
           toast.error("দয়া করে সব আবশ্যক ক্ষেত্রগুলো পূরণ করুন।");
@@ -207,7 +259,8 @@ export default function OnboardingModal() {
             division,
             district,
             upazila,
-            postOffice,
+            postOffice: union,
+            union,
             fullAddress,
           },
         };
@@ -265,92 +318,111 @@ export default function OnboardingModal() {
   const isTeacher = userType === "Teacher";
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-      <div className="w-full max-w-2xl bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 transition-all duration-300 transform scale-100 flex flex-col my-8 max-h-[85vh] overflow-hidden">
-        {/* Progress Header */}
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 font-sans tracking-tight">
-                প্রশ্ন অনবোর্ডিং
-              </h2>
-              <p className="text-xs text-slate-500 font-sans">
-                অ্যাকাউন্ট ভেরিফিকেশন সম্পন্ন করার শেষ ধাপ
-              </p>
-            </div>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
+      <div className="w-full max-w-2xl bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative p-4 sm:p-8 flex flex-col my-auto max-h-[92vh] overflow-hidden font-bengali">
+        {/* Top-Right Circular Close Button */}
+        <button
+          type="button"
+          onClick={() =>
+            toast.info("ড্যাশবোর্ডে প্রবেশ করতে অনবোর্ডিং তথ্য পূরণ প্রয়োজন।")
+          }
+          className="absolute top-3 right-3 sm:top-6 sm:right-6 size-8 sm:size-10 rounded-full bg-slate-100/80 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition flex items-center justify-center cursor-pointer z-50"
+          title="বন্ধ করুন"
+        >
+          <X className="size-4 sm:size-5" />
+        </button>
+
+        {/* Progress Step Header */}
+        <div className="space-y-2 mb-4 sm:mb-6 pr-12">
+          <div className="flex items-center justify-between text-xs sm:text-sm font-semibold text-slate-500 font-bengali">
+            <span>ধাপ {step} / ২</span>
+            <span>
+              {step === 1
+                ? "রোল সিলেক্ট করুন"
+                : isTeacher
+                  ? "শিক্ষকের তথ্য"
+                  : "প্রতিষ্ঠানের তথ্য"}
+            </span>
           </div>
-          {step === 2 && (
-            <button
-              onClick={handleBack}
-              disabled={loading}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold border transition-all duration-300 shadow-sm disabled:opacity-50 ${
-                isTeacher
-                  ? "text-indigo-600 border-indigo-100 bg-indigo-50/30 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-500/20"
-                  : "text-emerald-600 border-emerald-100 bg-emerald-50/30 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:shadow-lg hover:shadow-emerald-500/20"
-              }`}
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span>পেছনে ফিরুন</span>
-            </button>
-          )}
+
+          {/* Progress Line */}
+          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-[var(--purple-800)] to-[var(--purple-600)] transition-all duration-300 rounded-full"
+              style={{ width: step === 1 ? "50%" : "100%" }}
+            />
+          </div>
         </div>
 
         {/* Step 1: Role Selection */}
         {step === 1 && (
-          <div className="p-8 space-y-6">
-            <div className="text-center space-y-2">
-              <h1 className="text-2xl font-bold text-slate-800 font-bengali">
-                প্রশ্ন-এ আপনাকে স্বাগতম!
+          <div className="flex-1 flex flex-col justify-center py-2 sm:py-4 space-y-4 sm:space-y-6">
+            <div className="text-center space-y-1 sm:space-y-1.5">
+              <h1 className="text-xl sm:text-3xl font-bold text-[var(--purple-700)] font-bengali tracking-tight">
+                রোল সিলেক্ট করুন
               </h1>
-              <p className="text-sm text-slate-500 max-w-md mx-auto leading-relaxed font-bengali">
-                ড্যাশবোর্ডে প্রবেশ করার আগে দয়া করে আপনার সঠিক ভূমিকা নির্বাচন
-                করুন। এটি আপনার জন্য উপযুক্ত ফিচারগুলো সক্রিয় করবে।
+              <p className="text-[11px] sm:text-sm text-slate-500 font-bengali">
+                আপনি কোন ধরনের ব্যবহারকারী তা নির্বাচন করুন।
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-              {/* Teacher Selection Card */}
-              <button
+            {/* 2 Options Cards Side-by-Side: Teacher & Institution */}
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-6 max-w-xl mx-auto w-full my-2 sm:my-4">
+              {/* Teacher Option */}
+              <div
                 onClick={() => handleSelectRole("Teacher")}
-                className="group p-6 text-left rounded-2xl border-2 border-slate-100 hover:border-indigo-500 bg-white hover:bg-slate-50 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-6"
+                className={`group p-3.5 sm:p-8 rounded-2xl border-2 transition-all duration-200 cursor-pointer text-center flex flex-col items-center justify-center space-y-2 sm:space-y-4 ${
+                  userType === "Teacher"
+                    ? "border-[var(--purple-600)] bg-purple-50/40 shadow-md shadow-purple-500/10 ring-2 ring-purple-500/20"
+                    : "border-slate-100 hover:border-purple-200 bg-white hover:bg-slate-50/80 shadow-sm hover:shadow"
+                }`}
               >
-                <div className="p-4 bg-indigo-50 text-indigo-600 rounded-2xl group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300 w-fit">
-                  <GraduationCap className="h-8 w-8" />
+                <div
+                  className={`size-11 sm:size-16 rounded-full flex items-center justify-center transition-all duration-200 ${
+                    userType === "Teacher"
+                      ? "bg-[var(--purple-600)] text-white shadow-md shadow-purple-600/30"
+                      : "bg-purple-100/70 text-[var(--purple-700)] group-hover:bg-[var(--purple-600)] group-hover:text-white"
+                  }`}
+                >
+                  <GraduationCap className="size-5 sm:size-8" />
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-lg font-bold text-slate-800 group-hover:text-indigo-600 transition-colors font-bengali">
-                    আমি একজন শিক্ষক
+                <div className="space-y-0.5 sm:space-y-1">
+                  <h3 className="text-xs sm:text-lg font-bold text-slate-800 font-bengali">
+                    শিক্ষক
                   </h3>
-                  <p className="text-sm text-slate-500 font-bengali leading-relaxed">
-                    ব্যক্তিগতভাবে প্রশ্ন তৈরি, শিক্ষার্থীদের অনলাইন পরীক্ষা
-                    নেওয়া এবং ওএমআর মূল্যায়নের জন্য আপনার শিক্ষক অ্যাকাউন্ট তৈরি
-                    করুন।
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-bengali leading-snug sm:leading-relaxed">
+                    ব্যক্তিগত শিক্ষক বা শিক্ষাবিদদের জন্য।
                   </p>
                 </div>
-              </button>
+              </div>
 
-              {/* Institution Selection Card */}
-              <button
+              {/* Institution Option */}
+              <div
                 onClick={() => handleSelectRole("Institution")}
-                className="group p-6 text-left rounded-2xl border-2 border-slate-100 hover:border-emerald-500 bg-white hover:bg-slate-50 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-6"
+                className={`group p-3.5 sm:p-8 rounded-2xl border-2 transition-all duration-200 cursor-pointer text-center flex flex-col items-center justify-center space-y-2 sm:space-y-4 ${
+                  userType === "Institution"
+                    ? "border-[var(--purple-600)] bg-purple-50/40 shadow-md shadow-purple-500/10 ring-2 ring-purple-500/20"
+                    : "border-slate-100 hover:border-purple-200 bg-white hover:bg-slate-50/80 shadow-sm hover:shadow"
+                }`}
               >
-                <div className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300 w-fit">
-                  <Landmark className="h-8 w-8" />
+                <div
+                  className={`size-11 sm:size-16 rounded-full flex items-center justify-center transition-all duration-200 ${
+                    userType === "Institution"
+                      ? "bg-[var(--purple-600)] text-white shadow-md shadow-purple-600/30"
+                      : "bg-purple-100/70 text-[var(--purple-700)] group-hover:bg-[var(--purple-600)] group-hover:text-white"
+                  }`}
+                >
+                  <Landmark className="size-5 sm:size-8" />
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-lg font-bold text-slate-800 group-hover:text-emerald-600 transition-colors font-bengali">
-                    শিক্ষা প্রতিষ্ঠান
+                <div className="space-y-0.5 sm:space-y-1">
+                  <h3 className="text-xs sm:text-lg font-bold text-slate-800 font-bengali">
+                    প্রতিষ্ঠান
                   </h3>
-                  <p className="text-sm text-slate-500 font-bengali leading-relaxed">
-                    আপনার স্কুল, কলেজ, মাদ্রাসা বা কোচিং সেন্টারের জন্য
-                    প্রাতিষ্ঠানিক অ্যাকাউন্ট তৈরি করে শিক্ষক ও শিক্ষার্থী
-                    পরিচালনা করুন।
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-bengali leading-snug sm:leading-relaxed">
+                    বিদ্যালয়, কলেজ বা কোচিং সেন্টারের জন্য।
                   </p>
                 </div>
-              </button>
+              </div>
             </div>
           </div>
         )}
@@ -358,18 +430,19 @@ export default function OnboardingModal() {
         {/* Step 2: Form */}
         {step === 2 && (
           <form
+            id="onboarding-form"
             onSubmit={handleSubmit}
-            className="flex-1 flex flex-col overflow-y-auto"
+            className="flex-1 flex flex-col min-h-0"
           >
-            <div className="p-6 md:p-8 space-y-6 overflow-visible pb-32">
+            <div className="flex-1 overflow-y-auto max-h-[60vh] p-2 sm:p-4 space-y-6">
               {/* Teacher Form Fields */}
               {isTeacher && (
                 <div className="space-y-4 font-bengali">
-                  <h3 className="text-lg font-bold text-slate-800 mb-2 border-b pb-2 flex items-center gap-2">
-                    <GraduationCap className="h-5 w-5 text-indigo-500" />
-                    শিক্ষকের তথ্য
+                  <h3 className="text-sm sm:text-base font-bold text-slate-800 border-b border-slate-200/60 pb-2 flex items-center gap-2">
+                    <GraduationCap className="size-5 text-[var(--purple-700)]" />
+                    শিক্ষকের তথ্য বিবরণ
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-semibold text-slate-600">
                         প্রথম নাম <span className="text-red-500">*</span>
@@ -379,8 +452,8 @@ export default function OnboardingModal() {
                         required
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-sans"
-                        placeholder="উদা: সাইফুল"
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
+                        placeholder="রাতুল"
                       />
                     </div>
                     <div className="space-y-1">
@@ -392,13 +465,13 @@ export default function OnboardingModal() {
                         required
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-sans"
-                        placeholder="উদা: ইসলাম"
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
+                        placeholder="হাসান"
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-semibold text-slate-600">
                         মোবাইল নম্বর (ভেরিফাইড)
@@ -442,7 +515,7 @@ export default function OnboardingModal() {
                       required
                       value={institutionName}
                       onChange={(e) => setInstitutionName(e.target.value)}
-                      className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
+                      className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm"
                       placeholder="উদা: ঢাকা গভঃ মুসলিম হাই স্কুল"
                     />
                   </div>
@@ -452,9 +525,9 @@ export default function OnboardingModal() {
               {/* Institution Form Fields */}
               {!isTeacher && (
                 <div className="space-y-4 font-bengali">
-                  <h3 className="text-lg font-bold text-slate-800 mb-2 border-b pb-2 flex items-center gap-2">
-                    <Landmark className="h-5 w-5 text-emerald-500" />
-                    শিক্ষা প্রতিষ্ঠানের তথ্য
+                  <h3 className="text-sm sm:text-base font-bold text-slate-800 border-b border-slate-200/60 pb-2 flex items-center gap-2">
+                    <Landmark className="size-5 text-[var(--purple-700)]" />
+                    শিক্ষা প্রতিষ্ঠানের তথ্য বিবরণ
                   </h3>
 
                   {/* Type, Medium, Name */}
@@ -467,7 +540,6 @@ export default function OnboardingModal() {
                         value={institutionType}
                         onChange={setInstitutionType}
                         placeholder="নির্বাচন করুন"
-                        isEmerald={true}
                         options={[
                           { value: "School", label: "স্কুল" },
                           { value: "College", label: "কলেজ" },
@@ -489,7 +561,6 @@ export default function OnboardingModal() {
                         value={institutionMedium}
                         onChange={setInstitutionMedium}
                         placeholder="নির্বাচন করুন"
-                        isEmerald={true}
                         options={[
                           { value: "Bangla", label: "বাংলা" },
                           { value: "English", label: "ইংরেজি" },
@@ -506,7 +577,6 @@ export default function OnboardingModal() {
                         value={studentCountRange}
                         onChange={setStudentCountRange}
                         placeholder="নির্বাচন করুন"
-                        isEmerald={true}
                         options={studentRanges}
                       />
                     </div>
@@ -521,7 +591,7 @@ export default function OnboardingModal() {
                       required
                       value={institutionName}
                       onChange={(e) => setInstitutionName(e.target.value)}
-                      className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm"
+                      className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm"
                       placeholder="উদা: হলি ক্রস স্কুল অ্যান্ড কলেজ"
                     />
                   </div>
@@ -537,7 +607,7 @@ export default function OnboardingModal() {
                         required
                         value={founderName}
                         onChange={(e) => setFounderName(e.target.value)}
-                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm"
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm"
                         placeholder="প্রতিষ্ঠাতার পুরো নাম"
                       />
                     </div>
@@ -550,7 +620,7 @@ export default function OnboardingModal() {
                         required
                         value={foundingYear}
                         onChange={(e) => setFoundingYear(e.target.value)}
-                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-sans"
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                         placeholder="উদা: ১৯৯৫"
                       />
                     </div>
@@ -566,7 +636,7 @@ export default function OnboardingModal() {
                         type="text"
                         value={eiin}
                         onChange={(e) => setEiin(e.target.value)}
-                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-sans"
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                         placeholder="প্রতিষ্ঠানের EIIN নম্বর"
                       />
                     </div>
@@ -578,79 +648,26 @@ export default function OnboardingModal() {
                         type="text"
                         value={institutionCode}
                         onChange={(e) => setInstitutionCode(e.target.value)}
-                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-sans"
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                         placeholder="উদা: বোর্ড বা জাতীয় কোড"
                       />
                     </div>
                   </div>
 
-                  {/* Address Section */}
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-3">
-                    <h4 className="text-sm font-bold text-slate-700 flex items-center gap-1.5 font-sans">
-                      <MapPin className="h-4 w-4 text-emerald-500" />
-                      প্রতিষ্ঠানের ঠিকানা
-                    </h4>
-
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-slate-600">
-                          বিভাগ <span className="text-red-500">*</span>
-                        </label>
-                        <CustomSelect
-                          value={division}
-                          onChange={setDivision}
-                          placeholder="নির্বাচন"
-                          isEmerald={true}
-                          className="h-9 text-xs"
-                          options={divisions.map((div) => ({
-                            value: div,
-                            label: div,
-                          }))}
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-slate-600">
-                          জেলা <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={district}
-                          onChange={(e) => setDistrict(e.target.value)}
-                          className="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
-                          placeholder="জেলা"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-slate-600">
-                          উপজেলা <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={upazila}
-                          onChange={(e) => setUpazila(e.target.value)}
-                          className="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
-                          placeholder="উপজেলা"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-slate-600">
-                          ডাকঘর <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={postOffice}
-                          onChange={(e) => setPostOffice(e.target.value)}
-                          className="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
-                          placeholder="ডাকঘর"
-                        />
-                      </div>
-                    </div>
+                  {/* Address Section with BdAddressSelect */}
+                  <div className="space-y-3">
+                    <BdAddressSelect
+                      value={{ division, district, upazila, union }}
+                      onChange={({ division, district, upazila, union }) => {
+                        setDivision(division);
+                        setDistrict(district);
+                        setUpazila(upazila);
+                        setUnion(union);
+                      }}
+                    />
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-semibold text-slate-600">
+                      <label className="text-[11px] font-semibold text-slate-600 font-bengali">
                         সম্পূর্ণ ঠিকানা <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -658,7 +675,7 @@ export default function OnboardingModal() {
                         required
                         value={fullAddress}
                         onChange={(e) => setFullAddress(e.target.value)}
-                        className="w-full h-9 px-3 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                        className="w-full h-9 px-3 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-xs font-bengali"
                         placeholder="রোড নম্বর, হোল্ডিং, গ্রাম ইত্যাদি"
                       />
                     </div>
@@ -677,7 +694,7 @@ export default function OnboardingModal() {
                           required
                           value={contactNumber}
                           onChange={(e) => setContactNumber(e.target.value)}
-                          className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-sans"
+                          className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                           placeholder="উদা: 01XXXXXXXXX"
                         />
                       </div>
@@ -692,7 +709,7 @@ export default function OnboardingModal() {
                           type="email"
                           value={officialEmail}
                           onChange={(e) => setOfficialEmail(e.target.value)}
-                          className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-sans"
+                          className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                           placeholder="info@institution.edu"
                         />
                       </div>
@@ -707,7 +724,7 @@ export default function OnboardingModal() {
                           type="text"
                           value={officialWebsite}
                           onChange={(e) => setOfficialWebsite(e.target.value)}
-                          className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-sans"
+                          className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                           placeholder="www.institution.edu"
                         />
                       </div>
@@ -716,30 +733,52 @@ export default function OnboardingModal() {
                 </div>
               )}
             </div>
-
-            {/* Form Footer Action */}
-            <div className="p-6 border-t border-slate-100 bg-slate-50 rounded-b-3xl flex justify-end gap-3">
-              <button
-                type="submit"
-                disabled={loading}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white shadow-lg transition-all duration-300 ${
-                  isTeacher
-                    ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/25"
-                    : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/25"
-                } disabled:opacity-50`}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    সংরক্ষণ করা হচ্ছে...
-                  </>
-                ) : (
-                  <>তথ্য সংরক্ষণ করুন</>
-                )}
-              </button>
-            </div>
           </form>
         )}
+
+        {/* Bottom Navigation Actions (Matches Screenshot Layout) */}
+        <div className="pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-between mt-auto gap-2">
+          <button
+            type="button"
+            disabled={step === 1}
+            onClick={handleBack}
+            className="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-[11px] sm:text-sm font-bengali flex items-center gap-1 sm:gap-2 transition disabled:opacity-40 disabled:pointer-events-none cursor-pointer shrink-0"
+          >
+            <ArrowLeft className="size-3.5 sm:size-4" />
+            <span>ফিরে যান</span>
+          </button>
+
+          {step === 1 ? (
+            <button
+              type="button"
+              disabled={!userType}
+              onClick={() => setStep(2)}
+              className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[var(--purple-800)] to-[var(--purple-600)] hover:from-[var(--purple-900)] hover:to-[var(--purple-700)] text-white font-bold text-[11px] sm:text-sm font-bengali flex items-center gap-1.5 sm:gap-2 shadow-md shadow-purple-600/20 transition disabled:opacity-50 disabled:pointer-events-none cursor-pointer shrink-0"
+            >
+              <span>পরবর্তী ধাপ</span>
+              <ArrowRight className="size-3.5 sm:size-4" />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              form="onboarding-form"
+              disabled={loading}
+              className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[var(--purple-800)] to-[var(--purple-600)] hover:from-[var(--purple-900)] hover:to-[var(--purple-700)] text-white font-bold text-[11px] sm:text-sm font-bengali flex items-center gap-1.5 sm:gap-2 shadow-md shadow-purple-600/20 transition disabled:opacity-50 cursor-pointer shrink-0"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="size-3.5 sm:size-4 animate-spin" />
+                  সংরক্ষণ হচ্ছে...
+                </>
+              ) : (
+                <>
+                  <span>তথ্য সংরক্ষণ করুন</span>
+                  <ArrowRight className="size-3.5 sm:size-4" />
+                </>
+              )}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
