@@ -45,7 +45,7 @@ import {
   Sparkles as SparklesIcon,
   Users,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const DATA = {
   teams: [
@@ -215,6 +215,7 @@ const DATA = {
 export const RadixSidebar = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
+  const navigate = useNavigate();
   const { toggleSidebar, setOpenMobile } = useSidebar();
   const { role, userProfile, logout } = useUserContext();
   const currentRole = role || "Subscriber";
@@ -426,21 +427,16 @@ export const RadixSidebar = () => {
                   <>
                     <DropdownMenuGroup>
                       <DropdownMenuItem
-                        asChild
-                        className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali transition-all duration-150 focus:bg-[var(--sidebar-dropdown-hover-bg)] focus:text-[var(--sidebar-dropdown-hover-text)]"
+                        onSelect={() => {
+                          navigate("/dashboard/subscription");
+                          if (isMobile) {
+                            setOpenMobile(false);
+                          }
+                        }}
+                        className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali transition-all duration-150 focus:bg-[var(--sidebar-dropdown-hover-bg)] focus:text-[var(--sidebar-dropdown-hover-text)] flex items-center gap-2 w-full"
                       >
-                        <Link
-                          to="/dashboard/subscription"
-                          className="flex items-center gap-2 w-full"
-                          onClick={() => {
-                            if (isMobile) {
-                              setOpenMobile(false);
-                            }
-                          }}
-                        >
-                          <SparklesIcon className="size-4 text-amber-500" />
-                          প্রো-তে আপগ্রেড করুন
-                        </Link>
+                        <SparklesIcon className="size-4 text-amber-500" />
+                        প্রো-তে আপগ্রেড করুন
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator className="bg-black/[0.04]" />
@@ -448,70 +444,53 @@ export const RadixSidebar = () => {
                 )}
                 <DropdownMenuGroup>
                   <DropdownMenuItem
-                    asChild
-                    className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali transition-all duration-150 focus:bg-[var(--sidebar-dropdown-hover-bg)] focus:text-[var(--sidebar-dropdown-hover-text)]"
+                    onSelect={() => {
+                      navigate("/dashboard/profile");
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
+                    }}
+                    className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali transition-all duration-150 focus:bg-[var(--sidebar-dropdown-hover-bg)] focus:text-[var(--sidebar-dropdown-hover-text)] flex items-center gap-2 w-full"
                   >
-                    <Link
-                      to="/dashboard/profile"
-                      className="flex items-center gap-2 w-full"
-                      onClick={() => {
-                        if (isMobile) {
-                          setOpenMobile(false);
-                        }
-                      }}
-                    >
-                      <Users className="size-4" />
-                      আমার প্রোফাইল
-                    </Link>
+                    <Users className="size-4" />
+                    আমার প্রোফাইল
                   </DropdownMenuItem>
 
                   {userProfile?.userType === "Institution" && (
                     <DropdownMenuItem
-                      asChild
-                      className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali transition-all duration-150 focus:bg-[var(--sidebar-dropdown-hover-bg)] focus:text-[var(--sidebar-dropdown-hover-text)]"
-                    >
-                      <Link
-                        to="/dashboard/institution"
-                        className="flex items-center gap-2 w-full"
-                        onClick={() => {
-                          if (isMobile) {
-                            setOpenMobile(false);
-                          }
-                        }}
-                      >
-                        <BadgeCheck className="size-4" />
-                        প্রতিষ্ঠানের প্রোফাইল
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
-
-                  <DropdownMenuItem
-                    asChild
-                    className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali transition-all duration-150 focus:bg-[var(--sidebar-dropdown-hover-bg)] focus:text-[var(--sidebar-dropdown-hover-text)]"
-                  >
-                    <Link
-                      to="/dashboard/support"
-                      className="flex items-center gap-2 w-full"
-                      onClick={() => {
+                      onSelect={() => {
+                        navigate("/dashboard/institution");
                         if (isMobile) {
                           setOpenMobile(false);
                         }
                       }}
+                      className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali transition-all duration-150 focus:bg-[var(--sidebar-dropdown-hover-bg)] focus:text-[var(--sidebar-dropdown-hover-text)] flex items-center gap-2 w-full"
                     >
-                      <Bell className="size-4" />
-                      যোগাযোগ ও সাপোর্ট
-                    </Link>
+                      <BadgeCheck className="size-4" />
+                      প্রতিষ্ঠানের প্রোফাইল
+                    </DropdownMenuItem>
+                  )}
+
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      navigate("/dashboard/support");
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
+                    }}
+                    className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold font-bengali transition-all duration-150 focus:bg-[var(--sidebar-dropdown-hover-bg)] focus:text-[var(--sidebar-dropdown-hover-text)] flex items-center gap-2 w-full"
+                  >
+                    <Bell className="size-4" />
+                    যোগাযোগ ও সাপোর্ট
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator className="bg-black/[0.04]" />
-                <DropdownMenuItem className="p-0 focus:bg-transparent">
-                  <button
-                    onClick={logout}
-                    className="flex w-full items-center gap-2 px-2.5 py-2 text-[13px] font-semibold text-red-650 hover:bg-red-500/10 rounded-lg transition-colors font-bengali cursor-pointer"
-                  >
-                    <LogOut className="size-4" />
-                    লগ আউট
-                  </button>
+                <DropdownMenuItem
+                  onSelect={logout}
+                  className="rounded-lg cursor-pointer px-2.5 py-2 text-[13px] font-semibold text-red-650 hover:bg-red-500/10 focus:bg-red-500/10 transition-colors font-bengali flex items-center gap-2 w-full"
+                >
+                  <LogOut className="size-4" />
+                  লগ আউট
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
