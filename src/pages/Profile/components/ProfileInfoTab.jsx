@@ -146,7 +146,7 @@ export default function ProfileInfoTab({ profile }) {
                   required
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-sans"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                 />
               </div>
               <div className="space-y-1">
@@ -158,7 +158,7 @@ export default function ProfileInfoTab({ profile }) {
                   required
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-sans"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                 />
               </div>
             </div>
@@ -190,7 +190,7 @@ export default function ProfileInfoTab({ profile }) {
                   required
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-sans"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                 />
               </div>
               <div className="space-y-1">
@@ -202,7 +202,7 @@ export default function ProfileInfoTab({ profile }) {
                   required
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-sans"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                 />
               </div>
             </div>
@@ -227,7 +227,7 @@ export default function ProfileInfoTab({ profile }) {
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none"
+                      className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none"
                     >
                       <span>{designation || "পদবি নির্বাচন করুন"}</span>
                       <ChevronDown className="size-3.5 text-slate-400" />
@@ -236,15 +236,15 @@ export default function ProfileInfoTab({ profile }) {
                   <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                     <DropdownMenuItem
                       onSelect={() => setDesignation("")}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
+                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-purple-50 focus:text-[var(--purple-700)] hover:bg-slate-50 ${
                         !designation
-                          ? "bg-indigo-50 text-indigo-600"
+                          ? "bg-purple-50 text-[var(--purple-700)]"
                           : "text-slate-700"
                       }`}
                     >
                       <span>পদবি নির্বাচন করুন</span>
                       {!designation && (
-                        <span className="size-1 rounded-full bg-indigo-500" />
+                        <span className="size-1 rounded-full bg-[var(--purple-600)]" />
                       )}
                     </DropdownMenuItem>
                     {[
@@ -261,15 +261,15 @@ export default function ProfileInfoTab({ profile }) {
                       <DropdownMenuItem
                         key={deg}
                         onSelect={() => setDesignation(deg)}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-purple-50 focus:text-[var(--purple-700)] hover:bg-slate-50 ${
                           designation === deg
-                            ? "bg-indigo-50 text-indigo-600"
+                            ? "bg-purple-50 text-[var(--purple-700)]"
                             : "text-slate-700"
                         }`}
                       >
                         <span>{deg}</span>
                         {designation === deg && (
-                          <span className="size-1 rounded-full bg-indigo-500" />
+                          <span className="size-1 rounded-full bg-[var(--purple-600)]" />
                         )}
                       </DropdownMenuItem>
                     ))}
@@ -287,7 +287,7 @@ export default function ProfileInfoTab({ profile }) {
                 required
                 value={institutionName}
                 onChange={(e) => setInstitutionName(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
+                className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm"
               />
             </div>
           </div>
@@ -306,7 +306,7 @@ export default function ProfileInfoTab({ profile }) {
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none"
+                      className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none"
                     >
                       <span>
                         {institutionTypeLabels[institutionType] ||
@@ -318,15 +318,15 @@ export default function ProfileInfoTab({ profile }) {
                   <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                     <DropdownMenuItem
                       onSelect={() => setInstitutionType("")}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
+                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-purple-50 focus:text-[var(--purple-700)] hover:bg-slate-50 ${
                         !institutionType
-                          ? "bg-indigo-50 text-indigo-600"
+                          ? "bg-purple-50 text-[var(--purple-700)]"
                           : "text-slate-700"
                       }`}
                     >
                       <span>নির্বাচন করুন</span>
                       {!institutionType && (
-                        <span className="size-1 rounded-full bg-indigo-500" />
+                        <span className="size-1 rounded-full bg-[var(--purple-600)]" />
                       )}
                     </DropdownMenuItem>
                     {Object.entries(institutionTypeLabels).map(
@@ -334,15 +334,15 @@ export default function ProfileInfoTab({ profile }) {
                         <DropdownMenuItem
                           key={val}
                           onSelect={() => setInstitutionType(val)}
-                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
+                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-purple-50 focus:text-[var(--purple-700)] hover:bg-slate-50 ${
                             institutionType === val
-                              ? "bg-indigo-50 text-indigo-600"
+                              ? "bg-purple-50 text-[var(--purple-700)]"
                               : "text-slate-700"
                           }`}
                         >
                           <span>{label}</span>
                           {institutionType === val && (
-                            <span className="size-1 rounded-full bg-indigo-500" />
+                            <span className="size-1 rounded-full bg-[var(--purple-600)]" />
                           )}
                         </DropdownMenuItem>
                       ),
@@ -358,7 +358,7 @@ export default function ProfileInfoTab({ profile }) {
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none"
+                      className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none"
                     >
                       <span>
                         {institutionMediumLabels[institutionMedium] ||
@@ -370,15 +370,15 @@ export default function ProfileInfoTab({ profile }) {
                   <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                     <DropdownMenuItem
                       onSelect={() => setInstitutionMedium("")}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
+                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-purple-50 focus:text-[var(--purple-700)] hover:bg-slate-50 ${
                         !institutionMedium
-                          ? "bg-indigo-50 text-indigo-600"
+                          ? "bg-purple-50 text-[var(--purple-700)]"
                           : "text-slate-700"
                       }`}
                     >
                       <span>নির্বাচন করুন</span>
                       {!institutionMedium && (
-                        <span className="size-1 rounded-full bg-indigo-500" />
+                        <span className="size-1 rounded-full bg-[var(--purple-600)]" />
                       )}
                     </DropdownMenuItem>
                     {Object.entries(institutionMediumLabels).map(
@@ -386,15 +386,15 @@ export default function ProfileInfoTab({ profile }) {
                         <DropdownMenuItem
                           key={val}
                           onSelect={() => setInstitutionMedium(val)}
-                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
+                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-purple-50 focus:text-[var(--purple-700)] hover:bg-slate-50 ${
                             institutionMedium === val
-                              ? "bg-indigo-50 text-indigo-600"
+                              ? "bg-purple-50 text-[var(--purple-700)]"
                               : "text-slate-700"
                           }`}
                         >
                           <span>{label}</span>
                           {institutionMedium === val && (
-                            <span className="size-1 rounded-full bg-indigo-500" />
+                            <span className="size-1 rounded-full bg-[var(--purple-600)]" />
                           )}
                         </DropdownMenuItem>
                       ),
@@ -410,7 +410,7 @@ export default function ProfileInfoTab({ profile }) {
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none"
+                      className="w-full h-10 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none"
                     >
                       <span>
                         {studentRanges.find(
@@ -423,15 +423,15 @@ export default function ProfileInfoTab({ profile }) {
                   <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
                     <DropdownMenuItem
                       onSelect={() => setStudentCountRange("")}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
+                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-purple-50 focus:text-[var(--purple-700)] hover:bg-slate-50 ${
                         !studentCountRange
-                          ? "bg-indigo-50 text-indigo-600"
+                          ? "bg-purple-50 text-[var(--purple-700)]"
                           : "text-slate-700"
                       }`}
                     >
                       <span>নির্বাচন করুন</span>
                       {!studentCountRange && (
-                        <span className="size-1 rounded-full bg-indigo-500" />
+                        <span className="size-1 rounded-full bg-[var(--purple-600)]" />
                       )}
                     </DropdownMenuItem>
                     {studentRanges.map((range) => {
@@ -440,15 +440,15 @@ export default function ProfileInfoTab({ profile }) {
                         <DropdownMenuItem
                           key={range.value}
                           onSelect={() => setStudentCountRange(range.value)}
-                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
+                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-purple-50 focus:text-[var(--purple-700)] hover:bg-slate-50 ${
                             isSelected
-                              ? "bg-indigo-50 text-indigo-600"
+                              ? "bg-purple-50 text-[var(--purple-700)]"
                               : "text-slate-700"
                           }`}
                         >
                           <span>{range.label}</span>
                           {isSelected && (
-                            <span className="size-1 rounded-full bg-indigo-500" />
+                            <span className="size-1 rounded-full bg-[var(--purple-600)]" />
                           )}
                         </DropdownMenuItem>
                       );
@@ -467,7 +467,7 @@ export default function ProfileInfoTab({ profile }) {
                 required
                 value={institutionName}
                 onChange={(e) => setInstitutionName(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
+                className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm"
               />
             </div>
 
@@ -482,7 +482,7 @@ export default function ProfileInfoTab({ profile }) {
                   required
                   value={founderName}
                   onChange={(e) => setFounderName(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm"
                 />
               </div>
               <div className="space-y-1">
@@ -494,7 +494,7 @@ export default function ProfileInfoTab({ profile }) {
                   required
                   value={foundingYear}
                   onChange={(e) => setFoundingYear(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-sans"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                 />
               </div>
             </div>
@@ -509,7 +509,7 @@ export default function ProfileInfoTab({ profile }) {
                   type="text"
                   value={eiin}
                   onChange={(e) => setEiin(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-sans"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                 />
               </div>
               <div className="space-y-1">
@@ -520,7 +520,7 @@ export default function ProfileInfoTab({ profile }) {
                   type="text"
                   value={institutionCode}
                   onChange={(e) => setInstitutionCode(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-sans"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                 />
               </div>
             </div>
@@ -552,7 +552,7 @@ export default function ProfileInfoTab({ profile }) {
                   required
                   value={fullAddress}
                   onChange={(e) => setFullAddress(e.target.value)}
-                  className="w-full h-9 px-3 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs"
+                  className="w-full h-9 px-3 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-xs"
                   placeholder="রোড নম্বর, হোল্ডিং, গ্রাম ইত্যাদি"
                 />
               </div>
@@ -571,7 +571,7 @@ export default function ProfileInfoTab({ profile }) {
                     required
                     value={contactNumber}
                     onChange={(e) => setContactNumber(e.target.value)}
-                    className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-sans"
+                    className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                   />
                 </div>
               </div>
@@ -585,7 +585,7 @@ export default function ProfileInfoTab({ profile }) {
                     type="email"
                     value={officialEmail}
                     onChange={(e) => setOfficialEmail(e.target.value)}
-                    className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-sans"
+                    className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                   />
                 </div>
               </div>
@@ -599,7 +599,7 @@ export default function ProfileInfoTab({ profile }) {
                     type="text"
                     value={officialWebsite}
                     onChange={(e) => setOfficialWebsite(e.target.value)}
-                    className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-sans"
+                    className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--purple-600)] text-sm font-sans"
                   />
                 </div>
               </div>
