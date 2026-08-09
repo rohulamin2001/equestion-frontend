@@ -83,6 +83,7 @@ export function useProfile() {
   const [division, setDivision] = useState("");
   const [district, setDistrict] = useState("");
   const [upazila, setUpazila] = useState("");
+  const [union, setUnion] = useState("");
   const [postOffice, setPostOffice] = useState("");
   const [fullAddress, setFullAddress] = useState("");
 
@@ -160,7 +161,16 @@ export function useProfile() {
         setDivision(userProfile.addressInfo.division || "");
         setDistrict(userProfile.addressInfo.district || "");
         setUpazila(userProfile.addressInfo.upazila || "");
-        setPostOffice(userProfile.addressInfo.postOffice || "");
+        setUnion(
+          userProfile.addressInfo.union ||
+            userProfile.addressInfo.postOffice ||
+            "",
+        );
+        setPostOffice(
+          userProfile.addressInfo.postOffice ||
+            userProfile.addressInfo.union ||
+            "",
+        );
         setFullAddress(userProfile.addressInfo.fullAddress || "");
       }
     }
@@ -273,7 +283,6 @@ export function useProfile() {
           !division ||
           !district.trim() ||
           !upazila.trim() ||
-          !postOffice.trim() ||
           !fullAddress.trim()
         ) {
           toast.error("দয়া করে সব আবশ্যক ক্ষেত্রগুলো পূরণ করুন।");
@@ -297,7 +306,8 @@ export function useProfile() {
             division,
             district,
             upazila,
-            postOffice,
+            postOffice: union || postOffice,
+            union: union || postOffice,
             fullAddress,
           },
         };
@@ -554,6 +564,8 @@ export function useProfile() {
     setDistrict,
     upazila,
     setUpazila,
+    union,
+    setUnion,
     postOffice,
     setPostOffice,
     fullAddress,

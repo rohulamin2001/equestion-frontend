@@ -5,10 +5,10 @@ import {
   GraduationCap,
   Loader2,
   Mail,
-  MapPin,
   Phone,
   Save,
 } from "lucide-react";
+import BdAddressSelect from "../../../components/BdAddressSelect";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,12 +56,13 @@ export default function ProfileInfoTab({ profile }) {
     setDistrict,
     upazila,
     setUpazila,
+    union,
+    setUnion,
     postOffice,
     setPostOffice,
     fullAddress,
     setFullAddress,
     imageUploading,
-    divisions,
     studentRanges,
     institutionTypeLabels,
     institutionMediumLabels,
@@ -526,99 +527,21 @@ export default function ProfileInfoTab({ profile }) {
 
             {/* Address Section */}
             <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-3">
-              <h4 className="text-sm font-bold text-slate-700 flex items-center gap-1.5 font-sans">
-                <MapPin className="h-4 w-4 text-indigo-500" />
-                প্রতিষ্ঠানের ঠিকানা
-              </h4>
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-600">
-                    বিভাগ <span className="text-red-500">*</span>
-                  </label>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        type="button"
-                        className="w-full h-9 px-3 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all rounded-xl text-xs font-semibold text-slate-700 flex justify-between items-center shadow-sm backdrop-blur-sm cursor-pointer select-none"
-                      >
-                        <span>{division || "নির্বাচন"}</span>
-                        <ChevronDown className="size-3.5 text-slate-400" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)]">
-                      <DropdownMenuItem
-                        onSelect={() => setDivision("")}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
-                          !division
-                            ? "bg-indigo-50 text-indigo-600"
-                            : "text-slate-700"
-                        }`}
-                      >
-                        <span>নির্বাচন</span>
-                        {!division && (
-                          <span className="size-1 rounded-full bg-indigo-500" />
-                        )}
-                      </DropdownMenuItem>
-                      {divisions.map((div) => {
-                        const isSelected = division === div;
-                        return (
-                          <DropdownMenuItem
-                            key={div}
-                            onSelect={() => setDivision(div)}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50 ${
-                              isSelected
-                                ? "bg-indigo-50 text-indigo-600"
-                                : "text-slate-700"
-                            }`}
-                          >
-                            <span>{div}</span>
-                            {isSelected && (
-                              <span className="size-1 rounded-full bg-indigo-500" />
-                            )}
-                          </DropdownMenuItem>
-                        );
-                      })}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-600">
-                    জেলা <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={district}
-                    onChange={(e) => setDistrict(e.target.value)}
-                    className="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-600">
-                    উপজেলা <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={upazila}
-                    onChange={(e) => setUpazila(e.target.value)}
-                    className="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-600">
-                    ডাকঘর <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={postOffice}
-                    onChange={(e) => setPostOffice(e.target.value)}
-                    className="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs"
-                  />
-                </div>
-              </div>
+              <BdAddressSelect
+                value={{
+                  division,
+                  district,
+                  upazila,
+                  union: union || postOffice,
+                }}
+                onChange={({ division, district, upazila, union }) => {
+                  setDivision(division);
+                  setDistrict(district);
+                  setUpazila(upazila);
+                  setUnion(union);
+                  setPostOffice(union);
+                }}
+              />
 
               <div className="space-y-1">
                 <label className="text-[11px] font-semibold text-slate-600">
@@ -630,6 +553,7 @@ export default function ProfileInfoTab({ profile }) {
                   value={fullAddress}
                   onChange={(e) => setFullAddress(e.target.value)}
                   className="w-full h-9 px-3 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs"
+                  placeholder="রোড নম্বর, হোল্ডিং, গ্রাম ইত্যাদি"
                 />
               </div>
             </div>
