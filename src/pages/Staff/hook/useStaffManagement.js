@@ -22,6 +22,11 @@ export function useStaffManagement() {
   const [showPassword, setShowPassword] = useState(false);
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
 
+  // Filter & Search state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [userToReset2FA, setUserToReset2FA] = useState(null);
+
   // Fetch staff members query
   const {
     data: staffList = [],
@@ -29,9 +34,17 @@ export function useStaffManagement() {
     error: fetchError,
     refetch: fetchStaff,
   } = useQuery({
-    queryKey: ["staffList"],
+    queryKey: ["staffList", searchQuery, roleFilter],
     queryFn: async () => {
-      const response = await apiClient.get("/users/staff");
+      const params = {};
+      if (searchQuery.trim()) {
+        params.search = searchQuery.trim();
+        params.includeSubscribers = "true";
+      }
+      if (roleFilter && roleFilter !== "all") {
+        params.role = roleFilter;
+      }
+      const response = await apiClient.get("/users/staff", { params });
       return response.data.staff;
     },
   });
@@ -149,6 +162,35 @@ export function useStaffManagement() {
     setStaffToDelete(userId);
   };
 
+  // Handle 2FA Admin Reset mutation
+  const reset2FAMutation = useMutation({
+    mutationFn: async (userId) => {
+      const response = await apiClient.post(`/auth/2fa/admin-reset/${userId}`);
+      return { userId, message: response.data?.message };
+    },
+    onSuccess: ({ message }) => {
+      queryClient.invalidateQueries({ queryKey: ["staffList"] });
+      toast.success(
+        message || "ব্যবহারকারীর ২-স্টেপ নিরাপত্তা সফলভাবে রিসেট করা হয়েছে!",
+      );
+      setUserToReset2FA(null);
+    },
+    onError: (err) => {
+      toast.error(
+        err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "২FA রিসেট করতে ব্যর্থ হয়েছে",
+      );
+    },
+  });
+
+  const handleConfirmReset2FA = () => {
+    if (userToReset2FA?._id) {
+      reset2FAMutation.mutate(userToReset2FA._id);
+    }
+  };
+
   return {
     userProfile,
     // Modal states
@@ -158,6 +200,13 @@ export function useStaffManagement() {
     setStaffToDelete,
     activeDropdownMemberId,
     setActiveDropdownMemberId,
+    userToReset2FA,
+    setUserToReset2FA,
+    // Search & Filter
+    searchQuery,
+    setSearchQuery,
+    roleFilter,
+    setRoleFilter,
     // Form fields
     firstName,
     setFirstName,
@@ -181,10 +230,12 @@ export function useStaffManagement() {
     formLoading,
     deleteStaffPending: deleteStaffMutation.isPending,
     deleteStaffVariables: deleteStaffMutation.variables,
+    reset2FAPending: reset2FAMutation.isPending,
     // Handlers
     handleAddStaff,
     handleRoleChange,
     handleDeleteStaff,
+    handleConfirmReset2FA,
     deleteStaffMutation,
   };
 }

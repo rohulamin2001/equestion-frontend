@@ -41,7 +41,11 @@ import {
   EyeOff,
   Loader2,
   Lock,
+  RotateCcw,
+  Search,
   Shield,
+  ShieldCheck,
+  ShieldOff,
   Trash2,
   UserCheck,
   UserPlus,
@@ -100,6 +104,14 @@ export default function StaffManagement() {
     handleRoleChange,
     handleDeleteStaff,
     deleteStaffMutation,
+    userToReset2FA,
+    setUserToReset2FA,
+    searchQuery,
+    setSearchQuery,
+    roleFilter,
+    setRoleFilter,
+    reset2FAPending,
+    handleConfirmReset2FA,
   } = useStaffManagement();
 
   return (
@@ -108,21 +120,57 @@ export default function StaffManagement() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">
-            স্টাফ ব্যবস্থাপনা
+            স্টাফ ও ইউজার ব্যবস্থাপনা
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
-            প্যানেলের অন্যান্য এডমিন ও কন্টেন্ট মেম্বারদের সরাসরি এখানে যুক্ত ও
-            পরিচালনা করুন।
+          <p className="text-slate-500 text-sm mt-1 font-bengali">
+            প্যানেলের এডমিন, স্টাফ ও ব্যবহারকারীদের সরাসরি এখানে যুক্ত, পরিচালনা
+            ও ২-স্টেপ সিকিউরিটি রিসেট করুন।
           </p>
         </div>
         <RippleButton
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-5 py-6 rounded-xl bg-primary text-white hover:bg-primary/95 transition font-semibold"
+          className="flex items-center gap-2 px-5 py-6 rounded-xl bg-primary text-white hover:bg-primary/95 transition font-semibold font-bengali"
         >
           <UserPlus className="size-[18px]" />
           নতুন স্টাফ যোগ করুন
           <RippleButtonRipples color="rgba(255, 255, 255, 0.3)" />
         </RippleButton>
+      </div>
+
+      {/* Search & Filter Bar */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+        <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="ফোন নম্বর, নাম বা প্রতিষ্ঠান দিয়ে সার্চ করুন..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-sans focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+          />
+        </div>
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 shrink-0">
+          {[
+            { id: "all", label: "সকল" },
+            { id: "Admin", label: "এডমিন" },
+            { id: "Content Manager", label: "কন্টেন্ট ম্যানেজার" },
+            { id: "Question Creator", label: "প্রশ্ন ক্রিয়েটর" },
+            { id: "Support Team", label: "সাপোর্ট টিম" },
+            { id: "Subscriber", label: "সাবস্ক্রাইবারগণ" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setRoleFilter(item.id)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold font-bengali transition-all cursor-pointer whitespace-nowrap ${
+                roleFilter === item.id
+                  ? "bg-primary text-white shadow-sm"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Main Content */}
@@ -169,6 +217,9 @@ export default function StaffManagement() {
                   </th>
                   <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider font-sans">
                     রোল (পদবি)
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider font-sans">
+                    ২FA সিকিউরিটি
                   </th>
                   <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider font-sans">
                     অ্যাকশন
@@ -315,30 +366,58 @@ export default function StaffManagement() {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {isSelf ? (
-                          <span className="text-slate-400 text-xs flex items-center gap-1">
-                            <Lock className="size-3.5" /> অ্যাকশন লকড
+                        {member.twoFactorEnabled ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200/60 font-bengali">
+                            <ShieldCheck className="size-3.5" /> ২FA সক্রিয়
                           </span>
-                        ) : userProfile?.role === "Super Admin" ? (
-                          <Button
-                            variant="ghost"
-                            className="text-red-500 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg"
-                            title="স্থায়ীভাবে মুছুন"
-                            onClick={() => handleDeleteStaff(member._id)}
-                            disabled={deleteStaffPending}
-                          >
-                            {deleteStaffPending &&
-                            deleteStaffVariables === member._id ? (
-                              <Loader2 className="size-[18px] animate-spin text-red-500" />
-                            ) : (
-                              <Trash2 className="size-[18px]" />
-                            )}
-                          </Button>
                         ) : (
-                          <span className="text-slate-400 text-xs flex items-center gap-1">
-                            <Lock className="size-3.5" /> অ্যাকশন লকড
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-500 border border-slate-200/60 font-bengali">
+                            <ShieldOff className="size-3.5" /> ২FA নিষ্ক্রিয়
                           </span>
                         )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          {/* 2FA Admin Reset Button */}
+                          {member.twoFactorEnabled && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 border-amber-200/80 px-2.5 py-1.5 rounded-lg text-xs font-bold font-bengali flex items-center gap-1.5 cursor-pointer shadow-none"
+                              title="ব্যবহারকারীর ২-স্টেপ ২FA রিসেট করুন"
+                              onClick={() => setUserToReset2FA(member)}
+                            >
+                              <RotateCcw className="size-3.5" />
+                              <span>২FA রিসেট</span>
+                            </Button>
+                          )}
+
+                          {/* Delete Button for Staff */}
+                          {isSelf ? (
+                            <span className="text-slate-400 text-xs flex items-center gap-1">
+                              <Lock className="size-3.5" /> অ্যাকশন লকড
+                            </span>
+                          ) : userProfile?.role === "Super Admin" ? (
+                            <Button
+                              variant="ghost"
+                              className="text-red-500 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg"
+                              title="স্থায়ীভাবে মুছুন"
+                              onClick={() => handleDeleteStaff(member._id)}
+                              disabled={deleteStaffPending}
+                            >
+                              {deleteStaffPending &&
+                              deleteStaffVariables === member._id ? (
+                                <Loader2 className="size-[18px] animate-spin text-red-500" />
+                              ) : (
+                                <Trash2 className="size-[18px]" />
+                              )}
+                            </Button>
+                          ) : !member.twoFactorEnabled ? (
+                            <span className="text-slate-400 text-xs flex items-center gap-1">
+                              <Lock className="size-3.5" /> অ্যাকশন লকড
+                            </span>
+                          ) : null}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -607,6 +686,59 @@ export default function StaffManagement() {
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
+        </AlertDialogPopup>
+      </AlertDialog>
+
+      {/* 2FA Admin Reset Confirmation Modal */}
+      <AlertDialog
+        open={!!userToReset2FA}
+        onOpenChange={(open) => !open && setUserToReset2FA(null)}
+      >
+        <AlertDialogPopup className="max-w-md p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative">
+          <div className="p-6 space-y-4 text-left font-bengali">
+            <AlertDialogHeader className="space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-xl shrink-0">
+                  <ShieldOff className="size-5" />
+                </div>
+                <AlertDialogTitle className="font-bold text-slate-800 text-lg">
+                  ২-স্টেপ নিরাপত্তা (2FA) রিসেট করুন
+                </AlertDialogTitle>
+              </div>
+              <AlertDialogDescription className="text-slate-600 text-xs leading-relaxed pt-1">
+                আপনি কি নিশ্চিতভাবে{" "}
+                <strong className="text-slate-900 font-bold font-sans">
+                  {userToReset2FA?.fullName || userToReset2FA?.phoneNumber}
+                </strong>
+                -এর ২-স্টেপ টু-ফ্যাক্টর সিকিউরিটি রিসেট করতে চান?
+                <br />
+                <span className="text-amber-700 block mt-2 font-medium">
+                  ⚠️ রিসেট করার পর উক্ত ব্যবহারকারী তার ফোন নম্বর ও পাসওয়ার্ড
+                  দিয়ে সরাসরি লগইন করতে পারবেন।
+                </span>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex gap-2 pt-2">
+              <AlertDialogCancel
+                disabled={reset2FAPending}
+                onClick={() => setUserToReset2FA(null)}
+                className="flex-1 rounded-xl cursor-pointer"
+              >
+                বাতিল করুন
+              </AlertDialogCancel>
+              <AlertDialogAction
+                disabled={reset2FAPending}
+                onClick={handleConfirmReset2FA}
+                className="flex-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold cursor-pointer"
+              >
+                {reset2FAPending ? (
+                  <Loader2 className="size-4 animate-spin mx-auto" />
+                ) : (
+                  "হ্যাঁ, রিসেট করুন"
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </div>
         </AlertDialogPopup>
       </AlertDialog>
     </div>

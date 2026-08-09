@@ -241,8 +241,8 @@ export default function ProfileSecurityTab({ profile }) {
         </h3>
 
         <div className="flex items-center justify-between gap-3 p-3.5 bg-purple-50/40 rounded-xl border border-purple-100/80">
-          <div className="flex gap-3">
-            <div className="p-2 bg-green-100/60 text-[var(--green-700)] rounded-lg shrink-0 mt-0.5">
+          <div className="flex items-start gap-3">
+            <div className="p-2 bg-green-100/60 text-[var(--green-700)] rounded-lg shrink-0 mt-0.5 h-fit">
               <Lock className="size-4.5" />
             </div>
             <div>
@@ -265,7 +265,7 @@ export default function ProfileSecurityTab({ profile }) {
         {/* SMS 2FA Toggle & Status */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-slate-50/60 rounded-xl border border-slate-200/80">
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-purple-100 text-[var(--purple-700)] rounded-lg shrink-0 mt-0.5">
+            <div className="p-2 bg-purple-100 text-[var(--purple-700)] rounded-lg shrink-0 mt-0.5 h-fit">
               <Smartphone className="size-4.5" />
             </div>
             <div>
