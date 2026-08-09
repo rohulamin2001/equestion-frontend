@@ -37,12 +37,14 @@ import { useSms2FA } from "../hook/useSms2FA";
 export default function ProfileSecurityTab({ profile }) {
   const [isSetupModalOpen, setIsSetupModalOpen] = useState(false);
   const [isDisableModalOpen, setIsDisableModalOpen] = useState(false);
+  const [isEnableConfirmOpen, setIsEnableConfirmOpen] = useState(false);
   const [phoneNumberMasked, setPhoneNumberMasked] = useState("");
 
   const { sendEnableOtp } = useSms2FA();
   const is2FAEnabled = Boolean(profile?.userProfile?.twoFactorEnabled);
 
-  const handleEnable2FA = () => {
+  const handleConfirmEnable2FA = () => {
+    setIsEnableConfirmOpen(false);
     sendEnableOtp.mutate(undefined, {
       onSuccess: (data) => {
         setPhoneNumberMasked(data.phoneNumberMasked || "");
@@ -262,7 +264,7 @@ export default function ProfileSecurityTab({ profile }) {
           </span>
         </div>
 
-        {/* SMS 2FA Toggle & Status */}
+        {/* 2FA Toggle & Status */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-slate-50/60 rounded-xl border border-slate-200/80">
           <div className="flex items-start gap-3">
             <div className="p-2 bg-purple-100 text-[var(--purple-700)] rounded-lg shrink-0 mt-0.5 h-fit">
@@ -271,7 +273,7 @@ export default function ProfileSecurityTab({ profile }) {
             <div>
               <div className="flex items-center gap-2">
                 <p className="text-xs sm:text-sm font-bold text-slate-800 font-sans tracking-tight">
-                  SMS ২-স্টেপ টু-ফ্যাক্টর নিরাপত্তা (2FA)
+                  ২-স্টেপ টু-ফ্যাক্টর নিরাপত্তা (2FA)
                 </p>
                 <span
                   className={`px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold border whitespace-nowrap ${
@@ -302,7 +304,7 @@ export default function ProfileSecurityTab({ profile }) {
             ) : (
               <button
                 type="button"
-                onClick={handleEnable2FA}
+                onClick={() => setIsEnableConfirmOpen(true)}
                 disabled={sendEnableOtp.isPending}
                 className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[var(--purple-800)] to-[var(--purple-600)] shadow-sm hover:shadow transition disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
               >
@@ -318,6 +320,36 @@ export default function ProfileSecurityTab({ profile }) {
             )}
           </div>
         </div>
+
+        {/* 2FA Enable Confirmation Modal */}
+        <AlertDialog
+          open={isEnableConfirmOpen}
+          onOpenChange={setIsEnableConfirmOpen}
+        >
+          <AlertDialogPopup className="p-4 sm:p-6 max-w-[92vw] sm:max-w-md rounded-2xl">
+            <AlertDialogHeader className="space-y-1 sm:space-y-1.5 mb-3 sm:mb-4">
+              <AlertDialogTitle className="text-sm sm:text-lg font-bold text-slate-900 font-bengali">
+                টু-ফ্যাক্টর নিরাপত্তা (2FA) সক্রিয় করুন
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-xs sm:text-sm text-slate-500 font-bengali leading-relaxed">
+                আপনি কি নিশ্চিতভাবে আপনার অ্যাকাউন্টে টু-ফ্যাক্টর নিরাপত্তা
+                (2FA) সক্রিয় করতে চান? নিশ্চিত করলে আপনার নিবন্ধিত ফোন নম্বরে
+                একটি OTP কোড পাঠানো হবে।
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0 mt-4 sm:mt-6 pt-3 border-t border-slate-100/80">
+              <AlertDialogCancel className="mt-0 flex-1 sm:flex-initial h-9 sm:h-10 text-xs sm:text-sm rounded-xl px-3 sm:px-4 font-bengali">
+                বাতিল করুন
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleConfirmEnable2FA}
+                className="mt-0 flex-1 sm:flex-initial h-9 sm:h-10 text-xs sm:text-sm rounded-xl px-3 sm:px-4 font-bengali bg-gradient-to-r from-[var(--purple-800)] to-[var(--purple-600)] text-white hover:from-[var(--purple-900)] hover:to-[var(--purple-700)] cursor-pointer whitespace-nowrap"
+              >
+                হ্যাঁ, 2FA সক্রিয় করুন
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogPopup>
+        </AlertDialog>
 
         <Sms2FASetupModal
           open={isSetupModalOpen}
@@ -449,19 +481,23 @@ export default function ProfileSecurityTab({ profile }) {
           open={!!sessionToRevoke}
           onOpenChange={(open) => !open && setSessionToRevoke(null)}
         >
-          <AlertDialogPopup>
-            <AlertDialogHeader>
-              <AlertDialogTitle>ডিভাইস লগ আউট করুন</AlertDialogTitle>
-              <AlertDialogDescription>
+          <AlertDialogPopup className="p-4 sm:p-6 max-w-[92vw] sm:max-w-md rounded-2xl">
+            <AlertDialogHeader className="space-y-1 sm:space-y-1.5 mb-3 sm:mb-4">
+              <AlertDialogTitle className="text-sm sm:text-lg font-bold text-slate-900 font-bengali">
+                ডিভাইস লগ আউট করুন
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-xs sm:text-sm text-slate-500 font-bengali leading-relaxed">
                 আপনি কি নিশ্চিতভাবে এই ডিভাইসটি থেকে আপনার অ্যাকাউন্ট লগ আউট
                 করতে চান?
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>বাতিল করুন</AlertDialogCancel>
+            <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0 mt-4 sm:mt-6 pt-3 border-t border-slate-100/80">
+              <AlertDialogCancel className="mt-0 flex-1 sm:flex-initial h-9 sm:h-10 text-xs sm:text-sm rounded-xl px-3 sm:px-4 font-bengali">
+                বাতিল করুন
+              </AlertDialogCancel>
               <AlertDialogAction
                 onClick={confirmRevokeSession}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="mt-0 flex-1 sm:flex-initial h-9 sm:h-10 text-xs sm:text-sm rounded-xl px-3 sm:px-4 font-bengali bg-red-600 hover:bg-red-700 text-white cursor-pointer whitespace-nowrap"
               >
                 লগ আউট করুন
               </AlertDialogAction>

@@ -99,7 +99,7 @@ export default function Sms2FADisableModal({ open, onOpenChange, onSuccess }) {
             </div>
             <div>
               <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 font-sans tracking-tight">
-                SMS ২-স্টেপ সিকিউরিটি নিষ্ক্রিয়করণ
+                ২-স্টেপ সিকিউরিটি নিষ্ক্রিয়করণ
               </DialogTitle>
               <DialogDescription className="text-[11px] sm:text-xs text-slate-500 font-bengali mt-0.5 leading-relaxed">
                 {step === 1
@@ -111,7 +111,10 @@ export default function Sms2FADisableModal({ open, onOpenChange, onSuccess }) {
         </DialogHeader>
 
         {step === 1 ? (
-          <form onSubmit={handlePasswordSubmit} className="space-y-3.5 sm:space-y-4 pt-2">
+          <form
+            onSubmit={handlePasswordSubmit}
+            className="space-y-3.5 sm:space-y-4 pt-2"
+          >
             <div className="space-y-1.5">
               <label className="text-[11px] sm:text-xs font-semibold text-slate-700">
                 বর্তমান পাসওয়ার্ড <span className="text-red-500">*</span>
@@ -167,7 +170,10 @@ export default function Sms2FADisableModal({ open, onOpenChange, onSuccess }) {
             </div>
           </form>
         ) : (
-          <form onSubmit={handleOtpSubmit} className="space-y-3.5 sm:space-y-4 pt-2">
+          <form
+            onSubmit={handleOtpSubmit}
+            className="space-y-3.5 sm:space-y-4 pt-2"
+          >
             <div className="space-y-1.5 sm:space-y-2">
               <label className="text-[11px] sm:text-xs font-semibold text-slate-700 flex items-center justify-between">
                 <span>
