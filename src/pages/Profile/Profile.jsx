@@ -18,7 +18,7 @@ export default function Profile() {
   const tabs = [
     {
       id: "info",
-      label: "প্রোফাইল তথ্য",
+      label: "প্রোফাইল",
       icon: !isSubscriber || isTeacher ? GraduationCap : Landmark,
     },
     {
@@ -45,13 +45,14 @@ export default function Profile() {
             প্রোফাইল সেটিংস
           </h1>
           <p className="text-[11px] sm:text-sm text-slate-500 font-bengali mt-0.5 font-medium">
-            আপনার ব্যক্তিগত ও প্রাতিষ্ঠানিক তথ্য এবং অ্যাকাউন্ট নিরাপত্তা পরিচালনা করুন
+            আপনার ব্যক্তিগত ও প্রাতিষ্ঠানিক তথ্য এবং অ্যাকাউন্ট নিরাপত্তা
+            পরিচালনা করুন
           </p>
         </div>
       </div>
 
       {/* Tab Selector */}
-      <div className="bg-slate-100/80 p-1 sm:p-1.5 rounded-2xl flex gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar border border-slate-200/60 shadow-inner">
+      <div className="bg-slate-100/80 p-1.5 sm:p-2 rounded-2xl flex overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden border border-slate-200/60 shadow-inner">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -59,7 +60,7 @@ export default function Profile() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`relative z-10 flex-1 min-w-[105px] sm:min-w-[140px] py-2 sm:py-2.5 px-2 sm:px-4 rounded-xl text-[11px] sm:text-sm font-bold flex items-center justify-center gap-1 sm:gap-2 transition-colors duration-200 font-bengali cursor-pointer whitespace-nowrap ${
+              className={`relative z-10 flex-1 min-w-max py-2 sm:py-2.5 px-4 sm:px-2 rounded-xl text-[10px] sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-colors duration-200 font-bengali cursor-pointer whitespace-nowrap ${
                 isActive
                   ? "text-[var(--purple-800)]"
                   : "text-slate-500 hover:text-slate-800"
@@ -76,7 +77,9 @@ export default function Profile() {
                   }}
                 />
               )}
-              <Icon className={`size-3.5 sm:size-4 shrink-0 relative z-10 transition-colors ${isActive ? "text-[var(--purple-700)]" : "text-slate-400"}`} />
+              <Icon
+                className={`size-3.5 sm:size-4 shrink-0 relative z-10 transition-colors ${isActive ? "text-[var(--purple-700)]" : "text-slate-400"}`}
+              />
               <span className="relative z-10">{tab.label}</span>
             </button>
           );
