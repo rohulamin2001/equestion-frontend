@@ -51,7 +51,7 @@ const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
       exit={{ opacity: 0, filter: "blur(4px)" }}
       transition={{ duration: 0.12, ease: "easeInOut" }}
       className={cn(
-        "fixed inset-0 z-50 bg-black/40 backdrop-blur-sm",
+        "fixed inset-0 z-[10000] bg-black/40 backdrop-blur-sm",
         className,
       )}
       {...props}
@@ -110,14 +110,14 @@ const DialogContent = React.forwardRef(
           onPointerDownOutside={onPointerDownOutside}
           onEscapeKeyDown={onEscapeKeyDown}
         >
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[10050] flex items-center justify-center p-4">
             <motion.div
               initial={directionVariants.initial}
               animate={directionVariants.animate}
               exit={directionVariants.exit}
               transition={transition}
               className={cn(
-                "relative w-full max-w-lg rounded-2xl border border-slate-200/50 bg-glass-elevated backdrop-blur-xl p-6 shadow-2xl focus:outline-none",
+                "relative w-full max-w-lg rounded-2xl border border-slate-200/50 bg-glass-elevated backdrop-blur-xl p-6 shadow-2xl focus:outline-none z-[10050]",
                 className,
               )}
               {...props}

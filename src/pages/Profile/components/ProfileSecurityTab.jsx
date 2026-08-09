@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   CheckCircle2,
   Eye,
@@ -9,8 +10,11 @@ import {
   MoreHorizontal,
   Save,
   ShieldCheck,
+  Smartphone,
   Sparkles,
 } from "lucide-react";
+import Sms2FADisableModal from "../../../components/auth/Sms2FADisableModal";
+import Sms2FASetupModal from "../../../components/auth/Sms2FASetupModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,8 +31,25 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
+import { useSms2FA } from "../hook/useSms2FA";
 
 export default function ProfileSecurityTab({ profile }) {
+  const [isSetupModalOpen, setIsSetupModalOpen] = useState(false);
+  const [isDisableModalOpen, setIsDisableModalOpen] = useState(false);
+  const [phoneNumberMasked, setPhoneNumberMasked] = useState("");
+
+  const { sendEnableOtp } = useSms2FA();
+  const is2FAEnabled = Boolean(profile?.userProfile?.twoFactorEnabled);
+
+  const handleEnable2FA = () => {
+    sendEnableOtp.mutate(undefined, {
+      onSuccess: (data) => {
+        setPhoneNumberMasked(data.phoneNumberMasked || "");
+        setIsSetupModalOpen(true);
+      },
+    });
+  };
+
   const {
     currentPassword,
     setCurrentPassword,
@@ -232,6 +253,75 @@ export default function ProfileSecurityTab({ profile }) {
             সুরক্ষিত
           </span>
         </div>
+
+        {/* SMS 2FA Toggle & Status */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-slate-50/60 rounded-xl border border-slate-200/80">
+          <div className="flex items-start gap-3">
+            <div className="p-2 bg-purple-100 text-[var(--purple-700)] rounded-lg shrink-0 mt-0.5">
+              <Smartphone className="size-4.5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="text-xs sm:text-sm font-bold text-slate-800 font-sans tracking-tight">
+                  SMS ২-স্টেপ টু-ফ্যাক্টর নিরাপত্তা (2FA)
+                </p>
+                <span
+                  className={`px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold border whitespace-nowrap ${
+                    is2FAEnabled
+                      ? "bg-emerald-50 text-emerald-600 border-emerald-200/60"
+                      : "bg-amber-50 text-amber-600 border-amber-200/60"
+                  }`}
+                >
+                  {is2FAEnabled ? "সক্রিয় রয়েছে" : "নিষ্ক্রিয় রয়েছে"}
+                </span>
+              </div>
+              <p className="text-[10px] sm:text-xs text-slate-500 font-bengali mt-0.5">
+                লগইনের সময় নিবন্ধিত ফোন নম্বরে পাঠানো ৬ ডিজিটের OTP ব্যবহার করে দ্বিস্তরী নিরাপত্তা প্রদান করে।
+              </p>
+            </div>
+          </div>
+
+          <div className="shrink-0 flex items-center justify-end">
+            {is2FAEnabled ? (
+              <button
+                type="button"
+                onClick={() => setIsDisableModalOpen(true)}
+                className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200/60 transition cursor-pointer"
+              >
+                2FA বন্ধ করুন
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleEnable2FA}
+                disabled={sendEnableOtp.isPending}
+                className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[var(--purple-800)] to-[var(--purple-600)] shadow-sm hover:shadow transition disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+              >
+                {sendEnableOtp.isPending ? (
+                  <>
+                    <Loader2 className="size-3.5 animate-spin" />
+                    OTP পাঠানো হচ্ছে...
+                  </>
+                ) : (
+                  "2FA সক্রিয় করুন"
+                )}
+              </button>
+            )}
+          </div>
+        </div>
+
+        <Sms2FASetupModal
+          open={isSetupModalOpen}
+          onOpenChange={setIsSetupModalOpen}
+          phoneNumberMasked={phoneNumberMasked}
+          onSuccess={() => profile?.refreshProfile?.()}
+        />
+
+        <Sms2FADisableModal
+          open={isDisableModalOpen}
+          onOpenChange={setIsDisableModalOpen}
+          onSuccess={() => profile?.refreshProfile?.()}
+        />
       </div>
 
       {/* Custom Active Sessions / Devices Card */}

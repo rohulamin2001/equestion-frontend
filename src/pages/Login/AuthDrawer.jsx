@@ -1,12 +1,16 @@
 import { BookOpen, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
+import Sms2FALoginModal from "../../components/auth/Sms2FALoginModal";
+import { useUserContext } from "../../context/UserContext";
 import { AuthForgotPasswordMode } from "./components/AuthForgotPasswordMode";
 import { AuthLoginTab } from "./components/AuthLoginTab";
 import { AuthRegisterTab } from "./components/AuthRegisterTab";
 import { useAuthDrawer } from "./hook/useAuthDrawer";
 
 export default function AuthDrawer() {
+  const { complete2FALogin } = useUserContext();
+
   const {
     isAuthDrawerOpen,
     closeAuthDrawer,
@@ -27,6 +31,10 @@ export default function AuthDrawer() {
     setLoginPassword,
     handleLoginNext,
     handleLoginSubmit,
+    tempToken2FA,
+    phoneNumberMasked2FA,
+    is2FALoginModalOpen,
+    setIs2FALoginModalOpen,
 
     // Register
     regStep,
@@ -434,6 +442,20 @@ export default function AuthDrawer() {
           </motion.div>
         </div>
       )}
+
+      <Sms2FALoginModal
+        open={is2FALoginModalOpen}
+        onOpenChange={setIs2FALoginModalOpen}
+        tempToken={tempToken2FA}
+        phoneNumberMasked={phoneNumberMasked2FA}
+        onLoginSuccess={(data) => {
+          setIs2FALoginModalOpen(false);
+          closeAuthDrawer();
+          if (data?.accessToken) {
+            complete2FALogin(data.accessToken);
+          }
+        }}
+      />
     </AnimatePresence>
   );
 }

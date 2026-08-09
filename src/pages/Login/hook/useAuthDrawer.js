@@ -104,6 +104,11 @@ export function useAuthDrawer() {
     setLoginStep(2);
   };
 
+  // 2FA Login States
+  const [tempToken2FA, setTempToken2FA] = useState(null);
+  const [phoneNumberMasked2FA, setPhoneNumberMasked2FA] = useState("");
+  const [is2FALoginModalOpen, setIs2FALoginModalOpen] = useState(false);
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     if (!loginPassword) {
@@ -130,6 +135,12 @@ export function useAuthDrawer() {
         } catch {
           // ignore resend error
         }
+      } else if (data?.requires2FA) {
+        toast.info(data.message || "আপনার রেজিস্টার্ড নম্বরে ২-স্টেপ সিকিউরিটি OTP পাঠানো হয়েছে।");
+        setTempToken2FA(data.tempToken);
+        setPhoneNumberMasked2FA(data.phoneNumberMasked);
+        closeAuthDrawer();
+        setIs2FALoginModalOpen(true);
       }
     } catch (err) {
       console.error("Login error:", err);
@@ -378,6 +389,10 @@ export function useAuthDrawer() {
     setLoginPassword,
     handleLoginNext,
     handleLoginSubmit,
+    tempToken2FA,
+    phoneNumberMasked2FA,
+    is2FALoginModalOpen,
+    setIs2FALoginModalOpen,
 
     // Register
     regStep,

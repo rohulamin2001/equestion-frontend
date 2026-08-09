@@ -60,8 +60,8 @@ export const UserProvider = ({ children }) => {
       phoneNumber,
       password,
     });
-    if (response.data?.code === "PHONE_NOT_VERIFIED") {
-      return response.data; // Needs OTP verification
+    if (response.data?.code === "PHONE_NOT_VERIFIED" || response.data?.requires2FA) {
+      return response.data; // Needs OTP or 2FA verification
     }
     if (response.data?.accessToken) {
       setAccessToken(response.data.accessToken);
@@ -69,6 +69,14 @@ export const UserProvider = ({ children }) => {
       setIsAuthDrawerOpen(false);
     }
     return response.data;
+  };
+
+  const complete2FALogin = async (accessToken) => {
+    if (accessToken) {
+      setAccessToken(accessToken);
+      await refetch();
+      setIsAuthDrawerOpen(false);
+    }
   };
 
   const logout = async () => {
@@ -96,6 +104,7 @@ export const UserProvider = ({ children }) => {
         openAuthDrawer,
         closeAuthDrawer,
         login,
+        complete2FALogin,
         logout,
       }}
     >

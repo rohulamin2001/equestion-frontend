@@ -587,6 +587,7 @@ export function useProfile() {
     currentSessionId,
     isSubscriber,
     isTeacher,
+    refreshProfile,
     // Handlers
     handleImageClick,
     handleImageChange,
