@@ -11,7 +11,9 @@ export default function NotFoundFooter() {
           <div className="col-span-2 md:col-span-1 flex items-start gap-2">
             <BookOpen className="h-4 w-4 mt-0.5 shrink-0 text-white/60" />
             <div>
-              <p className="font-bold text-white/95 font-sans">স্মার্ট প্রশ্নব্যাংক</p>
+              <p className="font-bold text-white/95 font-sans">
+                স্মার্ট প্রশ্নব্যাংক
+              </p>
               <p className="text-white/50 mt-1 font-bengali leading-relaxed">
                 ক্লাস ৩–১২ প্রশ্ন জেনারেটর
               </p>
