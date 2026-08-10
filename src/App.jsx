@@ -14,6 +14,7 @@ import CreatedQuestions from "./pages/CreatedQuestions/CreatedQuestions";
 import Login from "./pages/Login/Login";
 import MetadataSetup from "./pages/MetadataSetup/MetadataSetup";
 import MyQuestions from "./pages/MyQuestions/MyQuestions";
+import NotFound from "./pages/NotFound/NotFound";
 import OMREvaluation from "./pages/OMREvaluation/OMREvaluation";
 import Overview from "./pages/Overview/Overview";
 import PricingManagement from "./pages/PricingManagement/PricingManagement";
@@ -259,7 +260,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
