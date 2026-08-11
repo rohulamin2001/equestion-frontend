@@ -32,6 +32,7 @@ import { translateSubscriptionKey } from "../../constants/subscriptions";
 import { useUserContext } from "../../context/UserContext";
 import apiClient from "../../lib/apiClient";
 import { useSubscription } from "./hook/useSubscription";
+import PricingCardGrid from "./components/PricingCardGrid";
 
 export default function Subscription() {
   const { refreshProfile } = useUserContext();
@@ -544,137 +545,16 @@ export default function Subscription() {
           </div>
 
           {/* Filtered Packages Grid */}
-          {packagesLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[1, 2, 3].map((n) => (
-                <div
-                  key={n}
-                  className="bg-white border border-slate-200/60 rounded-2xl p-6 shadow-sm space-y-4 animate-pulse"
-                >
-                  <div className="h-4 bg-slate-100 rounded-md w-3/4"></div>
-                  <div className="h-3 bg-slate-100 rounded-md w-1/4"></div>
-                  <div className="my-4 h-8 bg-slate-100 rounded-md w-1/2"></div>
-                  <div className="border-t border-slate-100 pt-4 space-y-2">
-                    <div className="h-3 bg-slate-100 rounded-md w-5/6"></div>
-                    <div className="h-3 bg-slate-100 rounded-md w-4/6"></div>
-                  </div>
-                  <div className="h-10 bg-slate-100 rounded-xl w-full mt-6"></div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {packagesList
-                .filter(
-                  (pkg) =>
-                    pkg.category === selectedCategory &&
-                    (pkg.version || "Bangla") === selectedVersion,
-                )
-                .map((pkg) => {
-                  const isSubscribed = activeSubs.some(
-                    (s) => s.packageId === pkg.id && s.version === pkg.version,
-                  );
-                  return (
-                    <div
-                      key={pkg.id}
-                      className={`bg-glass border rounded-2xl p-6 shadow-sm hover:shadow-md hover:bg-white/[0.60] flex flex-col justify-between transition-all relative overflow-hidden ${
-                        isSubscribed
-                          ? "border-purple-300 ring-2 ring-purple-100 bg-purple-50/20"
-                          : "border-slate-200/60 hover:border-purple-300"
-                      }`}
-                    >
-                      {pkg.price === 0 && !isSubscribed && (
-                        <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-500 to-orange-500 text-white text-[9px] font-semibold uppercase tracking-wider py-1 px-3 rounded-bl-xl shadow-sm">
-                          ফ্রি অফার
-                        </div>
-                      )}
-                      <div>
-                        <h3 className="text-base font-semibold text-slate-800">
-                          {pkg.title}
-                        </h3>
-                        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mt-1">
-                          {pkg.version}
-                        </p>
-
-                        <div className="my-4 flex items-baseline gap-2">
-                          {pkg.price === 0 ? (
-                            <>
-                              <span className="text-2xl font-bold text-orange-600">
-                                ফ্রি (৳০)
-                              </span>
-                              <span className="text-xs text-slate-400 line-through">
-                                {pkg.originalPrice}/-
-                              </span>
-                            </>
-                          ) : pkg.price !== pkg.originalPrice ? (
-                            <>
-                              <span className="text-2xl font-bold text-primary">
-                                {pkg.price}/-
-                              </span>
-                              <span className="text-xs text-slate-400 line-through">
-                                {pkg.originalPrice}/-
-                              </span>
-                              <span className="bg-purple-50 text-purple-700 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-purple-200/60">
-                                {pkg.discount?.discountType === "Percentage"
-                                  ? `${pkg.discount.value}% ছাড়`
-                                  : `${pkg.discount.value}৳ ছাড়`}
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <span className="text-2xl font-bold text-primary">
-                                {pkg.price}/-
-                              </span>
-                              <span className="text-xs text-slate-400 font-medium">
-                                টাকা / {pkg.period}
-                              </span>
-                            </>
-                          )}
-                        </div>
-
-                        <ul className="space-y-2 mt-4 border-t border-slate-100 pt-4">
-                          {pkg.features.map((feat, idx) => (
-                            <li
-                              key={idx}
-                              className="flex items-start gap-2 text-xs text-slate-600 font-medium"
-                            >
-                              <Check className="size-4 text-emerald-500 shrink-0 mt-0.5" />
-                              <span>{feat}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <button
-                        onClick={() => setCheckoutPkg(pkg)}
-                        disabled={loading || isSubscribed}
-                        className={`w-full mt-6 py-2.5 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer ${
-                          isSubscribed
-                            ? "bg-emerald-50 text-emerald-600 border border-emerald-200/60 cursor-default"
-                            : "bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-md shadow-purple-200"
-                        }`}
-                      >
-                        {isSubscribed ? (
-                          <>
-                            <Check className="size-4" />
-                            <span>সক্রিয় রয়েছে</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>
-                              {pkg.price === 0
-                                ? "বিনামূল্যে অ্যাক্টিভেট করুন"
-                                : "ক্রয় করুন"}
-                            </span>
-                            <ChevronRight className="size-3.5" />
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  );
-                })}
-            </div>
-          )}
+          <PricingCardGrid
+            packages={packagesList}
+            loading={packagesLoading}
+            selectedCategory={selectedCategory}
+            selectedVersion={selectedVersion}
+            activeSubs={activeSubs}
+            categoryIcon={getCategoryIcon(selectedCategory)}
+            isPurchasing={loading}
+            onSelectPackage={setCheckoutPkg}
+          />
         </div>
       )}
 
