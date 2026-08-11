@@ -3,6 +3,7 @@ import { useUserContext } from "../../context/UserContext";
 import CTASection from "./components/CTASection";
 import FAQSection from "./components/FAQSection";
 import FeatureGrid from "./components/FeatureGrid";
+import HeroHighlights from "./components/HeroHighlights";
 import HeroSection from "./components/HeroSection";
 import LandingFooter from "./components/LandingFooter";
 import LandingNavbar from "./components/LandingNavbar";
@@ -40,6 +41,7 @@ export default function Home() {
       />
       <main className="overflow-x-hidden">
         <HeroSection onDemo={scrollToFeatures} onSubscribe={onSubscribe} />
+        <HeroHighlights />
         <FeatureGrid />
         <PlatformSection onStart={onSubscribe} />
         <QuestionGeneratorSection onStart={onSubscribe} />

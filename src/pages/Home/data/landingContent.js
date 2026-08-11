@@ -6,6 +6,33 @@ export const NAV_LINKS = [
   { href: "#faq", label: "FAQ" },
 ];
 
+export const HERO_HIGHLIGHTS = [
+  {
+    id: "trust",
+    title: "আস্থা ও নির্ভরতা",
+    description: "দেশজুড়ে শিক্ষক ও শিক্ষাপ্রতিষ্ঠানের আস্থা ও নির্ভরতা",
+    icon: "ShieldCheck",
+  },
+  {
+    id: "auto",
+    title: "স্বয়ংক্রিয় প্রস্তুত",
+    description: "একটি ক্লিকেই স্বয়ংক্রিয় প্রশ্ন, শিট ও অনলাইন পরীক্ষা প্রস্তুত",
+    icon: "Zap",
+  },
+  {
+    id: "database",
+    title: "সমৃদ্ধ ডাটাবেজ",
+    description: "যাচাইকৃত বিপুল প্রশ্নের সমৃদ্ধ ডাটাবেজ ও আপডেট কারিকুলাম",
+    icon: "Database",
+  },
+  {
+    id: "accuracy",
+    title: "শতভাগ নিখুঁত",
+    description: "টাইপিং ও ভুল শুধরানোর ঝামেলামুক্ত শতভাগ নিখুঁত আউটপুট",
+    icon: "CheckCircle2",
+  },
+];
+
 export const FEATURES = [
   {
     id: "qgen",
