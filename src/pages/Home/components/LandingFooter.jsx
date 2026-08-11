@@ -5,7 +5,7 @@ import { FOOTER_COLUMNS } from "../data/landingContent";
 
 function FooterLink({ link }) {
   const className =
-    "text-[12px] xs:text-sm text-white/70 hover:text-white transition leading-snug";
+    "text-[11px] xs:text-sm text-white/70 hover:text-white transition leading-snug break-words";
 
   if (link.href.startsWith("/")) {
     return (
@@ -97,10 +97,10 @@ export default function LandingFooter() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-7 sm:gap-x-8 sm:gap-y-8">
+          <div className="grid grid-cols-3 gap-x-2.5 xs:gap-x-4 sm:gap-x-8 gap-y-6 sm:gap-y-8">
             {FOOTER_COLUMNS.map((col) => (
               <div key={col.title} className="min-w-0">
-                <h3 className="mb-3 sm:mb-3.5 flex items-center gap-2 text-[11px] xs:text-xs sm:text-sm font-bold uppercase tracking-wide text-white">
+                <h3 className="mb-2.5 sm:mb-3.5 flex items-center gap-1.5 sm:gap-2 text-[10px] xs:text-xs sm:text-sm font-bold uppercase tracking-wide text-white">
                   <span
                     className="size-1.5 rounded-full shrink-0"
                     style={{ background: "var(--landing-hero-gradient)" }}
@@ -108,7 +108,7 @@ export default function LandingFooter() {
                   />
                   {col.title}
                 </h3>
-                <ul className="space-y-2 sm:space-y-2.5">
+                <ul className="space-y-1.5 sm:space-y-2.5">
                   {col.links.map((link) => (
                     <li key={link.label}>
                       <FooterLink link={link} />
