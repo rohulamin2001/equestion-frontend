@@ -31,6 +31,7 @@ import Subscription from "./pages/Subscription/Subscription";
 import AdminSupportCenter from "./pages/Support/AdminSupportCenter";
 import SupportDesk from "./pages/Support/SupportDesk";
 import SyllabusManagement from "./pages/Syllabus/SyllabusManagement";
+import Terms from "./pages/Legal/Terms";
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
       <AuthDrawer />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/login/*" element={<Login />} />
         <Route path="/signup/*" element={<Signup />} />
 

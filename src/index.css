@@ -313,6 +313,17 @@
     --landing-grid-color: color-mix(in srgb, var(--purple-600) 6%, transparent);
     --landing-glass-bg: color-mix(in srgb, var(--primary-foreground) 65%, transparent);
     --landing-glass-border: color-mix(in srgb, var(--purple-600) 12%, transparent);
+    --landing-footer-overlay: linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--purple-900) 92%, black) 0%,
+      color-mix(in srgb, var(--purple-900) 72%, transparent) 48%,
+      color-mix(in srgb, var(--purple-900) 94%, black) 100%
+    );
+    --landing-footer-scrim: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--purple-900) 70%, black) 0%,
+      transparent 45%
+    );
   }
 
   .dark {

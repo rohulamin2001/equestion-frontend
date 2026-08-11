@@ -3,19 +3,18 @@ import { SAMPLE_QUOTES, TRUST_STATS } from "../data/landingContent";
 import { SectionHeading } from "./ui";
 
 function StatCounter({ value, suffix, label }) {
+  const reduceMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const [display, setDisplay] = useState(0);
   const ref = useRef(null);
   const started = useRef(false);
 
   useEffect(() => {
+    if (reduceMotion) return;
+
     const el = ref.current;
     if (!el) return;
-
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) {
-      setDisplay(value);
-      return;
-    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -36,7 +35,9 @@ function StatCounter({ value, suffix, label }) {
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [value]);
+  }, [value, reduceMotion]);
+
+  const shown = reduceMotion ? value : display;
 
   return (
     <div ref={ref} className="text-center font-bengali">
@@ -44,22 +45,24 @@ function StatCounter({ value, suffix, label }) {
         className="text-3xl sm:text-4xl font-black bg-clip-text text-transparent"
         style={{ backgroundImage: "var(--landing-hero-gradient)" }}
       >
-        {display.toLocaleString("bn-BD")}
+        {shown.toLocaleString("bn-BD")}
         {suffix}
       </p>
-      <p className="mt-1 text-sm text-muted-foreground font-semibold">{label}</p>
+      <p className="mt-1 text-sm text-muted-foreground font-semibold">
+        {label}
+      </p>
     </div>
   );
 }
 
 export default function TrustSection() {
   return (
-    <section id="trust" className="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 bg-muted/40">
+    <section
+      id="trust"
+      className="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 bg-muted/40"
+    >
       <div className="mx-auto max-w-7xl space-y-8 sm:space-y-10">
-        <SectionHeading
-          title="শিক্ষা ব্যবস্থাপনায় প্রযুক্তির স্মার্ট সমাধান"
-          description="নিচের সংখ্যাগুলো প্লেসহোল্ডার—পরে আসল ডেটা দিয়ে সহজে আপডেট করা যাবে।"
-        />
+        <SectionHeading title="শিক্ষা ব্যবস্থাপনায় প্রযুক্তির স্মার্ট সমাধান" />
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 rounded-2xl sm:rounded-3xl border border-border bg-glass-elevated p-6 sm:p-8 shadow-soft">
           {TRUST_STATS.map((stat) => (

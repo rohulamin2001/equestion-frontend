@@ -27,7 +27,8 @@ export default function HeroSection({ onDemo, onSubscribe }) {
           backgroundImage:
             "linear-gradient(var(--landing-grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--landing-grid-color) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
-          maskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)",
+          maskImage:
+            "radial-gradient(ellipse at center, black 30%, transparent 75%)",
         }}
         aria-hidden
       />
@@ -62,12 +63,18 @@ export default function HeroSection({ onDemo, onSubscribe }) {
             ক্লাস রুটিন—সবকিছু এক প্ল্যাটফর্মে।
           </p>
 
-          <div className="flex flex-col xs:flex-row gap-3 justify-center lg:justify-start">
-            <PrimaryButton className="w-full xs:w-auto" onClick={onDemo}>
+          <div className="flex flex-row gap-2 sm:gap-3 justify-center lg:justify-start">
+            <PrimaryButton
+              className="flex-1 sm:flex-none !min-h-9 sm:!min-h-11 !px-3 sm:!px-5 !py-2 sm:!py-2.5 !text-xs sm:!text-sm"
+              onClick={onDemo}
+            >
               Demo দেখুন
-              <ArrowRight className="size-4" />
+              <ArrowRight className="size-3.5 sm:size-4" />
             </PrimaryButton>
-            <SecondaryButton className="w-full xs:w-auto" onClick={onSubscribe}>
+            <SecondaryButton
+              className="flex-1 sm:flex-none !min-h-9 sm:!min-h-11 !px-3 sm:!px-5 !py-2 sm:!py-2.5 !text-xs sm:!text-sm"
+              onClick={onSubscribe}
+            >
               Subscribe করুন
             </SecondaryButton>
           </div>

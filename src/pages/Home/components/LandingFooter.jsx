@@ -1,27 +1,85 @@
 import { BookOpen, Link2, PlayCircle, Share2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import footerBg from "../../../assets/landing/footer-bg.png";
 import { FOOTER_COLUMNS } from "../data/landingContent";
+
+function FooterLink({ link }) {
+  const className =
+    "text-[12px] xs:text-sm text-white/70 hover:text-white transition leading-snug";
+
+  if (link.href.startsWith("/")) {
+    return (
+      <Link to={link.href} className={className}>
+        {link.label}
+      </Link>
+    );
+  }
+
+  return (
+    <a href={link.href} className={className}>
+      {link.label}
+    </a>
+  );
+}
 
 export default function LandingFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border bg-muted/50 pt-10 sm:pt-12 pb-6 px-4 sm:px-6 font-bengali">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2.5">
+    <footer className="relative isolate overflow-hidden font-bengali text-white">
+      <img
+        src={footerBg}
+        alt=""
+        aria-hidden
+        className="absolute inset-0 size-full object-cover object-center scale-105"
+      />
+      <div
+        className="absolute inset-0"
+        style={{ background: "var(--landing-footer-overlay)" }}
+        aria-hidden
+      />
+      <div
+        className="absolute inset-0"
+        style={{ background: "var(--landing-footer-scrim)" }}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-px opacity-80"
+        style={{ background: "var(--landing-hero-gradient)" }}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -top-28 right-0 size-72 rounded-full blur-3xl opacity-40"
+        style={{ background: "var(--landing-glow)" }}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -bottom-24 -left-16 size-64 rounded-full blur-3xl opacity-30"
+        style={{ background: "var(--landing-glow-soft)" }}
+        aria-hidden
+      />
+
+      <div className="relative z-10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-10 sm:pt-14 pb-7 sm:pb-8">
+          <div className="mb-8 sm:mb-10 flex flex-col xs:flex-row xs:items-center gap-5 justify-between border-b border-white/15 pb-7 sm:pb-8">
+            <div className="flex items-start gap-3 min-w-0">
               <div
-                className="flex size-9 items-center justify-center rounded-xl text-primary-foreground"
+                className="flex size-11 shrink-0 items-center justify-center rounded-2xl text-primary-foreground shadow-soft ring-1 ring-white/25"
                 style={{ background: "var(--landing-hero-gradient)" }}
               >
-                <BookOpen className="size-4" />
+                <BookOpen className="size-5" />
               </div>
-              <span className="font-extrabold text-foreground">স্মার্ট প্রশ্নব্যাংক</span>
+              <div className="min-w-0">
+                <p className="font-extrabold text-white text-base sm:text-lg tracking-tight">
+                  স্মার্ট প্রশ্নব্যাংক
+                </p>
+                <p className="mt-1 text-[11px] xs:text-xs sm:text-sm text-white/70 leading-relaxed max-w-sm">
+                  প্রশ্নপত্র, OMR ও পরীক্ষা—এক প্ল্যাটফর্মে।
+                </p>
+              </div>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              শিক্ষকদের জন্য স্মার্ট প্রশ্নপত্র, পরীক্ষা ও শিক্ষা ব্যবস্থাপনা প্ল্যাটফর্ম।
-            </p>
-            <div className="flex items-center gap-2 pt-1">
+
+            <div className="flex items-center gap-2 shrink-0">
               {[
                 { Icon: Share2, label: "Facebook", href: "#" },
                 { Icon: PlayCircle, label: "YouTube", href: "#" },
@@ -31,7 +89,7 @@ export default function LandingFooter() {
                   key={label}
                   href={href}
                   aria-label={label}
-                  className="inline-flex size-10 items-center justify-center rounded-xl border border-border bg-white text-muted-foreground hover:text-purple-800 hover:border-purple-200 transition"
+                  className="inline-flex size-9 sm:size-10 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white/85 backdrop-blur-md hover:bg-white/20 hover:text-white hover:border-white/35 transition"
                 >
                   <Icon className="size-4" />
                 </a>
@@ -39,27 +97,42 @@ export default function LandingFooter() {
             </div>
           </div>
 
-          {FOOTER_COLUMNS.map((col) => (
-            <div key={col.title}>
-              <h3 className="text-sm font-bold text-foreground mb-3">{col.title}</h3>
-              <ul className="space-y-2">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm text-muted-foreground hover:text-purple-800 transition"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-7 sm:gap-x-8 sm:gap-y-8">
+            {FOOTER_COLUMNS.map((col) => (
+              <div key={col.title} className="min-w-0">
+                <h3 className="mb-3 sm:mb-3.5 flex items-center gap-2 text-[11px] xs:text-xs sm:text-sm font-bold uppercase tracking-wide text-white">
+                  <span
+                    className="size-1.5 rounded-full shrink-0"
+                    style={{ background: "var(--landing-hero-gradient)" }}
+                    aria-hidden
+                  />
+                  {col.title}
+                </h3>
+                <ul className="space-y-2 sm:space-y-2.5">
+                  {col.links.map((link) => (
+                    <li key={link.label}>
+                      <FooterLink link={link} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
 
-        <div className="mt-10 pt-5 border-t border-border text-center text-xs text-muted-foreground">
-          © {year} স্মার্ট প্রশ্নব্যাংক। সর্বস্বত্ব সংরক্ষিত।
+          <div className="mt-9 sm:mt-11 pt-5 border-t border-white/15 flex flex-col xs:flex-row items-center justify-between gap-2 text-[11px] xs:text-xs text-white/60">
+            <p>© {year} স্মার্ট প্রশ্নব্যাংক। সর্বস্বত্ব সংরক্ষিত।</p>
+            <div className="flex items-center gap-3">
+              <Link to="/terms" className="hover:text-white transition">
+                Terms
+              </Link>
+              <span className="text-white/30" aria-hidden>
+                ·
+              </span>
+              <a href="#" className="hover:text-white transition">
+                Privacy
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

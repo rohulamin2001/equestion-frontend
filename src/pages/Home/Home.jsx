@@ -9,7 +9,6 @@ import LandingNavbar from "./components/LandingNavbar";
 import OMRSection from "./components/OMRSection";
 import OnlineExamSection from "./components/OnlineExamSection";
 import PlatformSection from "./components/PlatformSection";
-import PricingSection from "./components/PricingSection";
 import QuestionGeneratorSection from "./components/QuestionGeneratorSection";
 import TargetUsers from "./components/TargetUsers";
 import TrustSection from "./components/TrustSection";
@@ -31,9 +30,6 @@ export default function Home() {
 
   const onSubscribe = () => openAuthDrawer("register");
   const onLogin = () => openAuthDrawer("login");
-  const onContact = () => {
-    window.location.href = "mailto:support@smartproshnobank.com";
-  };
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
@@ -52,7 +48,6 @@ export default function Home() {
         <WorkflowSection />
         <TargetUsers />
         <TrustSection />
-        <PricingSection onRegister={onSubscribe} onContact={onContact} />
         <CTASection onDemo={scrollToFeatures} onSubscribe={onSubscribe} />
         <FAQSection />
       </main>

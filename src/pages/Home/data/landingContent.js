@@ -3,7 +3,6 @@ export const NAV_LINKS = [
   { href: "#features", label: "ফিচার" },
   { href: "#workflow", label: "কীভাবে কাজ করে" },
   { href: "#omr", label: "মূল্যায়ন" },
-  { href: "#pricing", label: "প্রাইসিং" },
   { href: "#faq", label: "FAQ" },
 ];
 
@@ -162,59 +161,6 @@ export const SAMPLE_QUOTES = [
   },
 ];
 
-export const PRICING_PLANS = [
-  {
-    id: "basic",
-    name: "Basic",
-    audience: "একক শিক্ষকের জন্য",
-    price: "শুরু করুন",
-    popular: false,
-    features: [
-      "Question paper generator",
-      "Basic question bank",
-      "PDF export",
-      "Basic OMR",
-    ],
-    cta: "শুরু করুন",
-    action: "register",
-  },
-  {
-    id: "pro",
-    name: "Professional",
-    audience: "কোচিং সেন্টারের জন্য",
-    price: "সবচেয়ে জনপ্রিয়",
-    popular: true,
-    features: [
-      "Everything in Basic",
-      "Advanced question filtering",
-      "OMR evaluation",
-      "Online exam",
-      "Result analytics",
-      "Lecture sheet",
-      "Class routine",
-    ],
-    cta: "শুরু করুন",
-    action: "register",
-  },
-  {
-    id: "institution",
-    name: "Institution",
-    audience: "স্কুল / কলেজ / প্রতিষ্ঠান",
-    price: "কাস্টম",
-    popular: false,
-    features: [
-      "Everything in Professional",
-      "Multiple users",
-      "Institution branding",
-      "Advanced analytics",
-      "Priority support",
-      "Custom requirements",
-    ],
-    cta: "যোগাযোগ করুন",
-    action: "contact",
-  },
-];
-
 export const FAQ_ITEMS = [
   {
     q: "স্মার্ট প্রশ্নব্যাংক কী?",
@@ -275,7 +221,7 @@ export const FOOTER_COLUMNS = [
       { label: "আমাদের সম্পর্কে", href: "#home" },
       { label: "যোগাযোগ", href: "mailto:support@smartproshnobank.com" },
       { label: "Privacy Policy", href: "#" },
-      { label: "Terms & Conditions", href: "#" },
+      { label: "Terms & Conditions", href: "/terms" },
     ],
   },
 ];
