@@ -59,7 +59,7 @@ export default function TrustSection() {
   return (
     <section
       id="trust"
-      className="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 bg-muted/40"
+      className="relative py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6"
     >
       <div className="mx-auto max-w-7xl space-y-8 sm:space-y-10">
         <SectionHeading title="শিক্ষা ব্যবস্থাপনায় প্রযুক্তির স্মার্ট সমাধান" />
@@ -74,7 +74,7 @@ export default function TrustSection() {
           {SAMPLE_QUOTES.map((item) => (
             <blockquote
               key={item.quote}
-              className="rounded-2xl border border-border bg-white/80 p-5 sm:p-6 shadow-soft font-bengali"
+              className="rounded-2xl border border-border bg-glass-elevated p-5 sm:p-6 shadow-soft font-bengali"
             >
               <p className="text-sm sm:text-base text-foreground leading-relaxed">
                 “{item.quote}”

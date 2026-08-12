@@ -23,7 +23,10 @@ export default function FeatureGrid() {
   const reduce = useReducedMotion();
 
   return (
-    <section id="features" className="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6">
+    <section
+      id="features"
+      className="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6"
+    >
       <div className="mx-auto max-w-7xl space-y-8 sm:space-y-10">
         <SectionHeading
           title="পেপারলেস স্মার্ট প্রশ্নব্যাংকে যা যা পাচ্ছেন"
@@ -40,17 +43,22 @@ export default function FeatureGrid() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ delay: idx * 0.05, duration: 0.35 }}
-                className={`group rounded-2xl border border-border bg-glass-elevated p-5 sm:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:border-purple-200 hover:shadow-soft-hover ${
+                className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl bg-glass-elevated p-5 sm:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-soft-hover ${
                   feat.span ? "lg:col-span-2" : ""
                 }`}
               >
-                <div className="mb-4 flex size-11 items-center justify-center rounded-xl border border-purple-200/70 bg-purple-50 text-purple-700">
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{ background: "var(--landing-highlight-glow)" }}
+                  aria-hidden
+                />
+                <div className="relative z-10 mb-4 flex size-11 items-center justify-center rounded-xl landing-glass-chip text-purple-700">
                   <Icon className="size-5" />
                 </div>
-                <h3 className="text-base sm:text-lg font-bold text-foreground font-bengali mb-2">
+                <h3 className="relative z-10 text-base sm:text-lg font-bold text-foreground font-bengali mb-2">
                   {feat.title}
                 </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed font-bengali">
+                <p className="relative z-10 text-sm text-muted-foreground leading-relaxed font-bengali">
                   {feat.description}
                 </p>
               </motion.article>

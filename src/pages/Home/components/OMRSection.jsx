@@ -4,7 +4,7 @@ import { SectionHeading } from "./ui";
 
 export default function OMRSection() {
   return (
-    <section id="omr" className="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 bg-muted/40">
+    <section id="omr" className="relative py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6">
       <div className="mx-auto max-w-7xl grid gap-8 lg:gap-12 lg:grid-cols-2 lg:items-center">
         <div className="space-y-5">
           <SectionHeading
@@ -26,7 +26,7 @@ export default function OMRSection() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 shadow-soft font-bengali">
+          <div className="rounded-2xl border border-border bg-glass-elevated p-4 sm:p-5 shadow-soft font-bengali">
             <p className="text-xs font-bold text-muted-foreground mb-3 uppercase tracking-wide">
               OMR Sheet
             </p>

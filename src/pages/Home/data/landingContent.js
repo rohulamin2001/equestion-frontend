@@ -1,6 +1,6 @@
 export const NAV_LINKS = [
   { href: "#home", label: "হোম" },
-  { href: "#features", label: "ফিচার" },
+  { href: "#platform", label: "ফিচার" },
   { href: "#workflow", label: "কীভাবে কাজ করে" },
   { href: "#omr", label: "মূল্যায়ন" },
   { href: "#faq", label: "FAQ" },
@@ -8,28 +8,24 @@ export const NAV_LINKS = [
 
 export const HERO_HIGHLIGHTS = [
   {
-    id: "trust",
-    title: "আস্থা ও নির্ভরতা",
-    description: "দেশজুড়ে শিক্ষক ও শিক্ষাপ্রতিষ্ঠানের আস্থা ও নির্ভরতা",
-    icon: "ShieldCheck",
+    id: 1,
+    step: "১",
+    text: "২ লক্ষাধিক শিক্ষক নিয়মিত ব্যবহার করছে",
   },
   {
-    id: "auto",
-    title: "স্বয়ংক্রিয় প্রস্তুত",
-    description: "একটি ক্লিকেই স্বয়ংক্রিয় প্রশ্ন, শিট ও অনলাইন পরীক্ষা প্রস্তুত",
-    icon: "Zap",
+    id: 2,
+    step: "২",
+    text: "১ ক্লিকে প্রশ্ন, শিট, সাজেশন, অনলাইন পরীক্ষা তৈরি",
   },
   {
-    id: "database",
-    title: "সমৃদ্ধ ডাটাবেজ",
-    description: "যাচাইকৃত বিপুল প্রশ্নের সমৃদ্ধ ডাটাবেজ ও আপডেট কারিকুলাম",
-    icon: "Database",
+    id: 3,
+    step: "৩",
+    text: "১০ লক্ষাধিক নির্ভুল ও ইউনিক প্রশ্নের ডাটাবেজ",
   },
   {
-    id: "accuracy",
-    title: "শতভাগ নিখুঁত",
-    description: "টাইপিং ও ভুল শুধরানোর ঝামেলামুক্ত শতভাগ নিখুঁত আউটপুট",
-    icon: "CheckCircle2",
+    id: 4,
+    step: "৪",
+    text: "টাইপিং ও প্রুফ রিডিংয়ের ঝামেলা নাই",
   },
 ];
 
@@ -91,6 +87,62 @@ export const PLATFORM_TOOLS = [
   "Lecture Sheet",
   "Class Routine",
   "Question Bank",
+];
+
+export const PLATFORM_TOOLS_DATA = [
+  {
+    id: "qgen",
+    title: "প্রশ্নপত্র জেনারেটর",
+    subtitle: "Question Paper Generator",
+    description: "অধ্যায়ভিত্তিক MCQ ও CQ প্রশ্নপত্র দ্রুত তৈরি ও কাস্টমাইজেশন",
+    icon: "FileQuestion",
+    badge: "পপুলার",
+  },
+  {
+    id: "omr",
+    title: "OMR মূল্যায়ন",
+    subtitle: "OMR Evaluator",
+    description:
+      "মোবাইল ও স্ক্যানার দিয়ে মুহূর্তে ওএমআর শিট স্বয়ংক্রিয় স্ক্যান",
+    icon: "ScanLine",
+    badge: "অটোমেশন",
+  },
+  {
+    id: "exam",
+    title: "অনলাইন পরীক্ষা",
+    subtitle: "Online Exam System",
+    description:
+      "ব্যাচভিত্তিক রিয়েল-টাইম অনলাইন এক্সাম ও স্বয়ংক্রিয় রেজাল্ট",
+    icon: "Laptop",
+    badge: "লাইভ",
+  },
+  {
+    id: "lecture",
+    title: "লেকচার শীট",
+    subtitle: "Lecture Sheet Builder",
+    description:
+      "শিক্ষার্থীদের জন্য নিখুঁত ও প্রফেশনাল হ্যান্ডনোট ও লেকচার শীট",
+    icon: "BookOpen",
+    badge: "স্মার্ট",
+  },
+  {
+    id: "routine",
+    title: "ক্লাস রুটিন",
+    subtitle: "Class Routine Manager",
+    description:
+      "স্মার্ট ও ঝামেলামুক্ত ক্লাস রুটিন তৈরি ও সময়সূচী ব্যবস্থাপনা",
+    icon: "CalendarClock",
+    badge: "সহজ",
+  },
+  {
+    id: "bank",
+    title: "সমৃদ্ধ প্রশ্নব্যাংক",
+    subtitle: "Question Bank",
+    description:
+      "১০ লক্ষাধিক নির্ভুল প্রশ্ন, বোর্ড প্রশ্ন ও টপিকওয়াইজ ফিল্টারিং",
+    icon: "Library",
+    badge: "বিশাল",
+  },
 ];
 
 export const QGEN_BULLETS = [

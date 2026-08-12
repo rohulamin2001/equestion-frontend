@@ -1,7 +1,6 @@
 import { BookOpen, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NAV_LINKS } from "../data/landingContent";
-import { PrimaryButton, SecondaryButton } from "./ui";
 
 export default function LandingNavbar({ onDemo, onSubscribe, onLogin }) {
   const [open, setOpen] = useState(false);
@@ -29,10 +28,10 @@ export default function LandingNavbar({ onDemo, onSubscribe, onLogin }) {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b backdrop-blur-xl transition-all duration-300 ${
+      className={`sticky top-0 z-50 border-b backdrop-blur-2xl transition-all duration-300 ${
         scrolled
-          ? "border-border/60 bg-background/80 shadow-soft"
-          : "border-border/60 bg-background/70"
+          ? "border-[color:var(--landing-glass-border)] bg-[color:var(--landing-glass-bg)] shadow-soft"
+          : "border-[color:var(--landing-glass-border)] bg-[color:var(--landing-glass-bg)]"
       }`}
     >
       <div className="mx-auto flex h-14 xs:h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
@@ -74,12 +73,10 @@ export default function LandingNavbar({ onDemo, onSubscribe, onLogin }) {
         </nav>
 
         <div className="hidden lg:flex items-center gap-2">
-          <SecondaryButton onClick={onDemo}>Demo দেখুন</SecondaryButton>
-          <PrimaryButton onClick={onSubscribe}>Subscribe করুন</PrimaryButton>
           <button
             type="button"
             onClick={onLogin}
-            className="text-sm font-bold text-purple-800 hover:underline font-bengali cursor-pointer px-2 min-h-11"
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-5 py-2 text-sm font-bold text-white shadow-soft transition-all hover:opacity-95 active:scale-[0.98] cursor-pointer font-bengali bg-[var(--purple-600)] hover:bg-[var(--purple-700)]"
           >
             লগইন
           </button>
@@ -87,7 +84,7 @@ export default function LandingNavbar({ onDemo, onSubscribe, onLogin }) {
 
         <button
           type="button"
-          className="lg:hidden inline-flex size-11 items-center justify-center rounded-xl border border-border bg-white/70 text-foreground cursor-pointer"
+          className="lg:hidden inline-flex size-11 items-center justify-center rounded-xl landing-glass-chip text-foreground cursor-pointer"
           aria-expanded={open}
           aria-label={open ? "মেনু বন্ধ" : "মেনু খুলুন"}
           onClick={() => setOpen((v) => !v)}
@@ -97,7 +94,7 @@ export default function LandingNavbar({ onDemo, onSubscribe, onLogin }) {
       </div>
 
       {open && (
-        <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur-xl px-4 py-4 space-y-1 max-h-[calc(100dvh-3.5rem)] overflow-y-auto">
+        <div className="lg:hidden border-t border-[color:var(--landing-glass-border)] bg-[color:var(--landing-glass-bg)] backdrop-blur-2xl px-4 py-4 space-y-1 max-h-[calc(100dvh-3.5rem)] overflow-y-auto">
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}
@@ -112,16 +109,10 @@ export default function LandingNavbar({ onDemo, onSubscribe, onLogin }) {
             </a>
           ))}
           <div className="pt-3 flex flex-col gap-2">
-            <SecondaryButton className="w-full" onClick={() => { setOpen(false); onDemo(); }}>
-              Demo দেখুন
-            </SecondaryButton>
-            <PrimaryButton className="w-full" onClick={() => { setOpen(false); onSubscribe(); }}>
-              Subscribe করুন
-            </PrimaryButton>
             <button
               type="button"
               onClick={() => { setOpen(false); onLogin(); }}
-              className="min-h-11 rounded-xl text-sm font-bold text-purple-800 font-bengali cursor-pointer"
+              className="w-full min-h-11 rounded-xl text-sm font-bold text-white font-bengali cursor-pointer bg-[var(--purple-600)] hover:bg-[var(--purple-700)]"
             >
               লগইন
             </button>

@@ -61,7 +61,7 @@ export function SecondaryButton({ children, className = "", light = false, ...pr
       className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-bold transition active:scale-[0.98] cursor-pointer font-bengali ${
         light
           ? "border-white/30 bg-white/10 text-white hover:bg-white/20"
-          : "border-purple-200 bg-white/80 text-purple-800 hover:bg-purple-50"
+          : "landing-glass-chip text-purple-800 hover:bg-purple-50/80"
       } ${className}`}
       {...props}
     >
