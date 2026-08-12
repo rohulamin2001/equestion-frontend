@@ -66,11 +66,7 @@ export default function Home() {
       </div>
 
       <div className="relative z-10">
-        <LandingNavbar
-          onDemo={scrollToFeatures}
-          onSubscribe={onSubscribe}
-          onLogin={onLogin}
-        />
+        <LandingNavbar onLogin={onLogin} />
         <main className="overflow-x-hidden">
           <HeroSection onDemo={scrollToFeatures} onSubscribe={onSubscribe} />
           <HeroHighlights />

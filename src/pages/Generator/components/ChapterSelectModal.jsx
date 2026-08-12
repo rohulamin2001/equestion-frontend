@@ -118,7 +118,7 @@ export function ChapterSelectModal({
                             onClick={() => {
                               if (isLocked) {
                                 toast.error(
-                                  "বাকি অধ্যায়সমূহ আনলক করতে সাবস্ক্রাইব করুন।",
+                                  "বাকি অধ্যায়সমূহ আনলক করতে রেজিস্ট্রেশন করুন।",
                                 );
                                 return;
                               }

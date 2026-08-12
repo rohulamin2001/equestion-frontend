@@ -311,11 +311,13 @@
       transparent 75%
     );
     --landing-grid-color: color-mix(in srgb, var(--purple-600) 6%, transparent);
-    --landing-glass-bg: color-mix(in srgb, var(--primary-foreground) 55%, transparent);
+    --landing-glass-bg: color-mix(in srgb, var(--primary-foreground) 80%, transparent);
+    --landing-nav-bg: color-mix(in srgb, var(--primary-foreground) 80%, transparent);
+    --landing-nav-bg-scrolled: color-mix(in srgb, var(--primary-foreground) 92%, transparent);
     --landing-glass-border: color-mix(
       in srgb,
       var(--purple-600) 14%,
-      color-mix(in srgb, var(--primary-foreground) 55%, transparent)
+      color-mix(in srgb, var(--primary-foreground) 70%, transparent)
     );
     --landing-highlight-surface: color-mix(
       in srgb,

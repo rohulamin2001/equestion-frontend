@@ -28,7 +28,7 @@ export function GeneratorHeader({ hasLockedSubject }) {
             className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 transition text-white px-5 py-1.5 rounded-xl text-xs font-medium flex items-center gap-2 shadow-md shadow-red-500/20 cursor-pointer"
           >
             <CreditCard className="size-3.5" />
-            <span>সাবস্ক্রাইব করুন!</span>
+            <span>রেজিস্ট্রেশন করুন!</span>
           </button>
         </div>
       )}

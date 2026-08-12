@@ -34,7 +34,7 @@ export default function CTASection({ onDemo, onSubscribe }) {
             style={{ background: "var(--primary-foreground)", color: "var(--purple-900)" }}
             onClick={onSubscribe}
           >
-            Subscribe করুন
+            রেজিস্ট্রেশন করুন
             <ArrowRight className="size-4" />
           </PrimaryButton>
         </div>

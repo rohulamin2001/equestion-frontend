@@ -73,17 +73,9 @@ function BlockRenderer({ block }) {
 export default function Terms() {
   const { openAuthDrawer } = useUserContext();
 
-  const scrollToFeatures = () => {
-    window.location.href = "/#features";
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
-      <LandingNavbar
-        onDemo={scrollToFeatures}
-        onSubscribe={() => openAuthDrawer("register")}
-        onLogin={() => openAuthDrawer("login")}
-      />
+      <LandingNavbar onLogin={() => openAuthDrawer("login")} />
 
       <main className="overflow-x-hidden">
         <section className="relative overflow-hidden border-b border-border">
