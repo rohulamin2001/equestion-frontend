@@ -2192,43 +2192,44 @@ export default function MyQuestions() {
             initial={{ y: 80, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 80, opacity: 0, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/95 backdrop-blur-xl border border-[#900EB0]/20 shadow-2xl rounded-2xl px-4 sm:px-6 py-3 flex items-center justify-between gap-3 sm:gap-6 max-w-lg w-[calc(100%-2rem)]"
+            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+            className="fixed bottom-3 sm:bottom-6 left-0 right-0 mx-auto z-50 bg-white/95 backdrop-blur-xl border border-[#900EB0]/25 shadow-[0_10px_35px_-5px_rgba(144,14,176,0.25)] rounded-2xl p-2.5 sm:px-5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4 w-[calc(100%-1.5rem)] sm:w-fit sm:max-w-lg"
           >
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="size-8 rounded-xl bg-[#900EB0]/10 text-[#900EB0] flex items-center justify-center font-bold text-xs shrink-0">
-                <CheckSquare className="size-4" />
+            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+              <div className="size-7 sm:size-8 rounded-xl bg-[#900EB0]/10 text-[#900EB0] flex items-center justify-center font-bold shrink-0">
+                <CheckSquare className="size-3.5 sm:size-4" />
               </div>
               <div className="min-w-0">
                 <span className="text-xs sm:text-sm font-bold text-slate-800 block truncate">
-                  {selectedQuestionIds.length.toLocaleString("bn-BD")} টি প্রশ্ন
-                  নির্বাচিত
+                  {selectedQuestionIds.length.toLocaleString("bn-BD")} টি প্রশ্ন নির্বাচিত
                 </span>
-                <span className="text-[10px] sm:text-xs text-slate-400 font-medium block truncate">
+                <span className="text-[10px] sm:text-xs text-slate-400 font-medium hidden sm:block truncate">
                   বাল্ক অ্যাকশন সক্রিয় রয়েছে
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <Button
                 type="button"
                 variant="ghost"
                 onClick={clearSelection}
-                className="h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-100/70 transition-all cursor-pointer"
+                className="h-7 sm:h-8 px-2 sm:px-2.5 rounded-xl text-[11px] sm:text-xs font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-100/80 transition-all cursor-pointer"
               >
-                <X className="size-3.5 mr-1" />
+                <X className="size-3 sm:size-3.5 mr-0.5 sm:mr-1" />
                 বাতিল
               </Button>
 
               <Button
                 type="button"
                 onClick={() => setBulkDeleteConfirmOpen(true)}
-                className="h-8 sm:h-9 px-3 sm:px-4 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 transition-all cursor-pointer flex items-center gap-1.5"
+                className="h-7 sm:h-8 px-2.5 sm:px-3.5 rounded-xl text-[11px] sm:text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 transition-all cursor-pointer flex items-center gap-1 sm:gap-1.5 shrink-0"
               >
-                <Trash2 className="size-3.5" />
-                মুছে ফেলুন ({selectedQuestionIds.length.toLocaleString("bn-BD")}
-                )
+                <Trash2 className="size-3 sm:size-3.5" />
+                <span>মুছে ফেলুন</span>
+                <span className="opacity-90 font-sans">
+                  ({selectedQuestionIds.length.toLocaleString("bn-BD")})
+                </span>
               </Button>
             </div>
           </motion.div>
@@ -2240,13 +2241,13 @@ export default function MyQuestions() {
         open={bulkDeleteConfirmOpen}
         onOpenChange={(open) => !open && setBulkDeleteConfirmOpen(false)}
       >
-        <DialogContent className="max-w-md border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl font-sans">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-600 font-bold">
-              <AlertCircle className="size-5 animate-pulse" />
-              নির্বাচিত প্রশ্নসমূহ কি মুছে ফেলতে চান?
+        <DialogContent className="max-w-md w-[calc(100%-2rem)] sm:w-full border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl font-sans p-4 sm:p-6">
+          <DialogHeader className="space-y-1.5 text-left mb-2 sm:mb-4">
+            <DialogTitle className="flex items-center gap-1.5 sm:gap-2 text-red-600 font-bold text-sm sm:text-base">
+              <AlertCircle className="size-4 sm:size-5 shrink-0 animate-pulse" />
+              <span>নির্বাচিত প্রশ্নসমূহ কি মুছে ফেলতে চান?</span>
             </DialogTitle>
-            <DialogDescription className="pt-2 text-slate-600 leading-relaxed font-semibold">
+            <DialogDescription className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal pt-1">
               আপনি মোট{" "}
               <span className="text-red-600 font-bold">
                 {selectedQuestionIds.length.toLocaleString("bn-BD")}
@@ -2256,27 +2257,29 @@ export default function MyQuestions() {
               নিশ্চিতভাবে এগুলো মুছে ফেলতে চান?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex gap-2 justify-end mt-4">
+          <DialogFooter className="mt-4 pt-3 border-t border-slate-100/60 flex flex-row items-center justify-between gap-2.5 sm:gap-3 w-full space-x-0">
             <Button
+              type="button"
               variant="outline"
               onClick={() => setBulkDeleteConfirmOpen(false)}
-              className="border-black/[0.08] text-slate-600 hover:bg-black/[0.02] rounded-xl font-semibold cursor-pointer"
+              className="flex-1 sm:flex-initial h-8 sm:h-9 px-3 sm:px-4 border-black/[0.08] text-slate-600 hover:bg-black/[0.02] rounded-xl text-xs sm:text-sm font-semibold cursor-pointer"
             >
               বাতিল করুন
             </Button>
             <Button
+              type="button"
               onClick={handleBulkDeleteConfirm}
-              className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold cursor-pointer flex items-center gap-1.5 shadow-sm shadow-red-500/10"
+              className="flex-1 sm:flex-initial h-8 sm:h-9 px-3 sm:px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs sm:text-sm font-semibold cursor-pointer flex items-center justify-center gap-1.5 shadow-sm shadow-red-500/10"
               disabled={bulkDeleteMutation.isPending}
             >
               {bulkDeleteMutation.isPending ? (
                 <>
-                  <Loader2 className="size-4 animate-spin" />
+                  <Loader2 className="size-3.5 sm:size-4 animate-spin" />
                   মুছে ফেলা হচ্ছে...
                 </>
               ) : (
                 <>
-                  <Trash2 className="size-4" />
+                  <Trash2 className="size-3.5 sm:size-4" />
                   হ্যাঁ, মুছে ফেলুন
                 </>
               )}
@@ -2290,41 +2293,45 @@ export default function MyQuestions() {
         open={!!deleteConfirmId}
         onOpenChange={(open) => !open && setDeleteConfirmId(null)}
       >
-        <DialogContent className="max-w-md border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-600 font-bold">
-              <AlertCircle className="size-5 animate-pulse" />
-              {typeof deleteConfirmId === "object" && deleteConfirmId?.isGroup
-                ? "সম্পূর্ণ উদ্দীপক প্রশ্নগুচ্ছটি কি মুছে ফেলতে চান?"
-                : "প্রশ্নটি কি মুছে ফেলতে চান?"}
+        <DialogContent className="max-w-md w-[calc(100%-2rem)] sm:w-full border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl font-sans p-4 sm:p-6">
+          <DialogHeader className="space-y-1.5 text-left mb-2 sm:mb-4">
+            <DialogTitle className="flex items-center gap-1.5 sm:gap-2 text-red-600 font-bold text-sm sm:text-base">
+              <AlertCircle className="size-4 sm:size-5 shrink-0 animate-pulse" />
+              <span>
+                {typeof deleteConfirmId === "object" && deleteConfirmId?.isGroup
+                  ? "সম্পূর্ণ উদ্দীপক প্রশ্নগুচ্ছটি কি মুছে ফেলতে চান?"
+                  : "প্রশ্নটি কি মুছে ফেলতে চান?"}
+              </span>
             </DialogTitle>
-            <DialogDescription className="pt-2 text-slate-600 leading-relaxed font-semibold">
+            <DialogDescription className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal pt-1">
               {typeof deleteConfirmId === "object" && deleteConfirmId?.isGroup
                 ? `এই উদ্দীপকভিত্তিক প্রশ্নগুচ্ছের সকল (${(deleteConfirmId.count || 0).toLocaleString("bn-BD")}টি) প্রশ্ন স্থায়ীভাবে মুছে যাবে এবং পরবর্তীতে উদ্ধার করা সম্ভব হবে না। আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?`
                 : "প্রশ্নটি মুছে ফেললে তা স্থায়ীভাবে হারিয়ে যাবে এবং পরবর্তীতে আর উদ্ধার করা সম্ভব হবে না। আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?"}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex gap-2 justify-end mt-4">
+          <DialogFooter className="mt-4 pt-3 border-t border-slate-100/60 flex flex-row items-center justify-between gap-2.5 sm:gap-3 w-full space-x-0">
             <Button
+              type="button"
               variant="outline"
               onClick={() => setDeleteConfirmId(null)}
-              className="border-black/[0.08] text-slate-600 hover:bg-black/[0.02] rounded-xl font-semibold cursor-pointer"
+              className="flex-1 sm:flex-initial h-8 sm:h-9 px-3 sm:px-4 border-black/[0.08] text-slate-600 hover:bg-black/[0.02] rounded-xl text-xs sm:text-sm font-semibold cursor-pointer"
             >
               বাতিল করুন
             </Button>
             <Button
+              type="button"
               onClick={handleDeleteConfirm}
-              className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold cursor-pointer flex items-center gap-1.5 shadow-sm shadow-red-500/10"
+              className="flex-1 sm:flex-initial h-8 sm:h-9 px-3 sm:px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs sm:text-sm font-semibold cursor-pointer flex items-center justify-center gap-1.5 shadow-sm shadow-red-500/10"
               disabled={qm.deleteQuestionMutation.isPending}
             >
               {qm.deleteQuestionMutation.isPending ? (
                 <>
-                  <Loader2 className="size-4 animate-spin" />
+                  <Loader2 className="size-3.5 sm:size-4 animate-spin" />
                   মুছে ফেলা হচ্ছে...
                 </>
               ) : (
                 <>
-                  <Trash2 className="size-4" />
+                  <Trash2 className="size-3.5 sm:size-4" />
                   হ্যাঁ, মুছে ফেলুন
                 </>
               )}
