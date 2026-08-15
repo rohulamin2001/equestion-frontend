@@ -1075,13 +1075,13 @@ export default function MyQuestions() {
         </div>
       ) : (
         <>
-          <div className="flex flex-wrap justify-between items-center bg-white/[0.45] backdrop-blur-md px-4 py-2.5 rounded-2xl border border-black/[0.04] text-xs font-semibold text-slate-500 mb-4 gap-2">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between bg-white/[0.45] backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl border border-black/[0.04] text-xs font-semibold text-slate-500 mb-4 gap-2">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               {deletableQuestions.length > 0 && (
                 <button
                   type="button"
                   onClick={toggleSelectAll}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all text-xs font-bold cursor-pointer select-none ${
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl border transition-all text-xs font-bold cursor-pointer select-none shrink-0 ${
                     isAllSelected
                       ? "bg-[#900EB0] text-white border-[#900EB0] shadow-sm shadow-[#900EB0]/20"
                       : isSomeSelected
@@ -1095,7 +1095,7 @@ export default function MyQuestions() {
                   }
                 >
                   <span
-                    className={`size-4 rounded border flex items-center justify-center shrink-0 ${
+                    className={`size-3.5 sm:size-4 rounded border flex items-center justify-center shrink-0 ${
                       isAllSelected
                         ? "border-white bg-white/20"
                         : isSomeSelected
@@ -1104,30 +1104,31 @@ export default function MyQuestions() {
                     }`}
                   >
                     {isAllSelected ? (
-                      <Check className="size-3 stroke-[3]" />
+                      <Check className="size-2.5 sm:size-3 stroke-[3]" />
                     ) : isSomeSelected ? (
-                      <span className="w-2 h-0.5 bg-[#900EB0] rounded-full" />
+                      <span className="w-1.5 sm:w-2 h-0.5 bg-[#900EB0] rounded-full" />
                     ) : null}
                   </span>
-                  <span>
-                    {isAllSelected ? "সব নির্বাচন বাতিল" : "সব নির্বাচন করুন"}
+                  <span className="text-[11px] sm:text-xs">
+                    {isAllSelected ? "সব বাতিল" : "সব নির্বাচন করুন"}
                   </span>
                   <span className="text-[10px] opacity-80 font-sans">
                     ({deletableQuestions.length.toLocaleString("bn-BD")})
                   </span>
                 </button>
               )}
-              <span>
-                মোট {questions.length.toLocaleString("bn-BD")} টি প্রশ্ন পাওয়া
-                গেছে
+              <span className="whitespace-nowrap text-slate-500 font-semibold text-xs truncate">
+                মোট: {questions.length.toLocaleString("bn-BD")} টি
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <span>প্রদর্শন:</span>
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto">
+              <span className="text-slate-500 text-xs whitespace-nowrap">
+                প্রদর্শন:
+              </span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="h-8 px-2.5 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-[#900EB0]/40 focus:outline-none transition-all rounded-xl text-xs font-bold text-slate-700 flex items-center gap-1 cursor-pointer select-none">
-                    <span>{pageSize} টি</span>
+                  <button className="h-7 sm:h-8 px-2 sm:px-2.5 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-[#900EB0]/40 focus:outline-none transition-all rounded-xl text-xs font-bold text-slate-700 flex items-center gap-1 cursor-pointer select-none">
+                    <span>{pageSize.toLocaleString("bn-BD")} টি</span>
                     <ChevronDown className="size-3 text-slate-400" />
                   </button>
                 </DropdownMenuTrigger>
@@ -1145,7 +1146,7 @@ export default function MyQuestions() {
                           : "text-slate-700"
                       }`}
                     >
-                      {size} টি
+                      {size.toLocaleString("bn-BD")} টি
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
