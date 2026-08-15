@@ -23,10 +23,12 @@ import {
   ArrowDownWideNarrow,
   ArrowUpNarrowWide,
   BadgeCheck,
+  Ban,
   BookOpenText,
   CalendarDays,
   Check,
   CheckCircle2,
+  CheckSquare,
   ChevronDown,
   CircleX,
   Clock3,
@@ -160,6 +162,22 @@ export default function MyQuestions() {
     isFetchingNextPage,
     requestReviewMutation,
     handleRequestReview,
+    // Bulk Selection & Delete exports
+    selectedQuestionIds,
+    bulkDeleteConfirmOpen,
+    setBulkDeleteConfirmOpen,
+    bulkDeleteMutation,
+    handleBulkDeleteConfirm,
+    isQuestionDeletable,
+    deletableQuestions,
+    isAllSelected,
+    isSomeSelected,
+    toggleSelectAll,
+    toggleSelectQuestion,
+    clearSelection,
+    isQuestionSelected,
+    isGroupFullySelected,
+    isGroupPartiallySelected,
   } = useMyQuestions();
 
   const questionsWithSerials = visibleQuestions.map((q, idx) => {
@@ -1057,11 +1075,53 @@ export default function MyQuestions() {
         </div>
       ) : (
         <>
-          <div className="flex justify-between items-center bg-white/[0.45] backdrop-blur-md px-4 py-2 rounded-2xl border border-black/[0.04] text-xs font-semibold text-slate-500 mb-4">
-            <span>
-              মোট {questions.length.toLocaleString("bn-BD")} টি প্রশ্ন পাওয়া
-              গেছে
-            </span>
+          <div className="flex flex-wrap justify-between items-center bg-white/[0.45] backdrop-blur-md px-4 py-2.5 rounded-2xl border border-black/[0.04] text-xs font-semibold text-slate-500 mb-4 gap-2">
+            <div className="flex items-center gap-3">
+              {deletableQuestions.length > 0 && (
+                <button
+                  type="button"
+                  onClick={toggleSelectAll}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all text-xs font-bold cursor-pointer select-none ${
+                    isAllSelected
+                      ? "bg-[#900EB0] text-white border-[#900EB0] shadow-sm shadow-[#900EB0]/20"
+                      : isSomeSelected
+                        ? "bg-[#900EB0]/10 text-[#900EB0] border-[#900EB0]/30"
+                        : "bg-white/70 text-slate-600 border-black/[0.08] hover:bg-[#900EB0]/5 hover:border-[#900EB0]/20"
+                  }`}
+                  title={
+                    isAllSelected
+                      ? "সব নির্বাচন বাতিল করুন"
+                      : "বর্তমান তালিকার সকল ডিলিটযোগ্য প্রশ্ন নির্বাচন করুন"
+                  }
+                >
+                  <span
+                    className={`size-4 rounded border flex items-center justify-center shrink-0 ${
+                      isAllSelected
+                        ? "border-white bg-white/20"
+                        : isSomeSelected
+                          ? "border-[#900EB0] bg-[#900EB0]/20"
+                          : "border-slate-300 bg-white"
+                    }`}
+                  >
+                    {isAllSelected ? (
+                      <Check className="size-3 stroke-[3]" />
+                    ) : isSomeSelected ? (
+                      <span className="w-2 h-0.5 bg-[#900EB0] rounded-full" />
+                    ) : null}
+                  </span>
+                  <span>
+                    {isAllSelected ? "সব নির্বাচন বাতিল" : "সব নির্বাচন করুন"}
+                  </span>
+                  <span className="text-[10px] opacity-80 font-sans">
+                    ({deletableQuestions.length.toLocaleString("bn-BD")})
+                  </span>
+                </button>
+              )}
+              <span>
+                মোট {questions.length.toLocaleString("bn-BD")} টি প্রশ্ন পাওয়া
+                গেছে
+              </span>
+            </div>
             <div className="flex items-center gap-2">
               <span>প্রদর্শন:</span>
               <DropdownMenu>
@@ -1105,16 +1165,58 @@ export default function MyQuestions() {
                 const classLabel =
                   CLASSES_MAP.find((c) => c.value === qMeta.className)?.label ||
                   qMeta.className;
+                const isGrpFull = isGroupFullySelected(item.questions);
+                const isGrpPart = isGroupPartiallySelected(item.questions);
+                const deletableSubQuestions =
+                  item.questions.filter(isQuestionDeletable);
+                const canSelectGroup = deletableSubQuestions.length > 0;
 
                 return (
                   <motion.div
                     key={item.passageGroupId}
                     variants={cardVariants}
-                    className="bg-white/[0.60] hover:bg-white/[0.75] p-4 sm:p-6 rounded-2xl border-2 border-[#900EB0]/20 backdrop-blur-md shadow-soft hover:shadow-soft-hover transition-all duration-200 flex flex-col space-y-4 relative overflow-hidden"
+                    className={`p-4 sm:p-6 rounded-2xl border-2 backdrop-blur-md shadow-soft hover:shadow-soft-hover transition-all duration-200 flex flex-col space-y-4 relative overflow-hidden ${
+                      isGrpFull || isGrpPart
+                        ? "ring-2 ring-[#900EB0]/25 border-[#900EB0]/50 bg-[#900EB0]/[0.03]"
+                        : "border-[#900EB0]/20 bg-white/[0.60] hover:bg-white/[0.75]"
+                    }`}
                   >
                     {/* Header Row */}
                     <div className="flex flex-wrap justify-between items-center gap-2 border-b border-black/[0.06] pb-3">
                       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-sans font-bold text-slate-500">
+                        {canSelectGroup ? (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              toggleSelectQuestion(null, true, item.questions)
+                            }
+                            className={`size-6 rounded-lg border flex items-center justify-center transition-all cursor-pointer shrink-0 select-none ${
+                              isGrpFull
+                                ? "bg-[#900EB0] border-[#900EB0] text-white shadow-sm shadow-[#900EB0]/20"
+                                : isGrpPart
+                                  ? "bg-[#900EB0]/15 border-[#900EB0]/40 text-[#900EB0]"
+                                  : "bg-white border-slate-300 hover:border-[#900EB0]/50"
+                            }`}
+                            title={
+                              isGrpFull
+                                ? "সম্পূর্ণ গুচ্ছ নির্বাচন বাতিল করুন"
+                                : "সম্পূর্ণ উদ্দীপক গুচ্ছ নির্বাচন করুন"
+                            }
+                          >
+                            {isGrpFull ? (
+                              <Check className="size-3.5 stroke-[3]" />
+                            ) : isGrpPart ? (
+                              <span className="w-2.5 h-0.5 bg-[#900EB0] rounded-full" />
+                            ) : null}
+                          </button>
+                        ) : (
+                          <span
+                            className="size-6 rounded-lg border border-slate-200 bg-slate-100/80 flex items-center justify-center text-slate-300 cursor-not-allowed shrink-0"
+                            title="অনুমোদিত উদ্দীপক গুচ্ছ ডিলিট করা যাবে না"
+                          >
+                            <Ban className="size-3 text-slate-400" />
+                          </span>
+                        )}
                         <span className="bg-gradient-to-r from-[#900EB0] to-[#B010CA] text-white px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 font-sans text-xs">
                           <BookOpenText className="size-3.5" />
                           {(() => {
@@ -1184,15 +1286,48 @@ export default function MyQuestions() {
                           label: q.difficulty,
                           color: "bg-slate-50 border-slate-100 text-slate-600",
                         };
+                        const isSubSelected = isQuestionSelected(q._id);
+                        const isSubDeletable = isQuestionDeletable(q);
 
                         return (
                           <div
                             key={q._id}
-                            className="p-4 bg-white/70 rounded-xl border border-slate-200/60 space-y-3 relative group/sub shadow-2xs"
+                            className={`p-4 rounded-xl border space-y-3 relative group/sub shadow-2xs transition-all ${
+                              isSubSelected
+                                ? "bg-[#900EB0]/[0.06] border-[#900EB0]/40 ring-1 ring-[#900EB0]/20"
+                                : "bg-white/70 border-slate-200/60"
+                            }`}
                           >
                             {/* Sub Question Row Header */}
                             <div className="flex flex-wrap justify-between items-center gap-2">
                               <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                                {isSubDeletable ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleSelectQuestion(q._id)}
+                                    className={`size-4.5 rounded border flex items-center justify-center transition-all cursor-pointer shrink-0 select-none ${
+                                      isSubSelected
+                                        ? "bg-[#900EB0] border-[#900EB0] text-white shadow-xs"
+                                        : "bg-white border-slate-300 hover:border-[#900EB0]/50"
+                                    }`}
+                                    title={
+                                      isSubSelected
+                                        ? "সিলেকশন বাতিল করুন"
+                                        : "প্রশ্নটি নির্বাচন করুন"
+                                    }
+                                  >
+                                    {isSubSelected && (
+                                      <Check className="size-3 stroke-[3]" />
+                                    )}
+                                  </button>
+                                ) : (
+                                  <span
+                                    className="size-4.5 rounded border border-slate-200 bg-slate-100 flex items-center justify-center cursor-not-allowed shrink-0"
+                                    title="অনুমোদিত প্রশ্ন ডিলিট করা যাবে না"
+                                  >
+                                    <Ban className="size-2.5 text-slate-400" />
+                                  </span>
+                                )}
                                 <span className="text-[#900EB0] font-sans">
                                   প্রশ্ন{" "}
                                   {(qSubIndex + 1).toLocaleString("bn-BD")}
@@ -1440,17 +1575,50 @@ export default function MyQuestions() {
                 CATEGORIES_MAP.find((c) => c.value === q.category)?.label ||
                 q.category;
               const isAnswerVisible = showAnswers || !!expandedAnswerIds[q._id];
+              const isSelected = isQuestionSelected(q._id);
+              const isDeletable = isQuestionDeletable(q);
 
               return (
                 <motion.div
                   key={q._id}
                   variants={cardVariants}
                   whileHover={{ y: -4 }}
-                  className="bg-white/[0.45] hover:bg-white/[0.60] p-3.5 sm:p-6 rounded-2xl border border-black/[0.04] backdrop-blur-md hover:shadow-md transition-colors duration-200 flex flex-col space-y-3 sm:space-y-4 relative"
+                  className={`p-3.5 sm:p-6 rounded-2xl border backdrop-blur-md hover:shadow-md transition-all duration-200 flex flex-col space-y-3 sm:space-y-4 relative ${
+                    isSelected
+                      ? "ring-2 ring-[#900EB0]/25 border-[#900EB0]/40 bg-[#900EB0]/[0.02]"
+                      : "bg-white/[0.45] hover:bg-white/[0.60] border-black/[0.04]"
+                  }`}
                 >
                   {/* Badge Header Row */}
                   <div className="flex flex-wrap justify-between items-center gap-2">
                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-sans font-bold text-slate-500">
+                      {isDeletable ? (
+                        <button
+                          type="button"
+                          onClick={() => toggleSelectQuestion(q._id)}
+                          className={`size-5 rounded-md border flex items-center justify-center transition-all cursor-pointer shrink-0 select-none ${
+                            isSelected
+                              ? "bg-[#900EB0] border-[#900EB0] text-white shadow-sm shadow-[#900EB0]/20"
+                              : "bg-white/80 border-slate-300 hover:border-[#900EB0]/50"
+                          }`}
+                          title={
+                            isSelected
+                              ? "সিলেকশন বাতিল করুন"
+                              : "প্রশ্নটি নির্বাচন করুন"
+                          }
+                        >
+                          {isSelected && (
+                            <Check className="size-3.5 stroke-[3]" />
+                          )}
+                        </button>
+                      ) : (
+                        <span
+                          className="size-5 rounded-md border border-slate-200 bg-slate-100/70 flex items-center justify-center text-slate-300 cursor-not-allowed shrink-0"
+                          title="অনুমোদিত প্রশ্ন ডিলিট করা যাবে না"
+                        >
+                          <Ban className="size-3 text-slate-400" />
+                        </span>
+                      )}
                       {new Date() - new Date(q.createdAt) <
                         24 * 60 * 60 * 1000 && (
                         <span className="bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded flex items-center gap-1.5">
@@ -2015,6 +2183,106 @@ export default function MyQuestions() {
           )}
         </>
       )}
+
+      {/* Floating Bulk Action Bar */}
+      <AnimatePresence>
+        {selectedQuestionIds.length > 0 && (
+          <motion.div
+            initial={{ y: 80, opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 80, opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/95 backdrop-blur-xl border border-[#900EB0]/20 shadow-2xl rounded-2xl px-4 sm:px-6 py-3 flex items-center justify-between gap-3 sm:gap-6 max-w-lg w-[calc(100%-2rem)]"
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="size-8 rounded-xl bg-[#900EB0]/10 text-[#900EB0] flex items-center justify-center font-bold text-xs shrink-0">
+                <CheckSquare className="size-4" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-xs sm:text-sm font-bold text-slate-800 block truncate">
+                  {selectedQuestionIds.length.toLocaleString("bn-BD")} টি প্রশ্ন
+                  নির্বাচিত
+                </span>
+                <span className="text-[10px] sm:text-xs text-slate-400 font-medium block truncate">
+                  বাল্ক অ্যাকশন সক্রিয় রয়েছে
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={clearSelection}
+                className="h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-100/70 transition-all cursor-pointer"
+              >
+                <X className="size-3.5 mr-1" />
+                বাতিল
+              </Button>
+
+              <Button
+                type="button"
+                onClick={() => setBulkDeleteConfirmOpen(true)}
+                className="h-8 sm:h-9 px-3 sm:px-4 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 transition-all cursor-pointer flex items-center gap-1.5"
+              >
+                <Trash2 className="size-3.5" />
+                মুছে ফেলুন ({selectedQuestionIds.length.toLocaleString("bn-BD")}
+                )
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <Dialog
+        open={bulkDeleteConfirmOpen}
+        onOpenChange={(open) => !open && setBulkDeleteConfirmOpen(false)}
+      >
+        <DialogContent className="max-w-md border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl shadow-xl font-sans">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-600 font-bold">
+              <AlertCircle className="size-5 animate-pulse" />
+              নির্বাচিত প্রশ্নসমূহ কি মুছে ফেলতে চান?
+            </DialogTitle>
+            <DialogDescription className="pt-2 text-slate-600 leading-relaxed font-semibold">
+              আপনি মোট{" "}
+              <span className="text-red-600 font-bold">
+                {selectedQuestionIds.length.toLocaleString("bn-BD")}
+              </span>{" "}
+              টি প্রশ্ন মুছে ফেলতে যাচ্ছেন। মুছে ফেলার পর এগুলো স্থায়ীভাবে
+              হারিয়ে যাবে এবং পরবর্তীতে আর উদ্ধার করা সম্ভব হবে না। আপনি কি
+              নিশ্চিতভাবে এগুলো মুছে ফেলতে চান?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 justify-end mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setBulkDeleteConfirmOpen(false)}
+              className="border-black/[0.08] text-slate-600 hover:bg-black/[0.02] rounded-xl font-semibold cursor-pointer"
+            >
+              বাতিল করুন
+            </Button>
+            <Button
+              onClick={handleBulkDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold cursor-pointer flex items-center gap-1.5 shadow-sm shadow-red-500/10"
+              disabled={bulkDeleteMutation.isPending}
+            >
+              {bulkDeleteMutation.isPending ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  মুছে ফেলা হচ্ছে...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="size-4" />
+                  হ্যাঁ, মুছে ফেলুন
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <Dialog
