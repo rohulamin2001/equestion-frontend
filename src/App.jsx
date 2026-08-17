@@ -9,13 +9,16 @@ import Generator from "./pages/Generator/Generator";
 import Home from "./pages/Home/Home";
 import Institution from "./pages/Institution/Institution";
 //login file
-import AuthDrawer from "./pages/Login/AuthDrawer";
 import CreatedQuestions from "./pages/CreatedQuestions/CreatedQuestions";
+import Terms from "./pages/Legal/Terms";
+import AuthDrawer from "./pages/Login/AuthDrawer";
 import Login from "./pages/Login/Login";
 import MetadataSetup from "./pages/MetadataSetup/MetadataSetup";
 import MyQuestions from "./pages/MyQuestions/MyQuestions";
 import NotFound from "./pages/NotFound/NotFound";
-import OMREvaluation from "./pages/OMREvaluation/OMREvaluation";
+import OMREvaluatorPage from "./pages/OMREvaluation/OMREvaluatorPage";
+import OMRGeneratorPage from "./pages/OMREvaluation/OMRGeneratorPage";
+import OMRTokenPage from "./pages/OMREvaluation/OMRTokenPage";
 import Overview from "./pages/Overview/Overview";
 import PricingManagement from "./pages/PricingManagement/PricingManagement";
 import Profile from "./pages/Profile/Profile";
@@ -31,7 +34,6 @@ import Subscription from "./pages/Subscription/Subscription";
 import AdminSupportCenter from "./pages/Support/AdminSupportCenter";
 import SupportDesk from "./pages/Support/SupportDesk";
 import SyllabusManagement from "./pages/Syllabus/SyllabusManagement";
-import Terms from "./pages/Legal/Terms";
 
 export default function App() {
   return (
@@ -166,10 +168,37 @@ export default function App() {
           />
 
           <Route
+            path="omr/generate"
+            element={
+              <RoleRouteGuard allowedRoles={["Subscriber"]}>
+                <OMRGeneratorPage />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
+            path="omr/tokens"
+            element={
+              <RoleRouteGuard allowedRoles={["Subscriber"]}>
+                <OMRTokenPage />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
+            path="omr/evaluator"
+            element={
+              <RoleRouteGuard allowedRoles={["Subscriber"]}>
+                <OMREvaluatorPage />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
             path="omr"
             element={
               <RoleRouteGuard allowedRoles={["Subscriber"]}>
-                <OMREvaluation />
+                <OMREvaluatorPage />
               </RoleRouteGuard>
             }
           />

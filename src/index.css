@@ -311,9 +311,21 @@
       transparent 75%
     );
     --landing-grid-color: color-mix(in srgb, var(--purple-600) 6%, transparent);
-    --landing-glass-bg: color-mix(in srgb, var(--primary-foreground) 80%, transparent);
-    --landing-nav-bg: color-mix(in srgb, var(--primary-foreground) 80%, transparent);
-    --landing-nav-bg-scrolled: color-mix(in srgb, var(--primary-foreground) 92%, transparent);
+    --landing-glass-bg: color-mix(
+      in srgb,
+      var(--primary-foreground) 80%,
+      transparent
+    );
+    --landing-nav-bg: color-mix(
+      in srgb,
+      var(--primary-foreground) 80%,
+      transparent
+    );
+    --landing-nav-bg-scrolled: color-mix(
+      in srgb,
+      var(--primary-foreground) 92%,
+      transparent
+    );
     --landing-glass-border: color-mix(
       in srgb,
       var(--purple-600) 14%,
@@ -640,6 +652,13 @@
 .question-paper-container.font-family-SolaimanLipi * {
   font-family:
     "SolaimanLipi", "Kalpurush", "Purno", "SutonnyMJ", sans-serif !important;
+}
+
+/* SolaimanLipi Font Class & OMR Sheet styling */
+.font-solaiman,
+#omr-printable-sheet,
+#omr-printable-sheet * {
+  font-family: "SolaimanLipi", "Kalpurush", "Noto Sans Bengali", sans-serif;
 }
 
 .question-paper-container.font-family-Nikosh,
