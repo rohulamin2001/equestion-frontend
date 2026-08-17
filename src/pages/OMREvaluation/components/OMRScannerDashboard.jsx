@@ -1,38 +1,35 @@
-import React, { useState, useRef } from "react";
 import {
-  Scan,
-  UploadCloud,
-  FileImage,
   CheckCircle,
-  XCircle,
-  AlertTriangle,
-  Eye,
   Download,
-  Trash2,
-  Activity,
-  Layers,
-  Sparkles,
+  Eye,
   RefreshCw,
-  UserCheck,
+  Scan,
   Search,
-  ExternalLink,
+  Trash2,
+  UploadCloud,
+  UserCheck,
+  XCircle,
 } from "lucide-react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import {
-  useOMRTokens,
-  useOMRResults,
-  useEvaluateOMR,
   useDeleteOMRResult,
+  useEvaluateOMR,
+  useOMRResults,
+  useOMRTokens,
   usePythonServiceHealth,
 } from "../hook/useOMREvaluation";
-import { toast } from "sonner";
 
-export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) {
+export default function OMRScannerDashboard({
+  selectedTokenId,
+  onTokenChange,
+}) {
   const { data: tokens = [] } = useOMRTokens();
   const { data: health } = usePythonServiceHealth();
   const evaluateMutation = useEvaluateOMR();
   const deleteResultMutation = useDeleteOMRResult();
 
-  const [activeTokenId, setActiveTokenId] = useState(selectedTokenId || (tokens[0]?.tokenId || ""));
+  const [internalTokenId, setInternalTokenId] = useState("");
   const [dragActive, setDragActive] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isEvaluatingBatch, setIsEvaluatingBatch] = useState(false);
@@ -41,19 +38,18 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
 
   const fileInputRef = useRef(null);
 
-  // Sync token if prop changes
-  React.useEffect(() => {
-    if (selectedTokenId) {
-      setActiveTokenId(selectedTokenId);
-    } else if (tokens.length > 0 && !activeTokenId) {
-      setActiveTokenId(tokens[0].tokenId);
-    }
-  }, [selectedTokenId, tokens]);
+  // Derive activeTokenId directly during rendering (no cascading renders via useEffect)
+  const activeTokenId =
+    selectedTokenId ||
+    internalTokenId ||
+    (tokens.length > 0 ? tokens[0].tokenId : "");
 
   const activeToken = tokens.find((t) => t.tokenId === activeTokenId);
-  const { data: resultsData, isLoading: loadingResults, refetch: refetchResults } = useOMRResults(
-    activeTokenId
-  );
+  const {
+    data: resultsData,
+    isLoading: loadingResults,
+    refetch: refetchResults,
+  } = useOMRResults(activeTokenId);
 
   const results = resultsData?.results || [];
   const summary = resultsData?.summary || {
@@ -92,7 +88,7 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
 
   const addFiles = (files) => {
     const validImageFiles = files.filter((f) =>
-      ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(f.type)
+      ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(f.type),
     );
 
     if (validImageFiles.length === 0) {
@@ -138,7 +134,9 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
 
       // Update status to EVALUATING
       setSelectedFiles((prev) =>
-        prev.map((f) => (f.id === item.id ? { ...f, status: "EVALUATING" } : f))
+        prev.map((f) =>
+          f.id === item.id ? { ...f, status: "EVALUATING" } : f,
+        ),
       );
 
       const formData = new FormData();
@@ -151,18 +149,16 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
           prev.map((f) =>
             f.id === item.id
               ? { ...f, status: "SUCCESS", result: res.result }
-              : f
-          )
+              : f,
+          ),
         );
       } catch (err) {
         const msg =
           err.response?.data?.message || err.message || "মূল্যায়ন ব্যর্থ হয়েছে";
         setSelectedFiles((prev) =>
           prev.map((f) =>
-            f.id === item.id
-              ? { ...f, status: "ERROR", errorMessage: msg }
-              : f
-          )
+            f.id === item.id ? { ...f, status: "ERROR", errorMessage: msg } : f,
+          ),
         );
       }
     }
@@ -212,7 +208,7 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
     link.setAttribute("href", encodedUri);
     link.setAttribute(
       "download",
-      `OMR_Results_${activeToken?.examTitle || activeTokenId}_${Date.now()}.csv`
+      `OMR_Results_${activeToken?.examTitle || activeTokenId}_${Date.now()}.csv`,
     );
     document.body.appendChild(link);
     link.click();
@@ -222,7 +218,9 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
 
   // Filtered Results
   const filteredResults = results.filter((r) =>
-    searchRoll.trim() ? r.studentRoll.toLowerCase().includes(searchRoll.toLowerCase().trim()) : true
+    searchRoll.trim()
+      ? r.studentRoll.toLowerCase().includes(searchRoll.toLowerCase().trim())
+      : true,
   );
 
   return (
@@ -237,7 +235,7 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
             <select
               value={activeTokenId}
               onChange={(e) => {
-                setActiveTokenId(e.target.value);
+                setInternalTokenId(e.target.value);
                 if (onTokenChange) onTokenChange(e.target.value);
               }}
               className="w-full pl-3 pr-8 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -266,7 +264,9 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
           >
             <span
               className={`w-2 h-2 rounded-full ${
-                health?.healthy ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+                health?.healthy
+                  ? "bg-emerald-500 animate-pulse"
+                  : "bg-amber-500"
               }`}
             />
             <span>Python Engine: {health?.healthy ? "ONLINE" : "STANDBY"}</span>
@@ -313,7 +313,8 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
               OMR শিটের ছবি টেনে এনে ছেড়ে দিন অথবা ক্লিক করুন
             </h4>
             <p className="text-xs text-slate-500 max-w-xs">
-              JPEG, PNG বা WebP ফরম্যাট। একাধিক খাতা একসাথে মূল্যায়ন করতে একসাথে একাধিক ছবি সিলেক্ট করুন।
+              JPEG, PNG বা WebP ফরম্যাট। একাধিক খাতা একসাথে মূল্যায়ন করতে একসাথে
+              একাধিক ছবি সিলেক্ট করুন।
             </p>
           </div>
 
@@ -348,7 +349,9 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
                         <div className="font-medium text-slate-800 dark:text-slate-200 truncate max-w-[160px]">
                           {item.name}
                         </div>
-                        <div className="text-[10px] text-slate-400">{item.size} MB</div>
+                        <div className="text-[10px] text-slate-400">
+                          {item.size} MB
+                        </div>
                       </div>
                     </div>
 
@@ -411,28 +414,36 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
         <div className="lg:col-span-6 space-y-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-xs">
-              <div className="text-[11px] text-slate-500 font-medium mb-1">মোট মূল্যায়িত</div>
+              <div className="text-[11px] text-slate-500 font-medium mb-1">
+                মোট মূল্যায়িত
+              </div>
               <div className="text-xl font-bold text-slate-800 dark:text-slate-100">
                 {summary.totalEvaluated}
               </div>
             </div>
 
             <div className="bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-xs">
-              <div className="text-[11px] text-emerald-600 font-medium mb-1">সফল সম্পন্ন</div>
+              <div className="text-[11px] text-emerald-600 font-medium mb-1">
+                সফল সম্পন্ন
+              </div>
               <div className="text-xl font-bold text-emerald-600">
                 {summary.completed}
               </div>
             </div>
 
             <div className="bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-xs">
-              <div className="text-[11px] text-blue-600 font-medium mb-1">সর্বোচ্চ নম্বর</div>
+              <div className="text-[11px] text-blue-600 font-medium mb-1">
+                সর্বোচ্চ নম্বর
+              </div>
               <div className="text-xl font-bold text-blue-600">
                 {summary.highestScore}
               </div>
             </div>
 
             <div className="bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-xs">
-              <div className="text-[11px] text-amber-600 font-medium mb-1">ম্যানুয়াল রিভিউ</div>
+              <div className="text-[11px] text-amber-600 font-medium mb-1">
+                ম্যানুয়াল রিভিউ
+              </div>
               <div className="text-xl font-bold text-amber-600">
                 {summary.manualReview}
               </div>
@@ -452,10 +463,30 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
               </div>
               <h3 className="font-bold text-base">{activeToken.examTitle}</h3>
               <div className="grid grid-cols-2 gap-2 text-xs text-slate-300 pt-1 border-t border-slate-700">
-                <div>বিষয়: <span className="font-medium text-white">{activeToken.subject || "সাধারণ"}</span></div>
-                <div>প্রশ্ন সংখ্যা: <span className="font-medium text-white">{activeToken.totalQuestions} টি</span></div>
-                <div>সঠিক উত্তরে: <span className="font-medium text-emerald-400">+{activeToken.marksPerQuestion}</span></div>
-                <div>ভুল উত্তরে: <span className="font-medium text-red-400">-{activeToken.negativeMarks}</span></div>
+                <div>
+                  বিষয়:{" "}
+                  <span className="font-medium text-white">
+                    {activeToken.subject || "সাধারণ"}
+                  </span>
+                </div>
+                <div>
+                  প্রশ্ন সংখ্যা:{" "}
+                  <span className="font-medium text-white">
+                    {activeToken.totalQuestions} টি
+                  </span>
+                </div>
+                <div>
+                  সঠিক উত্তরে:{" "}
+                  <span className="font-medium text-emerald-400">
+                    +{activeToken.marksPerQuestion}
+                  </span>
+                </div>
+                <div>
+                  ভুল উত্তরে:{" "}
+                  <span className="font-medium text-red-400">
+                    -{activeToken.negativeMarks}
+                  </span>
+                </div>
               </div>
             </div>
           )}
@@ -497,7 +528,9 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
 
         {/* Table */}
         {loadingResults ? (
-          <div className="p-8 text-center text-slate-500 text-xs">লোড হচ্ছে...</div>
+          <div className="p-8 text-center text-slate-500 text-xs">
+            লোড হচ্ছে...
+          </div>
         ) : filteredResults.length === 0 ? (
           <div className="p-8 text-center text-slate-400 text-xs">
             এই টোকেনের আওতায় এখনো কোনো ওএমআর খাতা মূল্যায়ন করা হয়নি।
@@ -519,11 +552,16 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filteredResults.map((item) => (
-                  <tr key={item._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                  <tr
+                    key={item._id}
+                    className="hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                  >
                     <td className="py-2.5 px-3 font-mono font-bold text-slate-800 dark:text-slate-200">
                       {item.studentRoll}
                     </td>
-                    <td className="py-2.5 px-3 font-semibold">{item.setCode || "A"}</td>
+                    <td className="py-2.5 px-3 font-semibold">
+                      {item.setCode || "A"}
+                    </td>
                     <td className="py-2.5 px-3">
                       <span className="font-bold text-blue-600 dark:text-blue-400 text-sm">
                         {item.totalScore}
@@ -532,16 +570,20 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
                     <td className="py-2.5 px-3 text-emerald-600 font-semibold">
                       {item.correctCount}
                     </td>
-                    <td className="py-2.5 px-3 text-red-500 font-semibold">{item.wrongCount}</td>
-                    <td className="py-2.5 px-3 text-slate-400">{item.blankCount}</td>
+                    <td className="py-2.5 px-3 text-red-500 font-semibold">
+                      {item.wrongCount}
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-400">
+                      {item.blankCount}
+                    </td>
                     <td className="py-2.5 px-3">
                       <span
                         className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           item.status === "COMPLETED"
                             ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60"
                             : item.status === "MANUAL_REVIEW"
-                            ? "bg-amber-50 text-amber-600 dark:bg-amber-950/60"
-                            : "bg-red-50 text-red-600"
+                              ? "bg-amber-50 text-amber-600 dark:bg-amber-950/60"
+                              : "bg-red-50 text-red-600"
                         }`}
                       >
                         {item.status}
@@ -558,7 +600,9 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
                         </button>
                         <button
                           onClick={() => {
-                            if (window.confirm("এই রেজাল্টটি ডিলিট করতে চান?")) {
+                            if (
+                              window.confirm("এই রেজাল্টটি ডিলিট করতে চান?")
+                            ) {
                               deleteResultMutation.mutate({
                                 resultId: item._id,
                                 tokenId: activeTokenId,
@@ -590,8 +634,13 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
                   মূল্যায়িত খাতার বিস্তারিত (রোল: {viewingResult.studentRoll})
                 </h3>
                 <p className="text-xs text-slate-500">
-                  স্কোর: <b className="text-blue-600">{viewingResult.totalScore}</b> | সঠিক:{" "}
-                  <b className="text-emerald-600">{viewingResult.correctCount}</b> | ভুল:{" "}
+                  স্কোর:{" "}
+                  <b className="text-blue-600">{viewingResult.totalScore}</b> |
+                  সঠিক:{" "}
+                  <b className="text-emerald-600">
+                    {viewingResult.correctCount}
+                  </b>{" "}
+                  | ভুল:{" "}
                   <b className="text-red-500">{viewingResult.wrongCount}</b>
                 </p>
               </div>
@@ -633,13 +682,18 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
                         ans.isCorrect
                           ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800"
                           : ans.state === "BLANK"
-                          ? "bg-slate-50 border-slate-200 dark:bg-slate-800"
-                          : "bg-red-50/50 border-red-200 dark:bg-red-950/30 dark:border-red-800"
+                            ? "bg-slate-50 border-slate-200 dark:bg-slate-800"
+                            : "bg-red-50/50 border-red-200 dark:bg-red-950/30 dark:border-red-800"
                       }`}
                     >
-                      <span className="font-mono font-bold w-6">Q{ans.questionNo}.</span>
+                      <span className="font-mono font-bold w-6">
+                        Q{ans.questionNo}.
+                      </span>
                       <span className="font-semibold">
-                        উত্তর: <b className="font-mono">{ans.selectedAnswer || "N/A"}</b>
+                        উত্তর:{" "}
+                        <b className="font-mono">
+                          {ans.selectedAnswer || "N/A"}
+                        </b>
                       </span>
                       <span className="text-[10px] font-bold">
                         {ans.isCorrect ? (
@@ -648,6 +702,10 @@ export default function OMRScannerDashboard({ selectedTokenId, onTokenChange }) 
                           <span className="text-slate-400">খালি</span>
                         ) : ans.state === "MULTIPLE" ? (
                           <span className="text-amber-500">একাধিক</span>
+                        ) : ans.state === "DAMAGED" ? (
+                          <span className="text-purple-500">ক্ষতিগ্রস্ত</span>
+                        ) : ans.state === "UNCERTAIN" ? (
+                          <span className="text-amber-500">অস্পষ্ট</span>
                         ) : (
                           <span className="text-red-500">✖ ভুল</span>
                         )}
