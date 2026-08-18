@@ -158,6 +158,8 @@ export default function Subscription() {
           version: checkoutPkg.version,
           couponCode: appliedCoupon ? appliedCoupon.code : undefined,
           cartTotal: checkoutPkg.price,
+          // Fresh key per attempt; server dedupes duplicate submissions.
+          idempotencyKey: crypto.randomUUID(),
         }
       : {
           purchaseType: "Package",
@@ -166,6 +168,7 @@ export default function Subscription() {
           version: checkoutPkg.version,
           couponCode: appliedCoupon ? appliedCoupon.code : undefined,
           cartTotal: checkoutPkg.price,
+          idempotencyKey: crypto.randomUUID(),
         };
 
     try {
