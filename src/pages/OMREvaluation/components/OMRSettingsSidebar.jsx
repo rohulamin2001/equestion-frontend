@@ -28,6 +28,10 @@ export default function OMRSettingsSidebar({
   setOptionLanguage,
   themeColor,
   setThemeColor,
+  headerType = "big",
+  setHeaderType,
+  infoType = "digital",
+  setInfoType,
   selectedLayoutCode,
   onPrint,
 }) {
@@ -293,6 +297,90 @@ export default function OMRSettingsSidebar({
                     ))}
                   </div>
                 </div>
+
+                {/* হেডার নির্বাচন করুন (SMALL vs BIG) */}
+                <div>
+                  <div className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+                    হেডার নির্বাচন করুন
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setHeaderType("small")}
+                      className={`py-2 px-3 rounded-xl border text-xs font-black uppercase transition-all flex items-center justify-center cursor-pointer shadow-sm ${
+                        headerType === "small"
+                          ? "text-white border-transparent shadow-md"
+                          : "bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200/70"
+                      }`}
+                      style={
+                        headerType === "small"
+                          ? { backgroundColor: themeColor }
+                          : {}
+                      }
+                    >
+                      SMALL
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHeaderType("big")}
+                      className={`py-2 px-3 rounded-xl border text-xs font-black uppercase transition-all flex items-center justify-center cursor-pointer shadow-sm ${
+                        headerType === "big"
+                          ? "text-white border-transparent shadow-md"
+                          : "bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200/70"
+                      }`}
+                      style={
+                        headerType === "big"
+                          ? { backgroundColor: themeColor }
+                          : {}
+                      }
+                    >
+                      BIG
+                    </button>
+                  </div>
+                </div>
+
+                {/* পরীক্ষা ও শিক্ষার্থীর তথ্যের টাইপ (DIGITAL vs MANUAL) - শুধুমাত্র BIG হেডারের ক্ষেত্রে দৃশ্যমান */}
+                {headerType === "big" && (
+                  <div className="animate-in fade-in-50 duration-200 space-y-1.5">
+                    <div className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                      পরীক্ষা ও শিক্ষার্থীর তথ্যের টাইপ
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setInfoType("digital")}
+                        className={`py-2 px-3 rounded-xl border text-xs font-black uppercase transition-all flex items-center justify-center cursor-pointer shadow-sm ${
+                          infoType === "digital"
+                            ? "text-white border-transparent shadow-md"
+                            : "bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200/70"
+                        }`}
+                        style={
+                          infoType === "digital"
+                            ? { backgroundColor: themeColor }
+                            : {}
+                        }
+                      >
+                        DIGITAL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setInfoType("manual")}
+                        className={`py-2 px-3 rounded-xl border text-xs font-black uppercase transition-all flex items-center justify-center cursor-pointer shadow-sm ${
+                          infoType === "manual"
+                            ? "text-white border-transparent shadow-md"
+                            : "bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200/70"
+                        }`}
+                        style={
+                          infoType === "manual"
+                            ? { backgroundColor: themeColor }
+                            : {}
+                        }
+                      >
+                        MANUAL
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

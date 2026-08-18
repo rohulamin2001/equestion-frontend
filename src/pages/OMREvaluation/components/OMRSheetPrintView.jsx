@@ -1,4 +1,3 @@
-import React from "react";
 import SmartSignatureOMRTemplate from "./templates/SmartSignatureOMRTemplate";
 import StandardClassicOMRTemplate from "./templates/StandardClassicOMRTemplate";
 
@@ -15,6 +14,8 @@ export default function OMRSheetPrintView({
   totalQuestions = 40,
   optionLanguage = "BN",
   themeColor = "#E11D48",
+  headerType = "big",
+  infoType = "digital",
   showInstructions = true,
   showSignatures = true,
   selectedLayoutCode = "OMR-SIG-V1",
@@ -34,6 +35,8 @@ export default function OMRSheetPrintView({
           totalQuestions={totalQuestions}
           optionLanguage={optionLanguage}
           themeColor={themeColor}
+          headerType={headerType}
+          infoType={infoType}
           showInstructions={showInstructions}
           showSignatures={showSignatures}
           selectedLayoutCode={selectedLayoutCode}

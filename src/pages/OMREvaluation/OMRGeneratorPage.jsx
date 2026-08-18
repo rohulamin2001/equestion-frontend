@@ -19,6 +19,8 @@ export default function OMRGeneratorPage() {
   const [totalQuestions, setTotalQuestions] = useState(40);
   const [optionLanguage, setOptionLanguage] = useState("BN"); // 'BN' (ক,খ,গ,ঘ) or 'EN' (A,B,C,D)
   const [themeColor, setThemeColor] = useState("#E11D48"); // Default: Rose / Board Red
+  const [headerType, setHeaderType] = useState("big"); // "small" | "big"
+  const [infoType, setInfoType] = useState("digital"); // "digital" | "manual"
 
   const selectedLayoutCode =
     templateType === "smart-signature"
@@ -85,6 +87,8 @@ export default function OMRGeneratorPage() {
             totalQuestions={totalQuestions}
             optionLanguage={optionLanguage}
             themeColor={themeColor}
+            headerType={headerType}
+            infoType={infoType}
             selectedLayoutCode={selectedLayoutCode}
           />
         </div>
@@ -107,6 +111,10 @@ export default function OMRGeneratorPage() {
           setOptionLanguage={setOptionLanguage}
           themeColor={themeColor}
           setThemeColor={setThemeColor}
+          headerType={headerType}
+          setHeaderType={setHeaderType}
+          infoType={infoType}
+          setInfoType={setInfoType}
           selectedLayoutCode={selectedLayoutCode}
           onPrint={handlePrint}
         />
