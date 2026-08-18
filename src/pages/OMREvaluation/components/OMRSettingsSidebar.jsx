@@ -34,15 +34,21 @@ export default function OMRSettingsSidebar({
   const [activeTab, setActiveTab] = useState("settings"); // "settings" | "actions"
   const [copied, setCopied] = useState(false);
 
-  // 10 Color Swatches as seen in the screenshot
+  // Color Swatches including standard and premium deep tone palettes
   const themeSwatches = [
     { name: "বোর্ড রেড/রোজ", hex: "#E11D48" },
-    { name: "স্লেট গ্রে", hex: "#64748B" },
     { name: "রয়েল ব্লু", hex: "#3B82F6" },
     { name: "এমেরাল্ড গ্রিন", hex: "#10B981" },
     { name: "পার্পল", hex: "#8B5CF6" },
+    { name: "রয়েল ভায়োলেট", hex: "#4B1D6E" },
+    { name: "স্লেট ভায়োলেট", hex: "#4C3A8C" },
+    { name: "মিডনাইট ভায়োলেট", hex: "#2D1B4E" },
+    { name: "ইন্ডিগো", hex: "#4B0082" },
+    { name: "ডিপ টিল", hex: "#0D7377" },
+    { name: "ডিপ পার্পল", hex: "#271066" },
     { name: "অরেঞ্জ", hex: "#F97316" },
     { name: "স্কাই সায়ান", hex: "#06B6D4" },
+    { name: "স্লেট গ্রে", hex: "#64748B" },
     { name: "পিঙ্ক", hex: "#EC4899" },
     { name: "গোল্ডেন ইয়েলো", hex: "#EAB308" },
     { name: "লাইম গ্রিন", hex: "#84CC16" },
@@ -265,7 +271,7 @@ export default function OMRSettingsSidebar({
                   <div className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-2">
                     থিম নির্বাচন করুন
                   </div>
-                  <div className="grid grid-cols-5 gap-2">
+                  <div className="grid grid-cols-4 gap-2">
                     {themeSwatches.map((swatch) => (
                       <button
                         key={swatch.hex}

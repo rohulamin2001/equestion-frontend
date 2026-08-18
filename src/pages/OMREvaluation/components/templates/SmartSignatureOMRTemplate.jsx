@@ -24,45 +24,45 @@ export default function SmartSignatureOMRTemplate({
   const getLayoutConfig = () => {
     if (totalQuestions > 80) {
       return {
-        topRowHeight: "h-[20.5px]",
+        topRowHeight: "h-[21px]",
         topBubbleSize: "w-[18px] h-[18px]",
-        mcqRowHeight: "h-[22.5px]",
+        mcqRowHeight: "h-[24px]",
         mcqBubbleSize: "w-[18px] h-[18px]",
-        sheetPadding: "p-4 sm:p-5",
-        titleMargin: "my-1.5",
-        sigHeight: "h-[68px]",
+        sheetPadding: "p-4 sm:p-6",
+        titleMargin: "my-2",
+        sigHeight: "h-[64px]",
       };
     }
     if (totalQuestions > 60) {
       return {
         topRowHeight: "h-[22px]",
-        topBubbleSize: "w-[18px] h-[18px]",
-        mcqRowHeight: "h-[24px]",
-        mcqBubbleSize: "w-[18px] h-[18px]",
+        topBubbleSize: "w-[19px] h-[19px]",
+        mcqRowHeight: "h-[26px]",
+        mcqBubbleSize: "w-[19px] h-[19px]",
         sheetPadding: "p-5 sm:p-6",
-        titleMargin: "my-2",
-        sigHeight: "h-[72px]",
+        titleMargin: "my-2.5",
+        sigHeight: "h-[70px]",
       };
     }
     if (totalQuestions > 40) {
       return {
         topRowHeight: "h-6",
         topBubbleSize: "w-[20px] h-[20px]",
-        mcqRowHeight: "h-[26px]",
-        mcqBubbleSize: "w-[19px] h-[19px]",
+        mcqRowHeight: "h-[28px]",
+        mcqBubbleSize: "w-[20px] h-[20px]",
         sheetPadding: "p-6",
-        titleMargin: "my-2.5",
+        titleMargin: "my-3",
         sigHeight: "h-[76px]",
       };
     }
     return {
       topRowHeight: "h-6",
       topBubbleSize: "w-[22px] h-[22px]",
-      mcqRowHeight: "h-[28px]",
-      mcqBubbleSize: "w-[20px] h-[20px]",
+      mcqRowHeight: "h-[30px]",
+      mcqBubbleSize: "w-[21px] h-[21px]",
       sheetPadding: "p-6 sm:p-7",
-      titleMargin: "my-3",
-      sigHeight: "h-[76px]",
+      titleMargin: "my-3.5",
+      sigHeight: "h-[80px]",
     };
   };
 
@@ -73,12 +73,15 @@ export default function SmartSignatureOMRTemplate({
     const cols = [];
     const perCol = Math.ceil(totalQuestions / 4);
     for (let c = 0; c < 4; c++) {
-      const start = c * perCol + 1;
-      const end = Math.min((c + 1) * perCol, totalQuestions);
-      if (start <= totalQuestions) {
-        const colQ = [];
-        for (let q = start; q <= end; q++) colQ.push(q);
-        cols.push(colQ);
+      const colQuestions = [];
+      for (let r = 1; r <= perCol; r++) {
+        const qNum = c * perCol + r;
+        if (qNum <= totalQuestions) {
+          colQuestions.push(qNum);
+        }
+      }
+      if (colQuestions.length > 0) {
+        cols.push(colQuestions);
       }
     }
     return cols;
@@ -107,10 +110,10 @@ export default function SmartSignatureOMRTemplate({
       }}
     >
       {/* 4 SOLID BLACK CORNER FIDUCIAL MARKERS FOR OPENCV PERSPECTIVE WARP (STANDARD) */}
-      <div className="absolute top-2.5 left-2.5 w-4.5 h-4.5 bg-black" />
-      <div className="absolute top-2.5 right-2.5 w-4.5 h-4.5 bg-black" />
-      <div className="absolute bottom-2.5 left-2.5 w-4.5 h-4.5 bg-black" />
-      <div className="absolute bottom-2.5 right-2.5 w-4.5 h-4.5 bg-black" />
+      <div className="absolute top-3 left-3 w-5 h-5 bg-black" />
+      <div className="absolute top-3 right-3 w-5 h-5 bg-black" />
+      <div className="absolute bottom-3 left-3 w-5 h-5 bg-black" />
+      <div className="absolute bottom-3 right-3 w-5 h-5 bg-black" />
 
       <div>
         {/* School Branding Header */}
@@ -306,36 +309,64 @@ export default function SmartSignatureOMRTemplate({
           </div>
 
           {/* 5. নিয়মাবলী ও কক্ষ পরিদর্শকের স্বাক্ষর */}
-          <div className="flex-1 space-y-2 min-w-[190px]">
+          <div className="flex-1 flex flex-col justify-between self-stretch min-w-[190px]">
             {/* Rules Box */}
             <div
               className="border leading-tight"
               style={{ borderColor: themeColor }}
             >
               <div
-                className="text-white text-center font-bold py-0.5 text-[16px]"
+                className="text-white text-center font-bold py-0.5 text-[14px]"
                 style={{ backgroundColor: themeColor }}
               >
                 নিয়মাবলী
               </div>
-              <div className="p-1.5 space-y-0.5 text-black font-medium text-[10px] leading-snug">
+              <div className="p-1.5 space-y-0.5 text-black text-[8.5px] leading-[12.5px]">
+                <div>
+                  <p className="font-semibold">
+                    ১। বৃত্তাকার ঘরগুলো এমনভাবে ভরাট করতে হবে যাতে ভিতরের লেখাটি
+                    দেখা না যায়।
+                  </p>
+                  <div className="flex items-center gap-2.5 pl-2 my-0.5 text-[8px]">
+                    <span className="inline-flex items-center gap-1 font-bold text-emerald-800">
+                      <span>* সঠিক পদ্ধতি:</span>
+                      <span className="text-[10px] text-black">⬤</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-rose-700 font-medium">
+                      <span>* ভুল পদ্ধতি:</span>
+                      <span className="text-[8.5px] font-mono tracking-tight">
+                        🗹, ⮽, ◐, ⊙
+                      </span>
+                    </span>
+                  </div>
+                </div>
                 <p>
-                  ১। বৃত্তাকার ঘরগুলো এমন ভাবে ভরাট করতে হবে যাতে ভেতরের লেখাটি
-                  দেখা না যায়।
+                  ২। বৃত্তাকার ঘরগুলো অবশ্যই <b>কালো কালির বলপয়েন্ট কলম</b>{" "}
+                  দিয়ে ভরাট করতে হবে।
                 </p>
-                <p>২। উত্তরপত্রে অবাঞ্ছিত দাগ দেয়া যাবেনা।</p>
-                <p>৩। উত্তরপত্র ভাজ করা যাবেনা।</p>
-                <p>৪। সেট কোডবিহীন উত্তরপত্র বাতিল হবে।</p>
+                <p>
+                  ৩। রোল নম্বর, রেজিস্ট্রেশন নম্বর ও প্রশ্নপত্রের সেট কোড
+                  সঠিকভাবে লিখে বৃত্ত ভরাট করতে হবে; অন্যথায় উত্তরপত্র বাতিল বলে
+                  গণ্য হবে।
+                </p>
+                <p>
+                  ৪। উত্তরপত্রে কোনো প্রকার অবাঞ্ছিত দাগ দেওয়া এবং উত্তরপত্র
+                  ভাঁজ করা যাবে না।
+                </p>
+                <p>
+                  ৫। পরিষ্কার-পরিচ্ছন্ন ও ভাঁজবিহীন উত্তরপত্র মেশিনে মূল্যায়নের
+                  জন্য অপরিহার্য।
+                </p>
               </div>
             </div>
 
             {/* Signature Box */}
             <div
-              className={`border p-2 text-center ${layout.sigHeight} flex flex-col justify-end`}
+              className="border p-1.5 text-center flex flex-col justify-end flex-1 min-h-[52px] mt-1"
               style={{ borderColor: themeColor }}
             >
-              <span className="text-[16px] font-bold text-black border-t border-dashed border-slate-400 pt-1 leading-snug">
-                কক্ষ পরিদর্শকের স্বাক্ষর তারিখসহ
+              <span className="text-[13px] font-bold text-black border-t border-dashed border-slate-400 pt-1 leading-snug">
+                কক্ষ পরিদর্শকের স্বাক্ষর ও তারিখ
               </span>
             </div>
           </div>
