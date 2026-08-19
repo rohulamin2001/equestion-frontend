@@ -1,5 +1,13 @@
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
   CheckCircle,
+  ChevronDown,
   Download,
   Eye,
   RefreshCw,
@@ -10,7 +18,9 @@ import {
   UserCheck,
   XCircle,
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import {
   useDeleteOMRResult,
@@ -232,24 +242,57 @@ export default function OMRScannerDashboard({
             সক্রিয় টোকেন:
           </label>
           <div className="relative flex-1 max-w-md">
-            <select
-              value={activeTokenId}
-              onChange={(e) => {
-                setInternalTokenId(e.target.value);
-                if (onTokenChange) onTokenChange(e.target.value);
-              }}
-              className="w-full pl-3 pr-8 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {tokens.length === 0 ? (
-                <option value="">কোনো টোকেন তৈরি নেই</option>
-              ) : (
-                tokens.map((t) => (
-                  <option key={t._id} value={t.tokenId}>
-                    {t.tokenId} - {t.examTitle} ({t.totalQuestions} প্রশ্ন)
-                  </option>
-                ))
-              )}
-            </select>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="w-full h-10 px-3.5 border border-black/[0.08] dark:border-white/10 bg-white dark:bg-slate-800 hover:border-[#900EB0]/40 focus:outline-none focus:ring-2 focus:ring-[#900EB0]/20 transition-all rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 flex justify-between items-center shadow-xs backdrop-blur-sm cursor-pointer select-none"
+                >
+                  <span className="truncate">
+                    {activeToken
+                      ? `${activeToken.tokenId} - ${activeToken.examTitle} (${activeToken.totalQuestions} প্রশ্ন)`
+                      : "কোনো টোকেন তৈরি নেই"}
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-black/[0.08] dark:border-slate-800 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[var(--radix-dropdown-menu-trigger-width)] min-w-[280px] max-h-60 overflow-y-auto"
+              >
+                {tokens.length === 0 ? (
+                  <div className="p-3 text-xs text-muted-foreground text-center">
+                    কোনো টোকেন তৈরি নেই
+                  </div>
+                ) : (
+                  tokens.map((t) => {
+                    const isSelected = activeTokenId === t.tokenId;
+                    return (
+                      <DropdownMenuItem
+                        key={t._id}
+                        onSelect={() => {
+                          setInternalTokenId(t.tokenId);
+                          if (onTokenChange) onTokenChange(t.tokenId);
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/10 focus:text-[#900EB0] hover:bg-purple-50/60 dark:hover:bg-slate-800 group ${
+                          isSelected
+                            ? "bg-[#900EB0]/10 text-[#900EB0] font-bold"
+                            : "text-slate-700 dark:text-slate-200"
+                        }`}
+                      >
+                        <span>
+                          {t.tokenId} - {t.examTitle} ({t.totalQuestions}{" "}
+                          প্রশ্ন)
+                        </span>
+                        {isSelected && (
+                          <span className="size-1.5 rounded-full bg-[#900EB0]" />
+                        )}
+                      </DropdownMenuItem>
+                    );
+                  })
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -417,36 +460,52 @@ export default function OMRScannerDashboard({
               <div className="text-[11px] text-slate-500 font-medium mb-1">
                 মোট মূল্যায়িত
               </div>
-              <div className="text-xl font-bold text-slate-800 dark:text-slate-100">
-                {summary.totalEvaluated}
-              </div>
+              {loadingResults ? (
+                <Skeleton className="h-7 w-12 rounded-md mt-0.5" />
+              ) : (
+                <div className="text-xl font-bold text-slate-800 dark:text-slate-100">
+                  {summary.totalEvaluated}
+                </div>
+              )}
             </div>
 
             <div className="bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-xs">
               <div className="text-[11px] text-emerald-600 font-medium mb-1">
                 সফল সম্পন্ন
               </div>
-              <div className="text-xl font-bold text-emerald-600">
-                {summary.completed}
-              </div>
+              {loadingResults ? (
+                <Skeleton className="h-7 w-12 rounded-md mt-0.5" />
+              ) : (
+                <div className="text-xl font-bold text-emerald-600">
+                  {summary.completed}
+                </div>
+              )}
             </div>
 
             <div className="bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-xs">
               <div className="text-[11px] text-blue-600 font-medium mb-1">
                 সর্বোচ্চ নম্বর
               </div>
-              <div className="text-xl font-bold text-blue-600">
-                {summary.highestScore}
-              </div>
+              {loadingResults ? (
+                <Skeleton className="h-7 w-12 rounded-md mt-0.5" />
+              ) : (
+                <div className="text-xl font-bold text-blue-600">
+                  {summary.highestScore}
+                </div>
+              )}
             </div>
 
             <div className="bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-xs">
               <div className="text-[11px] text-amber-600 font-medium mb-1">
                 ম্যানুয়াল রিভিউ
               </div>
-              <div className="text-xl font-bold text-amber-600">
-                {summary.manualReview}
-              </div>
+              {loadingResults ? (
+                <Skeleton className="h-7 w-12 rounded-md mt-0.5" />
+              ) : (
+                <div className="text-xl font-bold text-amber-600">
+                  {summary.manualReview}
+                </div>
+              )}
             </div>
           </div>
 
@@ -528,8 +587,57 @@ export default function OMRScannerDashboard({
 
         {/* Table */}
         {loadingResults ? (
-          <div className="p-8 text-center text-slate-500 text-xs">
-            লোড হচ্ছে...
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold">
+                  <th className="py-2.5 px-3">রোল নম্বর</th>
+                  <th className="py-2.5 px-3">সেট</th>
+                  <th className="py-2.5 px-3">মোট প্রাপ্ত নম্বর</th>
+                  <th className="py-2.5 px-3">সঠিক</th>
+                  <th className="py-2.5 px-3">ভুল</th>
+                  <th className="py-2.5 px-3">ব্ল্যাঙ্ক</th>
+                  <th className="py-2.5 px-3">স্ট্যাটাস</th>
+                  <th className="py-2.5 px-3 text-right">অ্যাকশন</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {Array.from({ length: 5 }).map((_, idx) => (
+                  <tr
+                    key={idx}
+                    className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30"
+                  >
+                    <td className="py-3 px-3">
+                      <Skeleton className="h-4 w-16 rounded" />
+                    </td>
+                    <td className="py-3 px-3">
+                      <Skeleton className="h-4 w-6 rounded" />
+                    </td>
+                    <td className="py-3 px-3">
+                      <Skeleton className="h-5 w-10 rounded" />
+                    </td>
+                    <td className="py-3 px-3">
+                      <Skeleton className="h-4 w-8 rounded" />
+                    </td>
+                    <td className="py-3 px-3">
+                      <Skeleton className="h-4 w-8 rounded" />
+                    </td>
+                    <td className="py-3 px-3">
+                      <Skeleton className="h-4 w-8 rounded" />
+                    </td>
+                    <td className="py-3 px-3">
+                      <Skeleton className="h-5 w-20 rounded-full" />
+                    </td>
+                    <td className="py-3 px-3 text-right">
+                      <div className="inline-flex items-center gap-1.5 justify-end">
+                        <Skeleton className="h-7 w-7 rounded-lg" />
+                        <Skeleton className="h-7 w-7 rounded-lg" />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : filteredResults.length === 0 ? (
           <div className="p-8 text-center text-slate-400 text-xs">
@@ -625,98 +733,129 @@ export default function OMRScannerDashboard({
       </div>
 
       {/* VISUAL MARKED OVERLAY MODAL */}
-      {viewingResult && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
-            <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm">
-                  মূল্যায়িত খাতার বিস্তারিত (রোল: {viewingResult.studentRoll})
-                </h3>
-                <p className="text-xs text-slate-500">
-                  স্কোর:{" "}
-                  <b className="text-blue-600">{viewingResult.totalScore}</b> |
-                  সঠিক:{" "}
-                  <b className="text-emerald-600">
-                    {viewingResult.correctCount}
-                  </b>{" "}
-                  | ভুল:{" "}
-                  <b className="text-red-500">{viewingResult.wrongCount}</b>
-                </p>
-              </div>
-
-              <button
+      {createPortal(
+        <AnimatePresence>
+          {viewingResult && (
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+              {/* Neutral Backdrop with blur */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15, ease: "easeInOut" }}
                 onClick={() => setViewingResult(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 flex items-center justify-center text-sm font-bold"
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm"
+              />
+
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  scale: 0.95,
+                  y: -16,
+                  filter: "blur(4px)",
+                }}
+                animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, scale: 0.95, y: -16, filter: "blur(4px)" }}
+                transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden z-10"
               >
-                ✕
-              </button>
-            </div>
-
-            <div className="p-4 overflow-y-auto flex-1 grid grid-cols-1 md:grid-cols-12 gap-4">
-              {/* Annotated Sheet Image */}
-              <div className="md:col-span-7 flex justify-center bg-slate-950 p-2 rounded-2xl">
-                {viewingResult.annotatedImageBase64 ? (
-                  <img
-                    src={viewingResult.annotatedImageBase64}
-                    alt="Annotated OMR"
-                    className="max-h-[500px] w-auto object-contain rounded-lg shadow-lg"
-                  />
-                ) : (
-                  <div className="text-slate-400 text-xs flex items-center justify-center h-48">
-                    ওভারলে ছবি পাওয়া যায়নি
+                <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm">
+                      মূল্যায়িত খাতার বিস্তারিত (রোল:{" "}
+                      {viewingResult.studentRoll})
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      স্কোর:{" "}
+                      <b className="text-blue-600">
+                        {viewingResult.totalScore}
+                      </b>{" "}
+                      | সঠিক:{" "}
+                      <b className="text-emerald-600">
+                        {viewingResult.correctCount}
+                      </b>{" "}
+                      | ভুল:{" "}
+                      <b className="text-red-500">{viewingResult.wrongCount}</b>
+                    </p>
                   </div>
-                )}
-              </div>
 
-              {/* Answers Grid Details */}
-              <div className="md:col-span-5 space-y-3">
-                <div className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  প্রশ্নের উত্তর বিবরণী
+                  <button
+                    onClick={() => setViewingResult(null)}
+                    className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 flex items-center justify-center text-sm font-bold cursor-pointer"
+                  >
+                    ✕
+                  </button>
                 </div>
-                <div className="max-h-[440px] overflow-y-auto space-y-1.5 pr-1">
-                  {(viewingResult.studentAnswers || []).map((ans) => (
-                    <div
-                      key={ans.questionNo}
-                      className={`p-2 rounded-xl border text-xs flex items-center justify-between ${
-                        ans.isCorrect
-                          ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800"
-                          : ans.state === "BLANK"
-                            ? "bg-slate-50 border-slate-200 dark:bg-slate-800"
-                            : "bg-red-50/50 border-red-200 dark:bg-red-950/30 dark:border-red-800"
-                      }`}
-                    >
-                      <span className="font-mono font-bold w-6">
-                        Q{ans.questionNo}.
-                      </span>
-                      <span className="font-semibold">
-                        উত্তর:{" "}
-                        <b className="font-mono">
-                          {ans.selectedAnswer || "N/A"}
-                        </b>
-                      </span>
-                      <span className="text-[10px] font-bold">
-                        {ans.isCorrect ? (
-                          <span className="text-emerald-600">✔ সঠিক</span>
-                        ) : ans.state === "BLANK" ? (
-                          <span className="text-slate-400">খালি</span>
-                        ) : ans.state === "MULTIPLE" ? (
-                          <span className="text-amber-500">একাধিক</span>
-                        ) : ans.state === "DAMAGED" ? (
-                          <span className="text-purple-500">ক্ষতিগ্রস্ত</span>
-                        ) : ans.state === "UNCERTAIN" ? (
-                          <span className="text-amber-500">অস্পষ্ট</span>
-                        ) : (
-                          <span className="text-red-500">✖ ভুল</span>
-                        )}
-                      </span>
+
+                <div className="p-4 overflow-y-auto flex-1 grid grid-cols-1 md:grid-cols-12 gap-4">
+                  {/* Annotated Sheet Image */}
+                  <div className="md:col-span-7 flex justify-center bg-slate-950 p-2 rounded-2xl">
+                    {viewingResult.annotatedImageBase64 ? (
+                      <img
+                        src={viewingResult.annotatedImageBase64}
+                        alt="Annotated OMR"
+                        className="max-h-[500px] w-auto object-contain rounded-lg shadow-lg"
+                      />
+                    ) : (
+                      <div className="text-slate-400 text-xs flex items-center justify-center h-48">
+                        ওভারলে ছবি পাওয়া যায়নি
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Answers Grid Details */}
+                  <div className="md:col-span-5 space-y-3">
+                    <div className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      প্রশ্নের উত্তর বিবরণী
                     </div>
-                  ))}
+                    <div className="max-h-[440px] overflow-y-auto space-y-1.5 pr-1">
+                      {(viewingResult.studentAnswers || []).map((ans) => (
+                        <div
+                          key={ans.questionNo}
+                          className={`p-2 rounded-xl border text-xs flex items-center justify-between ${
+                            ans.isCorrect
+                              ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800"
+                              : ans.state === "BLANK"
+                                ? "bg-slate-50 border-slate-200 dark:bg-slate-800"
+                                : "bg-red-50/50 border-red-200 dark:bg-red-950/30 dark:border-red-800"
+                          }`}
+                        >
+                          <span className="font-mono font-bold w-6">
+                            Q{ans.questionNo}.
+                          </span>
+                          <span className="font-semibold">
+                            উত্তর:{" "}
+                            <b className="font-mono">
+                              {ans.selectedAnswer || "N/A"}
+                            </b>
+                          </span>
+                          <span className="text-[10px] font-bold">
+                            {ans.isCorrect ? (
+                              <span className="text-emerald-600">✔ সঠিক</span>
+                            ) : ans.state === "BLANK" ? (
+                              <span className="text-slate-400">খালি</span>
+                            ) : ans.state === "MULTIPLE" ? (
+                              <span className="text-amber-500">একাধিক</span>
+                            ) : ans.state === "DAMAGED" ? (
+                              <span className="text-purple-500">
+                                ক্ষতিগ্রস্ত
+                              </span>
+                            ) : ans.state === "UNCERTAIN" ? (
+                              <span className="text-amber-500">অস্পষ্ট</span>
+                            ) : (
+                              <span className="text-red-500">✖ ভুল</span>
+                            )}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </div>
-        </div>
+          )}
+        </AnimatePresence>,
+        document.body,
       )}
     </div>
   );
