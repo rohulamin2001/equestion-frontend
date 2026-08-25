@@ -3,10 +3,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { GENERATOR_CLASSES as classes } from "../../../constants/classes";
+import { useUserContext } from "../../../context/UserContext";
 import apiClient from "../../../lib/apiClient";
 
 export const useGenerator = () => {
   const navigate = useNavigate();
+  const { role: userRole } = useUserContext();
+  const isAdminOrSuperAdmin = userRole === "Super Admin" || userRole === "Admin";
 
   // Form states
   const [examName, setExamName] = useState("");
@@ -34,14 +37,106 @@ export const useGenerator = () => {
   const userSubs = mySubscriptionsQuery.data || [];
   const loadingSubs = mySubscriptionsQuery.isLoading;
 
+  // Helper to add class with full normalization (e.g. Class 9 / Class 10 <-> Class 9-10)
+  const addNormalizedClass = (clsSet, clsName) => {
+    if (!clsName) return;
+    const trimmed = String(clsName).trim();
+    clsSet.add(trimmed);
+
+    if (
+      trimmed === "Class 9" ||
+      trimmed === "Class 10" ||
+      trimmed === "Class 9-10" ||
+      trimmed === "৯ম" ||
+      trimmed === "১০ম" ||
+      trimmed === "নবম" ||
+      trimmed === "দশম" ||
+      trimmed === "Class 9 - 10" ||
+      trimmed.includes("Class 9") ||
+      trimmed.includes("Class 10")
+    ) {
+      clsSet.add("Class 9-10");
+      clsSet.add("Class 9");
+      clsSet.add("Class 10");
+    }
+
+    if (
+      trimmed === "HSC" ||
+      trimmed === "Class 11" ||
+      trimmed === "Class 12" ||
+      trimmed === "Class 11-12" ||
+      trimmed === "এইচএসসি"
+    ) {
+      clsSet.add("HSC");
+      clsSet.add("Class 11");
+      clsSet.add("Class 12");
+      clsSet.add("Class 11-12");
+    }
+  };
+
   // Filter classes based on active subscriptions
   const activeClasses = (() => {
+    if (isAdminOrSuperAdmin) {
+      return classes.map((c) => c.value);
+    }
+
     const now = new Date();
     const clsSet = new Set();
     userSubs.forEach((sub) => {
       if (!sub.isActive || sub.isSuspended || new Date(sub.endDate) < now) {
         return;
       }
+
+      // 1. Expand known package IDs
+      if (sub.packageId) {
+        const pkgId = String(sub.packageId).toLowerCase();
+        if (pkgId.includes("all-classes") || pkgId.includes("all-in-one")) {
+          [
+            "Class 3",
+            "Class 4",
+            "Class 5",
+            "Class 6",
+            "Class 7",
+            "Class 8",
+            "Class 9-10",
+            "Class 9",
+            "Class 10",
+            "HSC",
+          ].forEach((c) => addNormalizedClass(clsSet, c));
+        } else if (pkgId.includes("6-to-10") || pkgId.includes("6-10")) {
+          [
+            "Class 6",
+            "Class 7",
+            "Class 8",
+            "Class 9-10",
+            "Class 9",
+            "Class 10",
+          ].forEach((c) => addNormalizedClass(clsSet, c));
+        } else if (pkgId.includes("3-to-5") || pkgId.includes("3-5")) {
+          ["Class 3", "Class 4", "Class 5"].forEach((c) =>
+            addNormalizedClass(clsSet, c),
+          );
+        } else if (
+          pkgId.includes("9-10") ||
+          pkgId.includes("9-to-10") ||
+          pkgId.includes("class-9") ||
+          pkgId.includes("class-10")
+        ) {
+          ["Class 9-10", "Class 9", "Class 10"].forEach((c) =>
+            addNormalizedClass(clsSet, c),
+          );
+        } else if (
+          pkgId.includes("hsc") ||
+          pkgId.includes("11-12") ||
+          pkgId.includes("college")
+        ) {
+          ["HSC", "Class 11", "Class 12"].forEach((c) =>
+            addNormalizedClass(clsSet, c),
+          );
+        }
+      }
+
+      // 2. Teacher packages
       if (sub.packageId && sub.packageId.startsWith("teacher-")) {
         [
           "Class 6",
@@ -50,19 +145,20 @@ export const useGenerator = () => {
           "Class 9-10",
           "Class 9",
           "Class 10",
-        ].forEach((c) => clsSet.add(c));
+        ].forEach((c) => addNormalizedClass(clsSet, c));
       } else if (
         sub.purchaseType === "Package" ||
         sub.purchaseType === "Class"
       ) {
-        sub.classNames?.forEach((c) => clsSet.add(c));
+        sub.classNames?.forEach((c) => addNormalizedClass(clsSet, c));
       } else if (sub.purchaseType === "Subject") {
         sub.subjectIds?.forEach((s) => {
           const clsName = s?.className;
-          if (clsName) clsSet.add(clsName);
+          if (clsName) addNormalizedClass(clsSet, clsName);
         });
       }
     });
+
     return Array.from(clsSet);
   })();
 
@@ -147,19 +243,25 @@ export const useGenerator = () => {
   // Verify access helper for a subject
   const hasSubjectAccess = (subject) => {
     if (!subject) return false;
+    if (isAdminOrSuperAdmin) return true;
 
-    const subId = subject.subjectId?._id || subject.subjectId;
+    const subId = (subject.subjectId?._id || subject.subjectId || "").toString();
     const subjectName =
       subject.subjectName || subject.subjectId?.subjectName || "";
+    const subjectVersion = subject.version || "Bangla";
+    const subjectClassName =
+      subject.className || subject.subjectId?.className || selectedClass;
     const now = new Date();
 
     return userSubs.some((sub) => {
       if (!sub.isActive || sub.isSuspended || new Date(sub.endDate) < now)
         return false;
 
-      // Fallback check for teacher package
+      const subVersion = sub.version || "Bangla";
+
+      // 1. Teacher package check
       if (sub.packageId && sub.packageId.startsWith("teacher-")) {
-        if (sub.version && sub.version !== subject.version) return false;
+        if (subVersion !== subjectVersion) return false;
         const pkgKey = sub.packageId.replace("-madrasah", "");
         const classesList = [
           "Class 6",
@@ -169,7 +271,10 @@ export const useGenerator = () => {
           "Class 9",
           "Class 10",
         ];
-        if (classesList.includes(selectedClass)) {
+        if (
+          classesList.includes(selectedClass) ||
+          classesList.includes(subjectClassName)
+        ) {
           if (
             pkgKey === "teacher-bangla-6-10" &&
             /বাংলা|Bangla/i.test(subjectName)
@@ -207,15 +312,84 @@ export const useGenerator = () => {
         }
       }
 
+      // 2. Package ID check (all-classes, 6-to-10, 9-10, etc.)
+      if (sub.packageId) {
+        const pkgId = String(sub.packageId).toLowerCase();
+        const matchesVersion =
+          !sub.version ||
+          sub.version === subjectVersion ||
+          (sub.version === "Madrasah"
+            ? subjectVersion === "Madrasah"
+            : subjectVersion !== "Madrasah");
+
+        if (matchesVersion) {
+          if (pkgId.includes("all-classes") || pkgId.includes("all-in-one"))
+            return true;
+          if (
+            (pkgId.includes("6-to-10") || pkgId.includes("6-10")) &&
+            [
+              "Class 6",
+              "Class 7",
+              "Class 8",
+              "Class 9-10",
+              "Class 9",
+              "Class 10",
+            ].some((c) => c === selectedClass || c === subjectClassName)
+          )
+            return true;
+          if (
+            (pkgId.includes("3-to-5") || pkgId.includes("3-5")) &&
+            ["Class 3", "Class 4", "Class 5"].some(
+              (c) => c === selectedClass || c === subjectClassName,
+            )
+          )
+            return true;
+          if (
+            (pkgId.includes("9-10") ||
+              pkgId.includes("9-to-10") ||
+              pkgId.includes("class-9") ||
+              pkgId.includes("class-10")) &&
+            ["Class 9-10", "Class 9", "Class 10"].some(
+              (c) => c === selectedClass || c === subjectClassName,
+            )
+          )
+            return true;
+          if (
+            (pkgId.includes("hsc") ||
+              pkgId.includes("11-12") ||
+              pkgId.includes("college")) &&
+            ["HSC", "Class 11", "Class 12"].some(
+              (c) => c === selectedClass || c === subjectClassName,
+            )
+          )
+            return true;
+        }
+      }
+
+      // 3. PurchaseType Package or Class
       if (sub.purchaseType === "Package" || sub.purchaseType === "Class") {
-        return (
-          sub.classNames?.includes(selectedClass) &&
-          sub.version === subject.version
+        const subClasses = new Set();
+        sub.classNames?.forEach((c) => addNormalizedClass(subClasses, c));
+
+        const classMatches =
+          subClasses.has(selectedClass) || subClasses.has(subjectClassName);
+        const versionMatches =
+          !sub.version ||
+          sub.version === subjectVersion ||
+          (sub.version === "Madrasah"
+            ? subjectVersion === "Madrasah"
+            : subjectVersion !== "Madrasah");
+
+        return classMatches && versionMatches;
+      }
+
+      // 4. Subject purchase
+      if (sub.purchaseType === "Subject") {
+        return sub.subjectIds?.some(
+          (s) => (s?._id || s || "").toString() === subId,
         );
       }
-      if (sub.purchaseType === "Subject") {
-        return sub.subjectIds?.some((s) => (s._id || s) === subId);
-      }
+
       return false;
     });
   };

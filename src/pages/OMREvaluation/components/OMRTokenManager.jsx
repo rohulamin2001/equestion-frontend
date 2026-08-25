@@ -243,7 +243,7 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
 
         <button
           onClick={handleOpenCreateModal}
-          className="relative shrink-0 inline-flex items-center gap-2 px-5 py-3 bg-white/95 hover:bg-white font-bold text-sm rounded-xl shadow-lg transition-modern hover-lift active:scale-95 focus-ring-modern"
+          className="relative shrink-0 inline-flex items-center gap-2 px-5 py-3 bg-white/95 hover:bg-white font-bold text-sm rounded-xl shadow-lg transition-colors hover:opacity-95 active:scale-95 focus-ring-modern cursor-pointer"
           style={{ color: "var(--purple-700)" }}
         >
           <Plus className="w-4 h-4" />
@@ -332,7 +332,7 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
           </div>
           <button
             onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-2 px-5 py-2.5 text-white text-xs font-bold rounded-xl transition-modern hover-lift focus-ring-modern"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-white text-xs font-bold rounded-xl transition-colors focus-ring-modern hover:opacity-90 cursor-pointer"
             style={{
               background: "var(--q-header-gradient)",
               boxShadow: "var(--q-print-btn-shadow)",
@@ -362,7 +362,7 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
                   <button
                     type="button"
                     onClick={() => copyTokenId(token.tokenId)}
-                    className="group/copy inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-modern hover-lift"
+                    className="group/copy inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-colors hover:opacity-85 cursor-pointer"
                     style={{
                       backgroundColor: "var(--accent)",
                       color: "var(--purple-700)",
@@ -566,7 +566,7 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="w-8 h-8 rounded-full flex items-center justify-center transition-modern hover-lift focus-ring-modern text-muted-foreground hover:text-slate-800 dark:hover:text-slate-100 cursor-pointer"
+                    className="w-8 h-8 rounded-full flex items-center justify-center transition-colors focus-ring-modern text-muted-foreground hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                     style={{
                       backgroundColor: "var(--accent)",
                       border: "1px solid var(--q-card-border)",
@@ -831,7 +831,7 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
                     <button
                       type="button"
                       onClick={() => setIsModalOpen(false)}
-                      className="px-4 py-2 text-xs font-semibold rounded-xl transition-modern hover-lift focus-ring-modern cursor-pointer"
+                      className="px-4 py-2 text-xs font-semibold rounded-xl transition-colors focus-ring-modern hover:opacity-85 cursor-pointer"
                       style={{
                         backgroundColor: "var(--accent)",
                         color: "var(--accent-foreground)",
@@ -847,7 +847,7 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
                         createTokenMutation.isPending ||
                         updateTokenMutation.isPending
                       }
-                      className="px-6 py-2 text-white text-xs font-bold rounded-xl transition-modern hover-lift focus-ring-modern disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      className="px-6 py-2 text-white text-xs font-bold rounded-xl transition-colors focus-ring-modern hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-md"
                       style={{
                         background: "var(--q-header-gradient)",
                         boxShadow: "var(--q-print-btn-shadow)",

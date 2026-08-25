@@ -4,13 +4,17 @@ import StandardClassicOMRTemplate from "./templates/StandardClassicOMRTemplate";
 export default function OMRSheetPrintView({
   templateType = "smart-signature", // "smart-signature" | "standard-classic"
   instituteName = "সোনার বাংলা হাই স্কুল",
-  instituteAddress = "বেলাবো, নরসিংদী",
+  instituteAddress = "ভালুকা, ময়মনসিংহ",
   instituteNameSize = 18,
   instituteAddressSize = 12,
   examTitle = "বার্ষিক মূল্যায়ন মডেল টেস্ট - ২০২৬",
+  showExamTitle = true,
   subject = "পদার্থবিজ্ঞান ১ম পত্র",
+  showSubject = true,
   subjectCode = "১০১",
+  showSubjectCode = true,
   examTime = "৫০ মিনিট",
+  showExamTime = true,
   totalQuestions = 40,
   optionLanguage = "BN",
   themeColor = "#E11D48",
@@ -29,9 +33,13 @@ export default function OMRSheetPrintView({
           instituteNameSize={instituteNameSize}
           instituteAddressSize={instituteAddressSize}
           examTitle={examTitle}
+          showExamTitle={showExamTitle}
           subject={subject}
+          showSubject={showSubject}
           subjectCode={subjectCode}
+          showSubjectCode={showSubjectCode}
           examTime={examTime}
+          showExamTime={showExamTime}
           totalQuestions={totalQuestions}
           optionLanguage={optionLanguage}
           themeColor={themeColor}
@@ -48,7 +56,13 @@ export default function OMRSheetPrintView({
           instituteNameSize={instituteNameSize}
           instituteAddressSize={instituteAddressSize}
           examTitle={examTitle}
+          showExamTitle={showExamTitle}
           subject={subject}
+          showSubject={showSubject}
+          subjectCode={subjectCode}
+          showSubjectCode={showSubjectCode}
+          examTime={examTime}
+          showExamTime={showExamTime}
           totalQuestions={totalQuestions}
           optionLanguage={optionLanguage}
           selectedLayoutCode={selectedLayoutCode}

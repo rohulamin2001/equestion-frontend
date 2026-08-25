@@ -6,16 +6,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  AlertTriangle,
+  Check,
   CheckCircle,
+  CheckCircle2,
   ChevronDown,
   Download,
+  Edit3,
   Eye,
   RefreshCw,
+  RotateCcw,
   Scan,
   Search,
   Trash2,
   UploadCloud,
   UserCheck,
+  X,
   XCircle,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -28,6 +34,7 @@ import {
   useOMRResults,
   useOMRTokens,
   usePythonServiceHealth,
+  useUpdateOMRResult,
 } from "../hook/useOMREvaluation";
 
 export default function OMRScannerDashboard({
@@ -37,6 +44,7 @@ export default function OMRScannerDashboard({
   const { data: tokens = [] } = useOMRTokens();
   const { data: health } = usePythonServiceHealth();
   const evaluateMutation = useEvaluateOMR();
+  const updateResultMutation = useUpdateOMRResult();
   const deleteResultMutation = useDeleteOMRResult();
 
   const [internalTokenId, setInternalTokenId] = useState("");
@@ -44,7 +52,13 @@ export default function OMRScannerDashboard({
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isEvaluatingBatch, setIsEvaluatingBatch] = useState(false);
   const [searchRoll, setSearchRoll] = useState("");
+
+  // Review & Override Modal States
   const [viewingResult, setViewingResult] = useState(null);
+  const [editedRoll, setEditedRoll] = useState("");
+  const [editedSet, setEditedSet] = useState("A");
+  const [editedAnswers, setEditedAnswers] = useState([]);
+  const [isSavingReview, setIsSavingReview] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -225,6 +239,136 @@ export default function OMRScannerDashboard({
     document.body.removeChild(link);
     toast.success("CSV মার্কশিট ডাউনলোড হয়েছে!");
   };
+
+  // Review & Override Handlers
+  const handleOpenReview = (item) => {
+    setViewingResult(item);
+    setEditedRoll(item.studentRoll || "");
+    setEditedSet(item.setCode || "A");
+    setEditedAnswers(
+      (item.studentAnswers || []).map((a) => ({
+        questionNo: a.questionNo,
+        state:
+          a.state ||
+          (a.selectedAnswer && a.selectedAnswer !== "NONE"
+            ? "SINGLE"
+            : "BLANK"),
+        selectedAnswer: a.selectedAnswer || "NONE",
+        isCorrect: a.isCorrect,
+        confidence: a.confidence,
+        fillRatio: a.fillRatio,
+        secondBestRatio: a.secondBestRatio,
+      })),
+    );
+  };
+
+  const handleOptionChange = (qNo, newOption) => {
+    setEditedAnswers((prev) =>
+      prev.map((a) => {
+        if (a.questionNo === qNo) {
+          return {
+            ...a,
+            selectedAnswer: newOption,
+            state: newOption === "NONE" ? "BLANK" : "SINGLE",
+          };
+        }
+        return a;
+      }),
+    );
+  };
+
+  const handleResetReview = () => {
+    if (!viewingResult) return;
+    setEditedRoll(viewingResult.studentRoll || "");
+    setEditedSet(viewingResult.setCode || "A");
+    setEditedAnswers(
+      (viewingResult.studentAnswers || []).map((a) => ({
+        questionNo: a.questionNo,
+        state:
+          a.state ||
+          (a.selectedAnswer && a.selectedAnswer !== "NONE"
+            ? "SINGLE"
+            : "BLANK"),
+        selectedAnswer: a.selectedAnswer || "NONE",
+        isCorrect: a.isCorrect,
+        confidence: a.confidence,
+        fillRatio: a.fillRatio,
+        secondBestRatio: a.secondBestRatio,
+      })),
+    );
+    toast.info("মূল স্ক্যান মানে রিসেট করা হয়েছে");
+  };
+
+  const handleApproveAndSave = async () => {
+    if (!viewingResult) return;
+    if (!editedRoll.trim()) {
+      toast.error("শিক্ষার্থীর রোল নম্বর লিখুন");
+      return;
+    }
+
+    try {
+      setIsSavingReview(true);
+      await updateResultMutation.mutateAsync({
+        resultId: viewingResult._id,
+        tokenId: activeTokenId,
+        payload: {
+          studentRoll: editedRoll.trim(),
+          setCode: editedSet.trim(),
+          status: "COMPLETED",
+          studentAnswers: editedAnswers.map((a) => ({
+            questionNo: a.questionNo,
+            selectedAnswer: a.selectedAnswer,
+            state: a.state,
+          })),
+        },
+      });
+      setViewingResult(null);
+    } catch {
+      // Error handled in hook toast
+    } finally {
+      setIsSavingReview(false);
+    }
+  };
+
+  // Compute live review metrics for active token
+  const answerKeyMap = new Map();
+  (activeToken?.answerKey || []).forEach((k) => {
+    answerKeyMap.set(k.questionNo, String(k.correctAnswer).toUpperCase());
+  });
+
+  const marksPerQ = Number(activeToken?.marksPerQuestion) || 1;
+  const negMarks = Number(activeToken?.negativeMarks) || 0;
+
+  let liveCorrect = 0;
+  let liveWrong = 0;
+  let liveBlank = 0;
+  let liveUncertain = 0;
+
+  const evaluatedAnswersList = editedAnswers.map((ans) => {
+    const selected = ans.selectedAnswer
+      ? String(ans.selectedAnswer).toUpperCase().trim()
+      : "NONE";
+    const isBlank = !selected || selected === "NONE" || ans.state === "BLANK";
+    const isUncertain = ans.state === "UNCERTAIN" || ans.state === "DAMAGED";
+    const correctAns = answerKeyMap.get(ans.questionNo);
+    const isCorrect = !isBlank && !isUncertain && selected === correctAns;
+    const isWrong = !isBlank && !isUncertain && selected !== correctAns;
+
+    if (isBlank) liveBlank++;
+    else if (isUncertain) liveUncertain++;
+    else if (isCorrect) liveCorrect++;
+    else if (isWrong) liveWrong++;
+
+    return {
+      ...ans,
+      selectedAnswer: selected,
+      isCorrect,
+      correctAnswer: correctAns,
+    };
+  });
+
+  const rawLiveScore = liveCorrect * marksPerQ - liveWrong * negMarks;
+  const liveScore = Math.max(0, Number(rawLiveScore.toFixed(2)));
 
   // Filtered Results
   const filteredResults = results.filter((r) =>
@@ -700,9 +844,9 @@ export default function OMRScannerDashboard({
                     <td className="py-2.5 px-3 text-right">
                       <div className="inline-flex items-center gap-1.5">
                         <button
-                          onClick={() => setViewingResult(item)}
-                          className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 rounded-lg transition"
-                          title="ওভারলে ও উত্তরপত্র দেখুন"
+                          onClick={() => handleOpenReview(item)}
+                          className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 rounded-lg transition cursor-pointer"
+                          title="ম্যানুয়াল রিভিউ ও সম্পাদনা করুন"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
@@ -717,7 +861,7 @@ export default function OMRScannerDashboard({
                               });
                             }
                           }}
-                          className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg transition"
+                          className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg transition cursor-pointer"
                           title="ডিলিট"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -732,11 +876,11 @@ export default function OMRScannerDashboard({
         )}
       </div>
 
-      {/* VISUAL MARKED OVERLAY MODAL */}
+      {/* ── MANUAL REVIEW, OVERRIDE & APPROVAL MODAL (PORTAL) ── */}
       {createPortal(
         <AnimatePresence>
           {viewingResult && (
-            <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4">
               {/* Neutral Backdrop with blur */}
               <motion.div
                 initial={{ opacity: 0 }}
@@ -744,111 +888,404 @@ export default function OMRScannerDashboard({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15, ease: "easeInOut" }}
                 onClick={() => setViewingResult(null)}
-                className="fixed inset-0 bg-black/40 backdrop-blur-sm"
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm"
               />
 
               <motion.div
                 initial={{
                   opacity: 0,
-                  scale: 0.95,
+                  scale: 0.96,
                   y: -16,
                   filter: "blur(4px)",
                 }}
                 animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 0.95, y: -16, filter: "blur(4px)" }}
+                exit={{ opacity: 0, scale: 0.96, y: -16, filter: "blur(4px)" }}
                 transition={{ type: "spring", stiffness: 350, damping: 28 }}
-                className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden z-10"
+                className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col overflow-hidden z-10"
               >
-                <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                  <div>
-                    <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm">
-                      মূল্যায়িত খাতার বিস্তারিত (রোল:{" "}
-                      {viewingResult.studentRoll})
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      স্কোর:{" "}
-                      <b className="text-blue-600">
-                        {viewingResult.totalScore}
-                      </b>{" "}
-                      | সঠিক:{" "}
-                      <b className="text-emerald-600">
-                        {viewingResult.correctCount}
-                      </b>{" "}
-                      | ভুল:{" "}
-                      <b className="text-red-500">{viewingResult.wrongCount}</b>
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() => setViewingResult(null)}
-                    className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 flex items-center justify-center text-sm font-bold cursor-pointer"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                <div className="p-4 overflow-y-auto flex-1 grid grid-cols-1 md:grid-cols-12 gap-4">
-                  {/* Annotated Sheet Image */}
-                  <div className="md:col-span-7 flex justify-center bg-slate-950 p-2 rounded-2xl">
-                    {viewingResult.annotatedImageBase64 ? (
-                      <img
-                        src={viewingResult.annotatedImageBase64}
-                        alt="Annotated OMR"
-                        className="max-h-[500px] w-auto object-contain rounded-lg shadow-lg"
-                      />
-                    ) : (
-                      <div className="text-slate-400 text-xs flex items-center justify-center h-48">
-                        ওভারলে ছবি পাওয়া যায়নি
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Answers Grid Details */}
-                  <div className="md:col-span-5 space-y-3">
-                    <div className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                      প্রশ্নের উত্তর বিবরণী
+                {/* Modal Header */}
+                <div
+                  className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  style={{ borderBottom: "1px solid var(--q-card-border)" }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-10 h-10 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-md"
+                      style={{
+                        background: "var(--q-header-gradient)",
+                        boxShadow: "var(--sidebar-brand-shadow)",
+                      }}
+                    >
+                      <Edit3 className="w-5 h-5" />
                     </div>
-                    <div className="max-h-[440px] overflow-y-auto space-y-1.5 pr-1">
-                      {(viewingResult.studentAnswers || []).map((ans) => (
-                        <div
-                          key={ans.questionNo}
-                          className={`p-2 rounded-xl border text-xs flex items-center justify-between ${
-                            ans.isCorrect
-                              ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800"
-                              : ans.state === "BLANK"
-                                ? "bg-slate-50 border-slate-200 dark:bg-slate-800"
-                                : "bg-red-50/50 border-red-200 dark:bg-red-950/30 dark:border-red-800"
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm sm:text-base">
+                          OMR খাতা ম্যানুয়াল রিভিউ ও মূল্যায়ন
+                        </h3>
+                        <span
+                          className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                            viewingResult.status === "COMPLETED"
+                              ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800"
+                              : "bg-amber-50 text-amber-600 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800"
                           }`}
                         >
-                          <span className="font-mono font-bold w-6">
-                            Q{ans.questionNo}.
-                          </span>
-                          <span className="font-semibold">
-                            উত্তর:{" "}
-                            <b className="font-mono">
-                              {ans.selectedAnswer || "N/A"}
-                            </b>
-                          </span>
-                          <span className="text-[10px] font-bold">
-                            {ans.isCorrect ? (
-                              <span className="text-emerald-600">✔ সঠিক</span>
-                            ) : ans.state === "BLANK" ? (
-                              <span className="text-slate-400">খালি</span>
-                            ) : ans.state === "MULTIPLE" ? (
-                              <span className="text-amber-500">একাধিক</span>
-                            ) : ans.state === "DAMAGED" ? (
-                              <span className="text-purple-500">
-                                ক্ষতিগ্রস্ত
-                              </span>
-                            ) : ans.state === "UNCERTAIN" ? (
-                              <span className="text-amber-500">অস্পষ্ট</span>
-                            ) : (
-                              <span className="text-red-500">✖ ভুল</span>
-                            )}
-                          </span>
-                        </div>
-                      ))}
+                          {viewingResult.status === "COMPLETED"
+                            ? "অনুমোদিত (COMPLETED)"
+                            : "ম্যানুয়াল রিভিউ আবশ্যক"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        খাতার ছবির সাথে মিলিয়ে রোল ও উত্তর যাচাই/সংশোধন করে
+                        এপ্রুভ করুন
+                      </p>
                     </div>
+                  </div>
+
+                  {/* Live Score Counter Pill */}
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-bold"
+                      style={{
+                        backgroundColor: "var(--q-selected-bg)",
+                        border: "1px solid var(--q-card-border)",
+                      }}
+                    >
+                      <span>
+                        স্কোর:{" "}
+                        <b
+                          className="text-sm"
+                          style={{ color: "var(--purple-600)" }}
+                        >
+                          {liveScore}
+                        </b>
+                      </span>
+                      <span className="text-slate-300 dark:text-slate-700">
+                        |
+                      </span>
+                      <span className="text-emerald-600">
+                        সঠিক: <b>{liveCorrect}</b>
+                      </span>
+                      <span className="text-slate-300 dark:text-slate-700">
+                        |
+                      </span>
+                      <span className="text-red-500">
+                        ভুল: <b>{liveWrong}</b>
+                      </span>
+                      <span className="text-slate-300 dark:text-slate-700">
+                        |
+                      </span>
+                      <span className="text-slate-400">
+                        খালি: <b>{liveBlank}</b>
+                      </span>
+                      {liveUncertain > 0 && (
+                        <>
+                          <span className="text-slate-300 dark:text-slate-700">
+                            |
+                          </span>
+                          <span className="text-amber-600 animate-pulse">
+                            অস্পষ্ট: <b>{liveUncertain}</b>
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setViewingResult(null)}
+                      className="w-8 h-8 rounded-full flex items-center justify-center transition-colors focus-ring-modern text-muted-foreground hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                      style={{
+                        backgroundColor: "var(--accent)",
+                        border: "1px solid var(--q-card-border)",
+                      }}
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Modal Body */}
+                <div className="p-4 sm:p-5 overflow-y-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5">
+                  {/* Left: Annotated Image Viewer */}
+                  <div className="lg:col-span-6 flex flex-col gap-2">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+                      <span className="flex items-center gap-1.5">
+                        <Scan className="w-4 h-4 text-purple-600" />
+                        স্ক্যানকৃত মূল খাতার ছবি
+                      </span>
+                      <span className="text-[11px] text-muted-foreground font-normal">
+                        (ছবিতে জুম করে বাবল যাচাই করুন)
+                      </span>
+                    </div>
+
+                    <div className="flex-1 min-h-[380px] max-h-[520px] bg-slate-950 p-2 rounded-2xl flex items-center justify-center overflow-auto border border-slate-800 shadow-inner">
+                      {viewingResult.annotatedImageBase64 ? (
+                        <img
+                          src={viewingResult.annotatedImageBase64}
+                          alt="Annotated OMR"
+                          className="max-h-[500px] w-auto object-contain rounded-lg shadow-lg transition-transform hover:scale-105 duration-200 cursor-zoom-in"
+                        />
+                      ) : (
+                        <div className="text-slate-500 text-xs flex flex-col items-center gap-2">
+                          <AlertTriangle className="w-8 h-8 opacity-40" />
+                          <span>ওভারলে ছবি পাওয়া যায়নি</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right: Roll, Set & Interactive Answer Override Matrix */}
+                  <div className="lg:col-span-6 flex flex-col gap-3.5">
+                    {/* Student Roll & Set Code Edit Card */}
+                    <div
+                      className="p-3.5 rounded-2xl space-y-3"
+                      style={{
+                        backgroundColor: "var(--q-selected-bg)",
+                        border: "1px solid var(--q-card-border)",
+                      }}
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {/* Student Roll Input */}
+                        <div>
+                          <label className="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">
+                            শিক্ষার্থীর রোল নম্বর *
+                          </label>
+                          <input
+                            type="text"
+                            value={editedRoll}
+                            onChange={(e) => setEditedRoll(e.target.value)}
+                            placeholder="রোল নম্বর লিখুন"
+                            className="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-bold text-xs transition-modern focus-ring-modern shadow-xs"
+                            style={{
+                              border: !editedRoll.trim()
+                                ? "1px solid #ef4444"
+                                : "1px solid var(--q-card-border-soft)",
+                            }}
+                          />
+                        </div>
+
+                        {/* Set Code Selector */}
+                        <div>
+                          <label className="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">
+                            প্রশ্ন সেট কোড
+                          </label>
+                          <div className="flex items-center gap-1.5">
+                            {["A", "B", "C", "D"].map((set) => {
+                              const isSelected = editedSet === set;
+                              return (
+                                <button
+                                  type="button"
+                                  key={set}
+                                  onClick={() => setEditedSet(set)}
+                                  className="flex-1 py-1 text-xs font-bold rounded-lg transition-modern cursor-pointer"
+                                  style={
+                                    isSelected
+                                      ? {
+                                          background:
+                                            "var(--q-header-gradient)",
+                                          color: "#fff",
+                                          boxShadow:
+                                            "0 2px 6px rgba(144,14,176,0.35)",
+                                        }
+                                      : {
+                                          backgroundColor: "var(--accent)",
+                                          color: "var(--accent-foreground)",
+                                          border:
+                                            "1px solid var(--q-badge-border)",
+                                        }
+                                  }
+                                >
+                                  {set}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Question Answers Override List */}
+                    <div className="flex flex-col flex-1 min-h-0">
+                      <div className="flex items-center justify-between pb-1.5 text-xs font-bold text-slate-700 dark:text-slate-300">
+                        <span>প্রশ্নের উত্তরমালা ও ম্যানুয়াল কারেকশন</span>
+                        <span className="text-[11px] text-muted-foreground font-normal">
+                          (সঠিক অপশনে ক্লিক করে ওভাররাইড করুন)
+                        </span>
+                      </div>
+
+                      <div className="max-h-[380px] overflow-y-auto space-y-1.5 pr-1.5 custom-sidebar-scrollbar">
+                        {evaluatedAnswersList.map((ans) => {
+                          const isMatch = ans.isCorrect;
+                          const isBlank =
+                            !ans.selectedAnswer ||
+                            ans.selectedAnswer === "NONE";
+                          const isUncertain = ans.state === "UNCERTAIN";
+
+                          return (
+                            <div
+                              key={ans.questionNo}
+                              className={`p-2 rounded-xl border text-xs flex items-center justify-between gap-2 transition-all ${
+                                isUncertain
+                                  ? "bg-amber-50/70 border-amber-300 dark:bg-amber-950/40 dark:border-amber-700"
+                                  : isMatch
+                                    ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800"
+                                    : isBlank
+                                      ? "bg-slate-50/70 border-slate-200 dark:bg-slate-800/70"
+                                      : "bg-red-50/40 border-red-200 dark:bg-red-950/30 dark:border-red-800"
+                              }`}
+                            >
+                              {/* Question info & Correct Answer */}
+                              <div className="flex items-center gap-2 min-w-[90px]">
+                                <span className="font-mono font-bold w-7 text-slate-700 dark:text-slate-300">
+                                  Q{ans.questionNo.toString().padStart(2, "0")}.
+                                </span>
+                                {ans.correctAnswer && (
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 font-bold">
+                                    কী: {ans.correctAnswer}
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Interactive Option Selectors */}
+                              <div className="flex items-center gap-1">
+                                {["A", "B", "C", "D"].map((opt) => {
+                                  const isOptionSelected =
+                                    ans.selectedAnswer === opt;
+                                  return (
+                                    <button
+                                      type="button"
+                                      key={opt}
+                                      onClick={() =>
+                                        handleOptionChange(ans.questionNo, opt)
+                                      }
+                                      className={`w-6 h-6 rounded-full text-[10px] font-bold transition-all cursor-pointer flex items-center justify-center ${
+                                        isOptionSelected
+                                          ? "ring-2 ring-purple-600 scale-105"
+                                          : "hover:bg-slate-200 dark:hover:bg-slate-700"
+                                      }`}
+                                      style={
+                                        isOptionSelected
+                                          ? {
+                                              background:
+                                                "var(--q-header-gradient)",
+                                              color: "#fff",
+                                              boxShadow:
+                                                "0 2px 6px rgba(144,14,176,0.35)",
+                                            }
+                                          : {
+                                              backgroundColor: "var(--accent)",
+                                              color: "var(--accent-foreground)",
+                                              border:
+                                                "1px solid var(--q-badge-border)",
+                                            }
+                                      }
+                                    >
+                                      {opt}
+                                    </button>
+                                  );
+                                })}
+
+                                {/* Clear / Blank Button */}
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleOptionChange(ans.questionNo, "NONE")
+                                  }
+                                  className={`px-1.5 h-6 rounded-lg text-[9px] font-bold transition-all cursor-pointer ${
+                                    isBlank
+                                      ? "bg-slate-300 dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold"
+                                      : "text-slate-400 hover:text-slate-700"
+                                  }`}
+                                  title="খালি রাখুন"
+                                >
+                                  খালি
+                                </button>
+                              </div>
+
+                              {/* Evaluation Status Badge */}
+                              <div className="min-w-[65px] text-right">
+                                {isMatch ? (
+                                  <span className="text-[10px] font-bold text-emerald-600 flex items-center justify-end gap-0.5">
+                                    <Check className="w-3 h-3" /> সঠিক
+                                  </span>
+                                ) : isBlank ? (
+                                  <span className="text-[10px] font-bold text-slate-400">
+                                    খালি
+                                  </span>
+                                ) : isUncertain ? (
+                                  <span className="text-[10px] font-bold text-amber-600">
+                                    অস্পষ্ট
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] font-bold text-red-500">
+                                    ✖ ভুল
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div
+                  className="p-4 sm:p-5 flex items-center justify-between gap-3"
+                  style={{ borderTop: "1px solid var(--q-card-border)" }}
+                >
+                  <button
+                    type="button"
+                    onClick={handleResetReview}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl transition-colors focus-ring-modern cursor-pointer text-slate-600 dark:text-slate-300 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    style={{
+                      backgroundColor: "var(--accent)",
+                      border: "1px solid var(--q-badge-border)",
+                    }}
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    মূল স্ক্যানে রিসেট
+                  </button>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setViewingResult(null)}
+                      className="px-4 py-2 text-xs font-semibold rounded-xl transition-colors focus-ring-modern hover:opacity-85 cursor-pointer"
+                      style={{
+                        backgroundColor: "var(--accent)",
+                        color: "var(--accent-foreground)",
+                        border: "1px solid var(--q-badge-border)",
+                      }}
+                    >
+                      বাতিল
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={
+                        isSavingReview || updateResultMutation.isPending
+                      }
+                      onClick={handleApproveAndSave}
+                      className="inline-flex items-center gap-2 px-6 py-2.5 text-white text-xs font-bold rounded-xl transition-colors focus-ring-modern hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-md"
+                      style={{
+                        background: "var(--q-header-gradient)",
+                        boxShadow: "var(--q-print-btn-shadow)",
+                      }}
+                    >
+                      {isSavingReview || updateResultMutation.isPending ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          সংরক্ষণ ও অনুমোদন হচ্ছে...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="w-4 h-4" />
+                          এপ্রুভ ও সংরক্ষণ করুন
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
               </motion.div>

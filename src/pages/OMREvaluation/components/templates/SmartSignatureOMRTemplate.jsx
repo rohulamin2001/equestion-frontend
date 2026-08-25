@@ -2,13 +2,17 @@ import { QRCodeSVG } from "qrcode.react";
 
 export default function SmartSignatureOMRTemplate({
   instituteName = "সোনার বাংলা হাই স্কুল",
-  instituteAddress = "বেলাবো, নরসিংদী",
+  instituteAddress = "ভালুকা, ময়মনসিংহ",
   instituteNameSize = 18,
   instituteAddressSize = 12,
   examTitle = "বার্ষিক মূল্যায়ন মডেল টেস্ট - ২০২৬",
+  showExamTitle = true,
   subject = "পদার্থবিজ্ঞান ১ম পত্র",
+  showSubject = true,
   subjectCode = "১০১",
+  showSubjectCode = true,
   examTime = "৫০ মিনিট",
+  showExamTime = true,
   totalQuestions = 40,
   optionLanguage = "BN", // 'BN' (ক,খ,গ,ঘ) or 'EN' (A,B,C,D)
   themeColor = "#E11D48", // Hex color
@@ -105,6 +109,44 @@ export default function SmartSignatureOMRTemplate({
 
   const questionColumns = getColumns();
 
+  const hasMetadata =
+    (showExamTitle && examTitle) ||
+    (showSubject && subject) ||
+    (showSubjectCode && subjectCode) ||
+    (showExamTime && examTime);
+
+  const renderExamMetadataStrip = () => {
+    if (!hasMetadata) return null;
+    return (
+      <div
+        className="flex items-center justify-center flex-wrap gap-x-4 gap-y-0.5 text-[12px] font-bold text-black border-y border-dashed py-1 my-1"
+        style={{ borderColor: themeColor }}
+      >
+        {showExamTitle && examTitle && (
+          <span className="font-extrabold text-black">{examTitle}</span>
+        )}
+        {showSubject && subject && (
+          <span>
+            <span className="text-slate-700 font-semibold">বিষয়: </span>
+            {subject}
+          </span>
+        )}
+        {showSubjectCode && subjectCode && (
+          <span>
+            <span className="text-slate-700 font-semibold">বিষয় কোড: </span>
+            {subjectCode}
+          </span>
+        )}
+        {showExamTime && examTime && (
+          <span>
+            <span className="text-slate-700 font-semibold">সময়: </span>
+            {examTime}
+          </span>
+        )}
+      </div>
+    );
+  };
+
   // Convert number to Bangla numeral
   const toBanglaNum = (num) => {
     return num
@@ -113,6 +155,8 @@ export default function SmartSignatureOMRTemplate({
       .map((d) => banglaDigits[parseInt(d, 10)] || d)
       .join("");
   };
+
+  const qrPayload = `https://smartproshnobank.com/omr?layout=${selectedLayoutCode}&sub=${encodeURIComponent(subjectCode || "")}&q=${totalQuestions}`;
 
   return (
     <div
@@ -137,7 +181,7 @@ export default function SmartSignatureOMRTemplate({
         {/* ========================================================================= */}
         {headerType === "small" && (
           <div className="space-y-1.5">
-            {/* Institute Name */}
+            {/* Institute Name & Address */}
             <div className="text-center">
               <h1
                 className="font-black text-black tracking-tight"
@@ -145,7 +189,21 @@ export default function SmartSignatureOMRTemplate({
               >
                 {instituteName || "প্রতিষ্ঠানের নাম"}
               </h1>
+              {instituteAddress && (
+                <p
+                  className="font-semibold text-slate-800 mt-0.5"
+                  style={{
+                    fontSize: `${instituteAddressSize}px`,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {instituteAddress}
+                </p>
+              )}
             </div>
+
+            {/* Exam Metadata Strip (Small Header) */}
+            {renderExamMetadataStrip()}
 
             {/* Main Small Header Box */}
             <div
@@ -197,37 +255,39 @@ export default function SmartSignatureOMRTemplate({
                     style={{ borderColor: themeColor }}
                   >
                     {/* Rules Box with Vertical Badge */}
-                    <div className="flex-1 flex">
-                      <div
-                        className="text-white font-bold flex items-center justify-center px-1 text-[11px] select-none shrink-0"
-                        style={{
-                          backgroundColor: themeColor,
-                          writingMode: "vertical-rl",
-                          transform: "rotate(180deg)",
-                        }}
-                      >
-                        নিয়মাবলী
+                    {showInstructions && (
+                      <div className="flex-1 flex">
+                        <div
+                          className="text-white font-bold flex items-center justify-center px-1 text-[11px] select-none shrink-0"
+                          style={{
+                            backgroundColor: themeColor,
+                            writingMode: "vertical-rl",
+                            transform: "rotate(180deg)",
+                          }}
+                        >
+                          নিয়মাবলী
+                        </div>
+                        <div className="p-1.5 text-[8.5px] leading-[12px] text-black space-y-0.5 font-medium flex-1">
+                          <p>
+                            ১। বৃত্তাকার ঘরগুলো এমন ভাবে ভরাট করতে হবে যাতে
+                            ভেতরের লেখাটি দেখা না যায়।
+                          </p>
+                          <p>২। উত্তরপত্রে কোন অবাঞ্ছিত দাগ দেয়া যাবেনা।</p>
+                          <p>৩। উত্তরপত্র কোন ভাবেই ভাজ করা যাবেনা।</p>
+                          <p>৪। সেট কোড না ভরাট করলে উত্তরপত্র বাতিল হবে।</p>
+                        </div>
                       </div>
-                      <div className="p-1.5 text-[8.5px] leading-[12px] text-black space-y-0.5 font-medium flex-1">
-                        <p>
-                          ১। বৃত্তাকার ঘরগুলো এমন ভাবে ভরাট করতে হবে যাতে ভেতরের
-                          লেখাটি দেখা না যায়।
-                        </p>
-                        <p>২। উত্তরপত্রে কোন অবাঞ্ছিত দাগ দেয়া যাবেনা।</p>
-                        <p>৩। উত্তরপত্র কোন ভাবেই ভাজ করা যাবেনা।</p>
-                        <p>৪। সেট কোড না ভরাট করলে উত্তরপত্র বাতিল হবে।</p>
-                      </div>
-                    </div>
+                    )}
 
                     {/* QR Code Container - Live Scannable */}
                     <div className="p-1 flex items-center justify-center shrink-0">
                       <div
                         className="border p-0.5 bg-white shadow-xs"
                         style={{ borderColor: themeColor }}
-                        title="স্মার্ট প্রশ্নব্যাংক - https://smartproshnobank.com"
+                        title={`Layout ID: ${selectedLayoutCode}`}
                       >
                         <QRCodeSVG
-                          value="https://smartproshnobank.com"
+                          value={qrPayload}
                           size={56}
                           level="M"
                           bgColor="#ffffff"
@@ -308,15 +368,18 @@ export default function SmartSignatureOMRTemplate({
               >
                 {instituteName || "প্রতিষ্ঠানের নাম"}
               </h1>
-              <p
-                className="font-semibold text-slate-800 mt-0.5"
-                style={{
-                  fontSize: `${instituteAddressSize}px`,
-                  lineHeight: 1.3,
-                }}
-              >
-                {instituteAddress || "ঠিকানা / এলাকা"}
-              </p>
+              {instituteAddress && (
+                <p
+                  className="font-semibold text-slate-800 mt-0.5"
+                  style={{
+                    fontSize: `${instituteAddressSize}px`,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {instituteAddress}
+                </p>
+              )}
+              {renderExamMetadataStrip()}
             </div>
 
             {/* Top Info Grid (শ্রেণি | রোল নম্বর | বিষয় কোড | সেট কোড | নিয়মাবলী ও স্বাক্ষর) */}
@@ -501,64 +564,68 @@ export default function SmartSignatureOMRTemplate({
               {/* 5. নিয়মাবলী ও কক্ষ পরিদর্শকের স্বাক্ষর */}
               <div className="flex-1 flex flex-col justify-between self-stretch min-w-[190px]">
                 {/* Rules Box */}
-                <div
-                  className="border leading-tight"
-                  style={{ borderColor: themeColor }}
-                >
+                {showInstructions && (
                   <div
-                    className="text-white text-center font-bold py-0.5 text-[14px]"
-                    style={{ backgroundColor: themeColor }}
+                    className="border leading-tight"
+                    style={{ borderColor: themeColor }}
                   >
-                    নিয়মাবলী
-                  </div>
-                  <div className="p-1.5 space-y-0.5 text-black text-[8.5px] leading-[12.5px]">
-                    <div>
-                      <p className="font-semibold">
-                        ১। বৃত্তাকার ঘরগুলো এমনভাবে ভরাট করতে হবে যাতে ভিতরের
-                        লেখাটি দেখা না যায়।
-                      </p>
-                      <div className="flex items-center gap-2.5 pl-2 my-0.5 text-[8px]">
-                        <span className="inline-flex items-center gap-1 font-bold text-emerald-800">
-                          <span>* সঠিক পদ্ধতি:</span>
-                          <span className="text-[10px] text-black">⬤</span>
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-rose-700 font-medium">
-                          <span>* ভুল পদ্ধতি:</span>
-                          <span className="text-[8.5px] font-mono tracking-tight">
-                            🗹, ⮽, ◐, ⊙
-                          </span>
-                        </span>
-                      </div>
+                    <div
+                      className="text-white text-center font-bold py-0.5 text-[14px]"
+                      style={{ backgroundColor: themeColor }}
+                    >
+                      নিয়মাবলী
                     </div>
-                    <p>
-                      ২। বৃত্তাকার ঘরগুলো অবশ্যই <b>কালো কালির বলপয়েন্ট কলম</b>{" "}
-                      দিয়ে ভরাট করতে হবে।
-                    </p>
-                    <p>
-                      ৩। রোল নম্বর, রেজিস্ট্রেশন নম্বর ও প্রশ্নপত্রের সেট কোড
-                      সঠিকভাবে লিখে বৃত্ত ভরাট করতে হবে; অন্যথায় উত্তরপত্র বাতিল
-                      বলে গণ্য হবে।
-                    </p>
-                    <p>
-                      ৪। উত্তরপত্রে কোনো প্রকার অবাঞ্ছিত দাগ দেওয়া এবং উত্তরপত্র
-                      ভাঁজ করা যাবে না।
-                    </p>
-                    <p>
-                      ৫। পরিষ্কার-পরিচ্ছন্ন ও ভাঁজবিহীন উত্তরপত্র মেশিনে
-                      মূল্যায়নের জন্য অপরিহার্য।
-                    </p>
+                    <div className="p-1.5 space-y-0.5 text-black text-[8.5px] leading-[12.5px]">
+                      <div>
+                        <p className="font-semibold">
+                          ১। বৃত্তাকার ঘরগুলো এমনভাবে ভরাট করতে হবে যাতে ভিতরের
+                          লেখাটি দেখা না যায়।
+                        </p>
+                        <div className="flex items-center gap-2.5 pl-2 my-0.5 text-[8px]">
+                          <span className="inline-flex items-center gap-1 font-bold text-emerald-800">
+                            <span>* সঠিক পদ্ধতি:</span>
+                            <span className="text-[10px] text-black">⬤</span>
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-rose-700 font-medium">
+                            <span>* ভুল পদ্ধতি:</span>
+                            <span className="text-[8.5px] font-mono tracking-tight">
+                              🗹, ⮽, ◐, ⊙
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                      <p>
+                        ২। বৃত্তাকার ঘরগুলো অবশ্যই{" "}
+                        <b>কালো কালির বলপয়েন্ট কলম</b> দিয়ে ভরাট করতে হবে।
+                      </p>
+                      <p>
+                        ৩। রোল নম্বর, রেজিস্ট্রেশন নম্বর ও প্রশ্নপত্রের সেট কোড
+                        সঠিকভাবে লিখে বৃত্ত ভরাট করতে হবে; অন্যথায় উত্তরপত্র
+                        বাতিল বলে গণ্য হবে।
+                      </p>
+                      <p>
+                        ৪। উত্তরপত্রে কোনো প্রকার অবাঞ্ছিত দাগ দেওয়া এবং
+                        উত্তরপত্র ভাঁজ করা যাবে না।
+                      </p>
+                      <p>
+                        ৫। পরিষ্কার-পরিচ্ছন্ন ও ভাঁজবিহীন উত্তরপত্র মেশিনে
+                        মূল্যায়নের জন্য অপরিহার্য।
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Signature Box */}
-                <div
-                  className="border p-1.5 text-center flex flex-col justify-end flex-1 min-h-[52px] mt-1"
-                  style={{ borderColor: themeColor }}
-                >
-                  <span className="text-[13px] font-bold text-black border-t border-dashed border-slate-400 pt-1 leading-snug">
-                    কক্ষ পরিদর্শকের স্বাক্ষর ও তারিখ
-                  </span>
-                </div>
+                {showSignatures && (
+                  <div
+                    className="border p-1.5 text-center flex flex-col justify-end flex-1 min-h-[52px] mt-1"
+                    style={{ borderColor: themeColor }}
+                  >
+                    <span className="text-[13px] font-bold text-black border-t border-dashed border-slate-400 pt-1 leading-snug">
+                      কক্ষ পরিদর্শকের স্বাক্ষর ও তারিখ
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -577,15 +644,18 @@ export default function SmartSignatureOMRTemplate({
               >
                 {instituteName || "প্রতিষ্ঠানের নাম"}
               </h1>
-              <p
-                className="font-semibold text-slate-800 mt-0.5"
-                style={{
-                  fontSize: `${instituteAddressSize}px`,
-                  lineHeight: 1.3,
-                }}
-              >
-                {instituteAddress || "ঠিকানা / এলাকা"}
-              </p>
+              {instituteAddress && (
+                <p
+                  className="font-semibold text-slate-800 mt-0.5"
+                  style={{
+                    fontSize: `${instituteAddressSize}px`,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {instituteAddress}
+                </p>
+              )}
+              {renderExamMetadataStrip()}
             </div>
 
             {/* Divided 2-Box Container (Left: পরীক্ষার্থীর তথ্য, Right: নিয়মাবলী + QR + স্বাক্ষর) */}
@@ -654,36 +724,38 @@ export default function SmartSignatureOMRTemplate({
               {/* Right Box: Rules + Scannable QR Code + Signature */}
               <div className="w-[38%] flex flex-col justify-between gap-1.5">
                 {/* Rules Box */}
-                <div
-                  className="border leading-tight"
-                  style={{ borderColor: themeColor }}
-                >
+                {showInstructions && (
                   <div
-                    className="text-white text-center font-bold py-0.5 text-[13px]"
-                    style={{ backgroundColor: themeColor }}
+                    className="border leading-tight"
+                    style={{ borderColor: themeColor }}
                   >
-                    নিয়মাবলী
+                    <div
+                      className="text-white text-center font-bold py-0.5 text-[13px]"
+                      style={{ backgroundColor: themeColor }}
+                    >
+                      নিয়মাবলী
+                    </div>
+                    <div className="p-1.5 text-[8px] leading-[11.5px] text-black space-y-0.5 font-medium">
+                      <p>
+                        ১। বৃত্তাকার ঘরগুলো এমন ভাবে ভরাট করতে হবে যাতে ভেতরের
+                        লেখাটি দেখা না যায়।
+                      </p>
+                      <p>২। উত্তরপত্রে অবাঞ্ছিত দাগ দেয়া যাবেনা।</p>
+                      <p>৩। উত্তরপত্র ভাজ করা যাবেনা।</p>
+                      <p>৪। সেট কোডবিহীন উত্তরপত্র বাতিল হবে।</p>
+                    </div>
                   </div>
-                  <div className="p-1.5 text-[8px] leading-[11.5px] text-black space-y-0.5 font-medium">
-                    <p>
-                      ১। বৃত্তাকার ঘরগুলো এমন ভাবে ভরাট করতে হবে যাতে ভেতরের
-                      লেখাটি দেখা না যায়।
-                    </p>
-                    <p>২। উত্তরপত্রে অবাঞ্ছিত দাগ দেয়া যাবেনা।</p>
-                    <p>৩। উত্তরপত্র ভাজ করা যাবেনা।</p>
-                    <p>৪। সেট কোডবিহীন উত্তরপত্র বাতিল হবে।</p>
-                  </div>
-                </div>
+                )}
 
                 {/* QR Code - Live Scannable */}
                 <div className="flex items-center justify-center py-0.5">
                   <div
                     className="border p-1 bg-white inline-block shadow-xs"
                     style={{ borderColor: themeColor }}
-                    title="স্মার্ট প্রশ্নব্যাংক - https://smartproshnobank.com"
+                    title={`Layout ID: ${selectedLayoutCode}`}
                   >
                     <QRCodeSVG
-                      value="https://smartproshnobank.com"
+                      value={qrPayload}
                       size={54}
                       level="M"
                       bgColor="#ffffff"
@@ -693,14 +765,16 @@ export default function SmartSignatureOMRTemplate({
                 </div>
 
                 {/* Signature Box */}
-                <div
-                  className="border p-1.5 text-center flex flex-col justify-end min-h-[46px]"
-                  style={{ borderColor: themeColor }}
-                >
-                  <span className="text-[12px] font-bold text-black border-t border-dashed border-slate-400 pt-1 leading-snug">
-                    কক্ষ পরিদর্শকের স্বাক্ষর তারিখসহ
-                  </span>
-                </div>
+                {showSignatures && (
+                  <div
+                    className="border p-1.5 text-center flex flex-col justify-end min-h-[46px]"
+                    style={{ borderColor: themeColor }}
+                  >
+                    <span className="text-[12px] font-bold text-black border-t border-dashed border-slate-400 pt-1 leading-snug">
+                      কক্ষ পরিদর্শকের স্বাক্ষর তারিখসহ
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -774,6 +848,14 @@ export default function SmartSignatureOMRTemplate({
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Subtle Sheet Footer Info Bar with Layout ID */}
+      <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 pt-1 border-t border-slate-300 print:border-slate-400 mt-2 px-1">
+        <span>স্মার্ট প্রশ্নব্যাংক ওএমআর মূল্যায়ন সিস্টেম</span>
+        <span className="font-bold text-slate-700">
+          Layout: {selectedLayoutCode}
+        </span>
       </div>
     </div>
   );

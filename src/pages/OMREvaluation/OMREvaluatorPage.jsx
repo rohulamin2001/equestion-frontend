@@ -85,7 +85,7 @@ export default function OMREvaluatorPage() {
           <div className="flex items-center gap-2 shrink-0">
             <Link
               to="/dashboard/omr/tokens"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-semibold rounded-xl transition-modern hover-lift focus-ring-modern bg-white/15 hover:bg-white/25 border border-white/25 backdrop-blur-sm text-white"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-semibold rounded-xl transition-colors focus-ring-modern bg-white/15 hover:bg-white/25 border border-white/25 backdrop-blur-sm text-white cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>টোকেন তালিকা</span>
@@ -93,7 +93,7 @@ export default function OMREvaluatorPage() {
 
             <Link
               to="/dashboard/omr/tokens"
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold rounded-xl transition-modern hover-lift focus-ring-modern bg-white/95 hover:bg-white"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold rounded-xl transition-colors focus-ring-modern bg-white/95 hover:bg-white cursor-pointer"
               style={{ color: "var(--purple-700)" }}
             >
               <PlusCircle className="w-4 h-4" />

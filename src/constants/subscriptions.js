@@ -15,6 +15,12 @@ const classTranslations = CLASSES_MAP.reduce((acc, curr) => {
 
 export const SUBSCRIPTION_TRANSLATION_MAP = {
   ...classTranslations,
+  "Class 9": "নবম/দশম শ্রেণি",
+  "Class 10": "নবম/দশম শ্রেণি",
+  "Class 11": "এইচএসসি",
+  "Class 12": "এইচএসসি",
+  "Class 9-10": "নবম/দশম শ্রেণি",
+  HSC: "এইচএসসি",
   // Packages
   "class-3-to-5": "৩য় - ৫ম শ্রেণি বান্ডেল প্যাকেজ",
   "class-6-to-10": "৬ষ্ঠ - ১০ম শ্রেণি বান্ডেল প্যাকেজ",

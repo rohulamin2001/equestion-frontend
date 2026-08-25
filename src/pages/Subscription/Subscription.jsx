@@ -240,14 +240,18 @@ export default function Subscription() {
     const now = new Date();
     const subject = allSubjects.find((s) => s._id === subId);
     const subjectName = subject ? subject.subjectName : "";
+    const subjectVersion = subject ? subject.version : "Bangla";
 
     return userSubs.some((sub) => {
-      if (!sub.isActive || new Date(sub.endDate) < now) return false;
+      if (!sub.isActive || sub.isSuspended || new Date(sub.endDate) < now)
+        return false;
 
-      // Fallback check for teacher package
+      const subVersion = sub.version || "Bangla";
+
+      // 1. Teacher package check
       if (sub.packageId && sub.packageId.startsWith("teacher-")) {
-        if (sub.version && sub.version !== subject?.version) return false;
-        const pkgKey = sub.packageId;
+        if (subVersion !== subjectVersion) return false;
+        const pkgKey = sub.packageId.replace("-madrasah", "");
         const classesList = [
           "Class 6",
           "Class 7",
@@ -294,15 +298,86 @@ export default function Subscription() {
         }
       }
 
+      // 2. Package ID check (all-classes, 6-to-10, 9-10, etc.)
+      if (sub.packageId) {
+        const pkgId = String(sub.packageId).toLowerCase();
+        const matchesVersion =
+          !sub.version ||
+          sub.version === subjectVersion ||
+          (sub.version === "Madrasah"
+            ? subjectVersion === "Madrasah"
+            : subjectVersion !== "Madrasah");
+
+        if (matchesVersion) {
+          if (pkgId.includes("all-classes") || pkgId.includes("all-in-one"))
+            return true;
+          if (
+            (pkgId.includes("6-to-10") || pkgId.includes("6-10")) &&
+            [
+              "Class 6",
+              "Class 7",
+              "Class 8",
+              "Class 9-10",
+              "Class 9",
+              "Class 10",
+            ].includes(className)
+          )
+            return true;
+          if (
+            (pkgId.includes("3-to-5") || pkgId.includes("3-5")) &&
+            ["Class 3", "Class 4", "Class 5"].includes(className)
+          )
+            return true;
+          if (
+            (pkgId.includes("9-10") ||
+              pkgId.includes("9-to-10") ||
+              pkgId.includes("class-9") ||
+              pkgId.includes("class-10")) &&
+            ["Class 9-10", "Class 9", "Class 10"].includes(className)
+          )
+            return true;
+          if (
+            (pkgId.includes("hsc") ||
+              pkgId.includes("11-12") ||
+              pkgId.includes("college")) &&
+            ["HSC", "Class 11", "Class 12"].includes(className)
+          )
+            return true;
+        }
+      }
+
+      // 3. PurchaseType Package or Class
       if (sub.purchaseType === "Package" || sub.purchaseType === "Class") {
-        return (
-          sub.classNames?.includes(className) &&
-          sub.version === subject?.version
+        const subClasses = new Set(sub.classNames || []);
+        if (subClasses.has("Class 9") || subClasses.has("Class 10"))
+          subClasses.add("Class 9-10");
+        if (subClasses.has("Class 9-10")) {
+          subClasses.add("Class 9");
+          subClasses.add("Class 10");
+        }
+        if (subClasses.has("HSC")) {
+          subClasses.add("Class 11");
+          subClasses.add("Class 12");
+        }
+
+        const classMatches = subClasses.has(className);
+        const versionMatches =
+          !sub.version ||
+          sub.version === subjectVersion ||
+          (sub.version === "Madrasah"
+            ? subjectVersion === "Madrasah"
+            : subjectVersion !== "Madrasah");
+
+        return classMatches && versionMatches;
+      }
+
+      // 4. Subject purchase
+      if (sub.purchaseType === "Subject") {
+        return sub.subjectIds?.some(
+          (s) => (s?._id || s || "").toString() === subId.toString(),
         );
       }
-      if (sub.purchaseType === "Subject") {
-        return sub.subjectIds?.some((s) => (s._id || s) === subId);
-      }
+
       return false;
     });
   };

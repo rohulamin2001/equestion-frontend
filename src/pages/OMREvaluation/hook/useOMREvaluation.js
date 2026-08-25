@@ -164,6 +164,33 @@ export function useOMRResults(tokenId) {
 }
 
 /**
+ * Manually update / approve single student result
+ */
+export function useUpdateOMRResult() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ resultId, tokenId, payload }) => {
+      const res = await apiClient.put(`/omr/results/${resultId}`, payload);
+      return { data: res.data, tokenId };
+    },
+    onSuccess: (res, variables) => {
+      toast.success(res.data?.message || "ফলাফল সফলভাবে আপডেট ও এপ্রুভ করা হয়েছে");
+      if (variables.tokenId) {
+        queryClient.invalidateQueries({
+          queryKey: OMR_KEYS.results(variables.tokenId),
+        });
+        queryClient.invalidateQueries({ queryKey: OMR_KEYS.tokens });
+      }
+    },
+    onError: (err) => {
+      toast.error(
+        err.response?.data?.error || err.message || "রেজাল্ট আপডেট করতে ব্যর্থ হয়েছে"
+      );
+    },
+  });
+}
+
+/**
  * Delete single student result
  */
 export function useDeleteOMRResult() {

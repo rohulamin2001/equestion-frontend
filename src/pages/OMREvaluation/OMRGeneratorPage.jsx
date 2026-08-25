@@ -1,4 +1,4 @@
-import { ArrowRight, Printer } from "lucide-react";
+import { ArrowRight, FileCheck, Printer, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import OMRSettingsSidebar from "./components/OMRSettingsSidebar";
@@ -7,20 +7,30 @@ import OMRSheetPrintView from "./components/OMRSheetPrintView";
 export default function OMRGeneratorPage() {
   const [templateType, setTemplateType] = useState("smart-signature"); // "smart-signature" | "standard-classic"
   const [instituteName, setInstituteName] = useState("সোনার বাংলা হাই স্কুল");
-  const [instituteAddress, setInstituteAddress] = useState("বেলাবো, নরসিংদী");
+  const [instituteAddress, setInstituteAddress] = useState("ভালুকা, ময়মনসিংহ");
   const [instituteNameSize, setInstituteNameSize] = useState(18);
   const [instituteAddressSize, setInstituteAddressSize] = useState(12);
   const [examTitle, setExamTitle] = useState(
     "বার্ষিক মূল্যায়ন মডেল টেস্ট - ২০২৬",
   );
+  const [showExamTitle, setShowExamTitle] = useState(true);
+
   const [subject, setSubject] = useState("পদার্থবিজ্ঞান ১ম পত্র");
+  const [showSubject, setShowSubject] = useState(true);
+
   const [subjectCode, setSubjectCode] = useState("১০১");
+  const [showSubjectCode, setShowSubjectCode] = useState(true);
+
   const [examTime, setExamTime] = useState("৫০ মিনিট");
+  const [showExamTime, setShowExamTime] = useState(true);
+
   const [totalQuestions, setTotalQuestions] = useState(40);
   const [optionLanguage, setOptionLanguage] = useState("BN"); // 'BN' (ক,খ,গ,ঘ) or 'EN' (A,B,C,D)
   const [themeColor, setThemeColor] = useState("#E11D48"); // Default: Rose / Board Red
   const [headerType, setHeaderType] = useState("big"); // "small" | "big"
   const [infoType, setInfoType] = useState("digital"); // "digital" | "manual"
+  const [showInstructions, setShowInstructions] = useState(true);
+  const [showSignatures, setShowSignatures] = useState(true);
 
   const selectedLayoutCode =
     templateType === "smart-signature"
@@ -32,29 +42,51 @@ export default function OMRGeneratorPage() {
   };
 
   return (
-    <div className="space-y-4 max-w-[1600px] mx-auto">
-      {/* Top Header (Hidden on Print) */}
-      <div className="print:hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
-        <div>
+    <div className="space-y-2.5 max-w-[1600px] mx-auto pb-6">
+      {/* ── Slim Single-Line Top Bar (Hidden on Print) ── */}
+      <div
+        className="print:hidden w-full flex items-center justify-between px-3 sm:px-4 py-2 rounded-xl transition-all shadow-xs"
+        style={{
+          background: "var(--q-tab-switcher-bg)",
+          border: "1px solid var(--q-tab-switcher-border)",
+        }}
+      >
+        {/* Left: Compact Title & Icon */}
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-white shrink-0 shadow-xs"
+            style={{ background: "var(--q-header-gradient)" }}
+          >
+            <FileCheck className="w-4 h-4" />
+          </div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+            <h1 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 tracking-tight">
               ওএমআর (OMR) শিট তৈরি ও কাস্টমাইজেশন
             </h1>
-            <span className="px-2.5 py-0.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 text-[10px] font-bold rounded-full border border-indigo-200 dark:border-indigo-800">
-              Step 1
+            <span
+              className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold"
+              style={{
+                backgroundColor: "var(--q-selected-bg)",
+                color: "var(--purple-700)",
+                border: "1px solid var(--q-card-border-soft)",
+              }}
+            >
+              <Sparkles className="w-3 h-3 text-purple-600" />
+              A4 রেডি
             </span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            ডানপাশের সেটিংস প্যানেল থেকে টেমপ্লেট, থিম ও প্রতিষ্ঠানের নাম
-            কাস্টমাইজ করে সরাসরি A4 শিট প্রিন্ট করুন।
-          </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Right: Quick Actions */}
+        <div className="flex items-center gap-2 shrink-0">
           <button
             type="button"
             onClick={handlePrint}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md shadow-indigo-500/20 transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-white text-xs font-bold rounded-lg transition-colors focus-ring-modern hover:opacity-95 cursor-pointer shadow-sm"
+            style={{
+              background: "var(--q-header-gradient)",
+              boxShadow: "var(--q-print-btn-shadow)",
+            }}
           >
             <Printer className="w-3.5 h-3.5" />
             <span>প্রিন্ট করুন (A4)</span>
@@ -62,7 +94,12 @@ export default function OMRGeneratorPage() {
 
           <Link
             to="/dashboard/omr/tokens"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors focus-ring-modern hover:opacity-90 cursor-pointer"
+            style={{
+              backgroundColor: "var(--accent)",
+              color: "var(--accent-foreground)",
+              border: "1px solid var(--q-badge-border)",
+            }}
           >
             <span>টোকেন পেজ</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -70,27 +107,35 @@ export default function OMRGeneratorPage() {
         </div>
       </div>
 
-      {/* Main 2-Column Editor Workspace */}
-      <div className="flex flex-col lg:flex-row items-start gap-6 relative">
-        {/* Left / Center: Interactive A4 Sheet Canvas Preview */}
-        <div className="flex-1 w-full bg-slate-200/70 dark:bg-slate-950/70 p-3 sm:p-6 rounded-2xl border border-slate-300/80 dark:border-slate-800/80 flex justify-center overflow-x-auto min-h-[calc(100vh-220px)] print:p-0 print:border-none print:bg-white">
-          <OMRSheetPrintView
-            templateType={templateType}
-            instituteName={instituteName}
-            instituteAddress={instituteAddress}
-            instituteNameSize={instituteNameSize}
-            instituteAddressSize={instituteAddressSize}
-            examTitle={examTitle}
-            subject={subject}
-            subjectCode={subjectCode}
-            examTime={examTime}
-            totalQuestions={totalQuestions}
-            optionLanguage={optionLanguage}
-            themeColor={themeColor}
-            headerType={headerType}
-            infoType={infoType}
-            selectedLayoutCode={selectedLayoutCode}
-          />
+      {/* ── Main 2-Column Editor Workspace ── */}
+      <div className="flex flex-col lg:flex-row items-start gap-4 relative">
+        {/* Left: Interactive A4 Sheet Canvas Preview */}
+        <div className="flex-1 w-full flex flex-col items-center min-w-0">
+          <div className="w-full bg-slate-200/60 dark:bg-slate-950/60 p-3 sm:p-5 rounded-2xl border border-slate-300/80 dark:border-slate-800 flex justify-center overflow-x-auto min-h-[calc(100vh-100px)] print:p-0 print:border-none print:bg-white shadow-inner">
+            <OMRSheetPrintView
+              templateType={templateType}
+              instituteName={instituteName}
+              instituteAddress={instituteAddress}
+              instituteNameSize={instituteNameSize}
+              instituteAddressSize={instituteAddressSize}
+              examTitle={examTitle}
+              showExamTitle={showExamTitle}
+              subject={subject}
+              showSubject={showSubject}
+              subjectCode={subjectCode}
+              showSubjectCode={showSubjectCode}
+              examTime={examTime}
+              showExamTime={showExamTime}
+              totalQuestions={totalQuestions}
+              optionLanguage={optionLanguage}
+              themeColor={themeColor}
+              headerType={headerType}
+              infoType={infoType}
+              showInstructions={showInstructions}
+              showSignatures={showSignatures}
+              selectedLayoutCode={selectedLayoutCode}
+            />
+          </div>
         </div>
 
         {/* Right: Dedicated OMR Customizer & Settings Sidebar */}
@@ -105,6 +150,22 @@ export default function OMRGeneratorPage() {
           setInstituteNameSize={setInstituteNameSize}
           instituteAddressSize={instituteAddressSize}
           setInstituteAddressSize={setInstituteAddressSize}
+          examTitle={examTitle}
+          setExamTitle={setExamTitle}
+          showExamTitle={showExamTitle}
+          setShowExamTitle={setShowExamTitle}
+          subject={subject}
+          setSubject={setSubject}
+          showSubject={showSubject}
+          setShowSubject={setShowSubject}
+          subjectCode={subjectCode}
+          setSubjectCode={setSubjectCode}
+          showSubjectCode={showSubjectCode}
+          setShowSubjectCode={setShowSubjectCode}
+          examTime={examTime}
+          setExamTime={setExamTime}
+          showExamTime={showExamTime}
+          setShowExamTime={setShowExamTime}
           totalQuestions={totalQuestions}
           setTotalQuestions={setTotalQuestions}
           optionLanguage={optionLanguage}
@@ -115,6 +176,10 @@ export default function OMRGeneratorPage() {
           setHeaderType={setHeaderType}
           infoType={infoType}
           setInfoType={setInfoType}
+          showInstructions={showInstructions}
+          setShowInstructions={setShowInstructions}
+          showSignatures={showSignatures}
+          setShowSignatures={setShowSignatures}
           selectedLayoutCode={selectedLayoutCode}
           onPrint={handlePrint}
         />

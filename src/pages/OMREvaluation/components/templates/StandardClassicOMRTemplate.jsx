@@ -1,10 +1,16 @@
 export default function StandardClassicOMRTemplate({
   instituteName = "সোনার বাংলা হাই স্কুল",
-  instituteAddress = "বেলাবো, নরসিংদী",
+  instituteAddress = "ভালুকা, ময়মনসিংহ",
   instituteNameSize = 18,
   instituteAddressSize = 12,
   examTitle = "বার্ষিক মূল্যায়ন",
+  showExamTitle = true,
   subject = "বাংলা ১ম পত্র",
+  showSubject = true,
+  subjectCode = "১০১",
+  showSubjectCode = true,
+  examTime = "৫০ মিনিট",
+  showExamTime = true,
   totalQuestions = 20,
   optionLanguage = "BN", // 'BN' (ক,খ,গ,ঘ) or 'EN' (A,B,C,D)
   selectedLayoutCode = "OMR-STD-V1",
@@ -21,6 +27,12 @@ export default function StandardClassicOMRTemplate({
       .map((d) => banglaDigits[parseInt(d, 10)] || d)
       .join("");
   };
+
+  const hasMetadata =
+    (showExamTitle && examTitle) ||
+    (showSubject && subject) ||
+    (showSubjectCode && subjectCode) ||
+    (showExamTime && examTime);
 
   // Determine number of columns (2 or 4) based on question count
   const numColumns = totalQuestions > 25 ? 4 : 2;
@@ -67,12 +79,42 @@ export default function StandardClassicOMRTemplate({
           >
             {instituteName || "প্রতিষ্ঠানের নাম"}
           </h1>
-          <p
-            className="font-semibold text-slate-800 mt-0.5"
-            style={{ fontSize: `${instituteAddressSize}px`, lineHeight: 1.3 }}
-          >
-            {instituteAddress || "ঠিকানা / এলাকা"}
-          </p>
+          {instituteAddress && (
+            <p
+              className="font-semibold text-slate-800 mt-0.5"
+              style={{ fontSize: `${instituteAddressSize}px`, lineHeight: 1.3 }}
+            >
+              {instituteAddress}
+            </p>
+          )}
+
+          {hasMetadata && (
+            <div className="flex items-center justify-center flex-wrap gap-x-4 gap-y-0.5 text-[12px] font-bold text-black border-y border-dashed border-slate-400 py-1 my-2">
+              {showExamTitle && examTitle && (
+                <span className="font-extrabold text-black">{examTitle}</span>
+              )}
+              {showSubject && subject && (
+                <span>
+                  <span className="text-slate-700 font-semibold">বিষয়: </span>
+                  {subject}
+                </span>
+              )}
+              {showSubjectCode && subjectCode && (
+                <span>
+                  <span className="text-slate-700 font-semibold">
+                    বিষয় কোড:{" "}
+                  </span>
+                  {subjectCode}
+                </span>
+              )}
+              {showExamTime && examTime && (
+                <span>
+                  <span className="text-slate-700 font-semibold">সময়: </span>
+                  {examTime}
+                </span>
+              )}
+            </div>
+          )}
 
           <div className="w-48 h-0.5 bg-black mx-auto mt-2 mb-4" />
         </div>
@@ -165,6 +207,14 @@ export default function StandardClassicOMRTemplate({
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Subtle Sheet Footer Info Bar with Layout ID */}
+      <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 pt-1 border-t border-slate-300 print:border-slate-400 mt-2 px-1">
+        <span>স্মার্ট প্রশ্নব্যাংক ক্লাসিক ওএমআর</span>
+        <span className="font-bold text-slate-700">
+          Layout: {selectedLayoutCode}
+        </span>
       </div>
     </div>
   );

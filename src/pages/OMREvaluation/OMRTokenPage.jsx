@@ -61,7 +61,7 @@ export default function OMRTokenPage() {
             {/* Secondary — Back to OMR Print */}
             <Link
               to="/dashboard/omr/generate"
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl transition-modern hover-lift focus-ring-modern"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl transition-colors focus-ring-modern hover:opacity-90 cursor-pointer"
               style={{
                 backgroundColor: "var(--accent)",
                 color: "var(--accent-foreground)",
@@ -75,7 +75,7 @@ export default function OMRTokenPage() {
             {/* Primary — Go to Evaluator */}
             <Link
               to="/dashboard/omr/evaluator"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl text-white transition-modern hover-lift focus-ring-modern"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl text-white transition-colors focus-ring-modern hover:opacity-90 cursor-pointer"
               style={{
                 background: "var(--q-header-gradient)",
                 boxShadow: "var(--q-print-btn-shadow)",
