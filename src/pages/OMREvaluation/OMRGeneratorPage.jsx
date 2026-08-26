@@ -10,6 +10,7 @@ export default function OMRGeneratorPage() {
   const [instituteAddress, setInstituteAddress] = useState("ভালুকা, ময়মনসিংহ");
   const [instituteNameSize, setInstituteNameSize] = useState(18);
   const [instituteAddressSize, setInstituteAddressSize] = useState(12);
+  const [headerBorderWidth, setHeaderBorderWidth] = useState(100);
   const [examTitle, setExamTitle] = useState(
     "বার্ষিক মূল্যায়ন মডেল টেস্ট - ২০২৬",
   );
@@ -118,6 +119,7 @@ export default function OMRGeneratorPage() {
               instituteAddress={instituteAddress}
               instituteNameSize={instituteNameSize}
               instituteAddressSize={instituteAddressSize}
+              headerBorderWidth={headerBorderWidth}
               examTitle={examTitle}
               showExamTitle={showExamTitle}
               subject={subject}
@@ -150,6 +152,8 @@ export default function OMRGeneratorPage() {
           setInstituteNameSize={setInstituteNameSize}
           instituteAddressSize={instituteAddressSize}
           setInstituteAddressSize={setInstituteAddressSize}
+          headerBorderWidth={headerBorderWidth}
+          setHeaderBorderWidth={setHeaderBorderWidth}
           examTitle={examTitle}
           setExamTitle={setExamTitle}
           showExamTitle={showExamTitle}

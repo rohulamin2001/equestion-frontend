@@ -3,6 +3,7 @@ export default function StandardClassicOMRTemplate({
   instituteAddress = "ভালুকা, ময়মনসিংহ",
   instituteNameSize = 18,
   instituteAddressSize = 12,
+  headerBorderWidth = 100,
   examTitle = "বার্ষিক মূল্যায়ন",
   showExamTitle = true,
   subject = "বাংলা ১ম পত্র",
@@ -89,34 +90,42 @@ export default function StandardClassicOMRTemplate({
           )}
 
           {hasMetadata && (
-            <div className="flex items-center justify-center flex-wrap gap-x-4 gap-y-0.5 text-[12px] font-bold text-black border-y border-dashed border-slate-400 py-1 my-2">
-              {showExamTitle && examTitle && (
-                <span className="font-extrabold text-black">{examTitle}</span>
-              )}
-              {showSubject && subject && (
-                <span>
-                  <span className="text-slate-700 font-semibold">বিষয়: </span>
-                  {subject}
-                </span>
-              )}
-              {showSubjectCode && subjectCode && (
-                <span>
-                  <span className="text-slate-700 font-semibold">
-                    বিষয় কোড:{" "}
+            <div className="w-full flex justify-center my-2">
+              <div
+                className="flex items-center justify-center flex-wrap gap-x-4 gap-y-0.5 text-[12px] font-bold text-black border-b border-dashed border-slate-400 pb-1.5"
+                style={{ width: `${headerBorderWidth}%` }}
+              >
+                {showExamTitle && examTitle && (
+                  <span className="font-extrabold text-black">{examTitle}</span>
+                )}
+                {showSubject && subject && (
+                  <span>
+                    <span className="text-slate-700 font-semibold">বিষয়: </span>
+                    {subject}
                   </span>
-                  {subjectCode}
-                </span>
-              )}
-              {showExamTime && examTime && (
-                <span>
-                  <span className="text-slate-700 font-semibold">সময়: </span>
-                  {examTime}
-                </span>
-              )}
+                )}
+                {showSubjectCode && subjectCode && (
+                  <span>
+                    <span className="text-slate-700 font-semibold">
+                      বিষয় কোড:{" "}
+                    </span>
+                    {subjectCode}
+                  </span>
+                )}
+                {showExamTime && examTime && (
+                  <span>
+                    <span className="text-slate-700 font-semibold">সময়: </span>
+                    {examTime}
+                  </span>
+                )}
+              </div>
             </div>
           )}
 
-          <div className="w-48 h-0.5 bg-black mx-auto mt-2 mb-4" />
+          <div
+            className="h-0.5 bg-black mx-auto mt-2 mb-4"
+            style={{ width: `${Math.min(192, Math.round(192 * (headerBorderWidth / 100)))}px` }}
+          />
         </div>
 
         {/* Fill-in Details Lines (নাম, শ্রেণি, সেকশন, বিষয়, পত্র, রোল) */}

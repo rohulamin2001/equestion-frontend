@@ -7,6 +7,7 @@ export default function OMRSheetPrintView({
   instituteAddress = "ভালুকা, ময়মনসিংহ",
   instituteNameSize = 18,
   instituteAddressSize = 12,
+  headerBorderWidth = 100,
   examTitle = "বার্ষিক মূল্যায়ন মডেল টেস্ট - ২০২৬",
   showExamTitle = true,
   subject = "পদার্থবিজ্ঞান ১ম পত্র",
@@ -32,6 +33,7 @@ export default function OMRSheetPrintView({
           instituteAddress={instituteAddress}
           instituteNameSize={instituteNameSize}
           instituteAddressSize={instituteAddressSize}
+          headerBorderWidth={headerBorderWidth}
           examTitle={examTitle}
           showExamTitle={showExamTitle}
           subject={subject}
@@ -55,6 +57,7 @@ export default function OMRSheetPrintView({
           instituteAddress={instituteAddress}
           instituteNameSize={instituteNameSize}
           instituteAddressSize={instituteAddressSize}
+          headerBorderWidth={headerBorderWidth}
           examTitle={examTitle}
           showExamTitle={showExamTitle}
           subject={subject}

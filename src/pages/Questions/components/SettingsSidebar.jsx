@@ -291,7 +291,8 @@ export default function SettingsSidebar({
                               isSelected
                                 ? {
                                     background: "var(--q-selected-bg)",
-                                    border: "1.5px solid var(--q-selected-border)",
+                                    border:
+                                      "1.5px solid var(--q-selected-border)",
                                     color: "var(--q-selected-text)",
                                   }
                                 : {
@@ -399,7 +400,8 @@ export default function SettingsSidebar({
                               isSelected
                                 ? {
                                     background: "var(--q-selected-bg)",
-                                    border: "1.5px solid var(--q-selected-border)",
+                                    border:
+                                      "1.5px solid var(--q-selected-border)",
                                     color: "var(--q-selected-text)",
                                   }
                                 : {
@@ -725,7 +727,8 @@ export default function SettingsSidebar({
                               isSelected
                                 ? {
                                     background: "var(--q-selected-bg)",
-                                    border: "1.5px solid var(--q-selected-border)",
+                                    border:
+                                      "1.5px solid var(--q-selected-border)",
                                     color: "var(--q-selected-text)",
                                   }
                                 : {

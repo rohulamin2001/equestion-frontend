@@ -5,6 +5,7 @@ export default function SmartSignatureOMRTemplate({
   instituteAddress = "ভালুকা, ময়মনসিংহ",
   instituteNameSize = 18,
   instituteAddressSize = 12,
+  headerBorderWidth = 100,
   examTitle = "বার্ষিক মূল্যায়ন মডেল টেস্ট - ২০২৬",
   showExamTitle = true,
   subject = "পদার্থবিজ্ঞান ১ম পত্র",
@@ -118,31 +119,36 @@ export default function SmartSignatureOMRTemplate({
   const renderExamMetadataStrip = () => {
     if (!hasMetadata) return null;
     return (
-      <div
-        className="flex items-center justify-center flex-wrap gap-x-4 gap-y-0.5 text-[12px] font-bold text-black border-y border-dashed py-1 my-1"
-        style={{ borderColor: themeColor }}
-      >
-        {showExamTitle && examTitle && (
-          <span className="font-extrabold text-black">{examTitle}</span>
-        )}
-        {showSubject && subject && (
-          <span>
-            <span className="text-slate-700 font-semibold">বিষয়: </span>
-            {subject}
-          </span>
-        )}
-        {showSubjectCode && subjectCode && (
-          <span>
-            <span className="text-slate-700 font-semibold">বিষয় কোড: </span>
-            {subjectCode}
-          </span>
-        )}
-        {showExamTime && examTime && (
-          <span>
-            <span className="text-slate-700 font-semibold">সময়: </span>
-            {examTime}
-          </span>
-        )}
+      <div className="w-full flex justify-center my-1">
+        <div
+          className="flex items-center justify-center flex-wrap gap-x-4 gap-y-0.5 text-[12px] font-bold text-black border-b border-dashed pb-1"
+          style={{
+            width: `${headerBorderWidth}%`,
+            borderColor: themeColor,
+          }}
+        >
+          {showExamTitle && examTitle && (
+            <span className="font-extrabold text-black">{examTitle}</span>
+          )}
+          {showSubject && subject && (
+            <span>
+              <span className="text-slate-700 font-semibold">বিষয়: </span>
+              {subject}
+            </span>
+          )}
+          {showSubjectCode && subjectCode && (
+            <span>
+              <span className="text-slate-700 font-semibold">বিষয় কোড: </span>
+              {subjectCode}
+            </span>
+          )}
+          {showExamTime && examTime && (
+            <span>
+              <span className="text-slate-700 font-semibold">সময়: </span>
+              {examTime}
+            </span>
+          )}
+        </div>
       </div>
     );
   };

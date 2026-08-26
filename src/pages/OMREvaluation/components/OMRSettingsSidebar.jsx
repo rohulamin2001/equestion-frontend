@@ -31,6 +31,8 @@ export default function OMRSettingsSidebar({
   setInstituteNameSize,
   instituteAddressSize,
   setInstituteAddressSize,
+  headerBorderWidth = 100,
+  setHeaderBorderWidth,
   examTitle,
   setExamTitle,
   showExamTitle = true,
@@ -153,7 +155,7 @@ export default function OMRSettingsSidebar({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="p-5 rounded divide-y divide-[var(--q-card-border)]/70 space-y-5"
+              className="p-5 rounded divide-y divide-[var(--q-card-border)]/70 space-y-5 pb-40"
               style={{
                 background: "var(--q-panel-bg)",
                 backdropFilter: "blur(24px) saturate(160%)",
@@ -250,6 +252,30 @@ export default function OMRSettingsSidebar({
                         {instituteAddressSize}
                       </span>
                     </div>
+                  </div>
+
+                  {/* Bottom Border Width / Length Slider */}
+                  <div className="space-y-1.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[13px] font-semibold text-slate-700 dark:text-slate-300">
+                        নিচের বর্ডারের দৈর্ঘ্য / উইডথ
+                      </label>
+                      <span className="text-[12px] font-mono font-bold text-purple-700 dark:text-purple-300 w-10 text-right">
+                        {headerBorderWidth}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="10"
+                      max="100"
+                      step="5"
+                      value={headerBorderWidth}
+                      onChange={(e) =>
+                        setHeaderBorderWidth &&
+                        setHeaderBorderWidth(Number(e.target.value))
+                      }
+                      className="w-full accent-purple-600 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg cursor-pointer"
+                    />
                   </div>
                 </div>
               </div>
@@ -865,7 +891,7 @@ export default function OMRSettingsSidebar({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="p-5 rounded divide-y divide-[var(--q-card-border)]/70 space-y-5"
+              className="p-5 rounded divide-y divide-[var(--q-card-border)]/70 space-y-5 pb-40"
               style={{
                 background: "var(--q-panel-bg)",
                 backdropFilter: "blur(24px) saturate(160%)",
