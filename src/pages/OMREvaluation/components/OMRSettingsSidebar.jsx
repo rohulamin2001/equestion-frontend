@@ -33,6 +33,8 @@ export default function OMRSettingsSidebar({
   setInstituteAddressSize,
   headerBorderWidth = 100,
   setHeaderBorderWidth,
+  headerBorderStyle = "dashed",
+  setHeaderBorderStyle,
   examTitle,
   setExamTitle,
   showExamTitle = true,
@@ -254,8 +256,65 @@ export default function OMRSettingsSidebar({
                     </div>
                   </div>
 
-                  {/* Bottom Border Width / Length Slider */}
+                  {/* Bottom Border Style Selector */}
                   <div className="space-y-1.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+                    <label className="text-[13px] font-semibold text-slate-700 dark:text-slate-300">
+                      বর্ডার স্টাইল
+                    </label>
+                    <div className="grid grid-cols-5 gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                      {[
+                        { id: "dashed", label: "ড্যাশড" },
+                        { id: "solid", label: "সলিড" },
+                        { id: "dotted", label: "ডটেড" },
+                        { id: "double", label: "ডাবল" },
+                        { id: "none", label: "নেই" },
+                      ].map((styleOpt) => {
+                        const isSelected = headerBorderStyle === styleOpt.id;
+                        return (
+                          <button
+                            key={styleOpt.id}
+                            type="button"
+                            onClick={() =>
+                              setHeaderBorderStyle &&
+                              setHeaderBorderStyle(styleOpt.id)
+                            }
+                            className={`px-1 py-1.5 rounded-sm text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-1 cursor-pointer select-none ${
+                              isSelected
+                                ? "text-white shadow-xs"
+                                : "text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60"
+                            }`}
+                            style={{
+                              background: isSelected
+                                ? "var(--q-header-gradient)"
+                                : "transparent",
+                            }}
+                          >
+                            <span>{styleOpt.label}</span>
+                            <div
+                              className={`w-full h-0 border-b ${
+                                styleOpt.id === "double"
+                                  ? "border-b-[3px]"
+                                  : "border-b-[1.5px]"
+                              } ${
+                                isSelected
+                                  ? "border-white"
+                                  : "border-slate-400 dark:border-slate-500"
+                              }`}
+                              style={{
+                                borderStyle:
+                                  styleOpt.id === "none"
+                                    ? "hidden"
+                                    : styleOpt.id,
+                              }}
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Bottom Border Width / Length Slider */}
+                  <div className="space-y-1.5 pt-1">
                     <div className="flex items-center justify-between">
                       <label className="text-[13px] font-semibold text-slate-700 dark:text-slate-300">
                         নিচের বর্ডারের দৈর্ঘ্য / উইডথ
@@ -268,7 +327,7 @@ export default function OMRSettingsSidebar({
                       type="range"
                       min="10"
                       max="100"
-                      step="5"
+                      step="1"
                       value={headerBorderWidth}
                       onChange={(e) =>
                         setHeaderBorderWidth &&
@@ -312,7 +371,9 @@ export default function OMRSettingsSidebar({
                       </label>
                       <button
                         type="button"
-                        onClick={() => setShowExamTitle && setShowExamTitle(!showExamTitle)}
+                        onClick={() =>
+                          setShowExamTitle && setShowExamTitle(!showExamTitle)
+                        }
                         className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
                         style={{
                           background: showExamTitle
@@ -331,7 +392,9 @@ export default function OMRSettingsSidebar({
                       <input
                         type="text"
                         value={examTitle}
-                        onChange={(e) => setExamTitle && setExamTitle(e.target.value)}
+                        onChange={(e) =>
+                          setExamTitle && setExamTitle(e.target.value)
+                        }
                         placeholder="বার্ষিক মূল্যায়ন মডেল টেস্ট - ২০২৬"
                         className="w-full px-3 py-2 text-[13px] font-medium border rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus-ring-modern shadow-2xs"
                         style={{ borderColor: "var(--q-card-border)" }}
@@ -348,7 +411,9 @@ export default function OMRSettingsSidebar({
                       </label>
                       <button
                         type="button"
-                        onClick={() => setShowSubject && setShowSubject(!showSubject)}
+                        onClick={() =>
+                          setShowSubject && setShowSubject(!showSubject)
+                        }
                         className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
                         style={{
                           background: showSubject
@@ -367,7 +432,9 @@ export default function OMRSettingsSidebar({
                       <input
                         type="text"
                         value={subject}
-                        onChange={(e) => setSubject && setSubject(e.target.value)}
+                        onChange={(e) =>
+                          setSubject && setSubject(e.target.value)
+                        }
                         placeholder="পদার্থবিজ্ঞান ১ম পত্র"
                         className="w-full px-3 py-2 text-[13px] font-medium border rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus-ring-modern shadow-2xs"
                         style={{ borderColor: "var(--q-card-border)" }}
@@ -384,7 +451,10 @@ export default function OMRSettingsSidebar({
                       </label>
                       <button
                         type="button"
-                        onClick={() => setShowSubjectCode && setShowSubjectCode(!showSubjectCode)}
+                        onClick={() =>
+                          setShowSubjectCode &&
+                          setShowSubjectCode(!showSubjectCode)
+                        }
                         className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
                         style={{
                           background: showSubjectCode
@@ -403,7 +473,9 @@ export default function OMRSettingsSidebar({
                       <input
                         type="text"
                         value={subjectCode}
-                        onChange={(e) => setSubjectCode && setSubjectCode(e.target.value)}
+                        onChange={(e) =>
+                          setSubjectCode && setSubjectCode(e.target.value)
+                        }
                         placeholder="১০১"
                         className="w-full px-3 py-2 text-[13px] font-medium border rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus-ring-modern shadow-2xs"
                         style={{ borderColor: "var(--q-card-border)" }}
@@ -420,7 +492,9 @@ export default function OMRSettingsSidebar({
                       </label>
                       <button
                         type="button"
-                        onClick={() => setShowExamTime && setShowExamTime(!showExamTime)}
+                        onClick={() =>
+                          setShowExamTime && setShowExamTime(!showExamTime)
+                        }
                         className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
                         style={{
                           background: showExamTime
@@ -439,7 +513,9 @@ export default function OMRSettingsSidebar({
                       <input
                         type="text"
                         value={examTime}
-                        onChange={(e) => setExamTime && setExamTime(e.target.value)}
+                        onChange={(e) =>
+                          setExamTime && setExamTime(e.target.value)
+                        }
                         placeholder="৫০ মিনিট"
                         className="w-full px-3 py-2 text-[13px] font-medium border rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus-ring-modern shadow-2xs"
                         style={{ borderColor: "var(--q-card-border)" }}
@@ -837,7 +913,10 @@ export default function OMRSettingsSidebar({
                     </div>
                     <button
                       type="button"
-                      onClick={() => setShowInstructions && setShowInstructions(!showInstructions)}
+                      onClick={() =>
+                        setShowInstructions &&
+                        setShowInstructions(!showInstructions)
+                      }
                       className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
                       style={{
                         background: showInstructions
@@ -865,7 +944,9 @@ export default function OMRSettingsSidebar({
                     </div>
                     <button
                       type="button"
-                      onClick={() => setShowSignatures && setShowSignatures(!showSignatures)}
+                      onClick={() =>
+                        setShowSignatures && setShowSignatures(!showSignatures)
+                      }
                       className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
                       style={{
                         background: showSignatures

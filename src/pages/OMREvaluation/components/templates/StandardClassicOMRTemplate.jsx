@@ -4,6 +4,7 @@ export default function StandardClassicOMRTemplate({
   instituteNameSize = 18,
   instituteAddressSize = 12,
   headerBorderWidth = 100,
+  headerBorderStyle = "dashed",
   examTitle = "বার্ষিক মূল্যায়ন",
   showExamTitle = true,
   subject = "বাংলা ১ম পত্র",
@@ -90,11 +91,9 @@ export default function StandardClassicOMRTemplate({
           )}
 
           {hasMetadata && (
-            <div className="w-full flex justify-center my-2">
-              <div
-                className="flex items-center justify-center flex-wrap gap-x-4 gap-y-0.5 text-[12px] font-bold text-black border-b border-dashed border-slate-400 pb-1.5"
-                style={{ width: `${headerBorderWidth}%` }}
-              >
+            <div className="w-full my-2">
+              {/* Full-width metadata text */}
+              <div className="flex items-center justify-center flex-wrap gap-x-4 gap-y-0.5 text-[12px] font-bold text-black pb-1.5">
                 {showExamTitle && examTitle && (
                   <span className="font-extrabold text-black">{examTitle}</span>
                 )}
@@ -119,13 +118,32 @@ export default function StandardClassicOMRTemplate({
                   </span>
                 )}
               </div>
+
+              {/* Dedicated Individual Border Line */}
+              {headerBorderStyle !== "none" && (
+                <div className="w-full flex justify-center">
+                  <div
+                    className="border-slate-400"
+                    style={{
+                      width: `${headerBorderWidth}%`,
+                      borderBottomStyle: headerBorderStyle,
+                      borderBottomWidth:
+                        headerBorderStyle === "double" ? "3px" : "1.5px",
+                    }}
+                  />
+                </div>
+              )}
             </div>
           )}
 
-          <div
-            className="h-0.5 bg-black mx-auto mt-2 mb-4"
-            style={{ width: `${Math.min(192, Math.round(192 * (headerBorderWidth / 100)))}px` }}
-          />
+          {headerBorderStyle !== "none" && (
+            <div
+              className="h-0.5 bg-black mx-auto mt-2 mb-4"
+              style={{
+                width: `${Math.min(192, Math.round(192 * (headerBorderWidth / 100)))}px`,
+              }}
+            />
+          )}
         </div>
 
         {/* Fill-in Details Lines (নাম, শ্রেণি, সেকশন, বিষয়, পত্র, রোল) */}

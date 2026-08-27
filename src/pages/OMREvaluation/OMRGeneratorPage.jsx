@@ -11,6 +11,7 @@ export default function OMRGeneratorPage() {
   const [instituteNameSize, setInstituteNameSize] = useState(18);
   const [instituteAddressSize, setInstituteAddressSize] = useState(12);
   const [headerBorderWidth, setHeaderBorderWidth] = useState(100);
+  const [headerBorderStyle, setHeaderBorderStyle] = useState("dashed"); // "dashed" | "solid" | "dotted" | "double" | "none"
   const [examTitle, setExamTitle] = useState(
     "বার্ষিক মূল্যায়ন মডেল টেস্ট - ২০২৬",
   );
@@ -120,6 +121,7 @@ export default function OMRGeneratorPage() {
               instituteNameSize={instituteNameSize}
               instituteAddressSize={instituteAddressSize}
               headerBorderWidth={headerBorderWidth}
+              headerBorderStyle={headerBorderStyle}
               examTitle={examTitle}
               showExamTitle={showExamTitle}
               subject={subject}
@@ -154,6 +156,8 @@ export default function OMRGeneratorPage() {
           setInstituteAddressSize={setInstituteAddressSize}
           headerBorderWidth={headerBorderWidth}
           setHeaderBorderWidth={setHeaderBorderWidth}
+          headerBorderStyle={headerBorderStyle}
+          setHeaderBorderStyle={setHeaderBorderStyle}
           examTitle={examTitle}
           setExamTitle={setExamTitle}
           showExamTitle={showExamTitle}

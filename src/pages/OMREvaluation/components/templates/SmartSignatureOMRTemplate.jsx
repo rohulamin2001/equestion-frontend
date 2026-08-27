@@ -6,6 +6,7 @@ export default function SmartSignatureOMRTemplate({
   instituteNameSize = 18,
   instituteAddressSize = 12,
   headerBorderWidth = 100,
+  headerBorderStyle = "dashed",
   examTitle = "বার্ষিক মূল্যায়ন মডেল টেস্ট - ২০২৬",
   showExamTitle = true,
   subject = "পদার্থবিজ্ঞান ১ম পত্র",
@@ -117,38 +118,50 @@ export default function SmartSignatureOMRTemplate({
     (showExamTime && examTime);
 
   const renderExamMetadataStrip = () => {
-    if (!hasMetadata) return null;
+    if (!hasMetadata && headerBorderStyle === "none") return null;
     return (
-      <div className="w-full flex justify-center my-1">
-        <div
-          className="flex items-center justify-center flex-wrap gap-x-4 gap-y-0.5 text-[12px] font-bold text-black border-b border-dashed pb-1"
-          style={{
-            width: `${headerBorderWidth}%`,
-            borderColor: themeColor,
-          }}
-        >
-          {showExamTitle && examTitle && (
-            <span className="font-extrabold text-black">{examTitle}</span>
-          )}
-          {showSubject && subject && (
-            <span>
-              <span className="text-slate-700 font-semibold">বিষয়: </span>
-              {subject}
-            </span>
-          )}
-          {showSubjectCode && subjectCode && (
-            <span>
-              <span className="text-slate-700 font-semibold">বিষয় কোড: </span>
-              {subjectCode}
-            </span>
-          )}
-          {showExamTime && examTime && (
-            <span>
-              <span className="text-slate-700 font-semibold">সময়: </span>
-              {examTime}
-            </span>
-          )}
-        </div>
+      <div className="w-full my-1">
+        {/* Full-width metadata text (stays fully readable and never squishes when border width is adjusted) */}
+        {hasMetadata && (
+          <div className="flex items-center justify-center flex-wrap gap-x-4 gap-y-0.5 text-[12px] font-bold text-black pb-1">
+            {showExamTitle && examTitle && (
+              <span className="font-extrabold text-black">{examTitle}</span>
+            )}
+            {showSubject && subject && (
+              <span>
+                <span className="text-slate-700 font-semibold">বিষয়: </span>
+                {subject}
+              </span>
+            )}
+            {showSubjectCode && subjectCode && (
+              <span>
+                <span className="text-slate-700 font-semibold">বিষয় কোড: </span>
+                {subjectCode}
+              </span>
+            )}
+            {showExamTime && examTime && (
+              <span>
+                <span className="text-slate-700 font-semibold">সময়: </span>
+                {examTime}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Dedicated Individual Border Line */}
+        {headerBorderStyle !== "none" && (
+          <div className="w-full flex justify-center">
+            <div
+              style={{
+                width: `${headerBorderWidth}%`,
+                borderColor: themeColor,
+                borderBottomStyle: headerBorderStyle,
+                borderBottomWidth:
+                  headerBorderStyle === "double" ? "3px" : "1.5px",
+              }}
+            />
+          </div>
+        )}
       </div>
     );
   };
