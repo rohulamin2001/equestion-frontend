@@ -1,4 +1,11 @@
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
   BarChart3,
   BookOpen,
   ChevronDown,
@@ -14,17 +21,10 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
-import { AnimatePresence, motion } from "motion/react";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   useCreateOMRToken,
   useDeleteOMRToken,
@@ -34,11 +34,31 @@ import {
 } from "../hook/useOMREvaluation";
 
 const STANDARD_TEMPLATES = [
-  { totalQuestions: 20, title: "২০ প্রশ্নের স্ট্যান্ডার্ড OMR শিট (১ কলাম)", code: "OMR-20-V1" },
-  { totalQuestions: 40, title: "৪০ প্রশ্নের স্ট্যান্ডার্ড OMR শিট (২ কলাম)", code: "OMR-40-V1" },
-  { totalQuestions: 60, title: "৬০ প্রশ্নের স্ট্যান্ডার্ড OMR শিট (৩ কলাম)", code: "OMR-60-V1" },
-  { totalQuestions: 80, title: "৮০ প্রশ্নের স্ট্যান্ডার্ড OMR শিট (৪ কলাম)", code: "OMR-80-V1" },
-  { totalQuestions: 100, title: "১০০ প্রশ্নের স্ট্যান্ডার্ড OMR শিট (৪ কলাম)", code: "OMR-100-V1" },
+  {
+    totalQuestions: 20,
+    title: "২০ প্রশ্নের স্ট্যান্ডার্ড OMR শিট (১ কলাম)",
+    code: "OMR-20-V1",
+  },
+  {
+    totalQuestions: 40,
+    title: "৪০ প্রশ্নের স্ট্যান্ডার্ড OMR শিট (২ কলাম)",
+    code: "OMR-40-V1",
+  },
+  {
+    totalQuestions: 60,
+    title: "৬০ প্রশ্নের স্ট্যান্ডার্ড OMR শিট (৩ কলাম)",
+    code: "OMR-60-V1",
+  },
+  {
+    totalQuestions: 80,
+    title: "৮০ প্রশ্নের স্ট্যান্ডার্ড OMR শিট (৪ কলাম)",
+    code: "OMR-80-V1",
+  },
+  {
+    totalQuestions: 100,
+    title: "১০০ প্রশ্নের স্ট্যান্ডার্ড OMR শিট (৪ কলাম)",
+    code: "OMR-100-V1",
+  },
 ];
 
 const NEGATIVE_MARK_OPTIONS = [
@@ -63,30 +83,41 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
   const [subject, setSubject] = useState("");
   const [className, setClassName] = useState("");
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
+  const [selectedTotalQuestions, setSelectedTotalQuestions] = useState(40);
   const [negativeMarks, setNegativeMarks] = useState(0.25);
   const [marksPerQuestion, setMarksPerQuestion] = useState(1);
   const [answerKey, setAnswerKey] = useState({});
 
-  // Compute standard 20, 40, 60, 80, 100 templates merged with DB templates
-  const templateOptions = STANDARD_TEMPLATES.map((st) => {
-    const dbTpl = templates.find(
-      (t) => t.totalQuestions === st.totalQuestions || t.layoutCode === st.code
+  // Compute standard 20, 40, 60, 80, 100 templates strictly mapped to DB _id
+  const templateOptions = useMemo(() => {
+    return STANDARD_TEMPLATES.map((st) => {
+      const dbTpl = templates.find(
+        (t) =>
+          t.totalQuestions === st.totalQuestions || t.layoutCode === st.code,
+      );
+      return {
+        _id: dbTpl?._id || "",
+        title: dbTpl?.title || st.title,
+        totalQuestions: st.totalQuestions,
+        code: st.code,
+      };
+    });
+  }, [templates]);
+
+  const selectedTemplate = useMemo(() => {
+    return (
+      templateOptions.find(
+        (t) => t.totalQuestions === selectedTotalQuestions
+      ) ||
+      templateOptions.find((t) => t._id && t._id === selectedTemplateId) ||
+      templates.find((t) => t._id === selectedTemplateId) ||
+      templateOptions[1] ||
+      templateOptions[0]
     );
-    return {
-      _id: dbTpl?._id || st.code,
-      title: st.title,
-      totalQuestions: st.totalQuestions,
-      code: st.code,
-    };
-  });
+  }, [templateOptions, templates, selectedTotalQuestions, selectedTemplateId]);
 
-  const selectedTemplate =
-    templateOptions.find((t) => t._id === selectedTemplateId) ||
-    templates.find((t) => t._id === selectedTemplateId) ||
-    templateOptions[1] ||
-    templateOptions[0];
-
-  const totalQuestions = selectedTemplate?.totalQuestions || 40;
+  const totalQuestions =
+    selectedTemplate?.totalQuestions || selectedTotalQuestions || 40;
 
   const initAnswers = (count) => {
     const obj = {};
@@ -101,15 +132,15 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
     setClassName("");
     setNegativeMarks(0.25);
     setMarksPerQuestion(1);
+    setSelectedTotalQuestions(40);
 
-    const defaultTpl = templateOptions[1] || templateOptions[0]; // 40 questions default
-    if (defaultTpl) {
-      setSelectedTemplateId(defaultTpl._id);
-      initAnswers(defaultTpl.totalQuestions);
-    } else {
-      setSelectedTemplateId("");
-      setAnswerKey({});
-    }
+    const defaultTpl =
+      templateOptions.find((t) => t.totalQuestions === 40) ||
+      templateOptions[1] ||
+      templateOptions[0];
+
+    setSelectedTemplateId(defaultTpl?._id || "");
+    initAnswers(defaultTpl?.totalQuestions || 40);
     setIsModalOpen(true);
   };
 
@@ -120,7 +151,10 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
     setClassName(token.className || "");
     setNegativeMarks(token.negativeMarks ?? 0.25);
     setMarksPerQuestion(token.marksPerQuestion ?? 1);
-    
+
+    const count = Number(token.totalQuestions) || 40;
+    setSelectedTotalQuestions(count);
+
     const tplId = token.omrTemplate?._id || token.omrTemplate || "";
     setSelectedTemplateId(tplId);
 
@@ -132,9 +166,22 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
     setIsModalOpen(true);
   };
 
-  const handleTemplateChange = (tplId, count) => {
-    setSelectedTemplateId(tplId);
-    initAnswers(count);
+  const handleTemplateChange = (tpl) => {
+    setSelectedTotalQuestions(tpl.totalQuestions);
+    const dbTpl =
+      templates.find((t) => t.totalQuestions === tpl.totalQuestions) ||
+      templates.find((t) => t._id === tpl._id) ||
+      tpl;
+    setSelectedTemplateId(dbTpl?._id || tpl._id || "");
+
+    // Preserve existing answers and add defaults for new question count
+    setAnswerKey((prev) => {
+      const obj = { ...prev };
+      for (let i = 1; i <= tpl.totalQuestions; i++) {
+        if (!obj[i]) obj[i] = "A";
+      }
+      return obj;
+    });
   };
 
   const handleOptionSelect = (qNo, opt) => {
@@ -154,8 +201,18 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
       toast.error("পরীক্ষার শিরোনাম লিখুন");
       return;
     }
-    if (!selectedTemplateId) {
-      toast.error("OMR টেমপ্লেট নির্বাচন করুন");
+
+    // Always resolve the valid MongoDB ObjectId matching the chosen totalQuestions
+    const dbTpl =
+      templates.find((t) => t.totalQuestions === totalQuestions) ||
+      templates.find((t) => t._id === selectedTemplateId) ||
+      templates.find((t) => t.layoutCode === selectedTemplate?.code) ||
+      templates[0];
+
+    const resolvedTemplateId = dbTpl?._id || selectedTemplateId;
+
+    if (!resolvedTemplateId) {
+      toast.error("OMR টেমপ্লেট নির্বাচন করুন বা পুনরায় পেজ রিলোড দিন");
       return;
     }
 
@@ -164,20 +221,11 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
       formattedKey.push({ questionNo: i, correctAnswer: answerKey[i] || "A" });
     }
 
-    // Resolve mongo template ID if available from database
-    const dbTpl = templates.find(
-      (t) =>
-        t._id === selectedTemplateId ||
-        t.layoutCode === selectedTemplateId ||
-        t.totalQuestions === totalQuestions
-    );
-    const resolvedTemplateId = dbTpl?._id || selectedTemplateId;
-
     const payload = {
       examTitle,
       subject,
       className,
-      totalQuestions,
+      totalQuestions: Number(totalQuestions),
       omrTemplateId: resolvedTemplateId,
       negativeMarks: Number(negativeMarks),
       marksPerQuestion: Number(marksPerQuestion),
@@ -529,7 +577,12 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
 
               {/* Modal Container with Spring Show & Hide Animation */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: -16, filter: "blur(4px)" }}
+                initial={{
+                  opacity: 0,
+                  scale: 0.95,
+                  y: -16,
+                  filter: "blur(4px)",
+                }}
                 animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, scale: 0.95, y: -16, filter: "blur(4px)" }}
                 transition={{ type: "spring", stiffness: 350, damping: 28 }}
@@ -595,7 +648,9 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
                         onChange={(e) => setExamTitle(e.target.value)}
                         placeholder="যেমন: ১ম সাময়িক পরীক্ষা ২০২৬"
                         className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium text-xs transition-modern focus-ring-modern shadow-xs"
-                        style={{ border: "1px solid var(--q-card-border-soft)" }}
+                        style={{
+                          border: "1px solid var(--q-card-border-soft)",
+                        }}
                       />
                     </div>
 
@@ -611,7 +666,8 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
                             className="w-full h-10 px-3.5 border border-black/[0.08] dark:border-white/10 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 hover:border-[#900EB0]/40 focus:outline-none focus:ring-2 focus:ring-[#900EB0]/20 transition-all rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 flex justify-between items-center shadow-xs backdrop-blur-sm cursor-pointer select-none"
                           >
                             <span className="truncate">
-                              {selectedTemplate?.title || "টেমপ্লেট নির্বাচন করুন"}
+                              {selectedTemplate?.title ||
+                                "টেমপ্লেট নির্বাচন করুন"}
                             </span>
                             <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
                           </button>
@@ -622,14 +678,13 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
                         >
                           {templateOptions.map((tpl) => {
                             const isSelected =
-                              selectedTemplate?._id === tpl._id ||
-                              selectedTemplate?.totalQuestions === tpl.totalQuestions;
+                              selectedTemplate?.totalQuestions ===
+                              tpl.totalQuestions;
                             return (
                               <DropdownMenuItem
                                 key={tpl.totalQuestions}
-                                onSelect={() =>
-                                  handleTemplateChange(tpl._id, tpl.totalQuestions)
-                                }
+                                onSelect={() => handleTemplateChange(tpl)}
+                                onClick={() => handleTemplateChange(tpl)}
                                 className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/10 focus:text-[#900EB0] hover:bg-purple-50/60 dark:hover:bg-slate-800 group ${
                                   isSelected
                                     ? "bg-[#900EB0]/10 text-[#900EB0] font-bold"
@@ -658,7 +713,9 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
                         onChange={(e) => setSubject(e.target.value)}
                         placeholder="যেমন: রসায়ন"
                         className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium text-xs transition-modern focus-ring-modern shadow-xs"
-                        style={{ border: "1px solid var(--q-card-border-soft)" }}
+                        style={{
+                          border: "1px solid var(--q-card-border-soft)",
+                        }}
                       />
                     </div>
 
@@ -722,7 +779,9 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
                           setMarksPerQuestion(Number(e.target.value))
                         }
                         className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium text-xs transition-modern focus-ring-modern shadow-xs"
-                        style={{ border: "1px solid var(--q-card-border-soft)" }}
+                        style={{
+                          border: "1px solid var(--q-card-border-soft)",
+                        }}
                       />
                     </div>
                   </div>
@@ -777,52 +836,55 @@ export default function OMRTokenManager({ onSelectTokenForEvaluation }) {
 
                     {/* Bubble Matrix */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 max-h-64 overflow-y-auto p-1 custom-sidebar-scrollbar">
-                      {Array.from({ length: totalQuestions }, (_, i) => i + 1).map(
-                        (qNo) => (
-                          <div
-                            key={qNo}
-                            className="flex items-center justify-between p-1.5 rounded-xl"
-                            style={{
-                              backgroundColor: "rgba(255,255,255,0.7)",
-                              border: "1px solid var(--q-card-border)",
-                            }}
-                          >
-                            <span className="font-mono font-bold text-[11px] text-muted-foreground w-7">
-                              {qNo.toString().padStart(2, "0")}.
-                            </span>
-                            <div className="flex items-center gap-1">
-                              {["A", "B", "C", "D"].map((opt) => {
-                                const isSelected = (answerKey[qNo] || "A") === opt;
-                                return (
-                                  <button
-                                    type="button"
-                                    key={opt}
-                                    onClick={() => handleOptionSelect(qNo, opt)}
-                                    className={`w-6 h-6 rounded-full text-[10px] font-bold transition-modern flex items-center justify-center`}
-                                    style={
-                                      isSelected
-                                        ? {
-                                            background: "var(--q-header-gradient)",
-                                            color: "#fff",
-                                            boxShadow:
-                                              "0 2px 6px rgba(144,14,176,0.35)",
-                                          }
-                                        : {
-                                            backgroundColor: "var(--accent)",
-                                            color: "var(--accent-foreground)",
-                                            border:
-                                              "1px solid var(--q-badge-border)",
-                                          }
-                                    }
-                                  >
-                                    {opt}
-                                  </button>
-                                );
-                              })}
-                            </div>
+                      {Array.from(
+                        { length: totalQuestions },
+                        (_, i) => i + 1,
+                      ).map((qNo) => (
+                        <div
+                          key={qNo}
+                          className="flex items-center justify-between p-1.5 rounded-xl"
+                          style={{
+                            backgroundColor: "rgba(255,255,255,0.7)",
+                            border: "1px solid var(--q-card-border)",
+                          }}
+                        >
+                          <span className="font-mono font-bold text-[11px] text-muted-foreground w-7">
+                            {qNo.toString().padStart(2, "0")}.
+                          </span>
+                          <div className="flex items-center gap-1">
+                            {["A", "B", "C", "D"].map((opt) => {
+                              const isSelected =
+                                (answerKey[qNo] || "A") === opt;
+                              return (
+                                <button
+                                  type="button"
+                                  key={opt}
+                                  onClick={() => handleOptionSelect(qNo, opt)}
+                                  className={`w-6 h-6 rounded-full text-[10px] font-bold transition-modern flex items-center justify-center`}
+                                  style={
+                                    isSelected
+                                      ? {
+                                          background:
+                                            "var(--q-header-gradient)",
+                                          color: "#fff",
+                                          boxShadow:
+                                            "0 2px 6px rgba(144,14,176,0.35)",
+                                        }
+                                      : {
+                                          backgroundColor: "var(--accent)",
+                                          color: "var(--accent-foreground)",
+                                          border:
+                                            "1px solid var(--q-badge-border)",
+                                        }
+                                  }
+                                >
+                                  {opt}
+                                </button>
+                              );
+                            })}
                           </div>
-                        ),
-                      )}
+                        </div>
+                      ))}
                     </div>
                   </div>
 

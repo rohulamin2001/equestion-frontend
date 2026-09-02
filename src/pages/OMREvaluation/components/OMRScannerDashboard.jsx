@@ -36,6 +36,7 @@ import {
   usePythonServiceHealth,
   useUpdateOMRResult,
 } from "../hook/useOMREvaluation";
+import OMRInteractiveImageViewer from "./OMRInteractiveImageViewer";
 
 export default function OMRScannerDashboard({
   selectedTokenId,
@@ -1006,7 +1007,7 @@ export default function OMRScannerDashboard({
 
                 {/* Modal Body */}
                 <div className="p-4 sm:p-5 overflow-y-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5">
-                  {/* Left: Annotated Image Viewer */}
+                  {/* Left: Annotated Image Viewer with Advanced Interactive Zoom, Pan & Rotate */}
                   <div className="lg:col-span-6 flex flex-col gap-2">
                     <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
                       <span className="flex items-center gap-1.5">
@@ -1014,24 +1015,14 @@ export default function OMRScannerDashboard({
                         স্ক্যানকৃত মূল খাতার ছবি
                       </span>
                       <span className="text-[11px] text-muted-foreground font-normal">
-                        (ছবিতে জুম করে বাবল যাচাই করুন)
+                        (মাউস স্ক্রোল বা ড্র্যাগ করে জুম ও প্যান করুন)
                       </span>
                     </div>
 
-                    <div className="flex-1 min-h-[380px] max-h-[520px] bg-slate-950 p-2 rounded-2xl flex items-center justify-center overflow-auto border border-slate-800 shadow-inner">
-                      {viewingResult.annotatedImageBase64 ? (
-                        <img
-                          src={viewingResult.annotatedImageBase64}
-                          alt="Annotated OMR"
-                          className="max-h-[500px] w-auto object-contain rounded-lg shadow-lg transition-transform hover:scale-105 duration-200 cursor-zoom-in"
-                        />
-                      ) : (
-                        <div className="text-slate-500 text-xs flex flex-col items-center gap-2">
-                          <AlertTriangle className="w-8 h-8 opacity-40" />
-                          <span>ওভারলে ছবি পাওয়া যায়নি</span>
-                        </div>
-                      )}
-                    </div>
+                    <OMRInteractiveImageViewer
+                      imageSrc={viewingResult.annotatedImageBase64}
+                      alt={`OMR খাতা - রোল: ${viewingResult.studentRoll || ""}`}
+                    />
                   </div>
 
                   {/* Right: Roll, Set & Interactive Answer Override Matrix */}

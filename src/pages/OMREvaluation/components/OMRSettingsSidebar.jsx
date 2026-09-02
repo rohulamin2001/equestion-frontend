@@ -99,7 +99,7 @@ export default function OMRSettingsSidebar({
   };
 
   return (
-    <aside className="w-full lg:w-[380px] lg:shrink-0 print:hidden lg:sticky lg:top-2 lg:h-[calc(100vh-48px)] lg:flex lg:flex-col gap-2.5">
+    <aside className="w-full lg:w-[380px] lg:shrink-0 print:hidden lg:sticky lg:top-0 lg:h-[calc(100vh-48px)] lg:flex lg:flex-col gap-2.5">
       {/* Top Tab Switcher */}
       <div
         className="flex p-1 rounded-xl shrink-0 gap-1 shadow-xs"
