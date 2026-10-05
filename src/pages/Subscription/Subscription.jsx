@@ -31,8 +31,8 @@ import { GENERATOR_CLASSES } from "../../constants/classes";
 import { translateSubscriptionKey } from "../../constants/subscriptions";
 import { useUserContext } from "../../context/UserContext";
 import apiClient from "../../lib/apiClient";
-import { useSubscription } from "./hook/useSubscription";
 import PricingCardGrid from "./components/PricingCardGrid";
+import { useSubscription } from "./hook/useSubscription";
 
 export default function Subscription() {
   const { refreshProfile } = useUserContext();
@@ -45,6 +45,7 @@ export default function Subscription() {
     loadingSubscriptions: subsLoading,
     validateCoupon,
     purchaseSubscription,
+    checkoutMutation,
   } = useSubscription();
 
   const activeSubs = userSubs.filter(
@@ -67,7 +68,7 @@ export default function Subscription() {
   const [showCouponInput, setShowCouponInput] = useState(false);
 
   const couponLoading = validateCoupon.isPending;
-  const loading = purchaseSubscription.isPending;
+  const loading = checkoutMutation.isPending || purchaseSubscription.isPending;
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
@@ -157,8 +158,6 @@ export default function Subscription() {
           subjectIds: checkoutPkg.subjectIds,
           version: checkoutPkg.version,
           couponCode: appliedCoupon ? appliedCoupon.code : undefined,
-          cartTotal: checkoutPkg.price,
-          // Fresh key per attempt; server dedupes duplicate submissions.
           idempotencyKey: crypto.randomUUID(),
         }
       : {
@@ -167,18 +166,29 @@ export default function Subscription() {
           classNames: checkoutPkg.classes,
           version: checkoutPkg.version,
           couponCode: appliedCoupon ? appliedCoupon.code : undefined,
-          cartTotal: checkoutPkg.price,
           idempotencyKey: crypto.randomUUID(),
         };
 
     try {
-      await purchaseSubscription.mutateAsync(payload);
-      toast.success(`${checkoutPkg.title} সফলভাবে ক্রয় করা হয়েছে!`);
-      setCheckoutPkg(null);
-      setAppliedCoupon(null);
-      setCouponCode("");
-      setSelectedSubjects([]);
-      refreshProfile();
+      const res = await checkoutMutation.mutateAsync(payload);
+
+      if (res.isFree) {
+        toast.success(
+          res.message || `${checkoutPkg.title} সফলভাবে সক্রিয় করা হয়েছে!`,
+        );
+        setCheckoutPkg(null);
+        setAppliedCoupon(null);
+        setCouponCode("");
+        setSelectedSubjects([]);
+        refreshProfile();
+      } else if (res.redirectUrl) {
+        toast.loading("পেমেন্ট গেটওয়েতে রিডাইরেক্ট করা হচ্ছে...", {
+          duration: 3000,
+        });
+        window.location.href = res.redirectUrl;
+      } else {
+        toast.success("পেমেন্ট রিকোয়েস্ট তৈরি হয়েছে!");
+      }
     } catch (err) {
       console.error("Purchase error:", err);
       toast.error(

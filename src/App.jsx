@@ -20,6 +20,7 @@ import OMREvaluatorPage from "./pages/OMREvaluation/OMREvaluatorPage";
 import OMRGeneratorPage from "./pages/OMREvaluation/OMRGeneratorPage";
 import OMRTokenPage from "./pages/OMREvaluation/OMRTokenPage";
 import Overview from "./pages/Overview/Overview";
+import PaymentStatus from "./pages/Payment/PaymentStatus";
 import PricingManagement from "./pages/PricingManagement/PricingManagement";
 import Profile from "./pages/Profile/Profile";
 import QuestionApproval from "./pages/QuestionApproval/QuestionApproval";
@@ -220,6 +221,8 @@ export default function App() {
               </RoleRouteGuard>
             }
           />
+
+          <Route path="payment/status" element={<PaymentStatus />} />
 
           <Route
             path="admin/pricing"

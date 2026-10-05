@@ -28,21 +28,36 @@ export const useSubscription = () => {
   // Validate coupon code
   const validateCouponMutation = useMutation({
     mutationFn: async ({ code, packageId, version, cartTotal }) => {
-      const res = await apiClient.post(
-        "/subscriptions/validate-coupon",
-        { code, packageId, version, cartTotal },
-      );
+      const res = await apiClient.post("/subscriptions/validate-coupon", {
+        code,
+        packageId,
+        version,
+        cartTotal,
+      });
       return res.data.coupon;
     },
   });
 
-  // Purchase subscription
+  // Purchase subscription (direct/legacy)
   const purchaseSubscriptionMutation = useMutation({
     mutationFn: async (payload) => {
-      const res = await apiClient.post(
-        "/subscriptions/purchase",
-        payload,
-      );
+      const res = await apiClient.post("/subscriptions/purchase", payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["mySubscriptions"] });
+    },
+  });
+
+  // Payment Gateway Checkout (PortPos v2)
+  const checkoutMutation = useMutation({
+    mutationFn: async (payload) => {
+      const idempotencyKey = payload.idempotencyKey || crypto.randomUUID();
+      const res = await apiClient.post("/payments/checkout", payload, {
+        headers: {
+          "Idempotency-Key": idempotencyKey,
+        },
+      });
       return res.data;
     },
     onSuccess: () => {
@@ -62,5 +77,6 @@ export const useSubscription = () => {
 
     validateCoupon: validateCouponMutation,
     purchaseSubscription: purchaseSubscriptionMutation,
+    checkoutMutation,
   };
 };
