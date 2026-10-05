@@ -1,3 +1,4 @@
+import { getCategoryJsonPlaceholder } from "@/constants/categoryJsonSamples";
 import Editor from "@/components/Editor";
 import RichTextRender from "@/components/RichTextRender";
 import { Button } from "@/components/ui/button";
@@ -76,25 +77,7 @@ const getFormattedTagValue = (val) => {
 };
 
 const getJsonPlaceholder = (category, subType = "All") => {
-  if (category === "MCQ") {
-    if (subType === "Simple") {
-      return `[\n  {\n    "difficulty": "Easy",\n    "topics": ["সততার পুরস্কার"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026", "2025"] }],\n    "school": ["মতিঝিল আইডিয়াল স্কুল ও কলেজ"],\n    "level": "জ্ঞান",\n    "specialSearch": ["অনুশীলনি"],\n    "mcqData": {\n      "mcqType": "Simple",\n      "questionText": "<p>'সততার পুরস্কার' গল্পে প্রথম লোকটির শরীরে কী রোগ ছিল?</p>",\n      "options": ["<p>ধবল রোগ</p>", "<p>টাকপড়া</p>", "<p>অন্ধত্ব</p>", "<p>জ্বর</p>"],\n      "correctAnswer": 0,\n      "explanation": "<p>গল্প অনুযায়ী প্রথম লোকটির শরীর ধবল রোগে আক্রান্ত ছিল।</p>"\n    }\n  }\n]`;
-    }
-    if (subType === "MultipleCompletion") {
-      return `[\n  {\n    "difficulty": "Medium",\n    "topics": ["সততার পুরস্কার"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026"] }],\n    "school": ["ভিকারুননিসা নূন স্কুল ও কলেজ"],\n    "level": "অনুধাবন",\n    "specialSearch": ["রিপিটেড স্কুল"],\n    "mcqData": {\n      "mcqType": "MultipleCompletion",\n      "questionText": "<p>'সততার পুরস্কার' গল্পের মূল শিক্ষা হলো—</p>",\n      "statements": [\n        "সততা ও ঈমানদারী",\n        "আল্লাহর প্রতি কৃতজ্ঞতা প্রকাশ",\n        "অকৃতজ্ঞতার কুফল"\n      ],\n      "options": ["i ও ii", "ii ও iii", "i ও iii", "i, ii ও iii"],\n      "correctAnswer": 3,\n      "explanation": "<p>তিনটি বাক্যই সততার পুরস্কার গল্পের মূল শিক্ষার অন্তর্ভুক্ত।</p>"\n    }\n  }\n]`;
-    }
-    if (subType === "Contextual") {
-      return `[\n  {\n    "difficulty": "Hard",\n    "topics": ["সততার পুরস্কার"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026"] }],\n    "school": ["গভ. ল্যাবরেটরি হাই স্কুল"],\n    "level": "প্রয়োগ",\n    "specialSearch": ["অভিন্ন তথ্যভিত্তিক"],\n    "mcqData": {\n      "mcqType": "Contextual",\n      "stem": "<p>রাফিজ একজন গরিব লোককে সাধ্যমতো সাহায্য করল, কিন্তু তার ভাই কালাম তাকে তাড়িয়ে দিল।</p>",\n      "questionText": "<p>উদ্দীপকের রাফিজের আচরণের সাথে 'সততার পুরস্কার' গল্পের কোন চরিত্রের মিল রয়েছে?</p>",\n      "options": ["<p>তৃতীয় ইহুদি</p>", "<p>প্রথম ইহুদি</p>", "<p>দ্বিতীয় ইহুদি</p>", "<p>ফেরেশতা</p>"],\n      "correctAnswer": 0,\n      "explanation": "<p>তৃতীয় ইহুদি অন্ধত্ব দূর হওয়ার পর আল্লাহর প্রতি কৃতজ্ঞ ছিল।</p>"\n    }\n  }\n]`;
-    }
-    if (subType === "Grouped") {
-      return `[\n  {\n    "isGroup": true,\n    "passageStem": "<p>রফিক সাহেব তার জমিতে রাসায়নিক সারের পরিবর্তে জৈব ও সবুজ সার ব্যবহার করায় জমির উর্বরতা বজায় রইল...</p>",\n    "questions": [\n      {\n        "difficulty": "Medium",\n        "topics": ["উদ্ভিদবিজ্ঞান"],\n        "mcqData": {\n          "mcqType": "Simple",\n          "questionText": "<p>উদ্দীপকে রফিক সাহেবের ব্যবহৃত সার কোনটি?</p>",\n          "options": ["কম্পোস্ট সার", "ইউরিয়া", "টিএসপি", "ডিএপি"],\n          "correctAnswer": 0\n        }\n      },\n      {\n        "difficulty": "Hard",\n        "mcqData": {\n          "mcqType": "MultipleCompletion",\n          "questionText": "<p>সবুজ সার ব্যবহারের সুবিধা হলো—</p>",\n          "statements": ["মাটির উর্বরতা বাড়ে", "পরিবেশবান্ধব", "অনুজীব ধ্বংস হয়"],\n          "options": ["i ও ii", "ii ও iii", "i ও iii", "i, ii ও iii"],\n          "correctAnswer": 0\n        }\n      }\n    ]\n  }\n]`;
-    }
-    return `[\n  {\n    "difficulty": "Easy",\n    "topics": ["সততার পুরস্কার"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026"] }],\n    "mcqData": {\n      "mcqType": "Simple",\n      "questionText": "<p>সাধারণ বহুনির্বাচনি প্রশ্ন...</p>",\n      "options": ["অপশন ১", "অপশন ২", "অপশন ৩", "অপশন ৪"],\n      "correctAnswer": 0\n    }\n  },\n  {\n    "difficulty": "Medium",\n    "mcqData": {\n      "mcqType": "MultipleCompletion",\n      "questionText": "<p>বহুপদী সমাপ্তিসূচক প্রশ্ন...</p>",\n      "statements": ["প্রথম তথ্য", "দ্বিতীয় তথ্য", "তৃতীয় তথ্য"],\n      "options": ["i ও ii", "ii ও iii", "i ও iii", "i, ii ও iii"],\n      "correctAnswer": 3\n    }\n  },\n  {\n    "difficulty": "Hard",\n    "mcqData": {\n      "mcqType": "Contextual",\n      "stem": "<p>উদ্দীপক/অনুচ্ছেদ...</p>",\n      "questionText": "<p>উদ্দীপকভিত্তিক প্রশ্ন...</p>",\n      "options": ["অপশন ১", "অপশন ২", "অপশন ৩", "অপশন ৪"],\n      "correctAnswer": 0\n    }\n  }\n]`;
-  }
-  if (category === "Creative") {
-    return `[\n  {\n    "difficulty": "Medium",\n    "topics": ["উদ্ভিদের শারীরতত্ত্ব"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026"] }],\n    "school": ["ঢাকা রেসিডেনসিয়াল মডেল কলেজ"],\n    "level": "Famous School",\n    "specialSearch": ["পরীক্ষায় আসার মতো"],\n    "creativeData": {\n      "stem": "<p>এখানে মূল উদ্দীপক বা অনুচ্ছেদটি লিখুন...</p>",\n      "subQuestions": {\n        "cognitiveA": { "text": "<p>'ক' (জ্ঞানমূলক) প্রশ্ন...</p>", "answer": "<p>'ক' প্রশ্নের উত্তর...</p>", "marks": 1 },\n        "cognitiveB": { "text": "<p>'খ' (অনুধাবনমূলক) প্রশ্ন...</p>", "answer": "<p>'খ' প্রশ্নের উত্তর...</p>", "marks": 2 },\n        "cognitiveC": { "text": "<p>'গ' (প্রয়োগমূলক) প্রশ্ন...</p>", "answer": "<p>'গ' প্রশ্নের উত্তর...</p>", "marks": 3 },\n        "cognitiveD": { "text": "<p>'ঘ' (উচ্চতর দক্ষতা) প্রশ্ন...</p>", "answer": "<p>'ঘ' প্রশ্নের উত্তর...</p>", "marks": 4 }\n      }\n    }\n  }\n]`;
-  }
-  return `[\n  {\n    "difficulty": "Easy",\n    "topics": ["সাধারণ জ্ঞান"],\n    "examHistory": [{ "board": "ঢাকা বোর্ড", "years": ["2026"] }],\n    "school": ["গভ. ল্যাবরেটরি হাই স্কুল"],\n    "level": "Top School",\n    "specialSearch": ["সংক্ষিপ্ত প্রশ্ন"],\n    "generalData": {\n      "questionText": "<p>এখানে প্রশ্নটি লিখুন...</p>",\n      "suggestedAnswer": "<p>এখানে উত্তর লিখুন...</p>",\n      "marks": 2\n    }\n  }\n]`;
+  return getCategoryJsonPlaceholder(category, subType);
 };
 
 export default function AddQuestion() {
