@@ -50,7 +50,7 @@ export default function Editor({
         "eraser",
         "source",
       ],
-      // File upload configuration for Cloudinary
+      // File upload configuration for Cloudflare R2
       uploader: token
         ? {
             url: `${apiBaseUrl}/api/upload`,

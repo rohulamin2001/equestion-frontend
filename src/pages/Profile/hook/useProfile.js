@@ -204,6 +204,7 @@ export function useProfile() {
     try {
       const formData = new FormData();
       formData.append("image", file);
+      formData.append("folder", "profiles");
 
       const uploadRes = await apiClient.post("/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },

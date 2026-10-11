@@ -1,3 +1,4 @@
+import { resolveImageUrl } from "@/lib/imageUtils";
 import { Info, Monitor, Plus, Settings } from "lucide-react";
 import { useState } from "react";
 import InlineEditable from "../../../components/InlineEditable.jsx";
@@ -124,7 +125,7 @@ export default function QuestionPaperPreview({
             {layoutSettings.watermarkSettings?.type === "image" &&
             layoutSettings.watermarkSettings?.imageUrl ? (
               <img
-                src={layoutSettings.watermarkSettings.imageUrl}
+                src={resolveImageUrl(layoutSettings.watermarkSettings.imageUrl)}
                 alt="Watermark"
                 className="max-w-none transition-all duration-200"
                 style={{
@@ -220,7 +221,7 @@ export default function QuestionPaperPreview({
                 >
                   {layoutSettings.logoSettings.logoUrl ? (
                     <img
-                      src={layoutSettings.logoSettings.logoUrl}
+                      src={resolveImageUrl(layoutSettings.logoSettings.logoUrl)}
                       className="w-full h-full object-contain"
                       alt="Logo"
                     />
@@ -244,7 +245,7 @@ export default function QuestionPaperPreview({
                   >
                     {layoutSettings.logoSettings.logoUrl ? (
                       <img
-                        src={layoutSettings.logoSettings.logoUrl}
+                        src={resolveImageUrl(layoutSettings.logoSettings.logoUrl)}
                         className="w-full h-full object-contain"
                         alt="Logo"
                       />
@@ -296,7 +297,7 @@ export default function QuestionPaperPreview({
                   >
                     {layoutSettings.logoSettings.logoUrl ? (
                       <img
-                        src={layoutSettings.logoSettings.logoUrl}
+                        src={resolveImageUrl(layoutSettings.logoSettings.logoUrl)}
                         className="w-full h-full object-contain"
                         alt="Logo"
                       />
@@ -424,7 +425,7 @@ export default function QuestionPaperPreview({
                   >
                     {layoutSettings.logoSettings.logoUrl ? (
                       <img
-                        src={layoutSettings.logoSettings.logoUrl}
+                        src={resolveImageUrl(layoutSettings.logoSettings.logoUrl)}
                         className="w-full h-full object-contain"
                         alt="Logo"
                       />

@@ -2,6 +2,16 @@ import katex from "katex";
 import "katex/dist/katex.min.css";
 import { useMemo } from "react";
 
+// Utility to resolve relative Cloudflare R2 image paths (e.g. questions/..., profiles/...) to full CDN URLs
+function resolveRelativeHtmlImages(html) {
+  if (!html || typeof html !== "string") return html;
+  const base = (import.meta.env.VITE_R2_PUBLIC_URL || "").replace(/\/+$/, "");
+  if (!base) return html;
+  // Generic resolver: matches any relative path (not starting with http://, https://, //, data:, or blob:)
+  const regex = /src=["'](?!(?:https?:|\/\/|data:|blob:))\/?([^"']+)["']/gi;
+  return html.replace(regex, `src="${base}/$1"`);
+}
+
 // Utility to find LaTeX syntax in HTML and render it to KaTeX HTML
 function parseAndRenderMath(html) {
   if (!html) return "";
@@ -82,7 +92,8 @@ export default function RichTextRender({
 }) {
   const renderedContent = useMemo(() => {
     const rawContent = content || html;
-    const parsed = parseAndRenderMath(rawContent);
+    const resolvedHtml = resolveRelativeHtmlImages(rawContent);
+    const parsed = parseAndRenderMath(resolvedHtml);
     return inline ? stripOuterP(parsed) : parsed;
   }, [content, html, inline]);
 

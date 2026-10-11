@@ -1,3 +1,5 @@
+import apiClient from "@/lib/apiClient";
+import { toast } from "sonner";
 import {
   AlignLeft,
   Eye,
@@ -29,18 +31,36 @@ export default function WatermarkSettingsDrawer({
     color: "#94a3b8",
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        alert("ফাইলের সাইজ ৫ MB এর কম হতে হবে");
+        toast.error("ফাইলের সাইজ ৫ MB এর কম হতে হবে");
         return;
       }
+      const toastId = toast.loading("জলছাপ ক্লাউডফ্লেয়ার R2-তে আপলোড করা হচ্ছে...");
+      try {
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("folder", "watermarks");
+        const res = await apiClient.post("/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        if (res.data?.url) {
+          updateSettingField("watermarkSettings", "imageUrl", res.data.relativePath || res.data.url);
+          toast.success("জলছাপ সফলভাবে আপলোড হয়েছে!", { id: toastId });
+          return;
+        }
+      } catch (err) {
+        console.warn("Watermark R2 upload fallback:", err);
+      }
+      // Fallback to local data URL
       const reader = new FileReader();
       reader.onload = () => {
         updateSettingField("watermarkSettings", "imageUrl", reader.result);
       };
       reader.readAsDataURL(file);
+      toast.dismiss(toastId);
     }
   };
 

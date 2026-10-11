@@ -1,3 +1,5 @@
+import apiClient from "@/lib/apiClient";
+import { toast } from "sonner";
 import {
   AlignCenter,
   AlignLeft,
@@ -441,18 +443,32 @@ export default function LogoSettingsDrawer({
                   accept="image/*"
                   id="logo-image-upload"
                   className="hidden"
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     const file = e.target.files[0];
                     if (file) {
+                      const toastId = toast.loading("লোগো ক্লাউডফ্লেয়ার R2-তে আপলোড করা হচ্ছে...");
+                      try {
+                        const formData = new FormData();
+                        formData.append("image", file);
+                        formData.append("folder", "logos");
+                        const res = await apiClient.post("/upload", formData, {
+                          headers: { "Content-Type": "multipart/form-data" },
+                        });
+                        if (res.data?.url) {
+                          updateSettingField("logoSettings", "logoUrl", res.data.relativePath || res.data.url);
+                          toast.success("লোগো সফলভাবে আপলোড হয়েছে!", { id: toastId });
+                          return;
+                        }
+                      } catch (err) {
+                        console.warn("R2 upload fallback to local preview:", err);
+                      }
+                      // Fallback to local data URL if server unreachable
                       const reader = new FileReader();
                       reader.onload = (uploadEvent) => {
-                        updateSettingField(
-                          "logoSettings",
-                          "logoUrl",
-                          uploadEvent.target.result,
-                        );
+                        updateSettingField("logoSettings", "logoUrl", uploadEvent.target.result);
                       };
                       reader.readAsDataURL(file);
+                      toast.dismiss(toastId);
                     }
                   }}
                 />
