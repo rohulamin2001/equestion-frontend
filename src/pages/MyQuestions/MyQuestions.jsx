@@ -48,6 +48,7 @@ import {
   Pen,
   Pencil,
   PlusCircle,
+  RefreshCw,
   RotateCcw,
   Search,
   SendHorizontal,
@@ -57,7 +58,8 @@ import {
   XCircle,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import React from "react";
+import React, { useState } from "react";
+import UpdateQuestionImageModal from "./components/UpdateQuestionImageModal.jsx";
 import { useMyQuestions } from "./hook/useMyQuestions";
 
 const TYPE_LABELS = {
@@ -189,6 +191,20 @@ export default function MyQuestions() {
   });
 
   const groupedQuestionsList = groupPassageQuestions(questionsWithSerials);
+
+  // Inline Image Update Modal state
+  const [imageUpdateModalData, setImageUpdateModalData] = useState(null);
+  const [isImageUpdateModalOpen, setIsImageUpdateModalOpen] = useState(false);
+
+  const handleOpenImageUpdateModal = (data) => {
+    setImageUpdateModalData(data);
+    setIsImageUpdateModalOpen(true);
+  };
+
+  const handleCloseImageUpdateModal = () => {
+    setIsImageUpdateModalOpen(false);
+    setImageUpdateModalData(null);
+  };
 
   const [selectedRejectionReason, setSelectedRejectionReason] =
     React.useState(null);
@@ -1398,9 +1414,33 @@ export default function MyQuestions() {
                                     : `${(qSubIndex + 1).toLocaleString("bn-BD")}.`}
                                 </span>
                                 <div className="flex-1">
-                                  <RichTextRender
-                                    content={q.mcqData?.questionText || ""}
-                                  />
+                                  <div className="flex items-start justify-between gap-2">
+                                    <RichTextRender
+                                      content={q.mcqData?.questionText || ""}
+                                      className="flex-1"
+                                    />
+                                    {/<img[^>]*>/i.test(
+                                      q.mcqData?.questionText,
+                                    ) && (
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          handleOpenImageUpdateModal({
+                                            question: q,
+                                            field: "mcqQuestionText",
+                                            currentHtml:
+                                              q.mcqData?.questionText,
+                                            label: `প্রশ্ন #${q._overallSerial || qSubIndex + 1} এর প্রশ্নের ছবি পরিবর্তন`,
+                                          })
+                                        }
+                                        className="px-2 py-0.5 bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white border border-purple-200 hover:border-purple-600 rounded-md text-[11px] font-semibold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0"
+                                        title="প্রশ্নের মূল ছবি পরিবর্তন করুন"
+                                      >
+                                        <RefreshCw className="size-3" />
+                                        <span>ছবি পরিবর্তন</span>
+                                      </button>
+                                    )}
+                                  </div>
                                   {q.mcqData?.mcqType ===
                                     "MultipleCompletion" &&
                                     q.mcqData?.statements && (
@@ -1437,31 +1477,50 @@ export default function MyQuestions() {
                                   const isCorrect =
                                     isAnswerVisible &&
                                     q.mcqData.correctAnswer === idx;
+                                  const optHasImage = /<img[^>]*>/i.test(opt);
+                                  const optLetter =
+                                    ["ক", "খ", "গ", "ঘ"][idx] || idx + 1;
                                   return (
                                     <div
                                       key={idx}
                                       className={`flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border transition-all duration-300 ${isCorrect ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm" : "bg-white border-black/[0.04] text-slate-600"}`}
                                     >
-                                      <div className="flex items-center gap-2.5">
+                                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
                                         <span
-                                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${isCorrect ? "bg-emerald-500 text-white" : "bg-black/[0.04] text-slate-500"}`}
+                                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all shrink-0 ${isCorrect ? "bg-emerald-500 text-white" : "bg-black/[0.04] text-slate-500"}`}
                                         >
-                                          {idx === 0
-                                            ? "ক"
-                                            : idx === 1
-                                              ? "খ"
-                                              : idx === 2
-                                                ? "গ"
-                                                : "ঘ"}
+                                          {optLetter}
                                         </span>
                                         <RichTextRender
                                           content={opt}
                                           className={`inline-block ${isCorrect ? "text-emerald-800" : "font-normal"}`}
                                         />
                                       </div>
-                                      {isCorrect && (
-                                        <Check className="size-4 text-emerald-600 shrink-0" />
-                                      )}
+                                      <div className="flex items-center gap-2 shrink-0">
+                                        {optHasImage && (
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleOpenImageUpdateModal({
+                                                question: q,
+                                                field: "mcqOption",
+                                                optIndex: idx,
+                                                currentHtml: opt,
+                                                label: `প্রশ্ন #${q._overallSerial || qSubIndex + 1} এর অপশন '${optLetter}'-এর ছবি পরিবর্তন`,
+                                              });
+                                            }}
+                                            className="px-2.5 py-1 bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white border border-purple-200 hover:border-purple-600 rounded-lg text-xs font-semibold transition flex items-center gap-1 shadow-2xs cursor-pointer"
+                                            title="এই অপশনের ছবি পরিবর্তন করুন"
+                                          >
+                                            <RefreshCw className="size-3" />
+                                            <span>পরিবর্তন</span>
+                                          </button>
+                                        )}
+                                        {isCorrect && (
+                                          <Check className="size-4 text-emerald-600 shrink-0" />
+                                        )}
+                                      </div>
                                     </div>
                                   );
                                 })}
@@ -1789,7 +1848,27 @@ export default function MyQuestions() {
                         {q.mcqData.mcqType === "Contextual" &&
                           q.mcqData.stem && (
                             <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#900EB0]/60 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-sm leading-relaxed text-slate-700 backdrop-blur-sm">
-                              <strong>উদ্দীপক:</strong>
+                              <div className="flex items-center justify-between gap-2 mb-1">
+                                <strong>উদ্দীপক:</strong>
+                                {/<img[^>]*>/i.test(q.mcqData.stem) && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleOpenImageUpdateModal({
+                                        question: q,
+                                        field: "mcqStem",
+                                        currentHtml: q.mcqData.stem,
+                                        label: `প্রশ্ন #${q._overallSerial || index + 1} এর উদ্দীপকের ছবি পরিবর্তন`,
+                                      })
+                                    }
+                                    className="px-2 py-0.5 bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white border border-purple-200 hover:border-purple-600 rounded-md text-[11px] font-semibold transition flex items-center gap-1 shadow-2xs cursor-pointer"
+                                    title="উদ্দীপকের ছবি পরিবর্তন করুন"
+                                  >
+                                    <RefreshCw className="size-3" />
+                                    <span>ছবি পরিবর্তন</span>
+                                  </button>
+                                )}
+                              </div>
                               <RichTextRender
                                 content={q.mcqData.stem}
                                 className="mt-1"
@@ -1805,10 +1884,30 @@ export default function MyQuestions() {
                                 : `${(index + 1).toLocaleString("bn-BD")}.`}
                             </span>
                             <div className="flex-1">
-                              <RichTextRender
-                                content={q.mcqData.questionText}
-                                className=""
-                              />
+                              <div className="flex items-start justify-between gap-2">
+                                <RichTextRender
+                                  content={q.mcqData.questionText}
+                                  className="flex-1"
+                                />
+                                {/<img[^>]*>/i.test(q.mcqData.questionText) && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleOpenImageUpdateModal({
+                                        question: q,
+                                        field: "mcqQuestionText",
+                                        currentHtml: q.mcqData.questionText,
+                                        label: `প্রশ্ন #${q._overallSerial || index + 1} এর প্রশ্নের ছবি পরিবর্তন`,
+                                      })
+                                    }
+                                    className="px-2 py-0.5 bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white border border-purple-200 hover:border-purple-600 rounded-md text-[11px] font-semibold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0"
+                                    title="প্রশ্নের মূল ছবি পরিবর্তন করুন"
+                                  >
+                                    <RefreshCw className="size-3" />
+                                    <span>ছবি পরিবর্তন</span>
+                                  </button>
+                                )}
+                              </div>
                               {q.mcqData.mcqType === "MultipleCompletion" &&
                                 q.mcqData.statements && (
                                   <div className="space-y-1 pl-6 mt-2 font-normal text-[15px] text-slate-700">
@@ -1849,6 +1948,9 @@ export default function MyQuestions() {
                               const isCorrect =
                                 isAnswerVisible &&
                                 q.mcqData.correctAnswer === idx;
+                              const optHasImage = /<img[^>]*>/i.test(opt);
+                              const optLetter =
+                                ["ক", "খ", "গ", "ঘ"][idx] || idx + 1;
                               return (
                                 <div
                                   key={idx}
@@ -1858,30 +1960,46 @@ export default function MyQuestions() {
                                       : "bg-white/[0.3] hover:bg-white/[0.6] border-black/[0.03] hover:border-black/[0.08] text-slate-600"
                                   }`}
                                 >
-                                  <div className="flex items-center gap-2.5">
+                                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
                                     <span
-                                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+                                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all shrink-0 ${
                                         isCorrect
                                           ? "bg-emerald-500 text-white"
                                           : "bg-black/[0.04] text-slate-500"
                                       }`}
                                     >
-                                      {idx === 0
-                                        ? "ক"
-                                        : idx === 1
-                                          ? "খ"
-                                          : idx === 2
-                                            ? "গ"
-                                            : "ঘ"}
+                                      {optLetter}
                                     </span>
                                     <RichTextRender
                                       content={opt}
                                       className={`inline-block ${isCorrect ? " text-emerald-800" : "font-normal"}`}
                                     />
                                   </div>
-                                  {isCorrect && (
-                                    <Check className="size-4 text-emerald-600 shrink-0" />
-                                  )}
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    {optHasImage && (
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleOpenImageUpdateModal({
+                                            question: q,
+                                            field: "mcqOption",
+                                            optIndex: idx,
+                                            currentHtml: opt,
+                                            label: `প্রশ্ন #${q._overallSerial || index + 1} এর অপশন '${optLetter}'-এর ছবি পরিবর্তন`,
+                                          });
+                                        }}
+                                        className="px-2.5 py-1 bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white border border-purple-200 hover:border-purple-600 rounded-lg text-xs font-semibold transition flex items-center gap-1 shadow-2xs cursor-pointer"
+                                        title="এই অপশনের ছবি পরিবর্তন করুন"
+                                      >
+                                        <RefreshCw className="size-3" />
+                                        <span>পরিবর্তন</span>
+                                      </button>
+                                    )}
+                                    {isCorrect && (
+                                      <Check className="size-4 text-emerald-600 shrink-0" />
+                                    )}
+                                  </div>
                                 </div>
                               );
                             })}
@@ -1913,7 +2031,28 @@ export default function MyQuestions() {
                           </span>
                           <div className="flex-1 space-y-4">
                             {q.creativeData.stem && (
-                              <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#900EB0]/60 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none  leading-relaxed text-slate-700 backdrop-blur-sm">
+                              <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#900EB0]/60 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none leading-relaxed text-slate-700 backdrop-blur-sm">
+                                <div className="flex items-center justify-between gap-2 mb-1.5">
+                                  <strong className="text-sm">উদ্দীপক:</strong>
+                                  {/<img[^>]*>/i.test(q.creativeData.stem) && (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleOpenImageUpdateModal({
+                                          question: q,
+                                          field: "creativeStem",
+                                          currentHtml: q.creativeData.stem,
+                                          label: `প্রশ্ন #${q._overallSerial || index + 1} এর সৃজনশীল উদ্দীপকের ছবি পরিবর্তন`,
+                                        })
+                                      }
+                                      className="px-2 py-0.5 bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white border border-purple-200 hover:border-purple-600 rounded-md text-[11px] font-semibold transition flex items-center gap-1 shadow-2xs cursor-pointer"
+                                      title="উদ্দীপকের ছবি পরিবর্তন করুন"
+                                    >
+                                      <RefreshCw className="size-3" />
+                                      <span>ছবি পরিবর্তন</span>
+                                    </button>
+                                  )}
+                                </div>
                                 <RichTextRender content={q.creativeData.stem} />
                               </div>
                             )}
@@ -2201,7 +2340,8 @@ export default function MyQuestions() {
               </div>
               <div className="min-w-0">
                 <span className="text-xs sm:text-sm font-bold text-slate-800 block truncate">
-                  {selectedQuestionIds.length.toLocaleString("bn-BD")} টি প্রশ্ন নির্বাচিত
+                  {selectedQuestionIds.length.toLocaleString("bn-BD")} টি প্রশ্ন
+                  নির্বাচিত
                 </span>
                 <span className="text-[10px] sm:text-xs text-slate-400 font-medium hidden sm:block truncate">
                   বাল্ক অ্যাকশন সক্রিয় রয়েছে
@@ -2419,6 +2559,13 @@ export default function MyQuestions() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Inline Image Update Modal */}
+      <UpdateQuestionImageModal
+        isOpen={isImageUpdateModalOpen}
+        onClose={handleCloseImageUpdateModal}
+        targetData={imageUpdateModalData}
+      />
 
       {/* Rejection Reason Modal */}
       <Dialog

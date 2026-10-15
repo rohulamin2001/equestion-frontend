@@ -12,6 +12,34 @@ function resolveRelativeHtmlImages(html) {
   return html.replace(regex, `src="${base}/$1"`);
 }
 
+/**
+ * Strips rounded and shadow classes or inline border-radius styles from question images
+ * so that all question/option images render strictly without border-radius in their natural shape.
+ */
+function sanitizeQuestionImageHtml(html) {
+  if (!html || typeof html !== "string") return html;
+  return html.replace(/<img\b([^>]*)>/gi, (match, attrs) => {
+    let cleanedAttrs = attrs
+      .replace(/class=["']([^"']*)["']/i, (classMatch, classVal) => {
+        const cleanedClasses = classVal
+          .split(/\s+/)
+          .filter(
+            (cls) => !cls.startsWith("rounded") && !cls.startsWith("shadow"),
+          )
+          .join(" ");
+        return `class="${cleanedClasses}"`;
+      })
+      .replace(/style=["']([^"']*)["']/i, (styleMatch, styleVal) => {
+        const cleanedStyle = styleVal
+          .replace(/border-radius\s*:[^;]+;?/gi, "")
+          .replace(/box-shadow\s*:[^;]+;?/gi, "")
+          .trim();
+        return cleanedStyle ? `style="${cleanedStyle}"` : "";
+      });
+    return `<img${cleanedAttrs}>`;
+  });
+}
+
 // Utility to find LaTeX syntax in HTML and render it to KaTeX HTML
 function parseAndRenderMath(html) {
   if (!html) return "";
@@ -76,6 +104,7 @@ function stripOuterP(html) {
 
 /**
  * RichTextRender renders rich HTML content (from Jodit editor) with KaTeX math support.
+ * Ensures question and option images render with NO border-radius and in their natural dimensions.
  *
  * Props:
  *  - content: HTML string from editor
@@ -93,14 +122,15 @@ export default function RichTextRender({
   const renderedContent = useMemo(() => {
     const rawContent = content || html;
     const resolvedHtml = resolveRelativeHtmlImages(rawContent);
-    const parsed = parseAndRenderMath(resolvedHtml);
+    const sanitizedHtml = sanitizeQuestionImageHtml(resolvedHtml);
+    const parsed = parseAndRenderMath(sanitizedHtml);
     return inline ? stripOuterP(parsed) : parsed;
   }, [content, html, inline]);
 
   if (inline) {
     return (
       <span
-        className={`inline [&_*]:inline [&_*]:!text-inherit [&_p]:inline [&_p]:m-0 [&_p]:p-0 text-inherit select-text break-words jodit-rendered-content ${className}`}
+        className={`inline [&_*]:inline [&_*]:!text-inherit [&_p]:inline [&_p]:m-0 [&_p]:p-0 [&_img]:!rounded-none [&_img]:!shadow-none [&_img]:!max-w-full [&_img]:h-auto [&_img]:object-contain text-inherit select-text break-words jodit-rendered-content ${className}`}
         dangerouslySetInnerHTML={{ __html: renderedContent }}
         {...props}
       />
@@ -109,7 +139,7 @@ export default function RichTextRender({
 
   return (
     <div
-      className={`prose max-w-none dark:prose-invert text-inherit select-text break-words jodit-rendered-content ${className}`}
+      className={`prose max-w-none dark:prose-invert [&_img]:!rounded-none [&_img]:!shadow-none [&_img]:!max-w-full [&_img]:h-auto [&_img]:object-contain text-inherit select-text break-words jodit-rendered-content ${className}`}
       dangerouslySetInnerHTML={{ __html: renderedContent }}
       {...props}
     />

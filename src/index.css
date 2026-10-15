@@ -703,3 +703,20 @@
 .custom-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(144, 14, 176, 0.45);
 }
+
+
+/* Question, Stem, and Option Images - Strict No Border Radius & Natural Aspect Ratio */
+.jodit-rendered-content img,
+.question-paper-container img,
+.question-image,
+img.question-image,
+img[class*="question-image"],
+.prose img {
+  border-radius: 0 !important;
+  -webkit-border-radius: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  max-width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
