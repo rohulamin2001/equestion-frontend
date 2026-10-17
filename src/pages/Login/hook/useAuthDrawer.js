@@ -1,9 +1,11 @@
 import { useUserContext } from "@/context/UserContext";
 import apiClient from "@/lib/apiClient";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export function useAuthDrawer() {
+  const navigate = useNavigate();
   const {
     isAuthDrawerOpen,
     closeAuthDrawer,
@@ -144,6 +146,22 @@ export function useAuthDrawer() {
       }
     } catch (err) {
       console.error("Login error:", err);
+      const data = err.response?.data;
+      if (data?.code === "AFFILIATE_PORTAL_REQUIRED") {
+        toast.error(data.message, {
+          action: {
+            label: "অ্যাফিলিয়েট লগইন",
+            onClick: () => {
+              closeAuthDrawer();
+              navigate("/affiliate/login", {
+                state: { phoneNumber: loginPhone.trim() },
+              });
+            },
+          },
+          duration: 8000,
+        });
+        return;
+      }
       toast.error(
         err.response?.data?.message ||
           "লগইন করতে ব্যর্থ হয়েছে। নম্বর ও পাসওয়ার্ড আবার চেক করুন।",

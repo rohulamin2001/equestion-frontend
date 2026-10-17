@@ -37,6 +37,7 @@ const ROUTE_TITLES = {
   "/dashboard/metadata-setup": "মেটাডাটা সেটআপ",
   "/dashboard/academic-setup": "অ্যাকাডেমিক সেটআপ",
   "/dashboard/admin/pricing": "প্যাকেজ ও ডিসকাউন্ট",
+  "/dashboard/affiliates": "অ্যাফিলিয়েট প্রোগ্রাম ব্যবস্থাপনা",
   "/dashboard/institution": "আমার প্রতিষ্ঠান",
   "/dashboard/subscription": "সাবস্ক্রিপশন ও প্যাকেজ",
   "/dashboard/support": "সহায়তা ও সাপোর্ট সেন্টার",
@@ -62,6 +63,11 @@ export default function DashboardLayout() {
   // Redirect to home if not authenticated
   if (!userProfile) {
     return <Navigate to="/" replace />;
+  }
+
+  // Strict Portal Separation: Affiliates should never access Subscriber / Teacher Dashboard
+  if (role === "Affiliate") {
+    return <Navigate to="/affiliate/dashboard" replace />;
   }
 
   const currentTitle = ROUTE_TITLES[location.pathname] || "ড্যাশবোর্ড";

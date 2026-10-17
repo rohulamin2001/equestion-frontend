@@ -394,6 +394,7 @@ export const FOOTER_COLUMNS = [
     links: [
       { label: "লেকচার শীট", href: "#features" },
       { label: "ক্লাস রুটিন", href: "#features" },
+      { label: "অ্যাফিলিয়েট রেজিস্ট্রেশন", href: "/affiliate/register" },
       { label: "FAQ", href: "#faq" },
       { label: "Help Center", href: "#faq" },
     ],
@@ -402,6 +403,7 @@ export const FOOTER_COLUMNS = [
     title: "কোম্পানি",
     links: [
       { label: "আমাদের সম্পর্কে", href: "#home" },
+      { label: "অ্যাফিলিয়েট পার্টনার প্রোগ্রাম (২০% কমিশন)", href: "/affiliate" },
       { label: "যোগাযোগ", href: "mailto:support@smartproshnobank.com" },
       { label: "Privacy Policy", href: "#" },
       { label: "Terms & Conditions", href: "/terms" },

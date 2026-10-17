@@ -186,6 +186,12 @@ const DATA = {
           roles: ["Super Admin", "Admin"],
         },
         {
+          title: "অ্যাফিলিয়েট প্রোগ্রাম",
+          url: "/dashboard/affiliates",
+          icon: SparklesIcon,
+          roles: ["Super Admin", "Admin"],
+        },
+        {
           title: "আমার প্রতিষ্ঠান",
           url: "/dashboard/institution",
           icon: HomeIcon,

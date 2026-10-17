@@ -2,6 +2,11 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import RoleRouteGuard from "./components/RoleRouteGuard";
 import AcademicSetup from "./pages/AcademicSetup/AcademicSetup";
+import AffiliateLanding from "./pages/Affiliate/AffiliateLanding";
+import AffiliateRegister from "./pages/Affiliate/AffiliateRegister";
+import AffiliateLogin from "./pages/Affiliate/AffiliateLogin";
+import AffiliateDashboard from "./pages/Affiliate/AffiliateDashboard";
+import AdminAffiliates from "./pages/Affiliate/AdminAffiliates";
 import AddQuestion from "./pages/AddQuestion/AddQuestion";
 import DashboardLayout from "./pages/DashboardLayout/DashboardLayout";
 import Exams from "./pages/Exams/Exams";
@@ -44,6 +49,17 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/affiliate" element={<AffiliateLanding />} />
+        <Route path="/affiliate/register" element={<AffiliateRegister />} />
+        <Route path="/affiliate/login" element={<AffiliateLogin />} />
+        <Route
+          path="/affiliate/dashboard"
+          element={
+            <RoleRouteGuard allowedRoles={["Affiliate"]}>
+              <AffiliateDashboard />
+            </RoleRouteGuard>
+          }
+        />
         <Route path="/login/*" element={<Login />} />
         <Route path="/signup/*" element={<Signup />} />
 
@@ -223,6 +239,15 @@ export default function App() {
           />
 
           <Route path="payment/status" element={<PaymentStatus />} />
+
+          <Route
+            path="affiliates"
+            element={
+              <RoleRouteGuard allowedRoles={["Super Admin", "Admin"]}>
+                <AdminAffiliates />
+              </RoleRouteGuard>
+            }
+          />
 
           <Route
             path="admin/pricing"

@@ -68,10 +68,12 @@ apiClient.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      // Do not retry refresh route itself
+      // Do not retry refresh route itself or login endpoints
       if (
         originalRequest.url?.includes("/auth/refresh") ||
-        originalRequest.url?.includes("/auth/login")
+        originalRequest.url?.includes("/auth/login") ||
+        originalRequest.url?.includes("/affiliate/login") ||
+        originalRequest.url?.includes("/affiliate/register")
       ) {
         return Promise.reject(error);
       }

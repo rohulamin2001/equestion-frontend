@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext";
 import CTASection from "./components/CTASection";
 import FAQSection from "./components/FAQSection";
+import AffiliateCallout from "./components/AffiliateCallout";
 import HeroHighlights from "./components/HeroHighlights";
 import HeroSection from "./components/HeroSection";
 import LandingFooter from "./components/LandingFooter";
@@ -17,7 +18,9 @@ import WorkflowSection from "./components/WorkflowSection";
 export default function Home() {
   const { userProfile, openAuthDrawer } = useUserContext();
 
-  if (userProfile) {
+  // Only redirect regular Subscribers, Admins, and Staff to their dashboard
+  // Allow Affiliates and guests to view the Home landing page freely
+  if (userProfile && userProfile.role !== "Affiliate") {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -79,6 +82,7 @@ export default function Home() {
           <TrustSection />
           <CTASection onDemo={scrollToFeatures} onSubscribe={onSubscribe} />
           <FAQSection />
+          <AffiliateCallout />
         </main>
         <LandingFooter />
       </div>
