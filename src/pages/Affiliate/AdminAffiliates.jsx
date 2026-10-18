@@ -1,40 +1,42 @@
-import React, { useState, useEffect } from "react";
+import { ModalCancelButton, ModalSubmitButton } from "@/components/ui/button";
 import {
-  AlertCircle,
-  AlertTriangle,
-  ArrowDownRight,
-  ArrowUpRight,
-  Award,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import apiClient from "@/lib/apiClient";
+import {
   CheckCircle2,
+  ChevronDown,
   Clock,
-  Coins,
-  CreditCard,
-  Edit,
-  Eye,
   Filter,
-  History,
-  Lock,
+  Loader2,
   PauseCircle,
-  PlayCircle,
-  Plus,
   RefreshCw,
   Save,
   Search,
   Send,
-  Shield,
-  ShieldAlert,
   ShieldCheck,
   Sliders,
   Sparkles,
-  TrendingUp,
   UserCheck,
   Users,
-  Wallet,
-  X,
   XCircle,
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import apiClient from "@/lib/apiClient";
 
 export default function AdminAffiliates() {
   const [activeTab, setActiveTab] = useState("settings"); // 'settings', 'applications', 'affiliates', 'withdrawals', 'audit'
@@ -67,7 +69,17 @@ export default function AdminAffiliates() {
   const [affiliatesList, setAffiliatesList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [selectedAffiliateForCustom, setSelectedAffiliateForCustom] = useState(null);
+  const [activeControlDropdownAffId, setActiveControlDropdownAffId] =
+    useState(null);
+  const [selectedAffiliateForCustom, setSelectedAffiliateForCustom] =
+    useState(null);
+  const [statusChangeModal, setStatusChangeModal] = useState({
+    isOpen: false,
+    affiliate: null,
+    newStatus: "Suspended",
+    reason: "",
+    isSubmitting: false,
+  });
   const [customSettingsForm, setCustomSettingsForm] = useState({
     useCustomSettings: false,
     discountValue: 10,
@@ -79,10 +91,12 @@ export default function AdminAffiliates() {
   // 4. Withdrawals Queue State
   const [withdrawals, setWithdrawals] = useState([]);
   const [withdrawalFilter, setWithdrawalFilter] = useState("ALL");
-  const [selectedWithdrawalForPaid, setSelectedWithdrawalForPaid] = useState(null);
+  const [selectedWithdrawalForPaid, setSelectedWithdrawalForPaid] =
+    useState(null);
   const [transactionId, setTransactionId] = useState("");
   const [paidNotes, setPaidNotes] = useState("");
-  const [selectedWithdrawalForReject, setSelectedWithdrawalForReject] = useState(null);
+  const [selectedWithdrawalForReject, setSelectedWithdrawalForReject] =
+    useState(null);
   const [withdrawalRejectReason, setWithdrawalRejectReason] = useState("");
 
   // Load Global Settings
@@ -111,10 +125,14 @@ export default function AdminAffiliates() {
   };
 
   // Load Affiliates List
-  const fetchAffiliates = async () => {
+  const fetchAffiliates = async (overrideStatus, overrideSearch) => {
     try {
+      const activeStatus =
+        overrideStatus !== undefined ? overrideStatus : statusFilter;
+      const activeSearch =
+        overrideSearch !== undefined ? overrideSearch : searchTerm;
       const res = await apiClient.get("/admin/affiliates/list", {
-        params: { search: searchTerm, status: statusFilter },
+        params: { search: activeSearch, status: activeStatus },
       });
       if (res.data?.affiliates) {
         setAffiliatesList(res.data.affiliates);
@@ -156,7 +174,7 @@ export default function AdminAffiliates() {
 
     if (discount + commission > cap) {
       toast.error(
-        `ডিসকাউন্ট (${discount}%) এবং কমিশন (${commission}%)-এর যোগফল অনুমোদিত ক্যাপ (${cap}%) অতিক্রম করেছে!`
+        `ডিসকাউন্ট (${discount}%) এবং কমিশন (${commission}%)-এর যোগফল অনুমোদিত ক্যাপ (${cap}%) অতিক্রম করেছে!`,
       );
       return;
     }
@@ -196,13 +214,19 @@ export default function AdminAffiliates() {
 
   // Approve Application
   const handleApproveApp = async (appId) => {
-    if (!window.confirm("আপনি কি নিশ্চিতভাবে এই আবেদনটি অনুমোদন করতে চান? এটি একটি ইউনিক কুপন কোড জেনারেট করবে এবং এসএমএস পাঠাবে।")) {
+    if (
+      !window.confirm(
+        "আপনি কি নিশ্চিতভাবে এই আবেদনটি অনুমোদন করতে চান? এটি একটি ইউনিক কুপন কোড জেনারেট করবে এবং এসএমএস পাঠাবে।",
+      )
+    ) {
       return;
     }
 
     setIsProcessingApp(true);
     try {
-      const res = await apiClient.post(`/admin/affiliates/applications/${appId}/approve`);
+      const res = await apiClient.post(
+        `/admin/affiliates/applications/${appId}/approve`,
+      );
       if (res.data?.success) {
         toast.success(res.data.message || "আবেদন সফলভাবে অনুমোদিত হয়েছে!");
         await fetchApplications();
@@ -224,7 +248,7 @@ export default function AdminAffiliates() {
     try {
       const res = await apiClient.post(
         `/admin/affiliates/applications/${selectedApplication._id}/reject`,
-        { rejectionReason }
+        { rejectionReason },
       );
       if (res.data?.success) {
         toast.success("আবেদন প্রত্যাখ্যাত হয়েছে।");
@@ -241,24 +265,48 @@ export default function AdminAffiliates() {
     }
   };
 
-  // Toggle Affiliate Account Control Status
-  const handleControlStatusChange = async (affiliateId, newStatus) => {
-    let suspensionReason = "";
-    if (newStatus === "Suspended") {
-      suspensionReason = prompt("স্থগিত করার কারণ লিখুন (ঐচ্ছিক):") || "";
-    }
+  // Handle Affiliate Account Control Status Dropdown with Custom Modal
+  const handleControlStatusSelect = (aff, newStatus) => {
+    if (newStatus === aff.accountControlStatus) return;
 
+    if (newStatus === "Suspended" || newStatus === "Disabled") {
+      setStatusChangeModal({
+        isOpen: true,
+        affiliate: aff,
+        newStatus,
+        reason: "",
+        isSubmitting: false,
+      });
+    } else {
+      executeControlStatusChange(aff._id, "Enabled", "");
+    }
+  };
+
+  const executeControlStatusChange = async (
+    affiliateId,
+    newStatus,
+    reason = "",
+  ) => {
     try {
       const res = await apiClient.patch(
         `/admin/affiliates/${affiliateId}/control-status`,
-        { accountControlStatus: newStatus, suspensionReason }
+        { accountControlStatus: newStatus, reason },
       );
       if (res.data?.success) {
-        toast.success(`অ্যাকাউন্ট স্ট্যাটাস '${newStatus}' করা হয়েছে।`);
+        toast.success(`অ্যাকাউন্ট স্ট্যাটাস সফলভাবে '${newStatus}' করা হয়েছে।`);
+        setStatusChangeModal({
+          isOpen: false,
+          affiliate: null,
+          newStatus: "Suspended",
+          reason: "",
+          isSubmitting: false,
+        });
         await fetchAffiliates();
       }
     } catch (err) {
-      toast.error(err.response?.data?.error || "স্ট্যাটাস পরিবর্তন ব্যর্থ হয়েছে।");
+      toast.error(
+        err.response?.data?.error || "স্ট্যাটাস পরিবর্তন ব্যর্থ হয়েছে।",
+      );
     }
   };
 
@@ -286,7 +334,7 @@ export default function AdminAffiliates() {
 
     if (customSettingsForm.useCustomSettings && discount + commission > cap) {
       toast.error(
-        `কাস্টম ডিসকাউন্ট (${discount}%) ও কমিশনের (${commission}%) যোগফল ক্যাপ (${cap}%) এর বেশি হতে পারবে না!`
+        `কাস্টম ডিসকাউন্ট (${discount}%) ও কমিশনের (${commission}%) যোগফল ক্যাপ (${cap}%) এর বেশি হতে পারবে না!`,
       );
       return;
     }
@@ -300,7 +348,7 @@ export default function AdminAffiliates() {
           commissionValue: commission,
           minWithdrawalAmountMinor: customSettingsForm.minWithdrawalTaka * 100,
           activationSalesCount: customSettingsForm.activationSalesCount,
-        }
+        },
       );
       if (res.data?.success) {
         toast.success("কাস্টম পলিসি সেটিংস সংরক্ষিত হয়েছে!");
@@ -308,14 +356,18 @@ export default function AdminAffiliates() {
         await fetchAffiliates();
       }
     } catch (err) {
-      toast.error(err.response?.data?.error || "কাস্টম সেটিংস সংরক্ষণ ব্যর্থ হয়েছে।");
+      toast.error(
+        err.response?.data?.error || "কাস্টম সেটিংস সংরক্ষণ ব্যর্থ হয়েছে।",
+      );
     }
   };
 
   // Withdrawal Transitions
   const handleApproveWithdrawal = async (id) => {
     try {
-      const res = await apiClient.post(`/admin/affiliates/withdrawals/${id}/approve`);
+      const res = await apiClient.post(
+        `/admin/affiliates/withdrawals/${id}/approve`,
+      );
       if (res.data?.success) {
         toast.success("উইথড্র রিকোয়েস্ট অনুমোদিত হয়েছে!");
         await fetchWithdrawals();
@@ -328,7 +380,7 @@ export default function AdminAffiliates() {
   const handleStartProcessingWithdrawal = async (id) => {
     try {
       const res = await apiClient.post(
-        `/admin/affiliates/withdrawals/${id}/start-processing`
+        `/admin/affiliates/withdrawals/${id}/start-processing`,
       );
       if (res.data?.success) {
         toast.success("উইথড্রয়াল প্রসেসিং শুরু হয়েছে।");
@@ -351,7 +403,7 @@ export default function AdminAffiliates() {
     try {
       const res = await apiClient.post(
         `/admin/affiliates/withdrawals/${selectedWithdrawalForPaid._id}/confirm-paid`,
-        { transactionId: transactionId.trim(), paymentNotes: paidNotes }
+        { transactionId: transactionId.trim(), paymentNotes: paidNotes },
       );
       if (res.data?.success) {
         toast.success("পেআউট সফলভাবে পরিশোধিত (Paid) হিসেবে রেকর্ড হয়েছে!");
@@ -362,7 +414,9 @@ export default function AdminAffiliates() {
         await fetchAffiliates();
       }
     } catch (err) {
-      toast.error(err.response?.data?.error || "পরিশোধ নিশ্চিতকরণ ব্যর্থ হয়েছে।");
+      toast.error(
+        err.response?.data?.error || "পরিশোধ নিশ্চিতকরণ ব্যর্থ হয়েছে।",
+      );
     }
   };
 
@@ -378,10 +432,12 @@ export default function AdminAffiliates() {
     try {
       const res = await apiClient.post(
         `/admin/affiliates/withdrawals/${selectedWithdrawalForReject._id}/reject`,
-        { rejectionReason: withdrawalRejectReason }
+        { rejectionReason: withdrawalRejectReason },
       );
       if (res.data?.success) {
-        toast.success("উইথড্র রিকোয়েস্ট বাতিল করা হয়েছে এবং সংরক্ষিত ব্যালেন্স ফেরত দেওয়া হয়েছে।");
+        toast.success(
+          "উইথড্র রিকোয়েস্ট বাতিল করা হয়েছে এবং সংরক্ষিত ব্যালেন্স ফেরত দেওয়া হয়েছে।",
+        );
         setSelectedWithdrawalForReject(null);
         setWithdrawalRejectReason("");
         await fetchWithdrawals();
@@ -399,14 +455,45 @@ export default function AdminAffiliates() {
   const isCapExceeded =
     currentTotalCost > Number(settings.maxMarketingCostPercent || 30);
 
+  const STATUS_FILTER_OPTIONS = [
+    { value: "ALL", label: "সকল স্ট্যাটাস", dot: "bg-slate-400" },
+    { value: "Approved", label: "অনুমোদিত (Approved)", dot: "bg-emerald-500" },
+    { value: "Pending", label: "অপেক্ষমান (Pending)", dot: "bg-amber-500" },
+    { value: "Rejected", label: "প্রত্যাখ্যাত (Rejected)", dot: "bg-rose-500" },
+    { value: "Suspended", label: "স্থগিত (Suspended)", dot: "bg-purple-500" },
+  ];
+
+  const AFFILIATE_TABS = [
+    { id: "settings", label: "গ্লোবাল সেটিংস ও পলিসি", icon: Sliders },
+    {
+      id: "applications",
+      label: "আবেদন অনুমোদন",
+      icon: UserCheck,
+      badge: applications.length,
+    },
+    {
+      id: "affiliates",
+      label: "এফিলিয়েট ডিরেক্টরি",
+      icon: Users,
+      badge: affiliatesList.length,
+    },
+    {
+      id: "withdrawals",
+      label: "উইথড্রয়াল কিউ",
+      icon: Send,
+      badge: withdrawals.length,
+    },
+  ];
+
   return (
     <div className="space-y-6 pb-12">
       {/* Top Banner & Quick Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
-              অ্যাফিলিয়েট প্রোগ্রাম ব্যবস্থাপনা
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2 font-sans">
+              <Sparkles className="size-6 text-primary" />
+              <span>অ্যাফিলিয়েট প্রোগ্রাম ব্যবস্থাপনা</span>
             </h1>
             <span
               className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
@@ -415,10 +502,12 @@ export default function AdminAffiliates() {
                   : "bg-slate-100 text-slate-600 border border-slate-200"
               }`}
             >
-              {settings.isProgramEnabled ? "প্রোগ্রাম চালু আছে" : "প্রোগ্রাম বন্ধ আছে"}
+              {settings.isProgramEnabled
+                ? "প্রোগ্রাম চালু আছে"
+                : "প্রোগ্রাম বন্ধ আছে"}
             </span>
           </div>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500">
+          <p className="mt-1 text-xs sm:text-sm text-slate-500 font-bengali">
             কুপন পলিসি, আবেদন অনুমোদন, পার্টনার অডিট ও উইথড্রয়াল ম্যানেজমেন্ট
           </p>
         </div>
@@ -427,66 +516,53 @@ export default function AdminAffiliates() {
           <button
             onClick={handleRunReleaseJob}
             disabled={isRunningReleaseJob}
-            className="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors flex items-center gap-2 border border-slate-200 disabled:opacity-50"
+            className="px-4 py-2.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 rounded-xl transition-all flex items-center gap-2 border border-slate-200 shadow-sm disabled:opacity-50 cursor-pointer"
             title="১৪ দিন অতিক্রম করা সেলসগুলো এভেইলেবল ব্যালেন্সে পাঠাতে চালান"
           >
             <Clock
-              className={`w-3.5 h-3.5 ${isRunningReleaseJob ? "animate-spin text-indigo-600" : ""}`}
+              className={`w-4 h-4 ${isRunningReleaseJob ? "animate-spin text-primary" : "text-slate-500"}`}
             />
             <span>১৪-দিনের হোল্ড রিলিজ জব চালান</span>
           </button>
         </div>
       </div>
 
-      {/* Tabs Header */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
-        <button
-          onClick={() => setActiveTab("settings")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2 shrink-0 ${
-            activeTab === "settings"
-              ? "bg-indigo-600 text-white shadow-sm"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-          }`}
-        >
-          <Sliders className="w-4 h-4" />
-          <span>গ্লোবাল সেটিংস ও পলিসি</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("applications")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2 shrink-0 ${
-            activeTab === "applications"
-              ? "bg-indigo-600 text-white shadow-sm"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-          }`}
-        >
-          <UserCheck className="w-4 h-4" />
-          <span>আবেদন অনুমোদন ({applications.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("affiliates")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2 shrink-0 ${
-            activeTab === "affiliates"
-              ? "bg-indigo-600 text-white shadow-sm"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          <span>এফিলিয়েট ডিরেক্টরি ({affiliatesList.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("withdrawals")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2 shrink-0 ${
-            activeTab === "withdrawals"
-              ? "bg-indigo-600 text-white shadow-sm"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-          }`}
-        >
-          <Send className="w-4 h-4" />
-          <span>উইথড্রয়াল কিউ ({withdrawals.length})</span>
-        </button>
+      {/* Main Tabs List (Modern spring animated pill tabs) */}
+      <div className="flex flex-wrap gap-2 p-1.5 bg-black/[0.02] border border-black/[0.05] rounded-2xl backdrop-blur-sm">
+        {AFFILIATE_TABS.map((tab) => {
+          const IconComponent = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer select-none ${
+                isActive ? "text-white" : "text-slate-600 hover:bg-black/[0.03]"
+              }`}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="affiliateActiveTabBackground"
+                  className="absolute inset-0 bg-gradient-to-r from-primary to-indigo-700 rounded-xl -z-10 shadow-md shadow-primary/20"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+              <IconComponent className="size-4 relative z-10" />
+              <span className="relative z-10">{tab.label}</span>
+              {tab.badge !== undefined && tab.badge > 0 && (
+                <span
+                  className={`relative z-10 ml-1.5 px-2 py-0.5 text-xs rounded-full font-bold ${
+                    isActive
+                      ? "bg-white/20 text-white"
+                      : "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                  }`}
+                >
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* TAB 1: Global Settings */}
@@ -494,26 +570,43 @@ export default function AdminAffiliates() {
         <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm max-w-4xl">
           <form onSubmit={handleSaveSettings} className="space-y-6">
             {/* Toggle Program */}
-            <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div
+              onClick={() =>
+                setSettings((prev) => ({
+                  ...prev,
+                  isProgramEnabled: !prev.isProgramEnabled,
+                }))
+              }
+              className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 cursor-pointer select-none group ${
+                settings.isProgramEnabled
+                  ? "bg-primary/[0.04] border-primary/30 shadow-sm"
+                  : "bg-slate-50 border-slate-200 hover:border-slate-300"
+              }`}
+            >
               <div>
-                <label className="text-sm font-bold text-slate-800">
+                <label className="text-sm font-bold text-slate-800 cursor-pointer">
                   অ্যাফিলিয়েট প্রোগ্রাম সক্রিয় রাখুন
                 </label>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  বন্ধ থাকলে নতুন আবেদন ও অ্যাফিলিয়েট কুপন ব্যবহার সাময়িকভাবে বন্ধ থাকবে।
+                  বন্ধ থাকলে নতুন আবেদন ও অ্যাফিলিয়েট কুপন ব্যবহার সাময়িকভাবে
+                  বন্ধ থাকবে।
                 </p>
               </div>
-              <input
-                type="checkbox"
-                checked={settings.isProgramEnabled}
-                onChange={(e) =>
-                  setSettings((prev) => ({
-                    ...prev,
-                    isProgramEnabled: e.target.checked,
-                  }))
-                }
-                className="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500"
-              />
+              <div
+                className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-300 ease-in-out cursor-pointer ${
+                  settings.isProgramEnabled
+                    ? "bg-primary shadow-sm shadow-primary/30"
+                    : "bg-slate-200"
+                }`}
+              >
+                <motion.span
+                  animate={{
+                    x: settings.isProgramEnabled ? 22 : 2,
+                  }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  className="inline-block h-4 w-4 rounded-full bg-white shadow-md"
+                />
+              </div>
             </div>
 
             {/* Authoritative Cap Notice */}
@@ -527,11 +620,14 @@ export default function AdminAffiliates() {
               <ShieldCheck className="w-5 h-5 shrink-0 mt-0.5 text-indigo-600" />
               <div>
                 <p className="font-bold">
-                  মার্কেটিং কস্ট ক্যাপ গার্ড: সর্বোচ্চ {settings.maxMarketingCostPercent || 30}%
+                  মার্কেটিং কস্ট ক্যাপ গার্ড: সর্বোচ্চ{" "}
+                  {settings.maxMarketingCostPercent || 30}%
                 </p>
                 <p className="mt-0.5 text-xs opacity-90 leading-relaxed">
-                  কোম্পানির লাভজনকতা বজায় রাখতে গ্রাহক ডিসকাউন্ট + অ্যাফিলিয়েট কমিশনের যোগফল সর্বোচ্চ{" "}
-                  {settings.maxMarketingCostPercent || 30}% হতে পারে। বর্তমানে মোট: {currentTotalCost}%।
+                  কোম্পানির লাভজনকতা বজায় রাখতে গ্রাহক ডিসকাউন্ট + অ্যাফিলিয়েট
+                  কমিশনের যোগফল সর্বোচ্চ{" "}
+                  {settings.maxMarketingCostPercent || 30}% হতে পারে। বর্তমানে
+                  মোট: {currentTotalCost}%।
                 </p>
               </div>
             </div>
@@ -617,11 +713,14 @@ export default function AdminAffiliates() {
                 <input
                   type="number"
                   min="500"
-                  value={(settings.defaultMinWithdrawalAmountMinor || 500000) / 100}
+                  value={
+                    (settings.defaultMinWithdrawalAmountMinor || 500000) / 100
+                  }
                   onChange={(e) =>
                     setSettings((prev) => ({
                       ...prev,
-                      defaultMinWithdrawalAmountMinor: Number(e.target.value) * 100,
+                      defaultMinWithdrawalAmountMinor:
+                        Number(e.target.value) * 100,
                     }))
                   }
                   required
@@ -787,23 +886,70 @@ export default function AdminAffiliates() {
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-700"
-              >
-                <option value="ALL">সকল স্ট্যাটাস</option>
-                <option value="Approved">অনুমোদিত (Approved)</option>
-                <option value="Pending">অপেক্ষমান (Pending)</option>
-                <option value="Rejected">প্রত্যাখ্যাত (Rejected)</option>
-                <option value="Suspended">স্থগিত (Suspended)</option>
-              </select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-xs sm:text-sm font-semibold text-slate-700 transition-all shadow-sm cursor-pointer min-w-[170px] group"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span
+                        className={`size-2 rounded-full ${
+                          STATUS_FILTER_OPTIONS.find(
+                            (o) => o.value === statusFilter,
+                          )?.dot || "bg-slate-400"
+                        }`}
+                      />
+                      <span>
+                        {STATUS_FILTER_OPTIONS.find(
+                          (o) => o.value === statusFilter,
+                        )?.label || "সকল স্ট্যাটাস"}
+                      </span>
+                    </span>
+                    <ChevronDown className="size-4 text-slate-400 transition-transform duration-200 group-hover:text-slate-600" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-[190px] bg-white border border-slate-100 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
+                >
+                  {STATUS_FILTER_OPTIONS.map((opt) => {
+                    const isSelected = statusFilter === opt.value;
+                    return (
+                      <DropdownMenuItem
+                        key={opt.value}
+                        onSelect={() => {
+                          setStatusFilter(opt.value);
+                          fetchAffiliates(opt.value);
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center justify-between cursor-pointer focus:bg-primary/5 focus:text-primary hover:bg-slate-50/80 ${
+                          isSelected
+                            ? "bg-primary/5 text-primary font-bold"
+                            : "text-slate-700"
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <span
+                            className={`size-1.5 rounded-full ${opt.dot}`}
+                          />
+                          {opt.label}
+                        </span>
+                        {isSelected && (
+                          <span className="size-1.5 rounded-full bg-primary" />
+                        )}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               <button
-                onClick={fetchAffiliates}
-                className="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold"
+                type="button"
+                onClick={() => fetchAffiliates()}
+                className="px-4 py-2.5 bg-primary hover:bg-primary/95 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
               >
-                ফিল্টার
+                <Filter className="size-3.5" />
+                <span>ফিল্টার</span>
               </button>
             </div>
           </div>
@@ -852,34 +998,125 @@ export default function AdminAffiliates() {
                             aff.reviewStatus === "Approved"
                               ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                               : aff.reviewStatus === "Rejected"
-                              ? "bg-pink-50 text-pink-700 border border-pink-200"
-                              : "bg-amber-50 text-amber-700 border border-amber-200"
+                                ? "bg-pink-50 text-pink-700 border border-pink-200"
+                                : "bg-amber-50 text-amber-700 border border-amber-200"
                           }`}
                         >
                           {aff.reviewStatus}
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <select
-                          value={aff.accountControlStatus}
-                          onChange={(e) =>
-                            handleControlStatusChange(aff._id, e.target.value)
+                        <DropdownMenu
+                          open={activeControlDropdownAffId === aff._id}
+                          onOpenChange={(open) =>
+                            setActiveControlDropdownAffId(open ? aff._id : null)
                           }
-                          className="px-2 py-1 bg-white border border-slate-300 rounded-lg text-[11px] font-medium"
                         >
-                          <option value="Enabled">Enabled</option>
-                          <option value="Suspended">Suspended</option>
-                          <option value="Disabled">Disabled</option>
-                        </select>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              type="button"
+                              className="inline-flex items-center justify-between gap-1.5 px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-white hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-semibold text-slate-700 transition-all duration-200 ease-out cursor-pointer min-w-[115px] group"
+                            >
+                              <span className="flex items-center gap-1.5">
+                                <span
+                                  className={`size-1.5 rounded-full transition-all duration-300 group-hover:scale-125 ${
+                                    aff.accountControlStatus === "Enabled"
+                                      ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]"
+                                      : aff.accountControlStatus === "Suspended"
+                                        ? "bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.5)]"
+                                        : "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.5)]"
+                                  }`}
+                                />
+                                <span
+                                  className={
+                                    aff.accountControlStatus === "Enabled"
+                                      ? "text-emerald-700 font-bold"
+                                      : aff.accountControlStatus === "Suspended"
+                                        ? "text-amber-700 font-bold"
+                                        : "text-rose-700 font-bold"
+                                  }
+                                >
+                                  {aff.accountControlStatus}
+                                </span>
+                              </span>
+                              <ChevronDown
+                                className={`size-3.5 text-slate-400 transition-transform duration-200 group-hover:text-slate-600 ${
+                                  activeControlDropdownAffId === aff._id
+                                    ? "rotate-180"
+                                    : ""
+                                }`}
+                              />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="start"
+                            className="w-[145px] bg-white border border-slate-100 rounded-xl shadow-xl p-1 space-y-0.5 z-[100]"
+                          >
+                            {[
+                              {
+                                key: "Enabled",
+                                label: "Enabled",
+                                dot: "bg-emerald-500",
+                                text: "text-emerald-700",
+                              },
+                              {
+                                key: "Suspended",
+                                label: "Suspended",
+                                dot: "bg-amber-500",
+                                text: "text-amber-700",
+                              },
+                              {
+                                key: "Disabled",
+                                label: "Disabled",
+                                dot: "bg-rose-500",
+                                text: "text-rose-700",
+                              },
+                            ].map((opt) => {
+                              const isSelected =
+                                aff.accountControlStatus === opt.key;
+                              return (
+                                <DropdownMenuItem
+                                  key={opt.key}
+                                  onSelect={() =>
+                                    handleControlStatusSelect(aff, opt.key)
+                                  }
+                                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center justify-between cursor-pointer focus:bg-slate-50 hover:bg-slate-50 ${
+                                    isSelected
+                                      ? "bg-slate-100/80 font-bold"
+                                      : "text-slate-700"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-2">
+                                    <span
+                                      className={`size-1.5 rounded-full ${opt.dot}`}
+                                    />
+                                    <span className={opt.text}>
+                                      {opt.label}
+                                    </span>
+                                  </span>
+                                  {isSelected && (
+                                    <span className="size-1.5 rounded-full bg-slate-900" />
+                                  )}
+                                </DropdownMenuItem>
+                              );
+                            })}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                       <td className="py-3 px-4 font-semibold text-slate-700">
                         {aff.successfulQualifyingSalesCount || 0} / ৩
                       </td>
                       <td className="py-3 px-4 font-bold text-emerald-600">
-                        ৳{((aff.balance?.available || 0) / 100).toLocaleString("bn-BD")}
+                        ৳
+                        {((aff.balance?.available || 0) / 100).toLocaleString(
+                          "bn-BD",
+                        )}
                       </td>
                       <td className="py-3 px-4 text-slate-600">
-                        ৳{((aff.lifetimeTotals?.totalWithdrawnMinor || 0) / 100).toLocaleString("bn-BD")}
+                        ৳
+                        {(
+                          (aff.lifetimeTotals?.totalWithdrawnMinor || 0) / 100
+                        ).toLocaleString("bn-BD")}
                       </td>
                       <td className="py-3 px-4 text-right">
                         <button
@@ -904,24 +1141,29 @@ export default function AdminAffiliates() {
         <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm space-y-4 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {["ALL", "Pending", "Approved", "Processing", "Paid", "Rejected"].map(
-                (status) => (
-                  <button
-                    key={status}
-                    onClick={() => {
-                      setWithdrawalFilter(status);
-                      fetchWithdrawals();
-                    }}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
-                      withdrawalFilter === status
-                        ? "bg-indigo-600 text-white"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                    }`}
-                  >
-                    {status}
-                  </button>
-                )
-              )}
+              {[
+                "ALL",
+                "Pending",
+                "Approved",
+                "Processing",
+                "Paid",
+                "Rejected",
+              ].map((status) => (
+                <button
+                  key={status}
+                  onClick={() => {
+                    setWithdrawalFilter(status);
+                    fetchWithdrawals();
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
+                    withdrawalFilter === status
+                      ? "bg-indigo-600 text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {status}
+                </button>
+              ))}
             </div>
 
             <button
@@ -985,11 +1227,12 @@ export default function AdminAffiliates() {
                           className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
                             w.status === "Paid"
                               ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                              : w.status === "Approved" || w.status === "Processing"
-                              ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
-                              : w.status === "Rejected"
-                              ? "bg-pink-50 text-pink-700 border border-pink-200"
-                              : "bg-amber-50 text-amber-700 border border-amber-200"
+                              : w.status === "Approved" ||
+                                  w.status === "Processing"
+                                ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                                : w.status === "Rejected"
+                                  ? "bg-pink-50 text-pink-700 border border-pink-200"
+                                  : "bg-amber-50 text-amber-700 border border-amber-200"
                           }`}
                         >
                           {w.status}
@@ -1018,7 +1261,9 @@ export default function AdminAffiliates() {
 
                         {w.status === "Approved" && (
                           <button
-                            onClick={() => handleStartProcessingWithdrawal(w._id)}
+                            onClick={() =>
+                              handleStartProcessingWithdrawal(w._id)
+                            }
                             className="px-2.5 py-1 rounded bg-blue-600 text-white font-medium text-[11px] hover:bg-blue-500"
                           >
                             প্রসেসিং শুরু
@@ -1071,295 +1316,553 @@ export default function AdminAffiliates() {
       )}
 
       {/* Reject Application Modal */}
-      {isRejectModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
-            <h3 className="text-base font-bold text-slate-800">
-              আবেদন প্রত্যাখ্যানের কারণ
-            </h3>
-            <p className="mt-1 text-xs text-slate-500">
-              আবেদনকারী: {selectedApplication?.fullName} ({selectedApplication?.phoneNumber})
-            </p>
+      <Dialog
+        open={isRejectModalOpen}
+        onOpenChange={(open) => {
+          if (!open && !isProcessingApp) setIsRejectModalOpen(false);
+        }}
+      >
+        <DialogContent
+          from="top"
+          showCloseButton={!isProcessingApp}
+          className="max-w-lg p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative"
+        >
+          <form
+            onSubmit={handleRejectApp}
+            className="flex flex-col h-full max-h-[85vh]"
+          >
+            <DialogHeader className="bg-transparent px-6 pt-6 pb-5 border-b border-slate-200/50 relative flex flex-col space-y-0 mb-0 text-left">
+              <div className="flex items-start gap-4 pr-8">
+                <div className="p-2 bg-rose-500/10 border border-rose-500/20 text-rose-600 rounded-xl shrink-0 mt-0.5 shadow-sm shadow-rose-500/5">
+                  <XCircle className="size-5" />
+                </div>
+                <div className="space-y-1">
+                  <DialogTitle className="font-bold text-slate-800 text-[17px] tracking-tight leading-snug">
+                    আবেদন প্রত্যাখ্যানের কারণ
+                  </DialogTitle>
+                  <DialogDescription className="text-slate-500 text-[13px] font-normal leading-relaxed">
+                    আবেদনকারী:{" "}
+                    <span className="font-semibold text-slate-700">
+                      {selectedApplication?.fullName}
+                    </span>{" "}
+                    ({selectedApplication?.phoneNumber})
+                  </DialogDescription>
+                </div>
+              </div>
+            </DialogHeader>
 
-            <form onSubmit={handleRejectApp} className="mt-4 space-y-4">
-              <textarea
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                required
-                placeholder="প্রত্যাখ্যানের সুনির্দিষ্ট কারণ লিখুন..."
-                rows={3}
-                className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsRejectModalOpen(false)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg"
-                >
-                  বাতিল
-                </button>
-                <button
-                  type="submit"
+            <div className="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  প্রত্যাখ্যানের সুনির্দিষ্ট কারণ{" "}
+                  <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  required
+                  rows={3}
                   disabled={isProcessingApp}
-                  className="px-4 py-1.5 bg-pink-600 hover:bg-pink-500 text-white font-semibold text-xs rounded-lg shadow-sm"
-                >
-                  প্রত্যাখ্যান নিশ্চিত করুন
-                </button>
+                  placeholder="আবেদন অসম্পূর্ণ বা নীতিমালার সাথে সাংঘর্ষিক হওয়ার সুনির্দিষ্ট কারণ লিখুন..."
+                  className="w-full p-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 text-xs text-slate-700 font-medium transition-all shadow-sm resize-none"
+                />
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Custom Override Settings Modal */}
-      {selectedAffiliateForCustom && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-xl">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h3 className="text-base font-bold text-slate-800">
-                  কাস্টম পলিসি ওভাররাইড
-                </h3>
-                <p className="text-xs text-slate-500">
-                  অ্যাফিলিয়েট: {selectedAffiliateForCustom.fullName} ({selectedAffiliateForCustom.couponCode})
-                </p>
-              </div>
-              <button
-                onClick={() => setSelectedAffiliateForCustom(null)}
-                className="text-slate-400 hover:text-slate-600"
-              >
-                <X className="w-5 h-5" />
-              </button>
             </div>
 
-            <form onSubmit={handleSaveCustomSettings} className="space-y-4">
-              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <input
-                  type="checkbox"
-                  id="useCustomSettings"
-                  checked={customSettingsForm.useCustomSettings}
-                  onChange={(e) =>
-                    setCustomSettingsForm((prev) => ({
-                      ...prev,
-                      useCustomSettings: e.target.checked,
-                    }))
-                  }
-                  className="w-4 h-4 rounded text-indigo-600"
-                />
-                <label
-                  htmlFor="useCustomSettings"
-                  className="text-xs font-bold text-slate-700 cursor-pointer"
-                >
-                  এই অ্যাফিলিয়েটের জন্য কাস্টম রেট ও শর্ত কার্যকর করুন
-                </label>
-              </div>
+            <DialogFooter className="bg-transparent px-6 py-3.5 border-t border-slate-200/50 flex flex-col-reverse sm:flex-row justify-end gap-2.5 mt-0">
+              <DialogClose asChild>
+                <ModalCancelButton disabled={isProcessingApp}>
+                  বাতিল করুন
+                </ModalCancelButton>
+              </DialogClose>
+              <ModalSubmitButton
+                type="submit"
+                disabled={isProcessingApp}
+                className="!bg-rose-600 hover:!bg-rose-700 !shadow-rose-600/20"
+              >
+                {isProcessingApp ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    প্রক্রিয়াধীন...
+                  </>
+                ) : (
+                  "প্রত্যাখ্যান নিশ্চিত করুন"
+                )}
+              </ModalSubmitButton>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
-              {customSettingsForm.useCustomSettings && (
-                <div className="space-y-3 pt-1">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-xs font-semibold text-slate-700">
-                        কাস্টম ডিসকাউন্ট (%)
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={customSettingsForm.discountValue}
-                        onChange={(e) =>
-                          setCustomSettingsForm((prev) => ({
-                            ...prev,
-                            discountValue: Number(e.target.value),
-                          }))
-                        }
-                        className="mt-1 w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-semibold text-slate-700">
-                        কাস্টম কমিশন (%)
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={customSettingsForm.commissionValue}
-                        onChange={(e) =>
-                          setCustomSettingsForm((prev) => ({
-                            ...prev,
-                            commissionValue: Number(e.target.value),
-                          }))
-                        }
-                        className="mt-1 w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-xs font-semibold text-slate-700">
-                        নূন্যতম উইথড্র (টাকা)
-                      </label>
-                      <input
-                        type="number"
-                        min="500"
-                        value={customSettingsForm.minWithdrawalTaka}
-                        onChange={(e) =>
-                          setCustomSettingsForm((prev) => ({
-                            ...prev,
-                            minWithdrawalTaka: Number(e.target.value),
-                          }))
-                        }
-                        className="mt-1 w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-semibold text-slate-700">
-                        কোয়ালিফাইং সেলস
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        max="10"
-                        value={customSettingsForm.activationSalesCount}
-                        onChange={(e) =>
-                          setCustomSettingsForm((prev) => ({
-                            ...prev,
-                            activationSalesCount: Number(e.target.value),
-                          }))
-                        }
-                        className="mt-1 w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
-                      />
-                    </div>
-                  </div>
+      {/* Custom Override Settings Modal */}
+      <Dialog
+        open={!!selectedAffiliateForCustom}
+        onOpenChange={(open) => {
+          if (!open) setSelectedAffiliateForCustom(null);
+        }}
+      >
+        <DialogContent
+          from="top"
+          className="max-w-lg p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative"
+        >
+          <form
+            onSubmit={handleSaveCustomSettings}
+            className="flex flex-col h-full max-h-[85vh]"
+          >
+            <DialogHeader className="bg-transparent px-6 pt-6 pb-5 border-b border-slate-200/50 relative flex flex-col space-y-0 mb-0 text-left">
+              <div className="flex items-start gap-4 pr-8">
+                <div className="p-2 bg-primary/10 border border-primary/20 text-primary rounded-xl shrink-0 mt-0.5 shadow-sm shadow-primary/5">
+                  <Sliders className="size-5" />
                 </div>
-              )}
-
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedAffiliateForCustom(null)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg"
-                >
-                  বাতিল
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-lg shadow-sm"
-                >
-                  সংরক্ষণ করুন
-                </button>
+                <div className="space-y-1">
+                  <DialogTitle className="font-bold text-slate-800 text-[17px] tracking-tight leading-snug">
+                    কাস্টম পলিসি ও শর্তাবলী নির্ধারণ
+                  </DialogTitle>
+                  <DialogDescription className="text-slate-500 text-[13px] font-normal leading-relaxed">
+                    অ্যাফিলিয়েট:{" "}
+                    <span className="font-semibold text-slate-700">
+                      {selectedAffiliateForCustom?.fullName}
+                    </span>{" "}
+                    ({selectedAffiliateForCustom?.couponCode})
+                  </DialogDescription>
+                </div>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+            </DialogHeader>
+
+            <div className="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+              <div
+                onClick={() =>
+                  setCustomSettingsForm((prev) => ({
+                    ...prev,
+                    useCustomSettings: !prev.useCustomSettings,
+                  }))
+                }
+                className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 cursor-pointer select-none group ${
+                  customSettingsForm.useCustomSettings
+                    ? "bg-primary/[0.04] border-primary/30 shadow-sm"
+                    : "bg-slate-50/80 border-slate-200/80 hover:bg-slate-50 hover:border-slate-300"
+                }`}
+              >
+                <div className="pr-4">
+                  <span className="text-xs sm:text-sm font-bold text-slate-800 block cursor-pointer">
+                    ব্যক্তিগত কাস্টম পলিসি সক্রিয় করুন
+                  </span>
+                  <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+                    সক্রিয় করলে গ্লোবাল পলিসির পরিবর্তে এই নির্দিষ্ট মানগুলো
+                    প্রযোজ্য হবে
+                  </p>
+                </div>
+                <div
+                  className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-300 ease-in-out cursor-pointer ${
+                    customSettingsForm.useCustomSettings
+                      ? "bg-primary shadow-sm shadow-primary/30"
+                      : "bg-slate-200"
+                  }`}
+                >
+                  <motion.span
+                    animate={{
+                      x: customSettingsForm.useCustomSettings ? 22 : 2,
+                    }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    className="inline-block h-4 w-4 rounded-full bg-white shadow-md"
+                  />
+                </div>
+              </div>
+
+              <AnimatePresence initial={false}>
+                {customSettingsForm.useCustomSettings && (
+                  <motion.div
+                    key="custom-settings-fields"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{
+                      opacity: { duration: 0.2 },
+                      height: {
+                        duration: 0.28,
+                        ease: [0.04, 0.62, 0.23, 0.98],
+                      },
+                    }}
+                    className="overflow-hidden space-y-4 pt-1"
+                  >
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                          কাস্টম ডিসকাউন্ট (%)
+                        </label>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={customSettingsForm.discountValue}
+                          onChange={(e) =>
+                            setCustomSettingsForm((prev) => ({
+                              ...prev,
+                              discountValue: Number(e.target.value),
+                            }))
+                          }
+                          className="px-4 py-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus-visible:bg-white focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-50/50 focus-visible:ring-offset-0 h-11 transition-all shadow-sm text-slate-700 text-xs font-semibold"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                          কাস্টম কমিশন (%)
+                        </label>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={customSettingsForm.commissionValue}
+                          onChange={(e) =>
+                            setCustomSettingsForm((prev) => ({
+                              ...prev,
+                              commissionValue: Number(e.target.value),
+                            }))
+                          }
+                          className="px-4 py-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus-visible:bg-white focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-50/50 focus-visible:ring-offset-0 h-11 transition-all shadow-sm text-slate-700 text-xs font-semibold"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                          সর্বনিম্ন উইথড্রয়াল (টাকা)
+                        </label>
+                        <Input
+                          type="number"
+                          min="100"
+                          value={customSettingsForm.minWithdrawalTaka}
+                          onChange={(e) =>
+                            setCustomSettingsForm((prev) => ({
+                              ...prev,
+                              minWithdrawalTaka: Number(e.target.value),
+                            }))
+                          }
+                          className="px-4 py-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus-visible:bg-white focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-50/50 focus-visible:ring-offset-0 h-11 transition-all shadow-sm text-slate-700 text-xs font-semibold"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                          অ্যাক্টিভেশন সেলস সংখ্যা
+                        </label>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="50"
+                          value={customSettingsForm.activationSalesCount}
+                          onChange={(e) =>
+                            setCustomSettingsForm((prev) => ({
+                              ...prev,
+                              activationSalesCount: Number(e.target.value),
+                            }))
+                          }
+                          className="px-4 py-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus-visible:bg-white focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-50/50 focus-visible:ring-offset-0 h-11 transition-all shadow-sm text-slate-700 text-xs font-semibold"
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <DialogFooter className="bg-transparent px-6 py-3.5 border-t border-slate-200/50 flex flex-col-reverse sm:flex-row justify-end gap-2.5 mt-0">
+              <DialogClose asChild>
+                <ModalCancelButton type="button">বাতিল করুন</ModalCancelButton>
+              </DialogClose>
+              <ModalSubmitButton type="submit">সংরক্ষণ করুন</ModalSubmitButton>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Confirm Paid Withdrawal Modal */}
-      {selectedWithdrawalForPaid && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
-            <h3 className="text-base font-bold text-slate-800">
-              উইথড্রয়াল পরিশোধ নিশ্চিতকরণ (Confirm Paid)
-            </h3>
-            <p className="mt-1 text-xs text-slate-500">
-              পরিমাণ: ৳{(selectedWithdrawalForPaid.amountMinor / 100).toLocaleString("bn-BD")} | মাধ্যম: {selectedWithdrawalForPaid.paymentMethod}
-            </p>
+      <Dialog
+        open={!!selectedWithdrawalForPaid}
+        onOpenChange={(open) => {
+          if (!open) setSelectedWithdrawalForPaid(null);
+        }}
+      >
+        <DialogContent
+          from="top"
+          className="max-w-lg p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative"
+        >
+          <form
+            onSubmit={handleConfirmPaidWithdrawal}
+            className="flex flex-col h-full max-h-[85vh]"
+          >
+            <DialogHeader className="bg-transparent px-6 pt-6 pb-5 border-b border-slate-200/50 relative flex flex-col space-y-0 mb-0 text-left">
+              <div className="flex items-start gap-4 pr-8">
+                <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 rounded-xl shrink-0 mt-0.5 shadow-sm shadow-emerald-500/5">
+                  <CheckCircle2 className="size-5" />
+                </div>
+                <div className="space-y-1">
+                  <DialogTitle className="font-bold text-slate-800 text-[17px] tracking-tight leading-snug">
+                    উইথড্রয়াল পরিশোধ নিশ্চিতকরণ (Confirm Paid)
+                  </DialogTitle>
+                  <DialogDescription className="text-slate-500 text-[13px] font-normal leading-relaxed">
+                    পরিশোধের পরিমাণ: ৳
+                    {(
+                      (selectedWithdrawalForPaid?.amountMinor || 0) / 100
+                    ).toLocaleString("bn-BD")}{" "}
+                    | মাধ্যম: {selectedWithdrawalForPaid?.paymentMethod} (
+                    {selectedWithdrawalForPaid?.accountDetails?.accountNumber})
+                  </DialogDescription>
+                </div>
+              </div>
+            </DialogHeader>
 
-            <form onSubmit={handleConfirmPaidWithdrawal} className="mt-4 space-y-4">
-              <div>
-                <label className="text-xs font-bold text-slate-700">
-                  ট্রানজেকশন আইডি (TrxID) <span className="text-pink-600">*</span>
+            <div className="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  ট্রানজেকশন আইডি (TrxID){" "}
+                  <span className="text-rose-500">*</span>
                 </label>
-                <input
+                <Input
                   type="text"
                   value={transactionId}
                   onChange={(e) => setTransactionId(e.target.value)}
                   required
                   placeholder="যেমন: BKG89102938"
-                  className="mt-1 w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="px-4 py-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus-visible:bg-white focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-50/50 focus-visible:ring-offset-0 h-11 transition-all shadow-sm text-slate-700 text-xs font-mono font-semibold"
                 />
               </div>
 
-              <div>
-                <label className="text-xs font-semibold text-slate-700">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                   অ্যাডমিন নোট (ঐচ্ছিক)
                 </label>
-                <input
+                <Input
                   type="text"
                   value={paidNotes}
                   onChange={(e) => setPaidNotes(e.target.value)}
-                  placeholder="যেমন: বিকাশে সফলভাবে ট্রান্সফার সম্পন্ন"
-                  className="mt-1 w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800"
+                  placeholder="যেমন: বিকাশ মারফত পেইড সম্পন্ন"
+                  className="px-4 py-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus-visible:bg-white focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-50/50 focus-visible:ring-offset-0 h-11 transition-all shadow-sm text-slate-700 text-xs font-semibold"
                 />
               </div>
+            </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedWithdrawalForPaid(null)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg"
-                >
-                  বাতিল
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-lg shadow-sm"
-                >
-                  পেইড সম্পন্ন করুন
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+            <DialogFooter className="bg-transparent px-6 py-3.5 border-t border-slate-200/50 flex flex-col-reverse sm:flex-row justify-end gap-2.5 mt-0">
+              <DialogClose asChild>
+                <ModalCancelButton type="button">বাতিল করুন</ModalCancelButton>
+              </DialogClose>
+              <ModalSubmitButton
+                type="submit"
+                className="!bg-emerald-600 hover:!bg-emerald-700 !shadow-emerald-600/20"
+              >
+                সফল পেইড নিশ্চিত করুন
+              </ModalSubmitButton>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Reject Withdrawal Modal */}
-      {selectedWithdrawalForReject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
-            <h3 className="text-base font-bold text-slate-800">
-              উইথড্রয়াল বাতিল ও রিফান্ড
-            </h3>
-            <p className="mt-1 text-xs text-slate-500">
-              বাতিল করলে সংরক্ষিত ৳{(selectedWithdrawalForReject.amountMinor / 100).toLocaleString("bn-BD")} টাকা পুনরায় অ্যাফিলিয়েটের এভেইলেবল ব্যালেন্সে যোগ হবে।
-            </p>
+      <Dialog
+        open={!!selectedWithdrawalForReject}
+        onOpenChange={(open) => {
+          if (!open) setSelectedWithdrawalForReject(null);
+        }}
+      >
+        <DialogContent
+          from="top"
+          className="max-w-lg p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative"
+        >
+          <form
+            onSubmit={handleRejectWithdrawal}
+            className="flex flex-col h-full max-h-[85vh]"
+          >
+            <DialogHeader className="bg-transparent px-6 pt-6 pb-5 border-b border-slate-200/50 relative flex flex-col space-y-0 mb-0 text-left">
+              <div className="flex items-start gap-4 pr-8">
+                <div className="p-2 bg-rose-500/10 border border-rose-500/20 text-rose-600 rounded-xl shrink-0 mt-0.5 shadow-sm shadow-rose-500/5">
+                  <XCircle className="size-5" />
+                </div>
+                <div className="space-y-1">
+                  <DialogTitle className="font-bold text-slate-800 text-[17px] tracking-tight leading-snug">
+                    উইথড্রয়াল বাতিল ও রিফান্ড
+                  </DialogTitle>
+                  <DialogDescription className="text-slate-500 text-[13px] font-normal leading-relaxed">
+                    বাতিল করলে ৳
+                    {(
+                      (selectedWithdrawalForReject?.amountMinor || 0) / 100
+                    ).toLocaleString("bn-BD")}{" "}
+                    টাকা সাথে সাথে অ্যাফিলিয়েটের অ্যাভেইলেবল ব্যালেন্সে ফেরত
+                    যোগ হবে
+                  </DialogDescription>
+                </div>
+              </div>
+            </DialogHeader>
 
-            <form onSubmit={handleRejectWithdrawal} className="mt-4 space-y-4">
-              <div>
-                <label className="text-xs font-bold text-slate-700">
-                  বাতিলের কারণ <span className="text-pink-600">*</span>
+            <div className="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  বাতিলের স্পষ্ট কারণ <span className="text-rose-500">*</span>
                 </label>
                 <textarea
                   value={withdrawalRejectReason}
                   onChange={(e) => setWithdrawalRejectReason(e.target.value)}
                   required
                   rows={3}
-                  placeholder="যেমন: অ্যাকাউন্ট নম্বর সঠিক নয়"
-                  className="mt-1 w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="যেমন: অ্যাকাউন্ট নম্বর সঠিক নয় বা বিকাশ অ্যাকাউন্টে লিমিট অতিক্রম হয়েছে..."
+                  className="w-full p-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 text-xs text-slate-700 font-medium transition-all shadow-sm resize-none"
                 />
               </div>
+            </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedWithdrawalForReject(null)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg"
+            <DialogFooter className="bg-transparent px-6 py-3.5 border-t border-slate-200/50 flex flex-col-reverse sm:flex-row justify-end gap-2.5 mt-0">
+              <DialogClose asChild>
+                <ModalCancelButton type="button">বাতিল করুন</ModalCancelButton>
+              </DialogClose>
+              <ModalSubmitButton
+                type="submit"
+                className="!bg-rose-600 hover:!bg-rose-700 !shadow-rose-600/20"
+              >
+                বাতিল ও ব্যালেন্স রিফান্ড করুন
+              </ModalSubmitButton>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Account Control Status Modal (Suspend / Disable) */}
+      <Dialog
+        open={statusChangeModal.isOpen && !!statusChangeModal.affiliate}
+        onOpenChange={(open) => {
+          if (!open && !statusChangeModal.isSubmitting) {
+            setStatusChangeModal({
+              isOpen: false,
+              affiliate: null,
+              newStatus: "Suspended",
+              reason: "",
+              isSubmitting: false,
+            });
+          }
+        }}
+      >
+        <DialogContent
+          from="top"
+          showCloseButton={!statusChangeModal.isSubmitting}
+          onPointerDownOutside={(e) => {
+            if (statusChangeModal.isSubmitting) e.preventDefault();
+          }}
+          onEscapeKeyDown={(e) => {
+            if (statusChangeModal.isSubmitting) e.preventDefault();
+          }}
+          className="max-w-lg p-0 border border-slate-200/50 overflow-hidden bg-glass-elevated backdrop-blur-xl shadow-2xl rounded-2xl relative"
+        >
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setStatusChangeModal((prev) => ({ ...prev, isSubmitting: true }));
+              await executeControlStatusChange(
+                statusChangeModal.affiliate._id,
+                statusChangeModal.newStatus,
+                statusChangeModal.reason,
+              );
+            }}
+            className="flex flex-col h-full max-h-[85vh]"
+          >
+            <DialogHeader className="bg-transparent px-6 pt-6 pb-5 border-b border-slate-200/50 relative flex flex-col space-y-0 mb-0 text-left">
+              <div className="flex items-start gap-4 pr-8">
+                <div
+                  className={`p-2 rounded-xl shrink-0 mt-0.5 shadow-sm ${
+                    statusChangeModal.newStatus === "Suspended"
+                      ? "bg-amber-500/10 border border-amber-500/20 text-amber-600 shadow-amber-500/5"
+                      : "bg-rose-500/10 border border-rose-500/20 text-rose-600 shadow-rose-500/5"
+                  }`}
                 >
-                  বাতিল
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 bg-pink-600 hover:bg-pink-500 text-white font-semibold text-xs rounded-lg shadow-sm"
-                >
-                  বাতিল ও ব্যালেন্স রিফান্ড করুন
-                </button>
+                  {statusChangeModal.newStatus === "Suspended" ? (
+                    <PauseCircle className="size-5" />
+                  ) : (
+                    <XCircle className="size-5" />
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <DialogTitle className="font-bold text-slate-800 text-[17px] tracking-tight leading-snug">
+                    {statusChangeModal.newStatus === "Suspended"
+                      ? "অ্যাকাউন্ট সাময়িক স্থগিত (Suspend) করুন"
+                      : "অ্যাকাউন্ট নিষ্ক্রিয় (Disable) করুন"}
+                  </DialogTitle>
+                  <DialogDescription className="text-slate-500 text-[13px] font-normal leading-relaxed">
+                    অ্যাফিলিয়েট:{" "}
+                    <span className="font-semibold text-slate-700">
+                      {statusChangeModal.affiliate?.fullName}
+                    </span>{" "}
+                    ({statusChangeModal.affiliate?.phoneNumber})
+                  </DialogDescription>
+                </div>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+            </DialogHeader>
+
+            <div className="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+              <div
+                className={`p-3.5 rounded-xl text-xs leading-relaxed border ${
+                  statusChangeModal.newStatus === "Suspended"
+                    ? "bg-amber-50/80 border-amber-200/80 text-amber-800"
+                    : "bg-rose-50/80 border-rose-200/80 text-rose-800"
+                }`}
+              >
+                {statusChangeModal.newStatus === "Suspended"
+                  ? "অ্যাকাউন্ট স্থগিত করলে অ্যাফিলিয়েট নতুন কোনো সেলস রেফার করতে পারবে না এবং উইথড্রয়াল রিকোয়েস্ট সাময়িকভাবে বন্ধ থাকবে।"
+                  : "অ্যাকাউন্ট নিষ্ক্রিয় করলে অ্যাফিলিয়েটের রেফারেল কোড স্থায়ীভাবে অকার্যকর হয়ে যাবে।"}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  {statusChangeModal.newStatus === "Suspended"
+                    ? "স্থগিতকরণের কারণ (ঐচ্ছিক)"
+                    : "নিষ্ক্রিয়করণের কারণ (ঐচ্ছিক)"}
+                </label>
+                <textarea
+                  value={statusChangeModal.reason}
+                  onChange={(e) =>
+                    setStatusChangeModal((prev) => ({
+                      ...prev,
+                      reason: e.target.value,
+                    }))
+                  }
+                  rows={3}
+                  disabled={statusChangeModal.isSubmitting}
+                  placeholder={
+                    statusChangeModal.newStatus === "Suspended"
+                      ? "যেমন: সন্দেহজনক ট্রাফিক বা অভিযোগের প্রেক্ষিতে সাময়িক তদন্ত..."
+                      : "যেমন: সার্ভিস পলিসি ভঙ্গের কারণে অ্যাকাউন্ট বাতিল..."
+                  }
+                  className="w-full p-3 rounded-xl border border-slate-200 bg-white/75 hover:border-indigo-400 hover:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 text-xs text-slate-700 font-medium transition-all shadow-sm resize-none"
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="bg-transparent px-6 py-3.5 border-t border-slate-200/50 flex flex-col-reverse sm:flex-row justify-end gap-2.5 mt-0">
+              <DialogClose asChild>
+                <ModalCancelButton disabled={statusChangeModal.isSubmitting}>
+                  বাতিল করুন
+                </ModalCancelButton>
+              </DialogClose>
+              <ModalSubmitButton
+                type="submit"
+                disabled={statusChangeModal.isSubmitting}
+                className={
+                  statusChangeModal.newStatus === "Suspended"
+                    ? "!bg-amber-600 hover:!bg-amber-700 !shadow-amber-600/20"
+                    : "!bg-rose-600 hover:!bg-rose-700 !shadow-rose-600/20"
+                }
+              >
+                {statusChangeModal.isSubmitting ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    সংরক্ষণ হচ্ছে...
+                  </>
+                ) : statusChangeModal.newStatus === "Suspended" ? (
+                  "স্থগিত নিশ্চিত করুন"
+                ) : (
+                  "নিষ্ক্রিয় নিশ্চিত করুন"
+                )}
+              </ModalSubmitButton>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

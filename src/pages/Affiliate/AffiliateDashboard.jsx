@@ -1,35 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useUserContext } from "@/context/UserContext";
+import apiClient, { setAccessToken } from "@/lib/apiClient";
 import {
   AlertCircle,
   AlertTriangle,
   ArrowDownRight,
   ArrowUpRight,
   Award,
-  Building,
   CheckCircle2,
   Clock,
-  Coins,
   Copy,
   CreditCard,
-  DollarSign,
   ExternalLink,
   History,
-  Info,
   LogOut,
   RefreshCw,
   Send,
   ShieldAlert,
-  ShieldCheck,
   Sparkles,
   TrendingUp,
   Users,
   Wallet,
   X,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useUserContext } from "@/context/UserContext";
-import apiClient, { setAccessToken } from "@/lib/apiClient";
 
 export default function AffiliateDashboard() {
   const navigate = useNavigate();
@@ -74,7 +69,10 @@ export default function AffiliateDashboard() {
 
       // 2. Load Summary
       try {
-        const sumRes = await apiClient.get("/affiliate/dashboard/summary");
+        const sumRes = await apiClient.get("/affiliate/dashboard");
+        if (sumRes.data?.affiliate) {
+          setAffiliate((prev) => ({ ...prev, ...sumRes.data.affiliate }));
+        }
         if (sumRes.data?.summary) {
           setSummary(sumRes.data.summary);
         }
@@ -94,7 +92,7 @@ export default function AffiliateDashboard() {
 
       // 4. Load Sales
       try {
-        const salesRes = await apiClient.get("/affiliate/dashboard/sales");
+        const salesRes = await apiClient.get("/affiliate/sales");
         if (salesRes.data?.sales) {
           setSales(salesRes.data.sales);
         }
@@ -104,7 +102,7 @@ export default function AffiliateDashboard() {
 
       // 5. Load Ledger
       try {
-        const ledRes = await apiClient.get("/affiliate/dashboard/ledger");
+        const ledRes = await apiClient.get("/affiliate/ledger");
         if (ledRes.data?.ledger) {
           setLedger(ledRes.data.ledger);
         }
@@ -125,7 +123,9 @@ export default function AffiliateDashboard() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadDashboardData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleLogout = async () => {
@@ -162,8 +162,9 @@ export default function AffiliateDashboard() {
   };
 
   // Withdrawal Validation Helpers
+  const targetActivationSales = affiliate?.activationSalesCount || summary?.config?.activationSalesCount || 3;
   const qualifyingCount = affiliate?.successfulQualifyingSalesCount || 0;
-  const isQualifyingComplete = qualifyingCount >= 3;
+  const isQualifyingComplete = qualifyingCount >= targetActivationSales;
   const availableTaka = (affiliate?.balance?.available || 0) / 100;
   const pendingTaka = (affiliate?.balance?.pending || 0) / 100;
   const reservedTaka = (affiliate?.balance?.reserved || 0) / 100;
@@ -174,9 +175,11 @@ export default function AffiliateDashboard() {
     (affiliate?.lifetimeTotals?.totalEarnedMinor || 0) / 100;
 
   const minWithdrawTaka =
-    ((affiliate?.useCustomSettings
-      ? affiliate?.customSettings?.minWithdrawalAmountMinor
-      : summary?.config?.minWithdrawalAmountMinor) || 500000) / 100;
+    affiliate?.balances?.minWithdrawalBDT
+      ? Number(affiliate.balances.minWithdrawalBDT)
+      : ((affiliate?.useCustomSettings
+          ? affiliate?.customSettings?.minWithdrawalAmountMinor
+          : summary?.config?.minWithdrawalAmountMinor) || 500000) / 100;
 
   const canRequestWithdrawal =
     isQualifyingComplete && availableTaka >= minWithdrawTaka;
@@ -186,12 +189,16 @@ export default function AffiliateDashboard() {
     const amountNum = Number(withdrawAmount);
 
     if (!amountNum || amountNum < minWithdrawTaka) {
-      toast.error(`নূন্যতম উইথড্রয়াল অ্যামাউন্ট ৳${minWithdrawTaka.toLocaleString("bn-BD")} টাকা।`);
+      toast.error(
+        `নূন্যতম উইথড্রয়াল অ্যামাউন্ট ৳${minWithdrawTaka.toLocaleString("bn-BD")} টাকা।`,
+      );
       return;
     }
 
     if (amountNum > availableTaka) {
-      toast.error("আপনার বর্তমান এভেইলেবল ব্যালেন্সের বেশি উইথড্র করা সম্ভব নয়।");
+      toast.error(
+        "আপনার বর্তমান এভেইলেবল ব্যালেন্সের বেশি উইথড্র করা সম্ভব নয়।",
+      );
       return;
     }
 
@@ -202,14 +209,16 @@ export default function AffiliateDashboard() {
 
     setIsSubmittingWithdraw(true);
     try {
-      const response = await apiClient.post("/affiliate/withdrawals/request", {
+      const response = await apiClient.post("/affiliate/withdrawals", {
         amount: amountNum,
         paymentMethod: payoutMethod,
         paymentDetails: payoutDetails,
       });
 
       if (response.data?.success) {
-        toast.success(response.data.message || "উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে!");
+        toast.success(
+          response.data.message || "উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে!",
+        );
         setShowWithdrawModal(false);
         setWithdrawAmount("");
         await loadDashboardData();
@@ -217,7 +226,8 @@ export default function AffiliateDashboard() {
     } catch (err) {
       console.error("Withdraw error:", err);
       toast.error(
-        err.response?.data?.error || "উইথড্র রিকোয়েস্ট প্রসেস করতে সমস্যা হয়েছে।"
+        err.response?.data?.error ||
+          "উইথড্র রিকোয়েস্ট প্রসেস করতে সমস্যা হয়েছে।",
       );
     } finally {
       setIsSubmittingWithdraw(false);
@@ -229,7 +239,9 @@ export default function AffiliateDashboard() {
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <RefreshCw className="w-8 h-8 text-indigo-500 animate-spin" />
-          <p className="text-slate-400 text-sm">অ্যাফিলিয়েট ড্যাশবোর্ড লোড হচ্ছে...</p>
+          <p className="text-slate-400 text-sm">
+            অ্যাফিলিয়েট ড্যাশবোর্ড লোড হচ্ছে...
+          </p>
         </div>
       </div>
     );
@@ -287,7 +299,8 @@ export default function AffiliateDashboard() {
                 আপনার আবেদনটি পর্যালোচনায় রয়েছে
               </p>
               <p className="mt-0.5 text-amber-300/90 leading-relaxed">
-                অ্যাডমিন কর্তৃক আবেদন অনুমোদিত হলে আপনার কুপন কোড ও উইথড্রয়াল ফিচার সক্রিয় হবে।
+                অ্যাডমিন কর্তৃক আবেদন অনুমোদিত হলে আপনার কুপন কোড ও উইথড্রয়াল
+                ফিচার সক্রিয় হবে।
               </p>
             </div>
           </div>
@@ -318,10 +331,12 @@ export default function AffiliateDashboard() {
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-white">
                 কোয়ালিফাইং সেলস অগ্রগতি:{" "}
-                <span className="text-indigo-400">{qualifyingCount} / ৩</span>
+                <span className="text-indigo-400">{qualifyingCount} / {targetActivationSales}</span>
               </h3>
               <p className="text-xs text-slate-400 max-w-xl leading-relaxed">
-                উইথড্র করার প্রাথমিক যোগ্যতা অর্জনের জন্য অন্তত ৩টি সফল সেল প্রয়োজন (১৪ দিনের রিফান্ড সুরক্ষা সময় পার হলে প্রতিটি সেল কোয়ালিফাইড হিসেবে গণ্য হয়)।
+                উইথড্র করার প্রাথমিক যোগ্যতা অর্জনের জন্য অন্তত {targetActivationSales}টি সফল সেল
+                প্রয়োজন (১৪ দিনের রিফান্ড সুরক্ষা সময় পার হলে প্রতিটি সেল
+                কোয়ালিফাইড হিসেবে গণ্য হয়)।
               </p>
             </div>
 
@@ -329,14 +344,14 @@ export default function AffiliateDashboard() {
               <div className="flex justify-between text-xs font-semibold">
                 <span className="text-slate-400">অগ্রগতি</span>
                 <span className="text-indigo-400">
-                  {Math.min(100, Math.round((qualifyingCount / 3) * 100))}%
+                  {Math.min(100, Math.round((qualifyingCount / targetActivationSales) * 100))}%
                 </span>
               </div>
               <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-500"
                   style={{
-                    width: `${Math.min(100, (qualifyingCount / 3) * 100)}%`,
+                    width: `${Math.min(100, (qualifyingCount / targetActivationSales) * 100)}%`,
                   }}
                 />
               </div>
@@ -347,7 +362,7 @@ export default function AffiliateDashboard() {
                 </div>
               ) : (
                 <div className="text-[11px] text-amber-400/90">
-                  আরও {Math.max(0, 3 - qualifyingCount)}টি সফল সেল প্রয়োজন।
+                  আরও {Math.max(0, targetActivationSales - qualifyingCount)}টি সফল সেল প্রয়োজন।
                 </div>
               )}
             </div>
@@ -462,7 +477,9 @@ export default function AffiliateDashboard() {
             <div className="flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-red-400" />
               <span>
-                পূর্বের রিফান্ডের কারণে আপনার ৳{recoveryDueTaka.toLocaleString("bn-BD")} বকেয়া রিকভারি ডিউ রয়েছে, যা ভবিষ্যতের কমিশন থেকে স্বয়ংক্রিয়ভাবে সমন্বয় হবে।
+                পূর্বের রিফান্ডের কারণে আপনার ৳
+                {recoveryDueTaka.toLocaleString("bn-BD")} বকেয়া রিকভারি ডিউ
+                রয়েছে, যা ভবিষ্যতের কমিশন থেকে স্বয়ংক্রিয়ভাবে সমন্বয় হবে।
               </span>
             </div>
           </div>
@@ -489,9 +506,10 @@ export default function AffiliateDashboard() {
               </div>
               <p className="text-xs text-slate-400">
                 এই কুপন ব্যবহার করে যেকোনো নতুন গ্রাহক প্রথম সাবস্ক্রিপশনে পাবেন{" "}
-                <span className="text-emerald-400 font-semibold">১০% ছাড়</span> এবং
-                আপনি পাবেন{" "}
-                <span className="text-indigo-400 font-semibold">২০% কমিশন</span>।
+                <span className="text-emerald-400 font-semibold">১০% ছাড়</span>{" "}
+                এবং আপনি পাবেন{" "}
+                <span className="text-indigo-400 font-semibold">২০% কমিশন</span>
+                ।
               </p>
             </div>
 
@@ -585,17 +603,18 @@ export default function AffiliateDashboard() {
                                 day: "numeric",
                                 month: "short",
                                 year: "numeric",
-                              }
+                              },
                             )}
                           </td>
                           <td className="py-3 px-4 font-bold text-white">
-                            ৳{(item.amountMinor / 100).toLocaleString("bn-BD")}
+                            ৳{((item.amountMinor !== undefined ? item.amountMinor / 100 : Number(item.amountBDT || 0))).toLocaleString("bn-BD")}
                           </td>
                           <td className="py-3 px-4 font-medium text-slate-300">
                             {item.paymentMethod}
                           </td>
                           <td className="py-3 px-4 text-slate-400 font-mono">
                             {item.paymentDetails?.accountNumber ||
+                              item.payoutDestinationSnapshot?.accountNumber ||
                               item.paymentDetails?.accountHolderName ||
                               "—"}
                           </td>
@@ -605,20 +624,18 @@ export default function AffiliateDashboard() {
                                 item.status === "Paid"
                                   ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                                   : item.status === "Approved" ||
-                                    item.status === "Processing"
-                                  ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
-                                  : item.status === "Rejected"
-                                  ? "bg-pink-500/10 text-pink-400 border border-pink-500/20"
-                                  : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                      item.status === "Processing"
+                                    ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+                                    : item.status === "Rejected"
+                                      ? "bg-pink-500/10 text-pink-400 border border-pink-500/20"
+                                      : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
                               }`}
                             >
                               {item.status}
                             </span>
                           </td>
                           <td className="py-3 px-4 text-slate-400 font-mono text-[11px]">
-                            {item.transactionId ||
-                              item.rejectionReason ||
-                              "—"}
+                            {item.transactionId || item.payoutTransactionRef || item.rejectionReason || "—"}
                           </td>
                         </tr>
                       ))
@@ -653,7 +670,8 @@ export default function AffiliateDashboard() {
                           colSpan={8}
                           className="py-8 text-center text-slate-500"
                         >
-                          এখনো কোনো রেফারেল সেল পাওয়া যায়নি। আপনার কুপন কোড শেয়ার করুন!
+                          এখনো কোনো রেফারেল সেল পাওয়া যায়নি। আপনার কুপন কোড
+                          শেয়ার করুন!
                         </td>
                       </tr>
                     ) : (
@@ -669,7 +687,7 @@ export default function AffiliateDashboard() {
                                 day: "numeric",
                                 month: "short",
                                 year: "numeric",
-                              }
+                              },
                             )}
                           </td>
                           <td className="py-3 px-4 font-mono text-slate-400">
@@ -682,16 +700,26 @@ export default function AffiliateDashboard() {
                             </div>
                           </td>
                           <td className="py-3 px-4 text-slate-300">
-                            ৳{(sale.originalPriceMinor / 100).toLocaleString("bn-BD")}
+                            ৳
+                            {((sale.originalPriceMinor !== undefined ? sale.originalPriceMinor / 100 : Number(sale.originalPriceBDT || 0))).toLocaleString(
+                              "bn-BD",
+                            )}
                           </td>
                           <td className="py-3 px-4 text-emerald-400">
-                            -৳{(sale.discountMinor / 100).toLocaleString("bn-BD")}
+                            -৳
+                            {((sale.discountMinor !== undefined ? sale.discountMinor / 100 : Number(sale.discountBDT || 0))).toLocaleString("bn-BD")}
                           </td>
                           <td className="py-3 px-4 text-white font-medium">
-                            ৳{(sale.finalPaidMinor / 100).toLocaleString("bn-BD")}
+                            ৳
+                            {((sale.finalPaidMinor !== undefined ? sale.finalPaidMinor / 100 : Number(sale.finalPaidBDT || 0))).toLocaleString(
+                              "bn-BD",
+                            )}
                           </td>
                           <td className="py-3 px-4 font-bold text-indigo-400">
-                            ৳{(sale.commissionMinor / 100).toLocaleString("bn-BD")}
+                            ৳
+                            {((sale.commissionMinor !== undefined ? sale.commissionMinor / 100 : Number(sale.commissionBDT || 0))).toLocaleString(
+                              "bn-BD",
+                            )}
                           </td>
                           <td className="py-3 px-4">
                             <span
@@ -699,15 +727,15 @@ export default function AffiliateDashboard() {
                                 sale.saleStatus === "Qualified"
                                   ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                                   : sale.saleStatus === "PendingHold"
-                                  ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                                  : "bg-pink-500/10 text-pink-400 border border-pink-500/20"
+                                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                    : "bg-pink-500/10 text-pink-400 border border-pink-500/20"
                               }`}
                             >
                               {sale.saleStatus === "PendingHold"
                                 ? "১৪ দিন হোল্ড"
                                 : sale.saleStatus === "Qualified"
-                                ? "কোয়ালিফাইড"
-                                : sale.saleStatus}
+                                  ? "কোয়ালিফাইড"
+                                  : sale.saleStatus}
                             </span>
                           </td>
                         </tr>
@@ -758,7 +786,7 @@ export default function AffiliateDashboard() {
                                 month: "short",
                                 hour: "2-digit",
                                 minute: "2-digit",
-                              }
+                              },
                             )}
                           </td>
                           <td className="py-3 px-4 font-mono font-medium text-slate-300">
@@ -780,11 +808,17 @@ export default function AffiliateDashboard() {
                               ) : (
                                 <ArrowUpRight className="w-3.5 h-3.5" />
                               )}
-                              ৳{(entry.amountMinor / 100).toLocaleString("bn-BD")}
+                              ৳
+                              {((entry.amountMinor !== undefined ? entry.amountMinor / 100 : Number(entry.amountBDT || 0))).toLocaleString(
+                                "bn-BD",
+                              )}
                             </span>
                           </td>
                           <td className="py-3 px-4 text-white font-mono">
-                            ৳{(entry.balanceAfterMinor / 100).toLocaleString("bn-BD")}
+                            ৳
+                            {((entry.balanceAfterMinor !== undefined ? entry.balanceAfterMinor / 100 : Number(entry.balanceAfterBDT || 0))).toLocaleString(
+                              "bn-BD",
+                            )}
                           </td>
                           <td className="py-3 px-4 text-slate-400">
                             {entry.description}
@@ -820,7 +854,8 @@ export default function AffiliateDashboard() {
                   উইথড্র রিকোয়েস্ট
                 </h3>
                 <p className="text-xs text-slate-400">
-                  নূন্যতম উত্তোলনের পরিমাণ ৳{minWithdrawTaka.toLocaleString("bn-BD")} টাকা
+                  নূন্যতম উত্তোলনের পরিমাণ ৳
+                  {minWithdrawTaka.toLocaleString("bn-BD")} টাকা
                 </p>
               </div>
             </div>
@@ -853,7 +888,10 @@ export default function AffiliateDashboard() {
                   {Number(withdrawAmount) > 0 && (
                     <span className="text-indigo-400 font-medium">
                       অবশিষ্ট থাকবে: ৳
-                      {Math.max(0, availableTaka - Number(withdrawAmount)).toLocaleString("bn-BD")}
+                      {Math.max(
+                        0,
+                        availableTaka - Number(withdrawAmount),
+                      ).toLocaleString("bn-BD")}
                     </span>
                   )}
                 </div>
@@ -865,20 +903,22 @@ export default function AffiliateDashboard() {
                   পেমেন্ট নেওয়ার মাধ্যম
                 </label>
                 <div className="mt-1 grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {["bKash", "Nagad", "Rocket", "Bank Transfer"].map((method) => (
-                    <button
-                      key={method}
-                      type="button"
-                      onClick={() => setPayoutMethod(method)}
-                      className={`py-2 px-2 text-xs font-semibold rounded-xl border transition-colors ${
-                        payoutMethod === method
-                          ? "bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/20"
-                          : "bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700"
-                      }`}
-                    >
-                      {method}
-                    </button>
-                  ))}
+                  {["bKash", "Nagad", "Rocket", "Bank Transfer"].map(
+                    (method) => (
+                      <button
+                        key={method}
+                        type="button"
+                        onClick={() => setPayoutMethod(method)}
+                        className={`py-2 px-2 text-xs font-semibold rounded-xl border transition-colors ${
+                          payoutMethod === method
+                            ? "bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/20"
+                            : "bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700"
+                        }`}
+                      >
+                        {method}
+                      </button>
+                    ),
+                  )}
                 </div>
               </div>
 

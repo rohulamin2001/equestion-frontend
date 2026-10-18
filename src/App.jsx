@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import RoleRouteGuard from "./components/RoleRouteGuard";
+import AffiliateCouponListener from "./components/AffiliateCouponListener";
 import AcademicSetup from "./pages/AcademicSetup/AcademicSetup";
 import AffiliateLanding from "./pages/Affiliate/AffiliateLanding";
 import AffiliateRegister from "./pages/Affiliate/AffiliateRegister";
@@ -45,6 +46,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Toaster richColors position="top-center" />
+      <AffiliateCouponListener />
       <AuthDrawer />
       <Routes>
         <Route path="/" element={<Home />} />

@@ -121,6 +121,51 @@ export default function Subscription() {
     }
   };
 
+  // Auto-apply referral/affiliate coupon stored in session/local storage on package select
+  useEffect(() => {
+    if (!checkoutPkg) return;
+
+    let isMounted = true;
+    try {
+      const savedCoupon =
+        sessionStorage.getItem("sp_affiliate_coupon") ||
+        localStorage.getItem("sp_affiliate_coupon");
+
+      if (savedCoupon && !appliedCoupon) {
+        const cleanSaved = savedCoupon.trim().toUpperCase();
+        setTimeout(() => {
+          if (!isMounted) return;
+          setCouponCode(cleanSaved);
+          setShowCouponInput(true);
+        }, 0);
+
+        validateCoupon
+          .mutateAsync({
+            code: cleanSaved,
+            packageId: checkoutPkg.id,
+            version: checkoutPkg.version,
+            cartTotal: checkoutPkg.price,
+          })
+          .then((res) => {
+            if (!isMounted) return;
+            setAppliedCoupon(res);
+            setCouponError("");
+            toast.success(`রেফারেল কুপন কোড (${cleanSaved}) স্বয়ংক্রিয়ভাবে প্রয়োগ করা হয়েছে!`);
+          })
+          .catch((err) => {
+            console.warn("Auto-applied coupon failed validation:", err);
+          });
+      }
+    } catch (err) {
+      console.warn("Coupon auto-apply check error:", err);
+    }
+
+    return () => {
+      isMounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkoutPkg]);
+
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
       setCouponError("কুপন কোড লিখুন");
@@ -149,6 +194,12 @@ export default function Subscription() {
     setCouponCode("");
     setAppliedCoupon(null);
     setCouponError("");
+    try {
+      sessionStorage.removeItem("sp_affiliate_coupon");
+      localStorage.removeItem("sp_affiliate_coupon");
+    } catch (err) {
+      console.warn("Failed to clear coupon storage:", err);
+    }
   };
 
   const handleConfirmPurchase = async () => {
