@@ -1,9 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   Briefcase,
-  CheckCircle,
   Eye,
   EyeOff,
   KeyRound,
@@ -16,190 +13,32 @@ import {
   Sparkles,
   User,
 } from "lucide-react";
-import { toast } from "sonner";
-import apiClient from "@/lib/apiClient";
+import { Link } from "react-router-dom";
+import { useAffiliateRegister } from "./hook/useAffiliateRegister";
 
 export default function AffiliateRegister() {
-  const navigate = useNavigate();
-
-  // Form State (7 Personal Info Fields)
-  const [formData, setFormData] = useState({
-    fullName: "",
-    phoneNumber: "",
-    email: "",
-    profession: "",
-    address: "",
-    password: "",
-    confirmPassword: "",
-    agreedToTerms: false,
-  });
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // OTP Modal State
-  const [showOtpModal, setShowOtpModal] = useState(false);
-  const [otpCode, setOtpCode] = useState("");
-  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
-  const [countdown, setCountdown] = useState(300); // 5 mins = 300s
-  const [canResend, setCanResend] = useState(false);
-  const [isResending, setIsResending] = useState(false);
-  const [verifiedPhone, setVerifiedPhone] = useState("");
-
-  // Countdown Timer
-  useEffect(() => {
-    let timer;
-    if (showOtpModal && countdown > 0) {
-      timer = setInterval(() => {
-        setCountdown((prev) => prev - 1);
-      }, 1000);
-    } else if (countdown === 0) {
-      setCanResend(true);
-    }
-    return () => clearInterval(timer);
-  }, [showOtpModal, countdown]);
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!formData.fullName.trim()) {
-      toast.error("অনুগ্রহ করে আপনার পূর্ণ নাম লিখুন।");
-      return;
-    }
-
-    if (!formData.phoneNumber.trim()) {
-      toast.error("অনুগ্রহ করে আপনার মোবাইল নম্বর লিখুন।");
-      return;
-    }
-
-    const cleanPhone = formData.phoneNumber.replace(/[^0-9]/g, "");
-    if (cleanPhone.length < 11) {
-      toast.error("সঠিক ১১ ডিজিটের মোবাইল নম্বর লিখুন (যেমন: 017XXXXXXXX)।");
-      return;
-    }
-
-    if (!formData.email.trim() || !formData.email.includes("@")) {
-      toast.error("সঠিক ইমেইল ঠিকানা লিখুন।");
-      return;
-    }
-
-    if (!formData.password || formData.password.length < 6) {
-      toast.error("পাসওয়ার্ড নূন্যতম ৬ অক্ষরের হতে হবে।");
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("পাসওয়ার্ড ও পাসওয়ার্ড নিশ্চিতকরণ মিলছে না।");
-      return;
-    }
-
-    if (!formData.agreedToTerms) {
-      toast.error("প্রোগ্রামের শর্তাবলী ও নীতিমালা মেনে নেওয়ার বক্সে টিক দিন।");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const response = await apiClient.post("/affiliate/register", {
-        fullName: formData.fullName,
-        phoneNumber: formData.phoneNumber,
-        email: formData.email,
-        profession: formData.profession,
-        address: formData.address,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
-      });
-
-      if (response.data?.success) {
-        setVerifiedPhone(response.data.phoneNumber || formData.phoneNumber);
-        setShowOtpModal(true);
-        setCountdown(300);
-        setCanResend(false);
-        toast.success(response.data.message || "মোবাইলে ওটিপি পাঠানো হয়েছে।");
-      }
-    } catch (err) {
-      console.error("Register error:", err);
-      toast.error(
-        err.response?.data?.error ||
-          "রেজিস্ট্রেশন শুরু করতে সমস্যা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।"
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-
-    if (!otpCode || otpCode.trim().length !== 6) {
-      toast.error("অনুগ্রহ করে ৬ ডিজিটের ওটিপি সঠিকভাবে লিখুন।");
-      return;
-    }
-
-    setIsVerifyingOtp(true);
-    try {
-      const response = await apiClient.post("/affiliate/verify-otp", {
-        phoneNumber: verifiedPhone || formData.phoneNumber,
-        otp: otpCode.trim(),
-      });
-
-      if (response.data?.success) {
-        toast.success("আপনার আবেদন সফলভাবে সম্পন্ন হয়েছে!");
-        setShowOtpModal(false);
-        navigate("/affiliate/login", {
-          state: {
-            registrationSuccess: true,
-            phoneNumber: verifiedPhone || formData.phoneNumber,
-          },
-        });
-      }
-    } catch (err) {
-      console.error("Verify OTP error:", err);
-      toast.error(
-        err.response?.data?.error || "ভুল ওটিপি অথবা মেয়াদ শেষ হয়ে গেছে।"
-      );
-    } finally {
-      setIsVerifyingOtp(false);
-    }
-  };
-
-  const handleResendOtp = async () => {
-    if (!canResend || isResending) return;
-
-    setIsResending(true);
-    try {
-      const response = await apiClient.post("/affiliate/resend-otp", {
-        phoneNumber: verifiedPhone || formData.phoneNumber,
-      });
-
-      if (response.data?.success) {
-        toast.success("নতুন ওটিপি কোড পাঠানো হয়েছে।");
-        setCountdown(300);
-        setCanResend(false);
-      }
-    } catch (err) {
-      toast.error(
-        err.response?.data?.error || "ওটিপি পুনরায় পাঠাতে সমস্যা হয়েছে।"
-      );
-    } finally {
-      setIsResending(false);
-    }
-  };
-
-  const formatTimer = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
-  };
+  const {
+    formData,
+    showPassword,
+    setShowPassword,
+    showConfirmPassword,
+    setShowConfirmPassword,
+    isSubmitting,
+    showOtpModal,
+    setShowOtpModal,
+    otpCode,
+    setOtpCode,
+    isVerifyingOtp,
+    countdown,
+    canResend,
+    isResending,
+    verifiedPhone,
+    formatTimer,
+    handleChange,
+    handleSubmit,
+    handleVerifyOtp,
+    handleResendOtp,
+  } = useAffiliateRegister();
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative selection:bg-indigo-500 selection:text-white">
@@ -218,7 +57,7 @@ export default function AffiliateRegister() {
         </Link>
 
         <div className="flex items-center justify-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <span className="font-extrabold text-2xl text-white tracking-tight">
@@ -230,17 +69,17 @@ export default function AffiliateRegister() {
           অ্যাফিলিয়েট পার্টনার রেজিস্ট্রেশন
         </h2>
         <p className="mt-1 text-center text-sm text-slate-400">
-          নতুন গ্রাহক রেফার করে আকর্ষণীয় কমিশন অর্জন শুরু করুন
+          নিচের তথ্যগুলো দিয়ে আপনার পার্টনারশিপ আবেদনটি সম্পন্ন করুন
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl relative z-10 px-4 sm:px-0">
         <div className="bg-slate-950/80 border border-slate-800 backdrop-blur-xl py-8 px-6 sm:px-10 shadow-2xl rounded-2xl">
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            {/* 1. Full Name */}
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            {/* Full Name */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                পূর্ণ নাম (Full Name) <span className="text-pink-400">*</span>
+                পূর্ণ নাম <span className="text-pink-400">*</span>
               </label>
               <div className="mt-1.5 relative rounded-xl shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
@@ -252,13 +91,13 @@ export default function AffiliateRegister() {
                   value={formData.fullName}
                   onChange={handleChange}
                   required
-                  placeholder="যেমন: মোঃ রাকিবুল হাসান"
+                  placeholder="আপনার পূর্ণ নাম লিখুন"
                   className="block w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm transition-colors"
                 />
               </div>
             </div>
 
-            {/* 2. Mobile Number & Email (2 Cols on md) */}
+            {/* Phone & Email Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
@@ -278,9 +117,6 @@ export default function AffiliateRegister() {
                     className="block w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm transition-colors"
                   />
                 </div>
-                <span className="text-[11px] text-slate-500 mt-1 block">
-                  ওটিপি ভেরিফিকেশনের জন্য ব্যবহৃত হবে
-                </span>
               </div>
 
               <div>
@@ -301,17 +137,14 @@ export default function AffiliateRegister() {
                     className="block w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm transition-colors"
                   />
                 </div>
-                <span className="text-[11px] text-slate-500 mt-1 block">
-                  নোটিফিকেশন পাঠানো হবে
-                </span>
               </div>
             </div>
 
-            {/* 4. Profession & Address */}
+            {/* Profession & Address Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                  পেশা / কর্মসংস্থান
+                  পেশা / পদবি
                 </label>
                 <div className="mt-1.5 relative rounded-xl shadow-sm">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
@@ -322,7 +155,7 @@ export default function AffiliateRegister() {
                     name="profession"
                     value={formData.profession}
                     onChange={handleChange}
-                    placeholder="যেমন: কন্টেন্ট ক্রিয়েটর / শিক্ষক"
+                    placeholder="যেমন: শিক্ষক, মার্কেটার, কনটেন্ট ক্রিয়েটর"
                     className="block w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm transition-colors"
                   />
                 </div>
@@ -330,7 +163,7 @@ export default function AffiliateRegister() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                  বর্তমান ঠিকানা / শহর
+                  ঠিকানা / জেলা
                 </label>
                 <div className="mt-1.5 relative rounded-xl shadow-sm">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
@@ -341,14 +174,14 @@ export default function AffiliateRegister() {
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
-                    placeholder="যেমন: মিরপুর, ঢাকা"
+                    placeholder="আপনার বর্তমান এলাকা/শহর"
                     className="block w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm transition-colors"
                   />
                 </div>
               </div>
             </div>
 
-            {/* 6. Password & Confirm Password */}
+            {/* Password & Confirm Password Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
@@ -423,7 +256,10 @@ export default function AffiliateRegister() {
                 onChange={handleChange}
                 className="h-4 w-4 mt-0.5 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500"
               />
-              <label htmlFor="agreedToTerms" className="text-xs text-slate-400 leading-relaxed">
+              <label
+                htmlFor="agreedToTerms"
+                className="text-xs text-slate-400 leading-relaxed"
+              >
                 আমি স্মার্ট প্রশ্ন ব্যাংক অ্যাফিলিয়েট প্রোগ্রামের{" "}
                 <Link to="/terms" className="text-indigo-400 hover:underline">
                   শর্তাবলী ও নীতিমালা
@@ -472,9 +308,14 @@ export default function AffiliateRegister() {
               <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto mb-4">
                 <KeyRound className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">মোবাইল নম্বর যাচাইকরণ</h3>
+              <h3 className="text-lg font-bold text-white">
+                মোবাইল নম্বর যাচাইকরণ
+              </h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-400">
-                <span className="font-semibold text-slate-200">{verifiedPhone}</span> নম্বরে একটি ৬ ডিজিটের ভেরিফিকেশন কোড পাঠানো হয়েছে।
+                <span className="font-semibold text-slate-200">
+                  {verifiedPhone}
+                </span>{" "}
+                নম্বরে একটি ৬ ডিজিটের ভেরিফিকেশন কোড পাঠানো হয়েছে।
               </p>
             </div>
 
@@ -484,7 +325,9 @@ export default function AffiliateRegister() {
                   type="text"
                   maxLength={6}
                   value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ""))}
+                  onChange={(e) =>
+                    setOtpCode(e.target.value.replace(/[^0-9]/g, ""))
+                  }
                   placeholder="• • • • • •"
                   className="w-full text-center tracking-[0.5em] text-2xl font-bold py-3 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   autoFocus
@@ -493,7 +336,10 @@ export default function AffiliateRegister() {
 
               <div className="flex items-center justify-between text-xs text-slate-400 px-1">
                 <span>
-                  মেয়াদ বাকি: <span className="text-indigo-400 font-semibold">{formatTimer(countdown)}</span>
+                  মেয়াদ বাকি:{" "}
+                  <span className="text-indigo-400 font-semibold">
+                    {formatTimer(countdown)}
+                  </span>
                 </span>
                 <button
                   type="button"
@@ -501,7 +347,9 @@ export default function AffiliateRegister() {
                   disabled={!canResend || isResending}
                   className="text-indigo-400 hover:text-indigo-300 disabled:opacity-40 disabled:hover:text-slate-400 flex items-center gap-1 font-medium"
                 >
-                  <RefreshCw className={`w-3.5 h-3.5 ${isResending ? "animate-spin" : ""}`} />
+                  <RefreshCw
+                    className={"w-3.5 h-3.5 " + (isResending ? "animate-spin" : "")}
+                  />
                   <span>পুনরায় পাঠান</span>
                 </button>
               </div>

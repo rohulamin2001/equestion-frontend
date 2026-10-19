@@ -1,7 +1,4 @@
-import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  AlertCircle,
   AlertTriangle,
   ArrowLeft,
   CheckCircle2,
@@ -13,117 +10,22 @@ import {
   ShieldAlert,
   Sparkles,
 } from "lucide-react";
-import { toast } from "sonner";
-import { useUserContext } from "@/context/UserContext";
-import apiClient, { setAccessToken } from "@/lib/apiClient";
+import { Link } from "react-router-dom";
+import { useAffiliateLogin } from "./hook/useAffiliateLogin";
 
 export default function AffiliateLogin() {
-  const navigate = useNavigate();
-  const { refreshProfile } = useUserContext();
-  const location = useLocation();
-
-  const [phoneNumber, setPhoneNumber] = useState(
-    location.state?.phoneNumber || ""
-  );
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [statusFeedback, setStatusFeedback] = useState(null);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatusFeedback(null);
-
-    if (!phoneNumber.trim()) {
-      toast.error("মোবাইল নম্বর লিখুন।");
-      return;
-    }
-
-    if (!password) {
-      toast.error("পাসওয়ার্ড লিখুন।");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await apiClient.post("/affiliate/login", {
-        phoneNumber: phoneNumber.trim(),
-        password,
-      });
-
-      if (response.data?.success) {
-        setAccessToken(response.data.accessToken);
-        if (refreshProfile) {
-          try {
-            await refreshProfile();
-          } catch (e) {
-            console.error("Profile refresh error:", e);
-          }
-        }
-        toast.success("অ্যাফিলিয়েট ড্যাশবোর্ডে স্বাগতম!");
-        navigate("/affiliate/dashboard", { replace: true });
-      }
-    } catch (err) {
-      console.error("Affiliate login error:", err);
-      const data = err.response?.data;
-
-      if (
-        data?.reviewStatus === "Pending" ||
-        data?.code === "APPLICATION_PENDING"
-      ) {
-        setStatusFeedback({
-          type: "pending",
-          title: "আবেদন পর্যালোচনায় রয়েছে",
-          message:
-            data?.error ||
-            "আপনার অ্যাফিলিয়েট আবেদনটি সফলভাবে জমা হয়েছে এবং বর্তমানে পর্যালোচনায় রয়েছে। অ্যাডমিন অনুমোদন করার পর আপনি ড্যাশবোর্ড ও কুপন কোড ব্যবহার করতে পারবেন।",
-        });
-      } else if (
-        data?.reviewStatus === "Rejected" ||
-        data?.code === "APPLICATION_REJECTED"
-      ) {
-        setStatusFeedback({
-          type: "rejected",
-          title: "আবেদন প্রত্যাখ্যাত হয়েছে",
-          message:
-            data?.error ||
-            `আপনার আবেদনটি অনুমোদিত হয়নি।${
-              data?.rejectionReason ? ` কারণ: ${data.rejectionReason}` : ""
-            }`,
-        });
-      } else if (
-        data?.accountControlStatus === "Suspended" ||
-        data?.code === "ACCOUNT_SUSPENDED"
-      ) {
-        setStatusFeedback({
-          type: "suspended",
-          title: "অ্যাকাউন্ট সাময়িকভাবে স্থগিত",
-          message:
-            data?.error ||
-            `আপনার অ্যাকাউন্টটি স্থগিত রাখা হয়েছে।${
-              data?.suspensionReason ? ` কারণ: ${data.suspensionReason}` : ""
-            } বিস্তারিত জানতে সাপোর্টে যোগাযোগ করুন।`,
-        });
-      } else if (
-        data?.accountControlStatus === "Disabled" ||
-        data?.code === "ACCOUNT_DISABLED"
-      ) {
-        setStatusFeedback({
-          type: "disabled",
-          title: "অ্যাকাউন্ট নিষ্ক্রিয় করা হয়েছে",
-          message:
-            data?.error ||
-            "আপনার অ্যাফিলিয়েট অ্যাকাউন্টটি নিষ্ক্রিয় করা হয়েছে। সহায়তার জন্য অ্যাডমিনের সাথে যোগাযোগ করুন।",
-        });
-      } else {
-        toast.error(
-          data?.error || "লগইন করতে সমস্যা হয়েছে। সঠিক মোবাইল নম্বর ও পাসওয়ার্ড দিন।"
-        );
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    phoneNumber,
+    setPhoneNumber,
+    password,
+    setPassword,
+    showPassword,
+    setShowPassword,
+    isLoading,
+    statusFeedback,
+    registrationSuccess,
+    handleSubmit,
+  } = useAffiliateLogin();
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative selection:bg-indigo-500 selection:text-white">
@@ -161,7 +63,7 @@ export default function AffiliateLogin() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
         <div className="bg-slate-950/80 border border-slate-800 backdrop-blur-xl py-8 px-6 sm:px-10 shadow-2xl rounded-2xl">
           {/* Registration Success Banner */}
-          {location.state?.registrationSuccess && !statusFeedback && (
+          {registrationSuccess && !statusFeedback && (
             <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-start gap-3">
               <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
               <div>
@@ -169,7 +71,9 @@ export default function AffiliateLogin() {
                   আবেদন সফলভাবে গৃহীত হয়েছে!
                 </p>
                 <p className="mt-1 text-emerald-400/90 leading-relaxed">
-                  অ্যাডমিন কর্তৃক আপনার আবেদন পর্যালোচনা করা হচ্ছে। অনুমোদন পেলে আপনি এসএমএস ও ইমেইলে নোটিফিকেশন পাবেন এবং আপনার ইউনিক কুপন সক্রিয় হবে।
+                  অ্যাডমিন কর্তৃক আপনার আবেদন পর্যালোচনা করা হচ্ছে। অনুমোদন পেলে
+                  আপনি এসএমএস ও ইমেইলে নোটিফিকেশন পাবেন এবং আপনার ইউনিক কুপন
+                  সক্রিয় হবে।
                 </p>
               </div>
             </div>
