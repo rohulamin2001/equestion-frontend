@@ -348,7 +348,9 @@ export default function AffiliateRegister() {
                   className="text-indigo-400 hover:text-indigo-300 disabled:opacity-40 disabled:hover:text-slate-400 flex items-center gap-1 font-medium"
                 >
                   <RefreshCw
-                    className={"w-3.5 h-3.5 " + (isResending ? "animate-spin" : "")}
+                    className={
+                      "w-3.5 h-3.5 " + (isResending ? "animate-spin" : "")
+                    }
                   />
                   <span>পুনরায় পাঠান</span>
                 </button>

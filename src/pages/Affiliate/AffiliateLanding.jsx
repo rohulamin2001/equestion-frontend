@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-import { useAffiliateLanding } from "./hook/useAffiliateLanding";
 import {
   ArrowRight,
   Award,
@@ -14,6 +12,8 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAffiliateLanding } from "./hook/useAffiliateLanding";
 
 export default function AffiliateLanding() {
   const {
@@ -191,7 +191,9 @@ export default function AffiliateLanding() {
           </h1>
 
           <p className="mt-4 sm:mt-6 text-xs sm:text-base md:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            বাংলাদেশের সবচেয়ে উন্নত প্রশ্নব্যাংক ও ওএমআর সিস্টেমকে আপনার পরিচিত শিক্ষক ও প্রতিষ্ঠানের কাছে পৌঁছে দিন। তারা পাবে বিশেষ ছাড়, আপনি পাবেন প্রতিটি সফল বিক্রয় থেকে নিশ্চিত ইনকাম।
+            বাংলাদেশের সবচেয়ে উন্নত প্রশ্নব্যাংক ও ওএমআর সিস্টেমকে আপনার পরিচিত
+            শিক্ষক ও প্রতিষ্ঠানের কাছে পৌঁছে দিন। তারা পাবে বিশেষ ছাড়, আপনি
+            পাবেন প্রতিটি সফল বিক্রয় থেকে নিশ্চিত ইনকাম।
           </p>
 
           {/* Primary Action Buttons */}
@@ -214,20 +216,36 @@ export default function AffiliateLanding() {
           {/* Quick Metrics Grid */}
           <div className="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 max-w-4xl mx-auto">
             <div className="p-3.5 sm:p-5 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-sm">
-              <div className="text-xl sm:text-3xl font-black text-indigo-400">২০%</div>
-              <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">সর্বোচ্চ কমিশন হার</div>
+              <div className="text-xl sm:text-3xl font-black text-indigo-400">
+                ২০%
+              </div>
+              <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">
+                সর্বোচ্চ কমিশন হার
+              </div>
             </div>
             <div className="p-3.5 sm:p-5 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-sm">
-              <div className="text-xl sm:text-3xl font-black text-emerald-400">১০%</div>
-              <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">গ্রাহক ডিসকাউন্ট</div>
+              <div className="text-xl sm:text-3xl font-black text-emerald-400">
+                ১০%
+              </div>
+              <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">
+                গ্রাহক ডিসকাউন্ট
+              </div>
             </div>
             <div className="p-3.5 sm:p-5 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-sm">
-              <div className="text-xl sm:text-3xl font-black text-amber-400">১৪ দিন</div>
-              <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">হোল্ড ও সিকিউরিটি</div>
+              <div className="text-xl sm:text-3xl font-black text-amber-400">
+                ১৪ দিন
+              </div>
+              <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">
+                হোল্ড ও সিকিউরিটি
+              </div>
             </div>
             <div className="p-3.5 sm:p-5 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-sm">
-              <div className="text-xl sm:text-3xl font-black text-purple-400">৳৫,০০০</div>
-              <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">সহজ উইথড্রয়াল সীমা</div>
+              <div className="text-xl sm:text-3xl font-black text-purple-400">
+                ৳৫,০০০
+              </div>
+              <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">
+                সহজ উইথড্রয়াল সীমা
+              </div>
             </div>
           </div>
         </div>
@@ -243,7 +261,9 @@ export default function AffiliateLanding() {
             <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-indigo-400">
               সহজ ৩টি ধাপ
             </h2>
-            <p className="mt-1.5 sm:mt-2 text-2xl sm:text-3xl font-bold text-white">কীভাবে প্রোগ্রামটি কাজ করে?</p>
+            <p className="mt-1.5 sm:mt-2 text-2xl sm:text-3xl font-bold text-white">
+              কীভাবে প্রোগ্রামটি কাজ করে?
+            </p>
           </div>
 
           <div className="mt-10 sm:mt-14 grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8">
@@ -252,9 +272,13 @@ export default function AffiliateLanding() {
               <div className="size-10 sm:size-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center font-black text-base sm:text-lg mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
                 ১
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-white">বিনামূল্যে রেজিস্ট্রেশন করুন</h3>
+              <h3 className="text-base sm:text-lg font-bold text-white">
+                বিনামূল্যে রেজিস্ট্রেশন করুন
+              </h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                আপনার নাম, মোবাইল নম্বর এবং মৌলিক তথ্য দিয়ে আবেদন করুন। মোবাইল ওটিপি দিয়ে ভেরিফাই সম্পন্ন করুন। অ্যাডমিন অনুমোদনের পর আপনি ইউনিক কুপন কোড পাবেন।
+                আপনার নাম, মোবাইল নম্বর এবং মৌলিক তথ্য দিয়ে আবেদন করুন। মোবাইল
+                ওটিপি দিয়ে ভেরিফাই সম্পন্ন করুন। অ্যাডমিন অনুমোদনের পর আপনি
+                ইউনিক কুপন কোড পাবেন।
               </p>
             </div>
 
@@ -263,9 +287,12 @@ export default function AffiliateLanding() {
               <div className="size-10 sm:size-12 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 flex items-center justify-center font-black text-base sm:text-lg mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
                 ২
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-white">কুপন কোড শেয়ার করুন</h3>
+              <h3 className="text-base sm:text-lg font-bold text-white">
+                কুপন কোড শেয়ার করুন
+              </h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                আপনার স্পেশাল কুপন কোড শিক্ষক, কোচিং বা ফেসবুক গ্রুপে শেয়ার করুন। আপনার কুপন ব্যবহার করে প্যাকেজ কিনলে গ্রাহক ১০% ছাড় পাবেন।
+                আপনার স্পেশাল কুপন কোড শিক্ষক, কোচিং বা ফেসবুক গ্রুপে শেয়ার
+                করুন। আপনার কুপন ব্যবহার করে প্যাকেজ কিনলে গ্রাহক ১০% ছাড় পাবেন।
               </p>
             </div>
 
@@ -274,9 +301,13 @@ export default function AffiliateLanding() {
               <div className="size-10 sm:size-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-base sm:text-lg mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
                 ৩
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-white">কমিশন উত্তোলন করুন</h3>
+              <h3 className="text-base sm:text-lg font-bold text-white">
+                কমিশন উত্তোলন করুন
+              </h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                প্রতিটি সফল সেল থেকে আপনার কমিশন জমা হবে। ৩টি সফল সেল ও ৫,০০০ টাকা ব্যালেন্স হলেই বিকাশ, নগদ, রকেট বা ব্যাংকে সরাসরি টাকা ট্রান্সফার করুন।
+                প্রতিটি সফল সেল থেকে আপনার কমিশন জমা হবে। ৩টি সফল সেল ও ৫,০০০
+                টাকা ব্যালেন্স হলেই বিকাশ, নগদ, রকেট বা ব্যাংকে সরাসরি টাকা
+                ট্রান্সফার করুন।
               </p>
             </div>
           </div>
@@ -290,7 +321,9 @@ export default function AffiliateLanding() {
             <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-indigo-400">
               সুবিধাসমূহ
             </h2>
-            <p className="mt-1.5 sm:mt-2 text-2xl sm:text-3xl font-bold text-white">কেন আমাদের সাথে কাজ করবেন?</p>
+            <p className="mt-1.5 sm:mt-2 text-2xl sm:text-3xl font-bold text-white">
+              কেন আমাদের সাথে কাজ করবেন?
+            </p>
           </div>
 
           <div className="mt-10 sm:mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -299,8 +332,12 @@ export default function AffiliateLanding() {
                 <TrendingUp className="size-4.5 sm:size-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm sm:text-base text-white">আকর্ষণীয় ইনকাম</h4>
-                <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">প্রতিটি পেইড সাবস্ক্রিপশনে ২০% পর্যন্ত নগদ কমিশন পাওয়ার সুযোগ।</p>
+                <h4 className="font-bold text-sm sm:text-base text-white">
+                  আকর্ষণীয় ইনকাম
+                </h4>
+                <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                  প্রতিটি পেইড সাবস্ক্রিপশনে ২০% পর্যন্ত নগদ কমিশন পাওয়ার সুযোগ।
+                </p>
               </div>
             </div>
 
@@ -309,8 +346,12 @@ export default function AffiliateLanding() {
                 <ShieldCheck className="size-4.5 sm:size-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm sm:text-base text-white">স্বচ্ছ অডিট ট্রেইল</h4>
-                <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">প্রতিটি সেল এবং উইথড্রয়ালের সম্পূর্ণ অপরিবর্তনীয় লেজার রেকর্ড।</p>
+                <h4 className="font-bold text-sm sm:text-base text-white">
+                  স্বচ্ছ অডিট ট্রেইল
+                </h4>
+                <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                  প্রতিটি সেল এবং উইথড্রয়ালের সম্পূর্ণ অপরিবর্তনীয় লেজার রেকর্ড।
+                </p>
               </div>
             </div>
 
@@ -319,8 +360,13 @@ export default function AffiliateLanding() {
                 <Percent className="size-4.5 sm:size-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm sm:text-base text-white">গ্রাহকদের জন্য ছাড়</h4>
-                <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">আপনার কুপন দিয়ে গ্রাহকরা ১০% ছাড় পাবেন, যা বিক্রয় বাড়াতে সাহায্য করে।</p>
+                <h4 className="font-bold text-sm sm:text-base text-white">
+                  গ্রাহকদের জন্য ছাড়
+                </h4>
+                <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                  আপনার কুপন দিয়ে গ্রাহকরা ১০% ছাড় পাবেন, যা বিক্রয় বাড়াতে
+                  সাহায্য করে।
+                </p>
               </div>
             </div>
 
@@ -329,8 +375,12 @@ export default function AffiliateLanding() {
                 <Zap className="size-4.5 sm:size-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm sm:text-base text-white">দ্রুত পেআউট</h4>
-                <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">অনুমোদিত উইথড্রয়াল বিকাশ, নগদ বা ব্যাংকে দ্রুত সম্পন্ন করা হয়।</p>
+                <h4 className="font-bold text-sm sm:text-base text-white">
+                  দ্রুত পেআউট
+                </h4>
+                <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                  অনুমোদিত উইথড্রয়াল বিকাশ, নগদ বা ব্যাংকে দ্রুত সম্পন্ন করা হয়।
+                </p>
               </div>
             </div>
 
@@ -339,8 +389,13 @@ export default function AffiliateLanding() {
                 <Users className="size-4.5 sm:size-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm sm:text-base text-white">শিক্ষকদের আস্থা</h4>
-                <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">দেশজুড়ে হাজারো শিক্ষক ও শিক্ষা প্রতিষ্ঠানের বিশ্বস্ত প্রশ্ন প্ল্যাটফর্ম।</p>
+                <h4 className="font-bold text-sm sm:text-base text-white">
+                  শিক্ষকদের আস্থা
+                </h4>
+                <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                  দেশজুড়ে হাজারো শিক্ষক ও শিক্ষা প্রতিষ্ঠানের বিশ্বস্ত প্রশ্ন
+                  প্ল্যাটফর্ম।
+                </p>
               </div>
             </div>
 
@@ -349,8 +404,13 @@ export default function AffiliateLanding() {
                 <Award className="size-4.5 sm:size-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm sm:text-base text-white">ডেডিকেটেড ড্যাশবোর্ড</h4>
-                <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">সেলস, কমিশন, কোয়ালিফাইং প্রগ্রেস ট্র্যাক করার আধুনিক ড্যাশবোর্ড।</p>
+                <h4 className="font-bold text-sm sm:text-base text-white">
+                  ডেডিকেটেড ড্যাশবোর্ড
+                </h4>
+                <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                  সেলস, কমিশন, কোয়ালিফাইং প্রগ্রেস ট্র্যাক করার আধুনিক
+                  ড্যাশবোর্ড।
+                </p>
               </div>
             </div>
           </div>
@@ -367,7 +427,9 @@ export default function AffiliateLanding() {
             <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-indigo-400">
               জিজ্ঞাসা ও উত্তর
             </h2>
-            <p className="mt-1.5 sm:mt-2 text-2xl sm:text-3xl font-bold text-white">সাধারণ কিছু প্রশ্নের উত্তর</p>
+            <p className="mt-1.5 sm:mt-2 text-2xl sm:text-3xl font-bold text-white">
+              সাধারণ কিছু প্রশ্নের উত্তর
+            </p>
           </div>
 
           <div className="mt-8 sm:mt-12 space-y-3 sm:space-y-4">
@@ -408,7 +470,8 @@ export default function AffiliateLanding() {
                 আজই আমাদের সাথে পার্টনার হিসেবে যুক্ত হন
               </h3>
               <p className="text-xs sm:text-sm md:text-base text-slate-300 leading-relaxed">
-                মাত্র দুই মিনিটে আবেদন সম্পন্ন করুন। আপনার ইউনিক কুপন দিয়ে আয় শুরু করুন ঘরে বসেই।
+                মাত্র দুই মিনিটে আবেদন সম্পন্ন করুন। আপনার ইউনিক কুপন দিয়ে আয়
+                শুরু করুন ঘরে বসেই।
               </p>
               <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
                 <Link
@@ -434,9 +497,13 @@ export default function AffiliateLanding() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center text-xs text-slate-500 space-y-2">
           <p>© ২০২৬ Smart Proshno Bank. সর্বস্বত্ব সংরক্ষিত।</p>
           <div className="flex items-center justify-center gap-4 text-[11px]">
-            <Link to="/terms" className="hover:text-slate-300 transition">শর্তাবলী ও নীতিমালা</Link>
+            <Link to="/terms" className="hover:text-slate-300 transition">
+              শর্তাবলী ও নীতিমালা
+            </Link>
             <span>•</span>
-            <Link to="/" className="hover:text-slate-300 transition">স্মার্ট প্রশ্নব্যাংক হোম</Link>
+            <Link to="/" className="hover:text-slate-300 transition">
+              স্মার্ট প্রশ্নব্যাংক হোম
+            </Link>
           </div>
         </div>
       </footer>

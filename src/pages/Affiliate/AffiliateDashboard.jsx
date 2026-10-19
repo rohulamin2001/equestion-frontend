@@ -52,6 +52,8 @@ export default function AffiliateDashboard() {
     lifetimeEarnedTaka,
     minWithdrawTaka,
     canRequestWithdrawal,
+    effectiveDiscountLabel,
+    effectiveCommissionLabel,
     handleLogout,
     copyCouponCode,
     copyReferralLink,
@@ -114,7 +116,7 @@ export default function AffiliateDashboard() {
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
-        {/* Status Notices */}
+        {/* Status Notices (Note: Pending users are blocked at login, handled here if session persists or on future live state updates) */}
         {affiliate?.reviewStatus === "Pending" && (
           <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs sm:text-sm flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
@@ -337,9 +339,13 @@ export default function AffiliateDashboard() {
               </div>
               <p className="text-xs text-slate-400">
                 এই কুপন ব্যবহার করে যেকোনো নতুন গ্রাহক প্রথম সাবস্ক্রিপশনে পাবেন{" "}
-                <span className="text-emerald-400 font-semibold">১০% ছাড়</span>{" "}
+                <span className="text-emerald-400 font-semibold">
+                  {effectiveDiscountLabel}
+                </span>{" "}
                 এবং আপনি পাবেন{" "}
-                <span className="text-indigo-400 font-semibold">২০% কমিশন</span>
+                <span className="text-indigo-400 font-semibold">
+                  {effectiveCommissionLabel}
+                </span>
                 ।
               </p>
             </div>

@@ -161,6 +161,16 @@ export const useAffiliateDashboard = () => {
         ? affiliate?.customSettings?.minWithdrawalAmountMinor
         : summary?.config?.minWithdrawalAmountMinor) || 500000) / 100;
 
+  // Dynamic discount/commission labels from backend config
+  const effectiveDiscount = affiliate?.effectiveDiscount || summary?.config?.effectiveDiscount || summary?.affiliate?.effectiveDiscount || { type: "Percentage", value: 10 };
+  const effectiveCommission = affiliate?.effectiveCommission || summary?.config?.effectiveCommission || summary?.affiliate?.effectiveCommission || { type: "Percentage", value: 20 };
+  const effectiveDiscountLabel = effectiveDiscount.type === "Percentage"
+    ? effectiveDiscount.value + "% ছাড়"
+    : "৳" + (effectiveDiscount.value / 100) + " ছাড়";
+  const effectiveCommissionLabel = effectiveCommission.type === "Percentage"
+    ? effectiveCommission.value + "% কমিশন"
+    : "৳" + (effectiveCommission.value / 100) + " কমিশন";
+
   const canRequestWithdrawal =
     isQualifyingComplete && availableTaka >= minWithdrawTaka;
 
@@ -244,6 +254,8 @@ export const useAffiliateDashboard = () => {
     lifetimeEarnedTaka,
     minWithdrawTaka,
     canRequestWithdrawal,
+    effectiveDiscountLabel,
+    effectiveCommissionLabel,
     loadDashboardData,
     handleLogout,
     copyCouponCode,
