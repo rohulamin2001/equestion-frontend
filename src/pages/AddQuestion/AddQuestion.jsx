@@ -1,4 +1,3 @@
-import { getCategoryJsonPlaceholder } from "@/constants/categoryJsonSamples";
 import Editor from "@/components/Editor";
 import RichTextRender from "@/components/RichTextRender";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import {
   RippleButton,
   RippleButtonRipples,
 } from "@/components/ui/ripple-button";
+import { getCategoryJsonPlaceholder } from "@/constants/categoryJsonSamples";
 import { isGroupEnabledClass } from "@/constants/classes";
 import { validateCategoryQuestionsJson } from "@/lib/jsonQuestionValidator";
 import {
@@ -43,8 +43,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import BulkImportModal from "./components/BulkImportModal";
-import SmartJsonPreviewCards from "./components/SmartJsonPreviewCards";
 import QuestionImageSlot from "./components/QuestionImageSlot";
+import SmartJsonPreviewCards from "./components/SmartJsonPreviewCards";
 import {
   CATEGORIES_MAP,
   CLASSES_MAP,
@@ -149,6 +149,7 @@ export default function AddQuestion() {
   };
   const {
     qm,
+    navigate,
     activeDropdown,
     setActiveDropdown,
     showStep2Error,
@@ -1573,11 +1574,14 @@ export default function AddQuestion() {
                           </div>
 
                           {/* Stem input: Universal for all MCQs (Contextual, when stem has content, or on-demand) */}
-                          {(qm.mcqType === "Contextual" || Boolean(qm.mcqStem && qm.mcqStem.trim()) || showStemEditor) ? (
+                          {qm.mcqType === "Contextual" ||
+                          Boolean(qm.mcqStem && qm.mcqStem.trim()) ||
+                          showStemEditor ? (
                             <div className="space-y-2 animate-in fade-in duration-200 p-4 bg-purple-50/40 rounded-2xl border border-purple-200/70 shadow-2xs">
                               <div className="flex items-center justify-between">
                                 <label className="text-xs font-bold text-purple-900 uppercase tracking-wider block">
-                                  উদ্দীপক / অনুচ্ছেদ / দৃশ্যপট (চিত্র ১, চিত্র ২ ও বর্ণনা থাকলে এখানে সাজান)
+                                  উদ্দীপক / অনুচ্ছেদ / দৃশ্যপট (চিত্র ১, চিত্র ২
+                                  ও বর্ণনা থাকলে এখানে সাজান)
                                 </label>
                                 {qm.mcqType !== "Contextual" && (
                                   <button
@@ -1594,7 +1598,9 @@ export default function AddQuestion() {
                                 )}
                               </div>
                               <p className="text-[11px] text-purple-700/80">
-                                <b>টিপ:</b> উপরে বা মাঝে টেক্সট লিখুন, পিসি থেকে সরাসরি ছবি <b>Drag & Drop</b> করুন বা <b>Ctrl+V</b> দিয়ে স্ক্রিনশট পেস্ট করুন।
+                                <b>টিপ:</b> উপরে বা মাঝে টেক্সট লিখুন, পিসি থেকে
+                                সরাসরি ছবি <b>Drag & Drop</b> করুন বা{" "}
+                                <b>Ctrl+V</b> দিয়ে স্ক্রিনশট পেস্ট করুন।
                               </p>
                               <Editor
                                 key={`mcq-stem-${qm.editingQuestion?._id || "form"}`}
@@ -1611,7 +1617,9 @@ export default function AddQuestion() {
                                 onClick={() => setShowStemEditor(true)}
                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-xl transition cursor-pointer shadow-2xs"
                               >
-                                <span>+ উদ্দীপক / দৃশ্যপটের চিত্র যোগ করুন</span>
+                                <span>
+                                  + উদ্দীপক / দৃশ্যপটের চিত্র যোগ করুন
+                                </span>
                               </button>
                             </div>
                           )}
@@ -1673,7 +1681,8 @@ export default function AddQuestion() {
                                 অপশনসমূহ ও সঠিক উত্তর নির্বাচন
                               </label>
                               <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
-                                (টেক্সট লিখুন বা [📷] বাটনে চিত্র দিন / [✕] চেপে শুধু চিত্র রাখুন)
+                                (টেক্সট লিখুন বা [📷] বাটনে চিত্র দিন / [✕] চেপে
+                                শুধু চিত্র রাখুন)
                               </span>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -1681,11 +1690,15 @@ export default function AddQuestion() {
                                 const isCorrect = qm.mcqCorrectAnswer === idx;
                                 const optImage = extractFirstImageSrc(opt);
                                 const optText = extractTextFromOption(opt);
-                                const letter = OPTION_LETTERS[idx] || String(idx + 1);
+                                const letter =
+                                  OPTION_LETTERS[idx] || String(idx + 1);
 
                                 const handleOptionTextChange = (newText) => {
                                   const updated = [...qm.mcqOptions];
-                                  updated[idx] = buildOptionHtml(newText, optImage);
+                                  updated[idx] = buildOptionHtml(
+                                    newText,
+                                    optImage,
+                                  );
                                   qm.setMcqOptions(updated);
                                 };
 
@@ -1719,7 +1732,9 @@ export default function AddQuestion() {
                                     <div className="flex items-center gap-2.5 min-w-0 flex-1">
                                       <button
                                         type="button"
-                                        onClick={() => qm.setMcqCorrectAnswer(idx)}
+                                        onClick={() =>
+                                          qm.setMcqCorrectAnswer(idx)
+                                        }
                                         className={`size-6 rounded-full border flex items-center justify-center shrink-0 transition-all font-bold text-xs cursor-pointer ${
                                           isCorrect
                                             ? "bg-emerald-500 border-emerald-500 text-white shadow-2xs"
@@ -1747,7 +1762,11 @@ export default function AddQuestion() {
                                               : `অপশন ${letter} লিখুন...`
                                           }
                                           value={optText}
-                                          onChange={(e) => handleOptionTextChange(e.target.value)}
+                                          onChange={(e) =>
+                                            handleOptionTextChange(
+                                              e.target.value,
+                                            )
+                                          }
                                           className={`w-full text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition outline-none pr-6 ${
                                             optText
                                               ? "bg-white/90 text-slate-800 border-slate-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-200"
@@ -1944,48 +1963,92 @@ export default function AddQuestion() {
                                       অপশনসমূহ ও সঠিক উত্তর নির্বাচন
                                     </label>
                                     <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
-                                      (টেক্সট লিখুন বা [📷] বাটনে চিত্র দিন / [✕] দিয়ে শুধু চিত্র রাখুন)
+                                      (টেক্সট লিখুন বা [📷] বাটনে চিত্র দিন /
+                                      [✕] দিয়ে শুধু চিত্র রাখুন)
                                     </span>
                                   </div>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                                     {q.mcqOptions.map((opt, oIdx) => {
                                       const isCorrect =
                                         q.mcqCorrectAnswer === oIdx;
-                                      const optImage = extractFirstImageSrc(opt);
-                                      const optText = extractTextFromOption(opt);
-                                      const letter = OPTION_LETTERS[oIdx] || String(oIdx + 1);
+                                      const optImage =
+                                        extractFirstImageSrc(opt);
+                                      const optText =
+                                        extractTextFromOption(opt);
+                                      const letter =
+                                        OPTION_LETTERS[oIdx] ||
+                                        String(oIdx + 1);
 
-                                      const handleGroupOptionTextChange = (newText) => {
+                                      const handleGroupOptionTextChange = (
+                                        newText,
+                                      ) => {
                                         const next = [...qm.mcqGroupQuestions];
-                                        const opts = [...next[qIndex].mcqOptions];
-                                        opts[oIdx] = buildOptionHtml(newText, optImage);
-                                        next[qIndex] = { ...next[qIndex], mcqOptions: opts };
+                                        const opts = [
+                                          ...next[qIndex].mcqOptions,
+                                        ];
+                                        opts[oIdx] = buildOptionHtml(
+                                          newText,
+                                          optImage,
+                                        );
+                                        next[qIndex] = {
+                                          ...next[qIndex],
+                                          mcqOptions: opts,
+                                        };
                                         qm.setMcqGroupQuestions(next);
                                       };
 
                                       const handleGroupOptionTextClear = () => {
                                         const next = [...qm.mcqGroupQuestions];
-                                        const opts = [...next[qIndex].mcqOptions];
-                                        opts[oIdx] = buildOptionHtml("", optImage);
-                                        next[qIndex] = { ...next[qIndex], mcqOptions: opts };
+                                        const opts = [
+                                          ...next[qIndex].mcqOptions,
+                                        ];
+                                        opts[oIdx] = buildOptionHtml(
+                                          "",
+                                          optImage,
+                                        );
+                                        next[qIndex] = {
+                                          ...next[qIndex],
+                                          mcqOptions: opts,
+                                        };
                                         qm.setMcqGroupQuestions(next);
                                       };
 
-                                      const handleGroupOptionImageAttach = (path) => {
+                                      const handleGroupOptionImageAttach = (
+                                        path,
+                                      ) => {
                                         const next = [...qm.mcqGroupQuestions];
-                                        const opts = [...next[qIndex].mcqOptions];
-                                        opts[oIdx] = buildOptionHtml(optText, path);
-                                        next[qIndex] = { ...next[qIndex], mcqOptions: opts };
+                                        const opts = [
+                                          ...next[qIndex].mcqOptions,
+                                        ];
+                                        opts[oIdx] = buildOptionHtml(
+                                          optText,
+                                          path,
+                                        );
+                                        next[qIndex] = {
+                                          ...next[qIndex],
+                                          mcqOptions: opts,
+                                        };
                                         qm.setMcqGroupQuestions(next);
                                       };
 
-                                      const handleGroupOptionImageRemove = () => {
-                                        const next = [...qm.mcqGroupQuestions];
-                                        const opts = [...next[qIndex].mcqOptions];
-                                        opts[oIdx] = buildOptionHtml(optText, "");
-                                        next[qIndex] = { ...next[qIndex], mcqOptions: opts };
-                                        qm.setMcqGroupQuestions(next);
-                                      };
+                                      const handleGroupOptionImageRemove =
+                                        () => {
+                                          const next = [
+                                            ...qm.mcqGroupQuestions,
+                                          ];
+                                          const opts = [
+                                            ...next[qIndex].mcqOptions,
+                                          ];
+                                          opts[oIdx] = buildOptionHtml(
+                                            optText,
+                                            "",
+                                          );
+                                          next[qIndex] = {
+                                            ...next[qIndex],
+                                            mcqOptions: opts,
+                                          };
+                                          qm.setMcqGroupQuestions(next);
+                                        };
 
                                       return (
                                         <div
@@ -2027,7 +2090,11 @@ export default function AddQuestion() {
                                                     : `অপশন ${letter} লিখুন...`
                                                 }
                                                 value={optText}
-                                                onChange={(e) => handleGroupOptionTextChange(e.target.value)}
+                                                onChange={(e) =>
+                                                  handleGroupOptionTextChange(
+                                                    e.target.value,
+                                                  )
+                                                }
                                                 className={`w-full text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition outline-none pr-6 ${
                                                   optText
                                                     ? "bg-white text-slate-800 border-slate-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-200"
@@ -2039,7 +2106,9 @@ export default function AddQuestion() {
                                               {optText && (
                                                 <button
                                                   type="button"
-                                                  onClick={handleGroupOptionTextClear}
+                                                  onClick={
+                                                    handleGroupOptionTextClear
+                                                  }
                                                   className="absolute right-1.5 p-0.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
                                                   title="টেক্সট মুছে শুধু চিত্র রাখুন"
                                                 >
@@ -2052,8 +2121,12 @@ export default function AddQuestion() {
                                           <QuestionImageSlot
                                             compact
                                             imageUrl={optImage}
-                                            onImageAttached={handleGroupOptionImageAttach}
-                                            onImageRemoved={handleGroupOptionImageRemove}
+                                            onImageAttached={
+                                              handleGroupOptionImageAttach
+                                            }
+                                            onImageRemoved={
+                                              handleGroupOptionImageRemove
+                                            }
                                             label={`অপশন ${letter}`}
                                           />
                                         </div>
@@ -2825,21 +2898,56 @@ export default function AddQuestion() {
                 {/* Exam Sheet Mockup */}
                 <div className="p-8 flex-1 bg-white/[0.70] backdrop-blur-sm text-slate-800 space-y-8 select-none font-serif leading-relaxed max-h-[70vh] overflow-y-auto custom-scrollbar">
                   {/* Header details */}
-                  <div className="text-center space-y-1.5 border-b border-black/[0.05] pb-4">
-                    <div className="text-xs text-slate-500 flex justify-center gap-4 font-sans font-semibold">
-                      <span>
-                        বিষয়:{" "}
-                        {
-                          qm.formSubjects.find(
+                  {qm.hasValidQuestions && (
+                    <div className="text-center space-y-1.5 border-b border-black/[0.05] pb-4">
+                      <div className="text-xs text-slate-500 flex justify-center gap-4 font-sans font-semibold">
+                        <span>
+                          বিষয়:{" "}
+                          {qm.formSubjects.find(
                             (s) => s._id === qm.formSubjectId,
-                          )?.subjectName
-                        }
-                      </span>
-                      <span>অধ্যায়: {qm.formChapterNumber}</span>
+                          )?.subjectName || "—"}
+                        </span>
+                        <span>অধ্যায়: {qm.formChapterNumber || "—"}</span>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
-                  {qm.questionsList.length > 0 ? (
+                  {!qm.hasValidQuestions ? (
+                    <div className="py-12 sm:py-16 px-4 flex flex-col items-center justify-center text-center">
+                      <div className="size-16 sm:size-20 rounded-3xl bg-purple-50 border border-purple-100 flex items-center justify-center text-[#900EB0] mb-4 shadow-sm">
+                        <FileText className="size-8 sm:size-10 stroke-[1.5]" />
+                      </div>
+                      <h3 className="text-base sm:text-lg font-bold text-slate-800 font-sans">
+                        কোনো প্রশ্ন প্রিভিউ নেই
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-500 max-w-md mt-1.5 leading-relaxed font-sans">
+                        বর্তমানে প্রিভিউ করার মতো কোনো প্রশ্ন প্রস্তুত নেই।
+                        প্রশ্ন তৈরি করতে পূর্ববর্তী ধাপে ফিরে যান অথবা আপনার
+                        সংরক্ষিত প্রশ্ন দেখতে নিচের বাটনে ক্লিক করুন।
+                      </p>
+
+                      <div className="flex flex-col sm:flex-row items-center gap-3 mt-6">
+                        <Button
+                          type="button"
+                          onClick={() => navigate("/dashboard/my-questions")}
+                          className="bg-gradient-to-r from-[#900EB0] to-[#B010CA] hover:from-[#720A7B] hover:to-[#900EB0] text-white font-semibold h-10 px-5 rounded-xl shadow-md shadow-[#900EB0]/20 text-xs sm:text-sm flex items-center gap-2 cursor-pointer transition-all"
+                        >
+                          <BookOpen className="size-4" />
+                          <span>আমার তৈরি প্রশ্ন পেজে যান</span>
+                        </Button>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => qm.setActiveStep(2)}
+                          className="border-slate-200 text-slate-700 hover:bg-slate-100/80 rounded-xl h-10 px-4 text-xs sm:text-sm flex items-center gap-1.5 font-sans cursor-pointer"
+                        >
+                          <ChevronLeft className="size-4" />
+                          <span>প্রশ্ন এডিটরে যান</span>
+                        </Button>
+                      </div>
+                    </div>
+                  ) : qm.questionsList.length > 0 ? (
                     <div className="space-y-8 divide-y divide-black/[0.05]">
                       {qm.questionsList.map((q, idx) => {
                         const diffConfig =
@@ -3686,19 +3794,26 @@ export default function AddQuestion() {
                 </h4>
 
                 <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">
-                  সব তথ্য পুনরায় যাচাই করে ডাটাবেজে সেভ করুন। প্রশ্ন সংরক্ষণের
-                  পর আপনার "আমার তৈরি প্রশ্ন" মডিউলে দেখতে পাবেন।
+                  {!qm.hasValidQuestions
+                    ? "ডাটাবেজে সংরক্ষণ করার জন্য কোনো প্রশ্ন নেই।"
+                    : "সব তথ্য পুনরায় যাচাই করে ডাটাবেজে সেভ করুন। প্রশ্ন সংরক্ষণের পর আপনার 'আমার তৈরি প্রশ্ন' মডিউলে দেখতে পাবেন।"}
                 </p>
 
                 <div className="space-y-2 pt-2">
                   <RippleButton
                     onClick={qm.handleSaveQuestion}
-                    disabled={qm.formLoading}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#900EB0] to-[#B010CA] hover:from-[#720A7B] hover:to-[#900EB0] text-white font-semibold h-9 sm:h-11 rounded-xl shadow-md shadow-[#900EB0]/20 text-xs sm:text-base cursor-pointer"
+                    disabled={!qm.hasValidQuestions || qm.formLoading}
+                    className={`w-full flex items-center justify-center gap-2 text-white font-semibold h-9 sm:h-11 rounded-xl shadow-md shadow-[#900EB0]/20 text-xs sm:text-base ${
+                      !qm.hasValidQuestions || qm.formLoading
+                        ? "opacity-40 cursor-not-allowed bg-slate-400 shadow-none pointer-events-none"
+                        : "bg-gradient-to-r from-[#900EB0] to-[#B010CA] hover:from-[#720A7B] hover:to-[#900EB0] cursor-pointer"
+                    }`}
                   >
                     <Save className="size-3.5 sm:size-4" />
                     {qm.formLoading ? "সংরক্ষণ হচ্ছে..." : "ডাটাবেজে সেভ করুন"}
-                    <RippleButtonRipples color="rgba(255, 255, 255, 0.3)" />
+                    {qm.hasValidQuestions && !qm.formLoading && (
+                      <RippleButtonRipples color="rgba(255, 255, 255, 0.3)" />
+                    )}
                   </RippleButton>
 
                   <Button

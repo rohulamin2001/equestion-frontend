@@ -8,7 +8,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAcademicConfig } from "./useAcademicConfig";
 
@@ -358,9 +358,11 @@ export function useQuestionManagement(options = {}) {
 
   // Reset Form
   const resetForm = useCallback(
-    (resetStepAndMeta = false) => {
+    (resetStepAndMeta = false, keepCurrentStep = false) => {
       if (resetStepAndMeta) {
-        setActiveStep(1);
+        if (!keepCurrentStep) {
+          setActiveStep(1);
+        }
         setFormType(filterType);
         setFormLevel(filterLevel);
         setFormClass(filterClass);
@@ -693,7 +695,7 @@ export function useQuestionManagement(options = {}) {
       queryClient.invalidateQueries({ queryKey: ["globalQuestionsList"] });
       queryClient.invalidateQueries({ queryKey: ["personalQuestionStats"] });
       toast.success("প্রশ্নটি সফলভাবে ডাটাবেজে যুক্ত হয়েছে!");
-      resetForm();
+      resetForm(true, true);
     },
     onError: (err) => {
       toast.error(
@@ -718,7 +720,7 @@ export function useQuestionManagement(options = {}) {
       queryClient.invalidateQueries({ queryKey: ["globalQuestionsList"] });
       queryClient.invalidateQueries({ queryKey: ["personalQuestionStats"] });
       toast.success("প্রশ্নটি সফলভাবে আপডেট করা হয়েছে!");
-      resetForm();
+      resetForm(true, true);
     },
     onError: (err) => {
       toast.error(
@@ -1507,7 +1509,36 @@ export function useQuestionManagement(options = {}) {
   ]);
 
   // Submit Handler
+  const hasValidQuestions = useMemo(() => {
+    if (questionsList && questionsList.length > 0) return true;
+    if (formCategory === "MCQ") {
+      if (isGroupedMcq) {
+        return (
+          !isHtmlEmpty(mcqStem) &&
+          Array.isArray(mcqGroupQuestions) &&
+          mcqGroupQuestions.some((q) => !isHtmlEmpty(q.mcqQuestionText))
+        );
+      }
+      return !isHtmlEmpty(mcqQuestionText);
+    }
+    if (formCategory === "Creative") {
+      return !isHtmlEmpty(creativeStem) || !isHtmlEmpty(creativeCognitiveA);
+    }
+    return !isHtmlEmpty(generalQuestionText);
+  }, [
+    questionsList,
+    formCategory,
+    isGroupedMcq,
+    mcqStem,
+    mcqGroupQuestions,
+    mcqQuestionText,
+    creativeStem,
+    creativeCognitiveA,
+    generalQuestionText,
+  ]);
+
   const handleSaveQuestion = async () => {
+    if (!hasValidQuestions) return;
     if (isSubmittingRef.current || formLoading) return;
     isSubmittingRef.current = true;
 
@@ -1806,6 +1837,7 @@ export function useQuestionManagement(options = {}) {
     handleSaveQuestion,
     handleOpenEditMode,
     resetForm,
+    hasValidQuestions,
 
     // Draft batch creation
     questionsList,
