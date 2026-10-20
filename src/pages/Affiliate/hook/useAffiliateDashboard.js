@@ -154,6 +154,8 @@ export const useAffiliateDashboard = () => {
     (affiliate?.lifetimeTotals?.totalWithdrawnMinor || 0) / 100;
   const lifetimeEarnedTaka =
     (affiliate?.lifetimeTotals?.totalEarnedMinor || 0) / 100;
+  const currentTotalBalanceTaka =
+    availableTaka + pendingTaka + reservedTaka;
 
   const minWithdrawTaka = affiliate?.balances?.minWithdrawalBDT
     ? Number(affiliate.balances.minWithdrawalBDT)
@@ -252,6 +254,7 @@ export const useAffiliateDashboard = () => {
     recoveryDueTaka,
     lifetimeWithdrawnTaka,
     lifetimeEarnedTaka,
+    currentTotalBalanceTaka,
     minWithdrawTaka,
     canRequestWithdrawal,
     effectiveDiscountLabel,

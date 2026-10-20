@@ -50,6 +50,7 @@ export default function AffiliateDashboard() {
     recoveryDueTaka,
     lifetimeWithdrawnTaka,
     lifetimeEarnedTaka,
+    currentTotalBalanceTaka,
     minWithdrawTaka,
     canRequestWithdrawal,
     effectiveDiscountLabel,
@@ -202,6 +203,81 @@ export default function AffiliateDashboard() {
           </div>
         </div>
 
+        {/* Total Lifetime & Active Balance Hero Banner (Suggestion 2) */}
+        <div className="p-5 sm:p-7 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 shadow-xl shadow-indigo-950/20 relative overflow-hidden">
+          {/* Ambient Lighting Accents */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 blur-[100px] pointer-events-none rounded-full" />
+          <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-violet-600/10 blur-[90px] pointer-events-none rounded-full" />
+
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            {/* Left: Lifetime Total Earnings */}
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                <span>সর্বমোট ব্যালেন্স ও আয়ের সামগ্রিক চিত্র</span>
+              </div>
+              <div className="mt-1">
+                <p className="text-xs sm:text-sm font-medium text-slate-400">
+                  আজ পর্যন্ত সর্বমোট অর্জিত কমিশন (লাইফটাইম)
+                </p>
+                <div className="flex items-baseline gap-2 mt-1">
+                  <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-100 to-indigo-300 tracking-tight">
+                    ৳{lifetimeEarnedTaka.toLocaleString("bn-BD")}
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed max-w-xl">
+                আপনার অ্যাফিলিয়েট রেফারেলের মাধ্যমে অর্জিত মোট আয়। এর মধ্যে বর্তমানে সিস্টেমে থাকা সক্রিয় ফান্ড এবং সফলভাবে উত্তোলিত উইথড্রয়াল অন্তর্ভুক্ত।
+              </p>
+            </div>
+
+            {/* Right: Balance Breakdown Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto shrink-0">
+              {/* Active System Balance */}
+              <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-950/70 border border-slate-800/90 flex flex-col justify-between min-w-[150px]">
+                <div className="flex items-center justify-between text-[11px] font-semibold text-slate-400 mb-1">
+                  <span>বর্তমানে জমা ফান্ড</span>
+                  <Wallet className="w-3.5 h-3.5 text-indigo-400" />
+                </div>
+                <div className="text-lg sm:text-xl font-bold text-white">
+                  ৳{currentTotalBalanceTaka.toLocaleString("bn-BD")}
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  এভেইলেবল + পেন্ডিং + প্রসেসিং
+                </p>
+              </div>
+
+              {/* Ready to Withdraw */}
+              <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-950/70 border border-slate-800/90 flex flex-col justify-between min-w-[150px]">
+                <div className="flex items-center justify-between text-[11px] font-semibold text-slate-400 mb-1">
+                  <span>উইথড্র যোগ্য</span>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                </div>
+                <div className="text-lg sm:text-xl font-bold text-emerald-400">
+                  ৳{availableTaka.toLocaleString("bn-BD")}
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  তাত্ক্ষণিক উইথড্র রিকোয়েস্ট
+                </p>
+              </div>
+
+              {/* Already Withdrawn */}
+              <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-950/70 border border-slate-800/90 flex flex-col justify-between min-w-[150px]">
+                <div className="flex items-center justify-between text-[11px] font-semibold text-slate-400 mb-1">
+                  <span>পরিশোধিত ফান্ড</span>
+                  <TrendingUp className="w-3.5 h-3.5 text-indigo-400" />
+                </div>
+                <div className="text-lg sm:text-xl font-bold text-indigo-300">
+                  ৳{lifetimeWithdrawnTaka.toLocaleString("bn-BD")}
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  সফল ক্যাশআউট সম্পন্ন
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Financial KPI Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Available Balance */}
@@ -295,7 +371,7 @@ export default function AffiliateDashboard() {
                 ৳{lifetimeWithdrawnTaka.toLocaleString("bn-BD")}
               </div>
               <p className="text-[11px] text-slate-400 mt-1">
-                সর্বমোট অর্জিত: ৳{lifetimeEarnedTaka.toLocaleString("bn-BD")}
+                সফল পেআউট সম্পন্ন ফান্ড
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-slate-500">
