@@ -1395,9 +1395,11 @@ export default function AdminAffiliates() {
           <form
             onSubmit={async (e) => {
               e.preventDefault();
+              const targetAffiliateId = statusChangeModal.affiliate?._id;
+              if (!targetAffiliateId) return;
               setStatusChangeModal((prev) => ({ ...prev, isSubmitting: true }));
               await executeControlStatusChange(
-                statusChangeModal.affiliate._id,
+                targetAffiliateId,
                 statusChangeModal.newStatus,
                 statusChangeModal.reason,
               );

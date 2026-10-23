@@ -253,6 +253,7 @@ export const useAdminAffiliates = () => {
     newStatus,
     reason = ""
   ) => {
+    if (!affiliateId) return;
     try {
       const res = await apiClient.patch(
         "/admin/affiliates/" + affiliateId + "/control-status",
