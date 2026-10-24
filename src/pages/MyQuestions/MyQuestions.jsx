@@ -1651,13 +1651,14 @@ export default function MyQuestions() {
                   }`}
                 >
                   {/* Badge Header Row */}
-                  <div className="flex flex-wrap justify-between items-center gap-2">
-                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-sans font-bold text-slate-500">
+                  <div className="flex items-center justify-between gap-1 sm:gap-2 flex-nowrap w-full">
+                    {/* Left Badges Group */}
+                    <div className="flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[11px] font-sans font-bold text-slate-500 shrink-0">
                       {isDeletable ? (
                         <button
                           type="button"
                           onClick={() => toggleSelectQuestion(q._id)}
-                          className={`size-5 rounded-md border flex items-center justify-center transition-all cursor-pointer shrink-0 select-none ${
+                          className={`size-4 sm:size-5 rounded sm:rounded-md border flex items-center justify-center transition-all cursor-pointer shrink-0 select-none ${
                             isSelected
                               ? "bg-[#900EB0] border-[#900EB0] text-white shadow-sm shadow-[#900EB0]/20"
                               : "bg-white/80 border-slate-300 hover:border-[#900EB0]/50"
@@ -1669,21 +1670,21 @@ export default function MyQuestions() {
                           }
                         >
                           {isSelected && (
-                            <Check className="size-3.5 stroke-[3]" />
+                            <Check className="size-2.5 sm:size-3.5 stroke-[3]" />
                           )}
                         </button>
                       ) : (
                         <span
-                          className="size-5 rounded-md border border-slate-200 bg-slate-100/70 flex items-center justify-center text-slate-300 cursor-not-allowed shrink-0"
+                          className="size-4 sm:size-5 rounded sm:rounded-md border border-slate-200 bg-slate-100/70 flex items-center justify-center text-slate-300 cursor-not-allowed shrink-0"
                           title="অনুমোদিত প্রশ্ন ডিলিট করা যাবে না"
                         >
-                          <Ban className="size-3 text-slate-400" />
+                          <Ban className="size-2.5 sm:size-3 text-slate-400" />
                         </span>
                       )}
                       {new Date() - new Date(q.createdAt) <
                         24 * 60 * 60 * 1000 && (
-                        <span className="bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded flex items-center gap-1.5">
-                          <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
+                        <span className="bg-rose-100 text-rose-700 border border-rose-200 px-1 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] flex items-center gap-1 sm:gap-1.5 shrink-0 whitespace-nowrap">
+                          <span className="size-1 sm:size-1.5 rounded-full bg-rose-500 animate-ping" />
                           নতুন
                         </span>
                       )}
@@ -1693,11 +1694,13 @@ export default function MyQuestions() {
                         classLabel={classLabel}
                       />
                     </div>
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
+
+                    {/* Right Badges Group */}
+                    <div className="flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[11px] font-sans font-bold text-slate-500 shrink-0 whitespace-nowrap">
                       {/* Status Badge */}
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
                         <span
-                          className={`px-2 py-0.5 rounded border flex items-center gap-1 ${
+                          className={`px-1.5 sm:px-2 py-0.5 rounded border flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-[10px] shrink-0 ${
                             q.status === "Approved"
                               ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                               : q.status === "Pending"
@@ -1706,7 +1709,7 @@ export default function MyQuestions() {
                           }`}
                         >
                           {q.status === "Pending" && (
-                            <LoaderCircle className="size-3 animate-spin text-amber-600" />
+                            <LoaderCircle className="size-2.5 sm:size-3 animate-spin text-amber-600" />
                           )}
                           {q.status === "Approved"
                             ? "অনুমোদিত"
@@ -1728,18 +1731,18 @@ export default function MyQuestions() {
                                     ]?.reason,
                                 )
                               }
-                              className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer flex items-center justify-center shrink-0"
+                              className="p-0.5 sm:p-1 rounded-md sm:rounded-lg hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer flex items-center justify-center shrink-0"
                               title="বাতিলকরণের কারণ দেখুন"
                             >
-                              <MessageSquareWarning className="size-3.5" />
+                              <MessageSquareWarning className="size-3 sm:size-3.5" />
                             </button>
                           )}
                       </div>
-                      <span className="bg-[#900EB0]/8 text-[#900EB0] border border-[#900EB0]/15 px-2 py-0.5 rounded">
+                      <span className="bg-[#900EB0]/8 text-[#900EB0] border border-[#900EB0]/15 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] shrink-0">
                         {catLabel}
                       </span>
                       <span
-                        className={`px-2 py-0.5 rounded border ${
+                        className={`px-1.5 sm:px-2 py-0.5 rounded border text-[9px] sm:text-[10px] shrink-0 ${
                           q.difficulty === "Easy"
                             ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                             : q.difficulty === "Medium"
@@ -1755,7 +1758,7 @@ export default function MyQuestions() {
                           e.stopPropagation();
                           toggleIndividualAnswer(q._id);
                         }}
-                        className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${
+                        className={`size-5.5 sm:size-7 rounded sm:rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${
                           isAnswerVisible
                             ? "bg-[#900EB0]/8 text-[#900EB0] border-[#900EB0]/20"
                             : "bg-slate-50 text-slate-400 hover:text-slate-600 border-slate-200 hover:bg-slate-100"
@@ -1763,9 +1766,9 @@ export default function MyQuestions() {
                         title={isAnswerVisible ? "উত্তর লুকান" : "উত্তর দেখান"}
                       >
                         {isAnswerVisible ? (
-                          <EyeOff className="size-3.5" />
+                          <EyeOff className="size-3 sm:size-3.5" />
                         ) : (
-                          <Eye className="size-3.5" />
+                          <Eye className="size-3 sm:size-3.5" />
                         )}
                       </button>
                     </div>

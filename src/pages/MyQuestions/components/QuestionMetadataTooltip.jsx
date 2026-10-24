@@ -106,7 +106,7 @@ export default function QuestionMetadataTooltip({ question, classLabel }) {
           }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          className={`size-6 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95 shrink-0 ${
+          className={`size-5 sm:size-6 rounded-md sm:rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95 shrink-0 ${
             isOpen
               ? "bg-[#900EB0] text-white border border-[#900EB0] shadow-sm shadow-[#900EB0]/20"
               : "bg-purple-50 hover:bg-purple-100/90 text-[#900EB0] border border-[#900EB0]/20 hover:border-[#900EB0]/40"
@@ -114,7 +114,7 @@ export default function QuestionMetadataTooltip({ question, classLabel }) {
           title="প্রশ্নের বিস্তারিত তথ্য ও মেটাডাটা"
           aria-label="প্রশ্নের বিস্তারিত তথ্য ও মেটাডাটা"
         >
-          <Info className="size-3.5" />
+          <Info className="size-3 sm:size-3.5" />
         </button>
       </PopoverTrigger>
 
