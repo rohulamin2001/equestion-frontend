@@ -18,8 +18,11 @@ import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
 import { groupPassageQuestions } from "@/lib/questionUtils";
+import QuestionMetadataTooltip from "@/pages/MyQuestions/components/QuestionMetadataTooltip";
 import {
   AlertCircle,
+  ArrowDownWideNarrow,
+  ArrowUpNarrowWide,
   BookOpen,
   Calendar,
   Check,
@@ -34,6 +37,7 @@ import {
   HelpCircle,
   Loader2,
   Plus,
+  RotateCcw,
   School,
   Search,
   Sparkles,
@@ -192,16 +196,16 @@ export default function QuestionBank() {
   return (
     <div className="space-y-6 pb-12 w-full font-bengali">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-glass p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-[#900EB0]/10 border border-[#900EB0]/20 text-[#900EB0] rounded-2xl shrink-0 shadow-xs">
-            <Database className="size-6" />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 sm:gap-4 bg-glass p-3.5 sm:p-6 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="p-2 sm:p-2.5 bg-[#900EB0]/10 border border-[#900EB0]/20 text-[#900EB0] rounded-xl sm:rounded-2xl shrink-0 shadow-xs">
+            <Database className="size-5 sm:size-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">
+            <h1 className="text-base sm:text-2xl font-bold text-slate-800 tracking-tight font-sans">
               প্রশ্নব্যাংক
             </h1>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-slate-500 text-xs sm:text-sm mt-0.5 sm:mt-1">
               সকল বিষয়ের অধ্যায়ভিত্তিক সৃজনশীল ও MCQ প্রশ্নভাণ্ডার
             </p>
           </div>
@@ -211,9 +215,9 @@ export default function QuestionBank() {
         {role === "Question Creator" && (
           <Button
             onClick={() => navigate("/dashboard/add-question")}
-            className="bg-[#900EB0] hover:bg-[#720A7B] text-white rounded-xl h-11 px-5 flex items-center gap-2 font-semibold shadow-md shadow-[#900EB0]/20 cursor-pointer"
+            className="bg-[#900EB0] hover:bg-[#720A7B] text-white rounded-xl h-8 sm:h-11 px-3.5 sm:px-5 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold shadow-md shadow-[#900EB0]/20 cursor-pointer"
           >
-            <Plus className="size-4" />
+            <Plus className="size-3.5 sm:size-4" />
             প্রশ্ন তৈরি করুন
           </Button>
         )}
@@ -224,7 +228,7 @@ export default function QuestionBank() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4"
       >
         {[
           {
@@ -266,26 +270,26 @@ export default function QuestionBank() {
               key={i}
               variants={cardVariants}
               whileHover={{ y: -6 }}
-              className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-5 rounded-2xl border border-black/[0.04] ${stat.border} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-default`}
+              className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-3.5 sm:p-5 rounded-2xl border border-black/[0.04] ${stat.border} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-default`}
             >
               {/* Ultra premium subtle glow background effect */}
               <div
                 className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}
               />
 
-              <div className="relative z-10 space-y-1.5">
-                <span className="text-sm font-bold text-slate-600 block uppercase tracking-wider font-sans">
+              <div className="relative z-10 space-y-1 sm:space-y-1.5">
+                <span className="text-[11px] sm:text-sm font-bold text-slate-600 block uppercase tracking-wider font-sans">
                   {stat.label}
                 </span>
-                <span className="text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
+                <span className="text-xl sm:text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
                   {stat.count.toLocaleString("bn-BD")}
                 </span>
               </div>
 
               <div
-                className={`relative z-10 size-12 rounded-xl bg-gradient-to-br ${stat.bg} ${stat.color} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}
+                className={`relative z-10 size-9 sm:size-12 rounded-xl bg-gradient-to-br ${stat.bg} ${stat.color} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}
               >
-                <IconComponent className="size-5.5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6" />
+                <IconComponent className="size-4 sm:size-5.5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6" />
               </div>
             </motion.div>
           );
@@ -297,7 +301,7 @@ export default function QuestionBank() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4"
       >
         {[
           {
@@ -331,26 +335,26 @@ export default function QuestionBank() {
               key={i}
               variants={cardVariants}
               whileHover={{ y: -6 }}
-              className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-5 rounded-2xl border border-black/[0.04] ${stat.border} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-default`}
+              className={`group relative bg-white/[0.45] hover:bg-white/[0.65] p-3.5 sm:p-5 rounded-2xl border border-black/[0.04] ${stat.border} backdrop-blur-md shadow-sm hover:shadow-md transition-colors duration-200 flex items-center justify-between overflow-hidden cursor-default`}
             >
               {/* Ultra premium subtle glow background effect */}
               <div
                 className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.bg} blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}
               />
 
-              <div className="relative z-10 space-y-1.5">
-                <span className="text-sm font-bold text-slate-600 block uppercase tracking-wider font-sans">
+              <div className="relative z-10 space-y-1 sm:space-y-1.5">
+                <span className="text-[11px] sm:text-sm font-bold text-slate-600 block uppercase tracking-wider font-sans">
                   {stat.label}
                 </span>
-                <span className="text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
+                <span className="text-xl sm:text-3xl font-extrabold text-slate-800 block font-sans tracking-tight">
                   {stat.count.toLocaleString("bn-BD")}
                 </span>
               </div>
 
               <div
-                className={`relative z-10 size-12 rounded-xl bg-gradient-to-br ${stat.bg} ${stat.color} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}
+                className={`relative z-10 size-9 sm:size-12 rounded-xl bg-gradient-to-br ${stat.bg} ${stat.color} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out`}
               >
-                <IconComponent className="size-5.5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6" />
+                <IconComponent className="size-4 sm:size-5.5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6" />
               </div>
             </motion.div>
           );
@@ -358,63 +362,117 @@ export default function QuestionBank() {
       </motion.div>
 
       {/* Filters Panel */}
-      <div className="bg-glass p-5 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div className="bg-glass p-3.5 sm:p-5 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-3 sm:space-y-4">
+        <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-4 items-center justify-between">
           <div className="relative w-full sm:max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 sm:size-4 text-slate-400" />
             <Input
               placeholder="প্রশ্ন, উদ্দীপক বা কীওয়ার্ড খুঁজুন..."
               value={qm.filterSearch}
               onChange={(e) => qm.setFilterSearch(e.target.value)}
-              className="pl-10 h-11 bg-white/[0.45] border-black/[0.08] focus-visible:ring-[#4F46E5]/15 focus-visible:border-[#4F46E5] rounded-xl font-semibold text-slate-700 backdrop-blur-sm"
+              className="pl-8 sm:pl-10 h-9 sm:h-11 text-xs sm:text-sm bg-white/[0.45] border-black/[0.08] focus-visible:ring-[#4F46E5]/15 focus-visible:border-[#4F46E5] rounded-xl font-semibold text-slate-700 backdrop-blur-sm"
             />
             {qm.filterSearch && (
               <button
                 onClick={() => qm.setFilterSearch("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               >
-                <X className="size-4" />
+                <X className="size-3.5 sm:size-4" />
               </button>
             )}
           </div>
 
-          <div className="flex gap-2 w-full sm:w-auto shrink-0 justify-end">
+          <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto shrink-0 justify-center sm:justify-end flex-nowrap overflow-x-auto no-scrollbar py-0.5">
+            <Button
+              variant="outline"
+              onClick={qm.toggleSortOrder}
+              className="border-black/[0.08] text-slate-700 hover:bg-[#900EB0]/5 hover:border-[#900EB0]/20 bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2 sm:px-4 text-[11px] sm:text-sm flex items-center gap-1 sm:gap-1.5 font-semibold cursor-pointer backdrop-blur-sm transition-all shadow-sm shrink-0 whitespace-nowrap"
+            >
+              {qm.sortOrder === "desc" ? (
+                <>
+                  <ArrowDownWideNarrow className="size-3 sm:size-4 text-[#900EB0] shrink-0" />
+                  {/* <span>নতুন থেকে পুরাতন</span> */}
+                </>
+              ) : (
+                <>
+                  <ArrowUpNarrowWide className="size-3 sm:size-4 text-[#900EB0] shrink-0" />
+                  {/* <span>পুরাতন থেকে নতুন</span> */}
+                </>
+              )}
+            </Button>
             <Button
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
-              className={`border-black/[0.08] text-slate-600 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-11 px-4 flex items-center gap-2 font-semibold ${
+              className={`border-black/[0.08] text-slate-700 hover:bg-[#900EB0]/5 hover:border-[#900EB0]/20 bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2 sm:px-4 text-[11px] sm:text-sm flex items-center gap-1 sm:gap-1.5 font-semibold cursor-pointer backdrop-blur-sm transition-all shadow-sm shrink-0 whitespace-nowrap ${
                 showFilters
-                  ? "bg-[#4F46E5]/10 border-[#4F46E5]/30 text-[#4F46E5]"
+                  ? "bg-[#900EB0]/10 border-[#900EB0]/30 text-[#900EB0]"
                   : ""
               }`}
             >
-              <Filter className="size-4" />
-              ফিল্টারসমূহ
+              <Filter className="size-3 sm:size-4 text-[#900EB0] shrink-0" />
+              <span>ফিল্টার</span>
               <ChevronDown
-                className={`size-4 transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
+                className={`size-3 sm:size-3.5 transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
               />
             </Button>
             <Button
               variant="outline"
               onClick={() => setShowAnswers(!showAnswers)}
-              className={`border-black/[0.08] text-slate-600 hover:bg-black/[0.02] bg-white/[0.45] rounded-xl h-11 px-4 flex items-center gap-2 font-semibold ${
+              className={`border-black/[0.08] text-slate-700 hover:bg-[#900EB0]/5 hover:border-[#900EB0]/20 bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2 sm:px-4 text-[11px] sm:text-sm flex items-center gap-1 sm:gap-1.5 font-semibold cursor-pointer backdrop-blur-sm transition-all shadow-sm shrink-0 whitespace-nowrap ${
                 showAnswers
                   ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600"
                   : ""
               }`}
             >
-              {showAnswers ? "উত্তর লুকান" : "উত্তর দেখান"}
+              {showAnswers ? (
+                <>
+                  <EyeOff className="size-3 sm:size-4 shrink-0" /> উত্তর লুকান
+                </>
+              ) : (
+                <>
+                  <Eye className="size-3 sm:size-4 shrink-0" /> উত্তর দেখান
+                </>
+              )}
             </Button>
 
             {hasActiveFilters && (
               <Button
                 variant="ghost"
                 onClick={handleResetFilters}
-                className="text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl h-11 px-3.5 font-semibold transition"
+                className="text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl h-8 sm:h-11 px-2 sm:px-3.5 text-[11px] sm:text-sm font-semibold transition shrink-0 whitespace-nowrap flex items-center gap-1"
               >
+                <RotateCcw className="size-3" />
                 রিসেট
               </Button>
             )}
+
+            {/* Page Size Selector */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="h-8 sm:h-11 px-2 sm:px-4 border border-black/[0.08] bg-white/[0.45] hover:bg-white/[0.65] hover:border-[#900EB0]/40 focus:outline-none transition-all rounded-xl text-[11px] sm:text-xs font-semibold text-slate-700 flex justify-between items-center gap-1.5 shadow-sm backdrop-blur-sm cursor-pointer select-none shrink-0 whitespace-nowrap">
+                  <span>{pageSize}টি</span>
+                  <ChevronDown className="size-3 sm:size-3.5 text-slate-400" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-[150px]">
+                {[10, 20, 50, 100].map((size) => (
+                  <DropdownMenuItem
+                    key={size}
+                    onSelect={() => setPageSize(size)}
+                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-between cursor-pointer focus:bg-[#900EB0]/8 focus:text-[#900EB0] hover:bg-slate-50 ${
+                      pageSize === size
+                        ? "bg-[#900EB0]/8 text-[#900EB0]"
+                        : "text-slate-700"
+                    }`}
+                  >
+                    <span>{size}টি </span>
+                    {pageSize === size && (
+                      <span className="size-1 rounded-full bg-[#900EB0]/80" />
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -1017,28 +1075,32 @@ export default function QuestionBank() {
                   <motion.div
                     key={item.passageGroupId}
                     variants={cardVariants}
-                    className="bg-white/[0.60] hover:bg-white/[0.75] p-4 sm:p-6 rounded-2xl border-2 border-[#4F46E5]/25 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-200 flex flex-col space-y-4 relative overflow-hidden"
+                    className="bg-white/[0.60] hover:bg-white/[0.75] p-3.5 sm:p-6 rounded-2xl border-2 border-[#4F46E5]/25 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-200 flex flex-col space-y-3 sm:space-y-4 relative overflow-hidden"
                   >
                     {/* Header Row */}
-                    <div className="flex flex-wrap justify-between items-center gap-2 border-b border-black/[0.06] pb-3">
-                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-sans font-bold text-slate-500">
-                        <span className="bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] text-white px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 font-sans text-xs">
-                          <BookOpen className="size-3.5" />
+                    <div className="flex flex-wrap justify-between items-center gap-1.5 sm:gap-2 border-b border-black/[0.06] pb-2.5 sm:pb-3">
+                      <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-[10px] sm:text-[11px] font-sans font-bold text-slate-500">
+                        <span className="bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] text-white px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg shadow-sm flex items-center gap-1 sm:gap-1.5 font-sans text-[11px] sm:text-xs">
+                          <BookOpen className="size-3 sm:size-3.5" />
                           উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ ({item.questions.length}টি
                           প্রশ্ন)
                         </span>
-                        <span className="bg-[#900EB0]/8 text-[#4F46E5] border border-[#900EB0]/20 px-2 py-0.5 rounded">
+                        <span className="bg-[#900EB0]/8 text-[#4F46E5] border border-[#900EB0]/20 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px]">
                           {classLabel}
                         </span>
-                        <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
+                        <span className="bg-violet-50 text-violet-700 border border-violet-100 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px]">
                           {qMeta.subjectId?.subjectName || "বিষয়"}
                         </span>
-                        <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded">
+                        <span className="bg-amber-50 text-amber-700 border border-amber-100 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px]">
                           অধ্যায় {qMeta.chapterNumber}
                         </span>
+                        <QuestionMetadataTooltip
+                          question={qMeta}
+                          classLabel={classLabel}
+                        />
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -1047,17 +1109,20 @@ export default function QuestionBank() {
                               toggleIndividualAnswer(q._id),
                             );
                           }}
-                          className="p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 bg-[#900EB0]/8 text-[#4F46E5] border-[#900EB0]/30 hover:bg-[#900EB0]/15 text-xs font-semibold px-2.5 gap-1 font-sans"
+                          className="p-1 sm:p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 bg-[#900EB0]/8 text-[#4F46E5] border-[#900EB0]/30 hover:bg-[#900EB0]/15 text-[10px] sm:text-xs font-semibold px-2 sm:px-2.5 gap-1 font-sans"
                         >
-                          <Eye className="size-3.5" />
-                          সবগুলোর উত্তর দেখান
+                          <Eye className="size-3 sm:size-3.5" />
+                          <span className="hidden sm:inline">
+                            সবগুলোর উত্তর দেখান
+                          </span>
+                          <span className="inline sm:hidden">উত্তর</span>
                         </button>
                       </div>
                     </div>
 
                     {/* Passage Box */}
                     {item.passageStem && (
-                      <div className="p-4 bg-[#900EB0]/8/70 border border-[#900EB0]/20 rounded-xl text-slate-800 font-serif text-[14px] leading-relaxed shadow-inner">
+                      <div className="p-3 sm:p-4 bg-[#900EB0]/8/70 border border-[#900EB0]/20 rounded-xl text-slate-800 font-serif text-xs sm:text-[14px] leading-relaxed shadow-inner">
                         <RichTextRender
                           content={item.passageStem}
                           inline={false}
@@ -1066,7 +1131,7 @@ export default function QuestionBank() {
                     )}
 
                     {/* Sub Questions List */}
-                    <div className="space-y-4 pt-2 border-t border-dashed border-[#900EB0]/30/80">
+                    <div className="space-y-3 sm:space-y-4 pt-2 border-t border-dashed border-[#900EB0]/30/80">
                       {item.questions.map((q, qSubIndex) => {
                         const isAnswerVisible =
                           showAnswers || !!expandedAnswerIds[q._id];
@@ -1081,30 +1146,30 @@ export default function QuestionBank() {
                         return (
                           <div
                             key={q._id}
-                            className="p-4 bg-white/70 rounded-xl border border-slate-200/60 space-y-3 relative group/sub shadow-2xs"
+                            className="p-3 sm:p-4 bg-white/70 rounded-xl border border-slate-200/60 space-y-2.5 sm:space-y-3 relative group/sub shadow-2xs"
                           >
                             {/* Sub Question Row Header */}
-                            <div className="flex flex-wrap justify-between items-center gap-2">
-                              <div className="flex items-center gap-2 text-xs font-bold text-slate-600 font-sans">
+                            <div className="flex flex-wrap justify-between items-center gap-1.5 sm:gap-2">
+                              <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-bold text-slate-600 font-sans">
                                 <span className="text-[#4F46E5]">
                                   প্রশ্ন{" "}
                                   {(qSubIndex + 1).toLocaleString("bn-BD")}
                                 </span>
-                                <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-2 py-0.5 rounded text-[10px]">
+                                <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px]">
                                   {subCatLabel}
                                 </span>
                                 <span
-                                  className={`px-2 py-0.5 rounded border text-[10px] ${subDiffConfig.color}`}
+                                  className={`px-1.5 sm:px-2 py-0.5 rounded border text-[9px] sm:text-[10px] ${subDiffConfig.color}`}
                                 >
                                   {subDiffConfig.label}
                                 </span>
                               </div>
 
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1 sm:gap-1.5">
                                 <button
                                   type="button"
                                   onClick={() => toggleIndividualAnswer(q._id)}
-                                  className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${isAnswerVisible ? "bg-[#900EB0]/8 text-[#4F46E5] border-[#900EB0]/30" : "bg-slate-50 text-slate-400 hover:text-slate-600 border-slate-200"}`}
+                                  className={`size-6 sm:size-7 rounded sm:rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${isAnswerVisible ? "bg-[#900EB0]/8 text-[#4F46E5] border-[#900EB0]/30" : "bg-slate-50 text-slate-400 hover:text-slate-600 border-slate-200"}`}
                                   title={
                                     isAnswerVisible
                                       ? "উত্তর লুকান"
@@ -1112,17 +1177,17 @@ export default function QuestionBank() {
                                   }
                                 >
                                   {isAnswerVisible ? (
-                                    <EyeOff className="size-3.5" />
+                                    <EyeOff className="size-3 sm:size-3.5" />
                                   ) : (
-                                    <Eye className="size-3.5" />
+                                    <Eye className="size-3 sm:size-3.5" />
                                   )}
                                 </button>
                               </div>
                             </div>
 
                             {/* Question Content */}
-                            <div className="text-[15px]">
-                              <div className="flex gap-2">
+                            <div className="text-sm sm:text-[15px]">
+                              <div className="flex gap-1.5 sm:gap-2">
                                 <span className="font-bold shrink-0">
                                   {(qSubIndex + 1).toLocaleString("bn-BD")}.
                                 </span>
@@ -1133,7 +1198,7 @@ export default function QuestionBank() {
                                   {q.mcqData?.mcqType ===
                                     "MultipleCompletion" &&
                                     q.mcqData?.statements && (
-                                      <div className="space-y-1 pl-6 mt-2 font-normal text-[15px] text-slate-700">
+                                      <div className="space-y-1 pl-3 sm:pl-6 mt-2 font-normal text-sm sm:text-[15px] text-slate-700">
                                         {q.mcqData.statements.map((st, idx) => (
                                           <div
                                             key={idx}
@@ -1161,7 +1226,7 @@ export default function QuestionBank() {
                               </div>
 
                               {/* Options Grid */}
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 mt-3 text-[15px]">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 pl-2 sm:pl-6 mt-2.5 sm:mt-3 text-sm sm:text-[15px]">
                                 {q.mcqData?.options?.map((opt, idx) => {
                                   const isCorrect =
                                     isAnswerVisible &&
@@ -1169,11 +1234,11 @@ export default function QuestionBank() {
                                   return (
                                     <div
                                       key={idx}
-                                      className={`flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border transition-all duration-300 ${isCorrect ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm" : "bg-white border-black/[0.04] text-slate-600"}`}
+                                      className={`flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border transition-all duration-300 ${isCorrect ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm" : "bg-white border-black/[0.04] text-slate-600"}`}
                                     >
-                                      <div className="flex items-center gap-2.5">
+                                      <div className="flex items-center gap-2 sm:gap-2.5">
                                         <span
-                                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${isCorrect ? "bg-emerald-500 text-white" : "bg-black/[0.04] text-slate-500"}`}
+                                          className={`size-5 sm:size-6 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-semibold transition-all shrink-0 ${isCorrect ? "bg-emerald-500 text-white" : "bg-black/[0.04] text-slate-500"}`}
                                         >
                                           {idx === 0
                                             ? "ক"
@@ -1189,7 +1254,7 @@ export default function QuestionBank() {
                                         />
                                       </div>
                                       {isCorrect && (
-                                        <Check className="size-4 text-emerald-600 shrink-0" />
+                                        <Check className="size-3.5 sm:size-4 text-emerald-600 shrink-0" />
                                       )}
                                     </div>
                                   );
@@ -1197,8 +1262,8 @@ export default function QuestionBank() {
                               </div>
 
                               {isAnswerVisible && q.mcqData?.explanation && (
-                                <div className="mt-3 p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
-                                  <span className="font-semibold text-[15px]">
+                                <div className="mt-2.5 sm:mt-3 p-2.5 sm:p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-xs sm:text-[15px] text-slate-700">
+                                  <span className="font-semibold">
                                     বিশ্লেষণ:{" "}
                                   </span>
                                   <RichTextRender
@@ -1216,26 +1281,26 @@ export default function QuestionBank() {
 
                     {/* Footer Metadata & Action Buttons */}
                     <div
-                      className="flex justify-between items-center border-t border-black/[0.05] pt-3 text-[11px] font-sans text-slate-500"
+                      className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-t border-black/[0.05] pt-2.5 sm:pt-3 gap-2.5 sm:gap-3 text-[10px] sm:text-[11px] font-sans text-slate-500"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <div className="flex flex-wrap items-center gap-4 font-medium">
+                      <div className="flex flex-wrap items-center gap-x-2.5 sm:gap-x-4 gap-y-1 font-medium">
                         <div className="flex items-center gap-1">
-                          <User className="size-3.5 text-slate-400" />
+                          <User className="size-3 sm:size-3.5 text-slate-400" />
                           <span>
                             তৈরি করেছেন:{" "}
                             {qMeta.creatorId?.fullName || "Content Creator"}
                           </span>
                         </div>
-                        <div className="hidden sm:flex items-center gap-1">
-                          <Calendar className="size-3.5 text-slate-400" />
+                        <div className="flex items-center gap-1">
+                          <Calendar className="size-3 sm:size-3.5 text-slate-400" />
                           <span>
                             তারিখ: {formatBengaliDate(qMeta.createdAt)}
                           </span>
                         </div>
                         {qMeta.approvedBy?.fullName && (
-                          <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
-                            <Check className="size-3 text-emerald-600" />
+                          <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-1.5 sm:px-2 py-0.5 rounded border border-emerald-500/10">
+                            <Check className="size-2.5 sm:size-3 text-emerald-600" />
                             <span>
                               অনুমোদনকারী: {qMeta.approvedBy.fullName}
                             </span>
@@ -1243,16 +1308,16 @@ export default function QuestionBank() {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-end">
                         {canManageQuestion(qMeta) && (
                           <>
                             <Button
                               type="button"
                               variant="outline"
                               onClick={() => handleEdit(item)}
-                              className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                              className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-7 sm:h-8 px-2.5 sm:px-3 text-[11px] sm:text-xs flex items-center gap-1 font-bold cursor-pointer"
                             >
-                              <Edit3 className="size-3" />
+                              <Edit3 className="size-3 sm:size-3.5" />
                               সম্পাদন
                             </Button>
                             <Button
@@ -1266,9 +1331,9 @@ export default function QuestionBank() {
                                   count: item.questions.length,
                                 })
                               }
-                              className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                              className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-7 sm:h-8 px-2.5 sm:px-3 text-[11px] sm:text-xs flex items-center gap-1 font-bold cursor-pointer"
                             >
-                              <Trash2 className="size-3" />
+                              <Trash2 className="size-3 sm:size-3.5" />
                               মুছে ফেলুন
                             </Button>
                           </>
@@ -1297,103 +1362,35 @@ export default function QuestionBank() {
                   key={q._id}
                   variants={cardVariants}
                   whileHover={{ y: -4 }}
-                  className="bg-glass border border-black/[0.06] hover:border-black/[0.12] rounded-2xl shadow-sm hover:shadow-md transition-colors duration-200 p-6 flex flex-col gap-4 relative overflow-hidden backdrop-blur-md group"
+                  className="bg-glass border border-black/[0.06] hover:border-black/[0.12] rounded-2xl shadow-sm hover:shadow-md transition-colors duration-200 p-3.5 sm:p-5 flex flex-col gap-3 sm:gap-4 relative overflow-hidden backdrop-blur-md group"
                 >
                   {/* Badge Header Row */}
                   <div
-                    className="flex flex-wrap justify-between items-center gap-2"
+                    className="flex items-center justify-between gap-1 sm:gap-2 flex-nowrap w-full"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
+                    {/* Left Badges Group */}
+                    <div className="flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[11px] font-sans font-bold text-slate-500 shrink-0">
                       {new Date() - new Date(q.createdAt) <
                         24 * 60 * 60 * 1000 && (
-                        <span className="bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded flex items-center gap-1.5">
-                          <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
+                        <span className="bg-rose-100 text-rose-700 border border-rose-200 px-1 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] flex items-center gap-1 sm:gap-1.5 shrink-0 whitespace-nowrap">
+                          <span className="size-1 sm:size-1.5 rounded-full bg-rose-500 animate-ping" />
                           নতুন
                         </span>
                       )}
-                      {q.institutionType && (
-                        <span
-                          className={`px-2 py-0.5 rounded border ${
-                            q.institutionType === "School"
-                              ? "bg-sky-55/60 text-sky-700 border-sky-100"
-                              : q.institutionType === "College"
-                                ? "bg-orange-55/60 text-orange-700 border-orange-100"
-                                : "bg-emerald-55/60 text-emerald-700 border-emerald-100"
-                          }`}
-                        >
-                          {q.institutionType === "School"
-                            ? "স্কুল"
-                            : q.institutionType === "College"
-                              ? "কলেজ"
-                              : "মাদ্রাসা"}
-                        </span>
-                      )}
-                      <span className="bg-[#900EB0]/8 text-[#4F46E5] border border-[#900EB0]/20 px-2 py-0.5 rounded">
-                        {classLabel}
-                      </span>
-                      <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
-                        {q.subjectId?.subjectName || "বিষয়"}
-                      </span>
-                      <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded">
-                        অধ্যায় {q.chapterNumber}
-                      </span>
-                      {q.topics && q.topics.length > 0 && (
-                        <span className="bg-slate-50 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">
-                          #{q.topics.join(", #")}
-                        </span>
-                      )}
-                      {(() => {
-                        const formattedYear = getFormattedTagValue(q.year);
-                        return formattedYear ? (
-                          <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
-                            সাল: {formattedYear}
-                          </span>
-                        ) : null;
-                      })()}
-                      {(() => {
-                        const formattedBoard = getFormattedTagValue(q.board);
-                        return formattedBoard ? (
-                          <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
-                            বোর্ড: {formattedBoard}
-                          </span>
-                        ) : null;
-                      })()}
-                      {(() => {
-                        const formattedSchool = getFormattedTagValue(q.school);
-                        return formattedSchool ? (
-                          <span
-                            className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[150px]"
-                            title={formattedSchool}
-                          >
-                            প্রতিষ্ঠান: {formattedSchool}
-                          </span>
-                        ) : null;
-                      })()}
-                      {q.level && String(q.level).trim() && (
-                        <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
-                          লেভেল: {LEVEL_LABELS[q.level] || q.level}
-                        </span>
-                      )}
-                      {q.specialSearch &&
-                        (Array.isArray(q.specialSearch)
-                          ? q.specialSearch.length > 0
-                          : String(q.specialSearch).trim()) && (
-                          <span className="bg-slate-50 text-slate-700 border border-slate-200 px-2 py-0.5 rounded">
-                            কীওয়ার্ড:{" "}
-                            {Array.isArray(q.specialSearch)
-                              ? q.specialSearch.join(", ")
-                              : q.specialSearch}
-                          </span>
-                        )}
+                      <QuestionMetadataTooltip
+                        question={q}
+                        classLabel={classLabel}
+                      />
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
-                      <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-2 py-0.5 rounded">
+                    {/* Right Badges Group */}
+                    <div className="flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[11px] font-sans font-bold text-slate-500 shrink-0 whitespace-nowrap">
+                      <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px]">
                         {catLabel}
                       </span>
                       <span
-                        className={`px-2 py-0.5 rounded border ${
+                        className={`px-1.5 sm:px-2 py-0.5 rounded border text-[9px] sm:text-[10px] ${
                           q.difficulty === "Easy"
                             ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                             : q.difficulty === "Medium"
@@ -1409,7 +1406,7 @@ export default function QuestionBank() {
                           e.stopPropagation();
                           toggleIndividualAnswer(q._id);
                         }}
-                        className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${
+                        className={`size-5.5 sm:size-7 rounded sm:rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 ${
                           isAnswerVisible
                             ? "bg-[#900EB0]/8 text-[#4F46E5] border-[#900EB0]/30"
                             : "bg-slate-50 text-slate-400 hover:text-slate-600 border-slate-200 hover:bg-slate-100"
@@ -1417,9 +1414,9 @@ export default function QuestionBank() {
                         title={isAnswerVisible ? "উত্তর লুকান" : "উত্তর দেখান"}
                       >
                         {isAnswerVisible ? (
-                          <EyeOff className="size-3.5" />
+                          <EyeOff className="size-3 sm:size-3.5" />
                         ) : (
-                          <Eye className="size-3.5" />
+                          <Eye className="size-3 sm:size-3.5" />
                         )}
                       </button>
                     </div>
@@ -1486,7 +1483,7 @@ export default function QuestionBank() {
                         </div>
 
                         {/* Options Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 text-[15px] font-serif">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 pl-2 sm:pl-6 text-sm sm:text-[15px] font-serif">
                           {q.mcqData.options &&
                             q.mcqData.options.slice(0, 4).map((opt, idx) => {
                               const isCorrect =
@@ -1495,15 +1492,15 @@ export default function QuestionBank() {
                               return (
                                 <div
                                   key={idx}
-                                  className={`flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border transition-all duration-300 ${
+                                  className={`flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border transition-all duration-300 ${
                                     isCorrect
                                       ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm"
                                       : "bg-white/[0.3] hover:bg-white/[0.6] border-black/[0.03] hover:border-black/[0.08] text-slate-600"
                                   }`}
                                 >
-                                  <div className="flex items-center gap-2.5">
+                                  <div className="flex items-center gap-2 sm:gap-2.5">
                                     <span
-                                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+                                      className={`size-5 sm:size-6 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-semibold transition-all shrink-0 ${
                                         isCorrect
                                           ? "bg-emerald-500 text-white"
                                           : "bg-black/[0.04] text-slate-500"
@@ -1523,7 +1520,7 @@ export default function QuestionBank() {
                                     />
                                   </div>
                                   {isCorrect && (
-                                    <Check className="size-4 text-emerald-600 shrink-0" />
+                                    <Check className="size-3.5 sm:size-4 text-emerald-600 shrink-0" />
                                   )}
                                 </div>
                               );
@@ -1745,37 +1742,37 @@ export default function QuestionBank() {
 
                   {/* Footer Metadata & Action Buttons */}
                   <div
-                    className="flex justify-between items-center border-t border-black/[0.05] pt-3 text-[11px] font-sans text-slate-500"
+                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-t border-black/[0.05] pt-2.5 sm:pt-3 gap-2.5 sm:gap-3 text-[10px] sm:text-[11px] font-sans text-slate-500"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="flex flex-wrap items-center gap-4 font-medium">
+                    <div className="flex flex-wrap items-center gap-x-2.5 sm:gap-x-4 gap-y-1 font-medium">
                       <div className="flex items-center gap-1">
-                        <User className="size-3.5 text-slate-400" />
+                        <User className="size-3 sm:size-3.5 text-slate-400" />
                         <span>
                           তৈরি করেছেন:{" "}
                           {q.creatorId?.fullName || "Content Creator"}
                         </span>
                       </div>
-                      <div className="hidden sm:flex items-center gap-1">
-                        <Calendar className="size-3.5 text-slate-400" />
+                      <div className="flex items-center gap-1">
+                        <Calendar className="size-3 sm:size-3.5 text-slate-400" />
                         <span>তারিখ: {formatBengaliDate(q.createdAt)}</span>
                       </div>
                       {q.approvedBy?.fullName && (
-                        <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
-                          <Check className="size-3 text-emerald-600" />
+                        <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-1.5 sm:px-2 py-0.5 rounded border border-emerald-500/10">
+                          <Check className="size-2.5 sm:size-3 text-emerald-600" />
                           <span>অনুমোদনকারী: {q.approvedBy.fullName}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-end flex-wrap sm:flex-nowrap mt-1 sm:mt-0">
                       <Button
                         type="button"
                         variant="outline"
                         onClick={() => setSelectedPreviewQuestion(q)}
-                        className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                        className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-7 sm:h-8 px-2.5 sm:px-3 text-[11px] sm:text-xs flex items-center gap-1 font-bold cursor-pointer"
                       >
-                        <Eye className="size-3" />
+                        <Eye className="size-3 sm:size-3.5" />
                         বিস্তারিত
                       </Button>
 
@@ -1785,18 +1782,18 @@ export default function QuestionBank() {
                             type="button"
                             variant="outline"
                             onClick={() => handleEdit(q)}
-                            className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                            className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl h-7 sm:h-8 px-2.5 sm:px-3 text-[11px] sm:text-xs flex items-center gap-1 font-bold cursor-pointer"
                           >
-                            <Edit3 className="size-3" />
+                            <Edit3 className="size-3 sm:size-3.5" />
                             সম্পাদন
                           </Button>
                           <Button
                             type="button"
                             variant="outline"
                             onClick={() => setDeleteConfirmId(q._id)}
-                            className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-8 px-3 text-xs flex items-center gap-1 font-bold cursor-pointer"
+                            className="border-black/[0.08] text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-xl h-7 sm:h-8 px-2.5 sm:px-3 text-[11px] sm:text-xs flex items-center gap-1 font-bold cursor-pointer"
                           >
-                            <Trash2 className="size-3" />
+                            <Trash2 className="size-3 sm:size-3.5" />
                             মুছে ফেলুন
                           </Button>
                         </>
@@ -1825,14 +1822,14 @@ export default function QuestionBank() {
       >
         <DialogContent
           showCloseButton={false}
-          className="max-w-3xl border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-3xl shadow-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden font-sans"
+          className="w-[calc(100%-1.5rem)] sm:w-full max-w-3xl border border-slate-200/50 bg-glass-elevated backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden font-sans"
         >
           {selectedPreviewQuestion && (
             <div className="flex flex-col h-full min-h-0">
               {/* Modal Header */}
-              <div className="px-6 py-5 border-b border-black/[0.05] flex items-center justify-between bg-slate-50/50 shrink-0">
+              <div className="px-4 sm:px-6 py-3.5 sm:py-5 border-b border-black/[0.05] flex items-center justify-between bg-slate-50/50 shrink-0">
                 <div>
-                  <DialogTitle className="text-slate-800 font-extrabold text-lg tracking-tight font-sans">
+                  <DialogTitle className="text-slate-800 font-extrabold text-base sm:text-lg tracking-tight font-sans">
                     প্রশ্নপত্র বিস্তারিত বিবরণ
                   </DialogTitle>
                   <DialogDescription className="text-slate-400 text-xs mt-0.5">
@@ -1848,7 +1845,7 @@ export default function QuestionBank() {
               </div>
 
               {/* Scrollable Modal Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6 min-h-0">
+              <div className="flex-1 overflow-y-auto p-3.5 sm:p-6 space-y-4 sm:space-y-6 min-h-0">
                 {/* Meta details Grid */}
                 <div className="bg-slate-50/60 border border-black/[0.03] rounded-2xl p-4 space-y-3">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
