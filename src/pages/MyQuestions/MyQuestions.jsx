@@ -40,7 +40,6 @@ import {
   FolderSearch,
   GraduationCap,
   HelpCircle,
-  Info,
   Layers3,
   ListFilter,
   Loader2,
@@ -60,8 +59,8 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import React, { useState } from "react";
-import UpdateQuestionImageModal from "./components/UpdateQuestionImageModal.jsx";
 import QuestionMetadataTooltip from "./components/QuestionMetadataTooltip.jsx";
+import UpdateQuestionImageModal from "./components/UpdateQuestionImageModal.jsx";
 import { useMyQuestions } from "./hook/useMyQuestions";
 
 const TYPE_LABELS = {
@@ -92,17 +91,6 @@ const DIFFICULTY_MAP = {
     label: "কঠিন",
     color: "bg-rose-50 text-rose-700 border-rose-200",
   },
-};
-
-const getFormattedTagValue = (val) => {
-  if (!val) return "";
-  if (Array.isArray(val)) {
-    return val
-      .map((item) => (item != null ? String(item).trim() : ""))
-      .filter(Boolean)
-      .join(", ");
-  }
-  return String(val).trim();
 };
 
 const containerVariants = {
