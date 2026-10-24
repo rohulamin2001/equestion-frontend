@@ -63,6 +63,7 @@ export function useQuestionApproval() {
       qm.filterSearch,
       qm.filterVersion,
       pageSize,
+      qm.sortOrder,
     ],
     initialPageParam: 1,
     queryFn: async ({ pageParam = 1 }) => {
@@ -70,6 +71,7 @@ export function useQuestionApproval() {
         page: pageParam,
         limit: pageSize,
         status: filterStatus,
+        sortOrder: qm.sortOrder,
       };
       if (qm.filterType) params.institutionType = qm.filterType;
       if (qm.filterLevel) params.academicLevel = qm.filterLevel;

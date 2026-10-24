@@ -386,17 +386,22 @@ export default function QuestionBank() {
             <Button
               variant="outline"
               onClick={qm.toggleSortOrder}
-              className="border-black/[0.08] text-slate-700 hover:bg-[#900EB0]/5 hover:border-[#900EB0]/20 bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2 sm:px-4 text-[11px] sm:text-sm flex items-center gap-1 sm:gap-1.5 font-semibold cursor-pointer backdrop-blur-sm transition-all shadow-sm shrink-0 whitespace-nowrap"
+              title={
+                qm.sortOrder === "desc"
+                  ? "নতুন থেকে পুরাতন (সর্বশেষ প্রশ্ন আগে)"
+                  : "পুরাতন থেকে নতুন (প্রথম প্রশ্ন আগে)"
+              }
+              className="border-black/[0.08] text-slate-700 hover:bg-[#900EB0]/5 hover:border-[#900EB0]/20 bg-white/[0.45] rounded-xl h-8 sm:h-11 px-2.5 sm:px-4 text-[11px] sm:text-sm flex items-center gap-1 sm:gap-1.5 font-semibold cursor-pointer backdrop-blur-sm transition-all shadow-sm shrink-0 whitespace-nowrap"
             >
               {qm.sortOrder === "desc" ? (
                 <>
                   <ArrowDownWideNarrow className="size-3 sm:size-4 text-[#900EB0] shrink-0" />
-                  {/* <span>নতুন থেকে পুরাতন</span> */}
+                  <span className="hidden sm:inline">নতুন থেকে পুরাতন</span>
                 </>
               ) : (
                 <>
                   <ArrowUpNarrowWide className="size-3 sm:size-4 text-[#900EB0] shrink-0" />
-                  {/* <span>পুরাতন থেকে নতুন</span> */}
+                  <span className="hidden sm:inline">পুরাতন থেকে নতুন</span>
                 </>
               )}
             </Button>
