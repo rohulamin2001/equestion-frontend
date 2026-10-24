@@ -40,6 +40,7 @@ import {
   FolderSearch,
   GraduationCap,
   HelpCircle,
+  Info,
   Layers3,
   ListFilter,
   Loader2,
@@ -60,6 +61,7 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import React, { useState } from "react";
 import UpdateQuestionImageModal from "./components/UpdateQuestionImageModal.jsx";
+import QuestionMetadataTooltip from "./components/QuestionMetadataTooltip.jsx";
 import { useMyQuestions } from "./hook/useMyQuestions";
 
 const TYPE_LABELS = {
@@ -1642,7 +1644,6 @@ export default function MyQuestions() {
                 <motion.div
                   key={q._id}
                   variants={cardVariants}
-                  whileHover={{ y: -4 }}
                   className={`p-3.5 sm:p-6 rounded-2xl border backdrop-blur-md hover:shadow-md transition-all duration-200 flex flex-col space-y-3 sm:space-y-4 relative ${
                     isSelected
                       ? "ring-2 ring-[#900EB0]/25 border-[#900EB0]/40 bg-[#900EB0]/[0.02]"
@@ -1686,82 +1687,12 @@ export default function MyQuestions() {
                           নতুন
                         </span>
                       )}
-                      {q.institutionType && (
-                        <span
-                          className={`px-2 py-0.5 rounded border ${
-                            q.institutionType === "School"
-                              ? "bg-sky-55/60 text-sky-700 border-sky-100"
-                              : q.institutionType === "College"
-                                ? "bg-orange-55/60 text-orange-700 border-orange-100"
-                                : "bg-emerald-55/60 text-emerald-700 border-emerald-100"
-                          }`}
-                        >
-                          {q.institutionType === "School"
-                            ? "স্কুল"
-                            : q.institutionType === "College"
-                              ? "কলেজ"
-                              : "মাদ্রাসা"}
-                        </span>
-                      )}
-                      <span className="bg-[#900EB0]/8 text-[#900EB0] border border-[#900EB0]/15 px-2 py-0.5 rounded">
-                        {classLabel}
-                      </span>
-                      <span className="bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded">
-                        {q.subjectId?.subjectName || "বিষয়"}
-                      </span>
-                      <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded">
-                        অধ্যায় {q.chapterNumber}
-                      </span>
-                      {q.topics && q.topics.length > 0 && (
-                        <span className="bg-slate-50 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">
-                          #{q.topics.join(", #")}
-                        </span>
-                      )}
-                      {(() => {
-                        const formattedYear = getFormattedTagValue(q.year);
-                        return formattedYear ? (
-                          <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
-                            সাল: {formattedYear}
-                          </span>
-                        ) : null;
-                      })()}
-                      {(() => {
-                        const formattedBoard = getFormattedTagValue(q.board);
-                        return formattedBoard ? (
-                          <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">
-                            বোর্ড: {formattedBoard}
-                          </span>
-                        ) : null;
-                      })()}
-                      {(() => {
-                        const formattedSchool = getFormattedTagValue(q.school);
-                        return formattedSchool ? (
-                          <span
-                            className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded truncate max-w-[150px]"
-                            title={formattedSchool}
-                          >
-                            প্রতিষ্ঠান: {formattedSchool}
-                          </span>
-                        ) : null;
-                      })()}
-                      {q.level && String(q.level).trim() && (
-                        <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
-                          লেভেল: {LEVEL_LABELS[q.level] || q.level}
-                        </span>
-                      )}
-                      {q.specialSearch &&
-                        (Array.isArray(q.specialSearch)
-                          ? q.specialSearch.length > 0
-                          : String(q.specialSearch).trim()) && (
-                          <span className="bg-slate-50 text-slate-700 border border-slate-200 px-2 py-0.5 rounded">
-                            কীওয়ার্ড:{" "}
-                            {Array.isArray(q.specialSearch)
-                              ? q.specialSearch.join(", ")
-                              : q.specialSearch}
-                          </span>
-                        )}
+                      {/* Metadata Info (i) Button */}
+                      <QuestionMetadataTooltip
+                        question={q}
+                        classLabel={classLabel}
+                      />
                     </div>
-
                     <div className="flex flex-wrap items-center gap-2 text-[11px] font-sans font-bold text-slate-500">
                       {/* Status Badge */}
                       <div className="flex items-center gap-1">
