@@ -2491,8 +2491,8 @@ export default function QuestionBank() {
               </div>
 
               {/* Footer */}
-              <div className="bg-slate-50/80 border-t border-black/[0.05] px-6 py-4 flex items-center justify-end shrink-0">
-                <div className="flex flex-row flex-nowrap items-center gap-2.5 shrink-0">
+              <div className="bg-slate-50/80 border-t border-black/[0.05] px-3.5 sm:px-6 py-3 sm:py-4 shrink-0">
+                <div className="grid grid-cols-2 sm:flex sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-2.5 w-full sm:w-auto">
                   {canManageQuestion(selectedPreviewQuestion) && (
                     <Button
                       variant="outline"
@@ -2500,7 +2500,7 @@ export default function QuestionBank() {
                         handleEdit(selectedPreviewQuestion);
                         setSelectedPreviewQuestion(null);
                       }}
-                      className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl font-bold text-xs h-10 px-4 cursor-pointer flex items-center gap-1.5 shadow-sm transition hover:scale-102 shrink-0"
+                      className="border-black/[0.08] text-slate-600 hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 hover:border-[#4F46E5]/20 rounded-xl font-bold text-xs h-9 sm:h-10 px-3 sm:px-4 cursor-pointer flex items-center justify-center gap-1.5 shadow-sm transition hover:scale-102 w-full sm:w-auto"
                     >
                       <Edit3 className="size-3.5" />
                       সম্পাদন করুন
@@ -2508,7 +2508,11 @@ export default function QuestionBank() {
                   )}
                   <Button
                     onClick={() => setSelectedPreviewQuestion(null)}
-                    className="bg-[#4F46E5] hover:bg-[#4F46E5]/95 text-white rounded-xl font-bold text-xs h-10 px-4 cursor-pointer shadow-md transition hover:scale-102 shrink-0 animate-in fade-in duration-200"
+                    className={`bg-[#4F46E5] hover:bg-[#4F46E5]/95 text-white rounded-xl font-bold text-xs h-9 sm:h-10 px-4 cursor-pointer shadow-md transition hover:scale-102 w-full sm:w-auto flex items-center justify-center animate-in fade-in duration-200 ${
+                      !canManageQuestion(selectedPreviewQuestion)
+                        ? "col-span-2"
+                        : ""
+                    }`}
                   >
                     বন্ধ করুন
                   </Button>

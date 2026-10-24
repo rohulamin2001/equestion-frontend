@@ -2733,11 +2733,10 @@ export default function QuestionApproval() {
               </div>
 
               {/* Modal Footer with Actions Only */}
-              <div className="bg-slate-50/80 border-t border-black/[0.05] px-6 py-4 flex items-center justify-end shrink-0">
-                {/* Footer Action Buttons */}
-                <div className="flex flex-row flex-nowrap items-center gap-2.5 shrink-0 animate-in fade-in duration-200">
-                  {selectedPreviewQuestion.status === "Pending" && (
-                    <>
+              <div className="bg-slate-50/80 border-t border-black/[0.05] px-3.5 sm:px-6 py-3 sm:py-4 shrink-0">
+                {selectedPreviewQuestion.status === "Pending" ? (
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-2.5 w-full">
+                    <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-2.5 w-full sm:w-auto">
                       <Button
                         onClick={() =>
                           handleUpdateStatus(
@@ -2746,7 +2745,7 @@ export default function QuestionApproval() {
                           )
                         }
                         disabled={updateStatusMutation.isPending}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs h-10 px-4 cursor-pointer flex items-center gap-1.5 shadow-sm transition hover:scale-102 shrink-0"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs h-9 sm:h-10 px-3 sm:px-4 cursor-pointer flex items-center justify-center gap-1.5 shadow-sm transition hover:scale-102 w-full sm:w-auto"
                       >
                         <Check className="size-3.5" />
                         অনুমোদন করুন
@@ -2757,51 +2756,60 @@ export default function QuestionApproval() {
                           handleRejectClick(selectedPreviewQuestion._id)
                         }
                         disabled={updateStatusMutation.isPending}
-                        className="border-red-200 text-red-650 hover:bg-red-50 hover:border-red-350 rounded-xl font-bold text-xs h-10 px-4 cursor-pointer flex items-center gap-1.5 shadow-sm transition hover:scale-102 shrink-0"
+                        className="border-red-200 text-red-650 hover:bg-red-50 hover:border-red-350 rounded-xl font-bold text-xs h-9 sm:h-10 px-3 sm:px-4 cursor-pointer flex items-center justify-center gap-1.5 shadow-sm transition hover:scale-102 w-full sm:w-auto"
                       >
                         <XCircle className="size-3.5" />
                         বাতিল করুন
                       </Button>
-                    </>
-                  )}
+                    </div>
 
-                  {selectedPreviewQuestion.status === "Approved" && (
                     <Button
-                      variant="outline"
-                      onClick={() =>
-                        handleRejectClick(selectedPreviewQuestion._id)
-                      }
-                      disabled={updateStatusMutation.isPending}
-                      className="border-red-200 text-red-650 hover:bg-red-50 hover:border-red-350 rounded-xl font-bold text-xs h-10 px-4 cursor-pointer flex items-center gap-1.5 shadow-sm transition hover:scale-102 shrink-0"
+                      onClick={() => setSelectedPreviewQuestion(null)}
+                      className="bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-xs h-9 sm:h-10 px-4 cursor-pointer shadow-md transition hover:scale-102 w-full sm:w-auto flex items-center justify-center"
                     >
-                      <XCircle className="size-3.5" />
-                      বাতিল করুন
+                      বন্ধ করুন
                     </Button>
-                  )}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:flex sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-2.5 w-full sm:w-auto">
+                    {selectedPreviewQuestion.status === "Approved" && (
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          handleRejectClick(selectedPreviewQuestion._id)
+                        }
+                        disabled={updateStatusMutation.isPending}
+                        className="border-red-200 text-red-650 hover:bg-red-50 hover:border-red-350 rounded-xl font-bold text-xs h-9 sm:h-10 px-3 sm:px-4 cursor-pointer flex items-center justify-center gap-1.5 shadow-sm transition hover:scale-102 w-full sm:w-auto"
+                      >
+                        <XCircle className="size-3.5" />
+                        বাতিল করুন
+                      </Button>
+                    )}
 
-                  {selectedPreviewQuestion.status === "Rejected" && (
+                    {selectedPreviewQuestion.status === "Rejected" && (
+                      <Button
+                        onClick={() =>
+                          handleUpdateStatus(
+                            selectedPreviewQuestion._id,
+                            "Approved",
+                          )
+                        }
+                        disabled={updateStatusMutation.isPending}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs h-9 sm:h-10 px-3 sm:px-4 cursor-pointer flex items-center justify-center gap-1.5 shadow-sm transition hover:scale-102 w-full sm:w-auto"
+                      >
+                        <Check className="size-3.5" />
+                        অনুমোদন করুন
+                      </Button>
+                    )}
+
                     <Button
-                      onClick={() =>
-                        handleUpdateStatus(
-                          selectedPreviewQuestion._id,
-                          "Approved",
-                        )
-                      }
-                      disabled={updateStatusMutation.isPending}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs h-10 px-4 cursor-pointer flex items-center gap-1.5 shadow-sm transition hover:scale-102 shrink-0"
+                      onClick={() => setSelectedPreviewQuestion(null)}
+                      className="bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-xs h-9 sm:h-10 px-4 cursor-pointer shadow-md transition hover:scale-102 w-full sm:w-auto flex items-center justify-center"
                     >
-                      <Check className="size-3.5" />
-                      অনুমোদন করুন
+                      বন্ধ করুন
                     </Button>
-                  )}
-
-                  <Button
-                    onClick={() => setSelectedPreviewQuestion(null)}
-                    className="bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-xs h-10 px-4 cursor-pointer shadow-md transition hover:scale-102 shrink-0"
-                  >
-                    বন্ধ করুন
-                  </Button>
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -2840,11 +2848,11 @@ export default function QuestionApproval() {
               className="w-full h-24 px-3 py-2 border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 bg-white/70 resize-none font-sans font-medium"
             />
           </div>
-          <DialogFooter className="flex gap-2 justify-end">
+          <DialogFooter className="grid grid-cols-2 sm:flex sm:justify-end gap-2">
             <Button
               variant="outline"
               onClick={() => setRejectConfirmId(null)}
-              className="border-black/[0.08] text-slate-600 hover:bg-black/[0.02] rounded-xl font-bold cursor-pointer text-xs h-9 px-4"
+              className="border-black/[0.08] text-slate-600 hover:bg-black/[0.02] rounded-xl font-bold cursor-pointer text-xs h-9 px-4 w-full sm:w-auto"
             >
               বন্ধ করুন
             </Button>
@@ -2861,7 +2869,7 @@ export default function QuestionApproval() {
                 );
                 setRejectConfirmId(null);
               }}
-              className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold cursor-pointer flex items-center gap-1.5 shadow-sm text-xs h-9 px-4"
+              className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold cursor-pointer flex items-center justify-center gap-1.5 shadow-sm text-xs h-9 px-4 w-full sm:w-auto"
               disabled={updateStatusMutation.isPending}
             >
               {updateStatusMutation.isPending ? (
