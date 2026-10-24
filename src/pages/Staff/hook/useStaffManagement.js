@@ -12,6 +12,9 @@ export function useStaffManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [staffToDelete, setStaffToDelete] = useState(null);
   const [activeDropdownMemberId, setActiveDropdownMemberId] = useState(null);
+  const [pendingRoleChange, setPendingRoleChange] = useState(null);
+  const [isPermissionsGuideOpen, setIsPermissionsGuideOpen] = useState(false);
+  const [guideRoleKey, setGuideRoleKey] = useState("Content Manager");
 
   // Form fields
   const [firstName, setFirstName] = useState("");
@@ -124,6 +127,7 @@ export function useStaffManagement() {
         );
       });
       toast.success("স্টাফ মেম্বারের রোল সফলভাবে পরিবর্তন করা হয়েছে!");
+      setPendingRoleChange(null);
     },
     onError: (err) => {
       toast.error(
@@ -133,6 +137,40 @@ export function useStaffManagement() {
       );
     },
   });
+
+  const initiateRoleChange = (member, newRole) => {
+    if (member.role === newRole) {
+      setActiveDropdownMemberId(null);
+      return;
+    }
+    setActiveDropdownMemberId(null);
+    setPendingRoleChange({
+      userId: member._id,
+      memberName: member.fullName || member.phoneNumber,
+      oldRole: member.role,
+      newRole,
+    });
+  };
+
+  const confirmRoleChange = () => {
+    if (!pendingRoleChange) return;
+    updateRoleMutation.mutate({
+      userId: pendingRoleChange.userId,
+      newRole: pendingRoleChange.newRole,
+    });
+  };
+
+  const cancelRoleChange = () => {
+    if (updateRoleMutation.isPending) return;
+    setPendingRoleChange(null);
+  };
+
+  const openPermissionsGuide = (roleKey) => {
+    if (roleKey) {
+      setGuideRoleKey(roleKey);
+    }
+    setIsPermissionsGuideOpen(true);
+  };
 
   const handleRoleChange = async (userId, newRole) => {
     updateRoleMutation.mutate({ userId, newRole });
@@ -202,6 +240,10 @@ export function useStaffManagement() {
     setActiveDropdownMemberId,
     userToReset2FA,
     setUserToReset2FA,
+    pendingRoleChange,
+    isPermissionsGuideOpen,
+    setIsPermissionsGuideOpen,
+    guideRoleKey,
     // Search & Filter
     searchQuery,
     setSearchQuery,
@@ -231,9 +273,14 @@ export function useStaffManagement() {
     deleteStaffPending: deleteStaffMutation.isPending,
     deleteStaffVariables: deleteStaffMutation.variables,
     reset2FAPending: reset2FAMutation.isPending,
+    updateRolePending: updateRoleMutation.isPending,
     // Handlers
     handleAddStaff,
     handleRoleChange,
+    initiateRoleChange,
+    confirmRoleChange,
+    cancelRoleChange,
+    openPermissionsGuide,
     handleDeleteStaff,
     handleConfirmReset2FA,
     deleteStaffMutation,

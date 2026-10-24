@@ -39,6 +39,7 @@ import {
   ChevronDown,
   Eye,
   EyeOff,
+  Info,
   Loader2,
   Lock,
   RotateCcw,
@@ -50,6 +51,9 @@ import {
   UserCheck,
   UserPlus,
 } from "lucide-react";
+import RoleChangeConfirmDialog from "./components/RoleChangeConfirmDialog";
+import RolePermissionsModal from "./components/RolePermissionsModal";
+import { ROLE_CONFIGS } from "./constants/rolePermissions";
 import { useStaffManagement } from "./hook/useStaffManagement";
 
 const ROLE_COLORS = {
@@ -101,7 +105,15 @@ export default function StaffManagement() {
     deleteStaffPending,
     deleteStaffVariables,
     handleAddStaff,
-    handleRoleChange,
+    initiateRoleChange,
+    confirmRoleChange,
+    cancelRoleChange,
+    openPermissionsGuide,
+    pendingRoleChange,
+    isPermissionsGuideOpen,
+    setIsPermissionsGuideOpen,
+    guideRoleKey,
+    updateRolePending,
     handleDeleteStaff,
     deleteStaffMutation,
     userToReset2FA,
@@ -127,14 +139,26 @@ export default function StaffManagement() {
             ও ২-স্টেপ সিকিউরিটি রিসেট করুন।
           </p>
         </div>
-        <RippleButton
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-5 py-6 rounded-xl bg-primary text-white hover:bg-primary/95 transition font-semibold font-bengali"
-        >
-          <UserPlus className="size-[18px]" />
-          নতুন স্টাফ যোগ করুন
-          <RippleButtonRipples color="rgba(255, 255, 255, 0.3)" />
-        </RippleButton>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => openPermissionsGuide()}
+            className="flex items-center gap-2 px-4 py-6 rounded-xl border-slate-200 text-slate-700 hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition font-semibold font-bengali shadow-xs cursor-pointer"
+          >
+            <ShieldCheck className="size-[18px] text-primary" />
+            রোল ও পারমিশন গাইড
+          </Button>
+
+          <RippleButton
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 px-5 py-6 rounded-xl bg-primary text-white hover:bg-primary/95 transition font-semibold font-bengali"
+          >
+            <UserPlus className="size-[18px]" />
+            নতুন স্টাফ যোগ করুন
+            <RippleButtonRipples color="rgba(255, 255, 255, 0.3)" />
+          </RippleButton>
+        </div>
       </div>
 
       {/* Search & Filter Bar */}
@@ -310,8 +334,24 @@ export default function StaffManagement() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                               align="start"
-                              className="w-[180px] bg-white border border-slate-100 rounded-xl shadow-lg p-1.5 space-y-0.5 z-[100]"
+                              className="w-[260px] bg-white border border-slate-100 rounded-xl shadow-xl p-1.5 space-y-1 z-[100]"
                             >
+                              <div className="px-2.5 py-1.5 border-b border-slate-100 flex items-center justify-between">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-sans">
+                                  পদবি (রোল) নির্বাচন
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openPermissionsGuide(member.role);
+                                  }}
+                                  className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Info className="size-3" />
+                                  গাইড দেখুন
+                                </button>
+                              </div>
                               {[
                                 "Admin",
                                 "Content Manager",
@@ -320,37 +360,48 @@ export default function StaffManagement() {
                                 "Subscriber",
                               ].map((roleKey) => {
                                 const isSelected = member.role === roleKey;
+                                const conf = ROLE_CONFIGS[roleKey];
                                 return (
                                   <DropdownMenuItem
                                     key={roleKey}
                                     onSelect={() =>
-                                      handleRoleChange(member._id, roleKey)
+                                      initiateRoleChange(member, roleKey)
                                     }
-                                    className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center justify-between cursor-pointer focus:bg-primary/5 focus:text-primary hover:bg-slate-50/80 hover:translate-x-1 group/item ${
+                                    className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer focus:bg-primary/5 focus:text-primary hover:bg-slate-50/80 group/item ${
                                       isSelected
                                         ? "bg-primary/5 text-primary"
                                         : "text-slate-700"
                                     }`}
                                   >
-                                    <span className="flex items-center gap-1.5">
-                                      <span
-                                        className={`size-1.5 rounded-full transition-all duration-300 group-hover/item:scale-125 ${
-                                          roleKey === "Admin"
-                                            ? "bg-orange-500 group-hover/item:shadow-[0_0_6px_rgba(249,115,22,0.6)]"
-                                            : roleKey === "Content Manager"
-                                              ? "bg-blue-500 group-hover/item:shadow-[0_0_6px_rgba(59,130,246,0.6)]"
-                                              : roleKey === "Question Creator"
-                                                ? "bg-emerald-500 group-hover/item:shadow-[0_0_6px_rgba(16,185,129,0.6)]"
-                                                : roleKey === "Support Team"
-                                                  ? "bg-purple-500 group-hover/item:shadow-[0_0_6px_rgba(168,85,247,0.6)]"
-                                                  : "bg-slate-500"
-                                        }`}
-                                      />
-                                      {BENGALI_ROLES[roleKey]}
-                                    </span>
-                                    {isSelected && (
-                                      <span className="size-1 rounded-full bg-primary" />
-                                    )}
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center justify-between">
+                                        <span className="flex items-center gap-1.5 font-bold text-xs">
+                                          <span
+                                            className={`size-1.5 rounded-full transition-all duration-300 group-hover/item:scale-125 ${
+                                              roleKey === "Admin"
+                                                ? "bg-orange-500 group-hover/item:shadow-[0_0_6px_rgba(249,115,22,0.6)]"
+                                                : roleKey === "Content Manager"
+                                                  ? "bg-blue-500 group-hover/item:shadow-[0_0_6px_rgba(59,130,246,0.6)]"
+                                                  : roleKey ===
+                                                      "Question Creator"
+                                                    ? "bg-emerald-500 group-hover/item:shadow-[0_0_6px_rgba(16,185,129,0.6)]"
+                                                    : roleKey === "Support Team"
+                                                      ? "bg-purple-500 group-hover/item:shadow-[0_0_6px_rgba(168,85,247,0.6)]"
+                                                      : "bg-slate-500"
+                                            }`}
+                                          />
+                                          {BENGALI_ROLES[roleKey]}
+                                        </span>
+                                        {isSelected && (
+                                          <span className="size-1.5 rounded-full bg-primary" />
+                                        )}
+                                      </div>
+                                      {conf?.tagline && (
+                                        <span className="block text-[10px] text-slate-400 font-normal font-bengali truncate mt-0.5">
+                                          {conf.tagline}
+                                        </span>
+                                      )}
+                                    </div>
                                   </DropdownMenuItem>
                                 );
                               })}
@@ -536,9 +587,19 @@ export default function StaffManagement() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                  Staff Role (পদবি নির্বাচন)
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                    Staff Role (পদবি নির্বাচন)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => openPermissionsGuide(role)}
+                    className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <Info className="size-3" />
+                    পারমিশন বিবরণ
+                  </button>
+                </div>
 
                 <DropdownMenu
                   open={isRoleDropdownOpen}
@@ -562,7 +623,7 @@ export default function StaffManagement() {
 
                   <DropdownMenuContent
                     align="start"
-                    className="w-[var(--radix-dropdown-menu-trigger-width)] bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
+                    className="w-[var(--radix-dropdown-menu-trigger-width)] bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-xl shadow-xl p-1.5 space-y-1 z-[100]"
                   >
                     {[
                       "Admin",
@@ -571,33 +632,43 @@ export default function StaffManagement() {
                       "Support Team",
                     ].map((roleKey) => {
                       const isSelected = role === roleKey;
+                      const conf = ROLE_CONFIGS[roleKey];
                       return (
                         <DropdownMenuItem
                           key={roleKey}
                           onSelect={() => setRole(roleKey)}
-                          className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50/80 group ${
+                          className={`w-full text-left px-3.5 py-2.5 rounded-lg transition flex items-center justify-between cursor-pointer focus:bg-indigo-50 focus:text-indigo-600 hover:bg-slate-50/80 group ${
                             isSelected
                               ? "bg-indigo-50 text-indigo-600"
                               : "text-slate-700"
                           }`}
                         >
-                          <span className="flex items-center gap-2">
-                            <span
-                              className={`size-1.5 rounded-full ${
-                                roleKey === "Admin"
-                                  ? "bg-orange-500"
-                                  : roleKey === "Content Manager"
-                                    ? "bg-blue-500"
-                                    : roleKey === "Question Creator"
-                                      ? "bg-emerald-500"
-                                      : "bg-purple-500"
-                              }`}
-                            />
-                            {BENGALI_ROLES[roleKey]}
-                          </span>
-                          {isSelected && (
-                            <span className="size-1.5 rounded-full bg-indigo-600" />
-                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <span className="flex items-center gap-2 font-semibold text-xs sm:text-sm">
+                                <span
+                                  className={`size-1.5 rounded-full ${
+                                    roleKey === "Admin"
+                                      ? "bg-orange-500"
+                                      : roleKey === "Content Manager"
+                                        ? "bg-blue-500"
+                                        : roleKey === "Question Creator"
+                                          ? "bg-emerald-500"
+                                          : "bg-purple-500"
+                                  }`}
+                                />
+                                {BENGALI_ROLES[roleKey]}
+                              </span>
+                              {isSelected && (
+                                <span className="size-1.5 rounded-full bg-indigo-600" />
+                              )}
+                            </div>
+                            {conf?.tagline && (
+                              <span className="block text-[11px] text-slate-400 font-normal font-bengali truncate mt-0.5">
+                                {conf.tagline}
+                              </span>
+                            )}
+                          </div>
                         </DropdownMenuItem>
                       );
                     })}
@@ -741,6 +812,22 @@ export default function StaffManagement() {
           </div>
         </AlertDialogPopup>
       </AlertDialog>
+
+      {/* Role Permissions Guide Modal */}
+      <RolePermissionsModal
+        isOpen={isPermissionsGuideOpen}
+        onOpenChange={setIsPermissionsGuideOpen}
+        initialRoleKey={guideRoleKey}
+      />
+
+      {/* Role Change Confirmation Dialog */}
+      <RoleChangeConfirmDialog
+        pendingChange={pendingRoleChange}
+        isOpen={!!pendingRoleChange}
+        onClose={cancelRoleChange}
+        onConfirm={confirmRoleChange}
+        isLoading={updateRolePending}
+      />
     </div>
   );
 }
