@@ -2,6 +2,7 @@
  * Sample JSON Template for Bulk Importing Questions (MCQ & Creative)
  */
 
+import { CATEGORIES_MAP } from "./categories";
 import { CLASSES_MAP } from "./classes";
 
 export const ALLOWED_IMPORT_VALUES = {
@@ -16,24 +17,7 @@ export const ALLOWED_IMPORT_VALUES = {
   ],
   version: ["Bangla", "English"],
   className: CLASSES_MAP.map((c) => c.value),
-  category: [
-    "MCQ",
-    "Creative",
-    "ShortAnswer",
-    "BroadQuestion",
-    "FillInBlanks",
-    "Matching",
-    "Poem",
-    "SentenceFormation",
-    "ConjunctLetters",
-    "WordMeaning",
-    "Punctuation",
-    "GenderChange",
-    "Antonym",
-    "FormFilling",
-    "Paragraph",
-    "Essay",
-  ],
+  category: CATEGORIES_MAP.map((c) => c.value),
   difficulty: ["Easy", "Medium", "Hard"],
   mcqType: ["Simple", "MultipleCompletion", "Contextual"],
   board: [

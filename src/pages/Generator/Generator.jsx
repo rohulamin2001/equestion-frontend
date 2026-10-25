@@ -19,31 +19,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { CATEGORIES_MAP } from "../../constants/categories";
+import {
+  CATEGORIES_MAP,
+  CATEGORY_LABELS,
+} from "../../constants/categories";
 import { ChapterSelectModal } from "./components/ChapterSelectModal";
 import { GeneratorHeader } from "./components/GeneratorHeader";
 import { StepIndicators } from "./components/StepIndicators";
 import { SubjectSelectModal } from "./components/SubjectSelectModal";
 import { useGenerator } from "./hook/useGenerator";
-
-const SHORT_CATEGORY_LABELS = {
-  MCQ: "বহু",
-  Creative: "সৃজনশীল",
-  ShortAnswer: "সংক্ষিপ্ত",
-  BroadQuestion: "রচনামূলক",
-  FillInBlanks: "শূন্যস্থান",
-  Matching: "মিলকরণ",
-  Poem: "কবিতা",
-  SentenceFormation: "বাক্য গঠন",
-  ConjunctLetters: "যুক্তবর্ণ",
-  WordMeaning: "শব্দার্থ",
-  Punctuation: "বিরামচিহ্ন",
-  GenderChange: "লিঙ্গান্তর",
-  Antonym: "বিপরীত শব্দ",
-  FormFilling: "ফরম পূরণ",
-  Paragraph: "অনুচ্ছেদ",
-  Essay: "রচনা",
-};
 
 const MARK_PRESETS = [25, 50, 75, 100];
 
@@ -89,10 +73,10 @@ export default function Generator() {
 
   const getCombinedLabel = () => {
     if (!activeCategories || activeCategories.length === 0) return "সমন্বিত";
-    const shortNames = activeCategories
-      .map((cat) => SHORT_CATEGORY_LABELS[cat] || cat)
+    const categoryNames = activeCategories
+      .map((cat) => CATEGORY_LABELS[cat] || cat)
       .filter(Boolean);
-    return `সমন্বিত (${shortNames.join(", ")})`;
+    return `সমন্বিত (${categoryNames.join(", ")})`;
   };
 
   const getSelectedTypeLabel = () => {

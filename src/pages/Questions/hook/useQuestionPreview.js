@@ -1,47 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
+import {
+  CATEGORY_LABELS,
+  CATEGORY_ORDER,
+} from "../../../constants/categories";
+import { CLASSES_MAP } from "../../../constants/classes";
 import { useUserContext } from "../../../context/UserContext.jsx";
 import { useQuestions } from "./useQuestions";
-import { CLASSES_MAP } from "../../../constants/classes";
-
-const CATEGORY_ORDER = [
-  "Creative",
-  "BroadQuestion",
-  "ShortAnswer",
-  "MCQ",
-  "FillInBlanks",
-  "Matching",
-  "Poem",
-  "SentenceFormation",
-  "ConjunctLetters",
-  "WordMeaning",
-  "Punctuation",
-  "GenderChange",
-  "Antonym",
-  "FormFilling",
-  "Paragraph",
-  "Essay",
-];
-
-const CATEGORY_LABELS = {
-  Creative: "সৃজনশীল প্রশ্ন",
-  BroadQuestion: "রচনামূলক প্রশ্ন",
-  ShortAnswer: "সংক্ষিপ্ত উত্তর প্রশ্ন",
-  MCQ: "বহু নির্বাচনী প্রশ্ন",
-  FillInBlanks: "শূন্যস্থান পূরণ",
-  Matching: "বাম-ডান মিলকরণ",
-  Poem: "কবিতা",
-  SentenceFormation: "বাক্য গঠন",
-  ConjunctLetters: "যুক্তবর্ণ",
-  WordMeaning: "শব্দার্থ",
-  Punctuation: "বিরামচিহ্ন",
-  GenderChange: "লিঙ্গ পরিবর্তন",
-  Antonym: "বিপরীত শব্দ",
-  FormFilling: "ফরম পূরণ",
-  Paragraph: "অনুচ্ছেদ",
-  Essay: "রচনা",
-};
 
 const DEFAULT_SETTINGS = {
   paperSize: "A4",
