@@ -1,6 +1,6 @@
 import { BookOpen, Menu, Sparkles, X } from "lucide-react";
-import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { NAV_LINKS } from "../data/landingContent";
 
 export default function LandingNavbar({ onLogin }) {

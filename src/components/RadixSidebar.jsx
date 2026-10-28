@@ -52,7 +52,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 const DATA = {
   teams: [
     {
-      name: "প্রশ্ন",
+      name: "স্মার্ট প্রশ্নব্যাংক",
       logo: BookOpen,
       plan: "SaaS Platform",
     },
@@ -277,20 +277,21 @@ export const RadixSidebar = () => {
               <div className="flex items-center gap-3">
                 <div
                   className="flex aspect-square size-9 items-center justify-center rounded-xl text-white transition-all duration-300"
-                  style={{
-                    background: "var(--sidebar-brand-gradient)",
-                    boxShadow: "var(--sidebar-brand-shadow)",
-                  }}
+                  // style={{
+                  //   background: "var(--sidebar-brand-gradient)",
+                  //   boxShadow: "var(--sidebar-brand-shadow)",
+                  // }}
                 >
-                  <BookOpen className="size-5" />
+                  {/* <BookOpen className="size-5" /> */}
+                  <img src="/src/assets/logo.svg" />
                 </div>
-                <div className="grid flex-1 text-left text-[15px] leading-tight group-data-[collapsible=icon]:hidden">
-                  <span className="truncate font-bold text-slate-800 font-sans tracking-tight">
+                <div className="grid flex-1 text-left text-[20px] leading-tight group-data-[collapsible=icon]:hidden">
+                  <span className="truncate font-extrabold text-[#270950] font-sans pt-1.5">
                     {DATA.teams[0].name}
                   </span>
-                  <span className="truncate text-xs font-medium text-slate-500 font-sans">
+                  {/* <span className="truncate text-xs font-medium text-slate-500 font-sans">
                     {DATA.teams[0].plan}
-                  </span>
+                  </span> */}
                 </div>
               </div>
 
