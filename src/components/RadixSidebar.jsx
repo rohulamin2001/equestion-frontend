@@ -284,7 +284,11 @@ export const RadixSidebar = () => {
                   // }}
                 >
                   {/* <BookOpen className="size-5" /> */}
+<<<<<<< HEAD
                   <img src={logoImg} alt="Logo" className="w-full h-full object-contain" />
+=======
+                  <img src="/src/assets/logo.svg" />
+>>>>>>> 073b222da6302c64db1f97d4707cd94fbc49effb
                 </div>
                 <div className="grid flex-1 text-left text-[20px] leading-tight group-data-[collapsible=icon]:hidden">
                   <span className="truncate font-extrabold text-[#270950] font-sans pt-1.5">
