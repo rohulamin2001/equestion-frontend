@@ -104,7 +104,7 @@ export default function DashboardLayout() {
                   <BreadcrumbList>
                     <BreadcrumbItem className="hidden lg:block">
                       <BreadcrumbLink className="text-slate-500 hover:text-[#4F46E5] transition font-sans">
-                        প্রশ্ন
+                        স্মার্ট প্রশ্নব্যাংক
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator className="hidden lg:block text-slate-400" />
