@@ -1,4 +1,3 @@
-import logoImg from "@/assets/logo.svg";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -285,7 +284,7 @@ export const RadixSidebar = () => {
                 >
                   {/* <BookOpen className="size-5" /> */}
                   <img
-                    src={logoImg}
+                    src="/logo.svg"
                     alt="Logo"
                     className="w-full h-full object-contain"
                   />
