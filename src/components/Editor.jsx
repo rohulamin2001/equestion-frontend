@@ -1,22 +1,28 @@
-import { getAccessToken } from "@/lib/apiClient";
+import apiClient, { getAccessToken } from "@/lib/apiClient";
 import JoditEditor from "jodit-react";
 import { useMemo } from "react";
+import { toast } from "sonner";
 
 // Utility to resolve relative R2 image paths (e.g. questions/...) to full CDN URLs for Jodit Editor
 function resolveEditorImages(html) {
   if (!html || typeof html !== "string") return html;
   const r2Base = (import.meta.env.VITE_R2_PUBLIC_URL || "").replace(/\/+$/, "");
-  const apiBase = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
+  const apiBase = (
+    import.meta.env.VITE_API_URL || "http://localhost:5000"
+  ).replace(/\/+$/, "");
 
-  return html.replace(/src=["'](?!(?:https?:|\/\/|data:|blob:))\/?([^"']+)["']/gi, (match, path) => {
-    if (path.startsWith("uploads/")) {
+  return html.replace(
+    /src=["'](?!(?:https?:|\/\/|data:|blob:))\/?([^"']+)["']/gi,
+    (match, path) => {
+      if (path.startsWith("uploads/")) {
+        return `src="${apiBase}/${path}"`;
+      }
+      if (r2Base) {
+        return `src="${r2Base}/${path}"`;
+      }
       return `src="${apiBase}/${path}"`;
-    }
-    if (r2Base) {
-      return `src="${r2Base}/${path}"`;
-    }
-    return `src="${apiBase}/${path}"`;
-  });
+    },
+  );
 }
 
 export default function Editor({
@@ -26,15 +32,15 @@ export default function Editor({
   height = 300,
   ...props
 }) {
-  const token = getAccessToken();
-
   // Resolve relative R2 paths so Jodit Editor displays images properly
   const resolvedValue = useMemo(() => {
     return resolveEditorImages(value);
   }, [value]);
 
   const config = useMemo(() => {
-    const apiBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const apiBaseUrl = (
+      import.meta.env.VITE_API_URL || "http://localhost:5000"
+    ).replace(/\/+$/, "");
 
     return {
       readonly: false,
@@ -44,6 +50,7 @@ export default function Editor({
       addNewLine: false,
       toolbarButtonSize: "middle",
       defaultActionOnPaste: "insert_clear_html",
+      enableDragAndDropFileToEditor: true,
       image: {
         openOnDblClick: true,
         editSize: true,
@@ -79,30 +86,77 @@ export default function Editor({
         "source",
       ],
       // File upload configuration for Cloudflare R2
-      uploader: token
-        ? {
-            url: `${apiBaseUrl}/api/upload`,
-            format: "json",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            filesVariableName: "image",
-            // Map Jodit's upload response
-            isSuccess: (resp) => resp.success === true,
-            getMessage: (resp) => resp.error || "Image uploaded successfully",
-            process: (resp) => {
-              return {
-                files: resp.files || [resp.url],
-                path: resp.url,
-                baseurl: "",
-                error: resp.error ? 1 : 0,
-                msg: resp.error || "",
-              };
-            },
+      uploader: {
+        url: `${apiBaseUrl}/api/upload`,
+        insertImageAsBase64URI: false,
+        imagesExtensions: ["jpg", "png", "jpeg", "gif", "svg", "webp"],
+        filesVariableName: () => "image",
+        withCredentials: true,
+        headers: () => {
+          const token = getAccessToken();
+          return token ? { Authorization: `Bearer ${token}` } : {};
+        },
+        isSuccess: (resp) =>
+          Boolean(resp && (resp.success === true || !!resp.url)),
+        getMessage: (resp) => resp?.error || "ছবি আপলোড ব্যর্থ হয়েছে",
+        process: (resp) => {
+          const publicUrl = resp?.url || (resp?.files && resp?.files[0]) || "";
+          return {
+            files: publicUrl ? [publicUrl] : [],
+            path: publicUrl,
+            baseurl: "",
+            isImages: [true],
+            error: resp?.success === false ? 1 : 0,
+            msg: resp?.error || "",
+          };
+        },
+        customUploadFunction: async (formData, showProgress) => {
+          try {
+            if (showProgress) showProgress(15);
+
+            if (formData instanceof FormData) {
+              if (!formData.has("folder")) {
+                formData.append("folder", "questions");
+              }
+              // Ensure field name is 'image' as expected by multer
+              if (!formData.has("image")) {
+                for (const [, val] of formData.entries()) {
+                  if (val instanceof File || val instanceof Blob) {
+                    formData.set("image", val);
+                    break;
+                  }
+                }
+              }
+            }
+
+            const res = await apiClient.post("/upload", formData, {
+              headers: { "Content-Type": "multipart/form-data" },
+              onUploadProgress: (evt) => {
+                if (evt.total && showProgress) {
+                  showProgress(Math.round((evt.loaded * 100) / evt.total));
+                }
+              },
+            });
+
+            if (showProgress) showProgress(100);
+            toast.success("ছবি সফলভাবে আপলোড হয়েছে!");
+            return res.data;
+          } catch (err) {
+            if (showProgress) showProgress(100);
+            const errMsg =
+              err.response?.data?.error ||
+              err.message ||
+              "ছবি আপলোড করা যায়নি!";
+            toast.error(errMsg);
+            return {
+              success: false,
+              error: errMsg,
+            };
           }
-        : undefined,
+        },
+      },
     };
-  }, [token, placeholder, height]);
+  }, [placeholder, height]);
 
   return (
     <div className="jodit-editor-wrapper bg-white rounded-xl overflow-hidden border border-black/[0.08] focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-500 transition shadow-sm">
