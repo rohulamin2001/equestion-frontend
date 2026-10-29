@@ -275,14 +275,8 @@ export const RadixSidebar = () => {
           <SidebarMenuItem>
             <div className="flex p-2 items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div
-                  className="flex aspect-square size-9 items-center justify-center rounded-xl text-white transition-all duration-300"
-                  // style={{
-                  //   background: "var(--sidebar-brand-gradient)",
-                  //   boxShadow: "var(--sidebar-brand-shadow)",
-                  // }}
-                >
-                  {/* <BookOpen className="size-5" /> */}
+                <div className="flex aspect-square size-9 items-center justify-center rounded-xl text-white transition-all duration-300">
+                  {/* //logo  */}
                   <img
                     src="/logo.svg"
                     alt="Logo"

@@ -10,7 +10,7 @@ export default function Overview() {
             ড্যাশবোর্ড ওভারভিউ
           </h1>
           <p className="text-sm text-slate-500 mt-1 font-bengali">
-            আপনার প্রশ্ন ব্যাংক সিস্টেমের সংক্ষিপ্ত তথ্য ও পরিসংখ্যান
+            আপনার ‍স্মার্ট প্রশ্নব্যাংক সিস্টেমের সংক্ষিপ্ত তথ্য ও পরিসংখ্যান
           </p>
         </div>
       </div>
