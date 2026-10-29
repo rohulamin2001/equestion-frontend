@@ -1953,7 +1953,7 @@ export default function MyQuestions() {
                           </span>
                           <div className="flex-1 space-y-4">
                             {q.creativeData.stem && (
-                              <div className="p-1 bg-slate-50/60 rounded-xl leading-relaxed text-slate-700">
+                              <div className="pt-1 bg-slate-50/60 rounded-xl leading-relaxed text-slate-700">
                                 <div className="flex items-center justify-between gap-2 mb-1.5">
                                   <strong className="text-sm font-semibold text-slate-800">
                                     উদ্দীপক:

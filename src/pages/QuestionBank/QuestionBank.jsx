@@ -1556,7 +1556,12 @@ export default function QuestionBank() {
                           </span>
                           <div className="flex-1 space-y-4">
                             {q.creativeData.stem && (
-                              <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none  leading-relaxed text-slate-700 backdrop-blur-sm">
+                              <div className=" bg-slate-50/60 rounded-xl leading-relaxed text-slate-700">
+                                <div className="mb-1.5">
+                                  <strong className="text-sm font-semibold text-slate-800">
+                                    উদ্দীপক:
+                                  </strong>
+                                </div>
                                 <RichTextRender content={q.creativeData.stem} />
                               </div>
                             )}
@@ -1582,7 +1587,7 @@ export default function QuestionBank() {
                                 {isAnswerVisible &&
                                   q.creativeData.subQuestions?.cognitiveA
                                     ?.answer && (
-                                    <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                    <div className="ml-6 mt-1 text-sm text-green-800 leading-relaxed">
                                       <span className="font-bold text-green-700 mr-1.5">
                                         উত্তর:
                                       </span>
@@ -1616,7 +1621,7 @@ export default function QuestionBank() {
                                 {isAnswerVisible &&
                                   q.creativeData.subQuestions?.cognitiveB
                                     ?.answer && (
-                                    <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                    <div className="ml-6 mt-1 text-sm text-green-800 leading-relaxed">
                                       <span className="font-bold text-green-700 mr-1.5">
                                         উত্তর:
                                       </span>
@@ -1650,7 +1655,7 @@ export default function QuestionBank() {
                                 {isAnswerVisible &&
                                   q.creativeData.subQuestions?.cognitiveC
                                     ?.answer && (
-                                    <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                    <div className="ml-6 mt-1 text-sm text-green-800 leading-relaxed">
                                       <span className="font-bold text-green-700 mr-1.5">
                                         উত্তর:
                                       </span>
@@ -1684,7 +1689,7 @@ export default function QuestionBank() {
                                 {isAnswerVisible &&
                                   q.creativeData.subQuestions?.cognitiveD
                                     ?.answer && (
-                                    <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                    <div className="ml-6 mt-1 text-sm text-green-800 leading-relaxed">
                                       <span className="font-bold text-green-700 mr-1.5">
                                         উত্তর:
                                       </span>
@@ -2201,7 +2206,12 @@ export default function QuestionBank() {
                     selectedPreviewQuestion.creativeData && (
                       <div className="space-y-5">
                         {selectedPreviewQuestion.creativeData.stem && (
-                          <div className="p-5 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none leading-relaxed text-slate-700 backdrop-blur-sm">
+                          <div className="p-3 bg-slate-50/60 rounded-xl leading-relaxed text-slate-700">
+                            <div className="mb-1.5">
+                              <strong className="text-sm font-semibold text-slate-800">
+                                উদ্দীপক:
+                              </strong>
+                            </div>
                             <RichTextRender
                               content={
                                 selectedPreviewQuestion.creativeData.stem
@@ -2231,7 +2241,7 @@ export default function QuestionBank() {
                             {showModalAnswers &&
                               selectedPreviewQuestion.creativeData.subQuestions
                                 ?.cognitiveA?.answer && (
-                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                <div className="ml-6 mt-1 text-sm text-green-800 leading-relaxed">
                                   <span className="font-bold text-green-700 mr-1.5">
                                     উত্তর:
                                   </span>
@@ -2265,7 +2275,7 @@ export default function QuestionBank() {
                             {showModalAnswers &&
                               selectedPreviewQuestion.creativeData.subQuestions
                                 ?.cognitiveB?.answer && (
-                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                <div className="ml-6 mt-1 text-sm text-green-800 leading-relaxed">
                                   <span className="font-bold text-green-700 mr-1.5">
                                     উত্তর:
                                   </span>
@@ -2299,7 +2309,7 @@ export default function QuestionBank() {
                             {showModalAnswers &&
                               selectedPreviewQuestion.creativeData.subQuestions
                                 ?.cognitiveC?.answer && (
-                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                <div className="ml-6 mt-1 text-sm text-green-800 leading-relaxed">
                                   <span className="font-bold text-green-700 mr-1.5">
                                     উত্তর:
                                   </span>
@@ -2333,7 +2343,7 @@ export default function QuestionBank() {
                             {showModalAnswers &&
                               selectedPreviewQuestion.creativeData.subQuestions
                                 ?.cognitiveD?.answer && (
-                                <div className="ml-8 mt-1 p-3 bg-green-50/50 border border-green-100 rounded-lg text-[17px] text-green-800 font-serif">
+                                <div className="ml-6 mt-1 text-sm text-green-800 leading-relaxed">
                                   <span className="font-bold text-green-700 mr-1.5">
                                     উত্তর:
                                   </span>
