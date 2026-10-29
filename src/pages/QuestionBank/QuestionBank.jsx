@@ -1566,7 +1566,7 @@ export default function QuestionBank() {
                               </div>
                             )}
 
-                            <div className="pl-4 space-y-2.5 text-[15px] text-slate-700">
+                            <div className=" space-y-2.5 text-[15px] text-slate-700">
                               <div className="flex flex-col gap-2">
                                 <div className="flex justify-between items-center ">
                                   <span className="w-6">ক.</span>
