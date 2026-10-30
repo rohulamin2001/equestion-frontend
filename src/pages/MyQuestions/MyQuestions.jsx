@@ -2136,7 +2136,7 @@ export default function MyQuestions() {
 
                           <div className="text-[15px] flex justify-between items-start gap-4">
                             <div className="flex gap-2">
-                              <span className="font-bold shrink-0">
+                              <span className="font-medium shrink-0">
                                 {q._overallSerial
                                   ? `${q._overallSerial.toLocaleString("bn-BD")}.`
                                   : `${(index + 1).toLocaleString("bn-BD")}.`}

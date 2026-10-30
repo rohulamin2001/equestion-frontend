@@ -130,7 +130,7 @@ export default function RichTextRender({
   if (inline) {
     return (
       <span
-        className={`inline [&_*]:inline [&_*]:!text-inherit [&_p]:inline [&_p]:m-0 [&_p]:p-0 [&_img]:!rounded-none [&_img]:!shadow-none [&_img]:!max-w-full [&_img]:h-auto [&_img]:object-contain text-inherit select-text break-words jodit-rendered-content ${className}`}
+        className={`inline [&_p]:inline [&_p]:m-0 [&_p]:p-0 [&_span]:inline [&_img]:!rounded-none [&_img]:!shadow-none [&_img]:!max-w-full [&_img]:h-auto [&_img]:object-contain text-inherit select-text break-words jodit-rendered-content ${className}`}
         dangerouslySetInnerHTML={{ __html: renderedContent }}
         {...props}
       />
@@ -139,7 +139,7 @@ export default function RichTextRender({
 
   return (
     <div
-      className={`prose max-w-none dark:prose-invert [&_img]:!rounded-none [&_img]:!shadow-none [&_img]:!max-w-full [&_img]:h-auto [&_img]:object-contain text-inherit select-text break-words jodit-rendered-content ${className}`}
+      className={`max-w-none overflow-x-auto [&_img]:!rounded-none [&_img]:!shadow-none [&_img]:!max-w-full [&_img]:h-auto [&_img]:object-contain text-inherit select-text break-words jodit-rendered-content ${className}`}
       dangerouslySetInnerHTML={{ __html: renderedContent }}
       {...props}
     />

@@ -720,3 +720,126 @@ img[class*="question-image"],
   height: auto !important;
   object-fit: contain !important;
 }
+
+/* ==========================================================================
+   Rich Text Rendered Content (Jodit Output & Question Paper Tables/Lists)
+   ========================================================================== */
+
+/* Tables */
+.jodit-rendered-content table,
+.question-paper-container table {
+  width: auto;
+  max-width: 100%;
+  border-collapse: collapse !important;
+  border-spacing: 0;
+  margin: 0.75rem 0;
+  border: 1.5px solid #94a3b8 !important;
+  display: table !important;
+  empty-cells: show;
+  background-color: transparent;
+}
+
+.jodit-rendered-content thead,
+.question-paper-container thead {
+  display: table-header-group !important;
+}
+
+.jodit-rendered-content tbody,
+.question-paper-container tbody {
+  display: table-row-group !important;
+}
+
+.jodit-rendered-content tr,
+.question-paper-container tr {
+  display: table-row !important;
+}
+
+.jodit-rendered-content th,
+.jodit-rendered-content td,
+.question-paper-container th,
+.question-paper-container td {
+  border: 1px solid #94a3b8 !important;
+  padding: 0.45rem 0.85rem !important;
+  text-align: inherit;
+  vertical-align: middle;
+  min-width: 2.5rem;
+  display: table-cell !important;
+  line-height: 1.45;
+}
+
+.jodit-rendered-content th,
+.question-paper-container th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Dark Mode Tables */
+.dark .jodit-rendered-content table,
+.dark .question-paper-container table,
+.dark .jodit-rendered-content th,
+.dark .jodit-rendered-content td,
+.dark .question-paper-container th,
+.dark .question-paper-container td {
+  border-color: #475569 !important;
+}
+
+.dark .jodit-rendered-content th,
+.dark .question-paper-container th {
+  background-color: #1e293b;
+}
+
+/* Unordered & Ordered Lists */
+.jodit-rendered-content ul,
+.question-paper-container ul {
+  list-style-type: disc !important;
+  margin-left: 1.5rem !important;
+  margin-top: 0.35rem !important;
+  margin-bottom: 0.35rem !important;
+  padding-left: 0.5rem !important;
+}
+
+.jodit-rendered-content ol,
+.question-paper-container ol {
+  list-style-type: decimal !important;
+  margin-left: 1.5rem !important;
+  margin-top: 0.35rem !important;
+  margin-bottom: 0.35rem !important;
+  padding-left: 0.5rem !important;
+}
+
+.jodit-rendered-content li,
+.question-paper-container li {
+  display: list-item !important;
+  margin-top: 0.15rem !important;
+  margin-bottom: 0.15rem !important;
+}
+
+/* Blockquotes */
+.jodit-rendered-content blockquote,
+.question-paper-container blockquote {
+  border-left: 3px solid #cbd5e1;
+  padding-left: 0.75rem;
+  margin: 0.5rem 0;
+  font-style: italic;
+  color: #64748b;
+}
+
+/* Print Specific Rules for Sharp Tables */
+@media print {
+  .jodit-rendered-content table,
+  .question-paper-container table,
+  .jodit-rendered-content th,
+  .jodit-rendered-content td,
+  .question-paper-container th,
+  .question-paper-container td {
+    border-color: #000 !important;
+    color: #000 !important;
+  }
+  .jodit-rendered-content th,
+  .question-paper-container th {
+    background-color: #f1f5f9 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
