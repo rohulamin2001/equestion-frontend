@@ -19,6 +19,7 @@ import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
 import { groupPassageQuestions } from "@/lib/questionUtils";
 import QuestionMetadataTooltip from "@/pages/MyQuestions/components/QuestionMetadataTooltip";
+import { getStructuredGeneralData } from "@/utils/generalQuestionUtils";
 import {
   AlertCircle,
   ArrowDownWideNarrow,
@@ -1711,43 +1712,118 @@ export default function QuestionBank() {
 
                     {/* General Questions */}
                     {!["MCQ", "Creative"].includes(q.category) &&
-                      q.generalData && (
-                        <div className="space-y-3">
-                          {q.generalData.stem && (
-                            <div className="p-4 bg-black/[0.02] border-l-4 border-l-[#4F46E5]/70 border-y border-r border-black/[0.05] rounded-r-xl rounded-l-none text-[15px] font-serif leading-relaxed text-slate-700 backdrop-blur-sm">
-                              <RichTextRender content={q.generalData.stem} />
-                            </div>
-                          )}
+                      q.generalData &&
+                      (() => {
+                        const parsed = getStructuredGeneralData(q.generalData);
+                        const hasSubQuestions =
+                          Array.isArray(parsed.subQuestions) &&
+                          parsed.subQuestions.length > 0;
 
-                          <div className="text-[15px] flex justify-between items-start gap-4">
-                            <div className="flex gap-2">
-                              <span className="font-bold shrink-0">
-                                {(index + 1).toLocaleString("bn-BD")}.
-                              </span>
-                              <RichTextRender
-                                content={q.generalData.questionText}
-                                className="font-serif"
-                              />
-                            </div>
-                            <span className="text-slate-505 text-xs font-bold">
-                              {(q.generalData.marks || 0).toLocaleString(
-                                "bn-BD",
-                              )}
+                        return (
+                          <div className="flex gap-2 text-[15px]">
+                            <span className="font-bold shrink-0">
+                              {(index + 1).toLocaleString("bn-BD")}.
                             </span>
-                          </div>
 
-                          {isAnswerVisible && q.generalData.suggestedAnswer && (
-                            <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] font-serif text-slate-700">
-                              <span className="font-semibold">উত্তর: </span>
-                              <RichTextRender
-                                content={q.generalData.suggestedAnswer}
-                                className="inline-block font-serif"
-                                inline
-                              />
+                            <div className="flex-1 space-y-3">
+                              {/* Stimulus / Stem if present - simple display without background or left border */}
+                              {parsed.stem && (
+                                <div className="leading-relaxed text-slate-700">
+                                  <RichTextRender content={parsed.stem} />
+                                </div>
+                              )}
+
+                              {hasSubQuestions ? (
+                                <div className="space-y-3">
+                                  {parsed.instruction && (
+                                    <div className="flex justify-between items-start gap-4">
+                                      <div className="font-medium text-[15px] text-slate-800 leading-relaxed font-serif">
+                                        <RichTextRender
+                                          content={parsed.instruction}
+                                        />
+                                      </div>
+                                      <span className="text-slate-505 text-[15px] font-bold shrink-0 font-serif">
+                                        {(
+                                          q.generalData.marks || 10
+                                        ).toLocaleString("bn-BD")}
+                                      </span>
+                                    </div>
+                                  )}
+
+                                  {/* Sub-questions formatted identical to Creative */}
+                                  <div className="space-y-2.5 text-[15px] text-slate-700">
+                                    {parsed.subQuestions.map((subQ, sIdx) => (
+                                      <div
+                                        key={sIdx}
+                                        className="flex flex-col gap-2"
+                                      >
+                                        <div className="flex justify-between items-center">
+                                          <span className="w-6 font-medium">
+                                            {subQ.identifier}
+                                          </span>
+                                          <RichTextRender
+                                            content={subQ.text}
+                                            className="flex-1 inline-block text-sm"
+                                          />
+                                          <span className="text-slate-555 text-[15px] font-bold">
+                                            {(subQ.marks || 2).toLocaleString(
+                                              "bn-BD",
+                                            )}
+                                          </span>
+                                        </div>
+                                        {isAnswerVisible && subQ.answer && (
+                                          <div className="ml-6 mt-1 text-sm text-green-800 leading-relaxed">
+                                            <span className="font-bold text-green-700 mr-1.5">
+                                              উত্তর:
+                                            </span>
+                                            <RichTextRender
+                                              content={subQ.answer}
+                                              inline={true}
+                                            />
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              ) : (
+                                /* Standard General Question */
+                                <div className="space-y-3">
+                                  <div className="text-[15px] flex justify-between items-start gap-4">
+                                    <div className="flex-1">
+                                      <RichTextRender
+                                        content={q.generalData.questionText}
+                                        className="font-serif"
+                                      />
+                                    </div>
+                                    <span className="text-slate-505 text-xs font-bold shrink-0">
+                                      {(
+                                        q.generalData.marks || 0
+                                      ).toLocaleString("bn-BD")}
+                                    </span>
+                                  </div>
+
+                                  {isAnswerVisible &&
+                                    q.generalData.suggestedAnswer && (
+                                      <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] font-serif text-slate-700">
+                                        <span className="font-semibold">
+                                          উত্তর:{" "}
+                                        </span>
+                                        <RichTextRender
+                                          content={
+                                            q.generalData.suggestedAnswer
+                                          }
+                                          className="inline-block font-serif"
+                                          inline
+                                        />
+                                      </div>
+                                    )}
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      )}
+                          </div>
+                        );
+                      })()}
                   </div>
 
                   {/* Footer Metadata & Action Buttons */}

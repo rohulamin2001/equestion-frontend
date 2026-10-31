@@ -1,4 +1,5 @@
 import { resolveImageUrl } from "@/lib/imageUtils";
+import { getStructuredGeneralData } from "@/utils/generalQuestionUtils";
 import { Info, Monitor, Plus, Settings } from "lucide-react";
 import { useState } from "react";
 import InlineEditable from "../../../components/InlineEditable.jsx";
@@ -162,8 +163,7 @@ export default function QuestionPaperPreview({
             style={{
               minHeight: `${layoutSettings.headerSettings?.height || 70}px`,
               background:
-                layoutSettings.headerSettings?.bgColor ||
-                "var(--purple-600)",
+                layoutSettings.headerSettings?.bgColor || "var(--purple-600)",
               color: layoutSettings.headerSettings?.textColor || "#ffffff",
               borderRadius: `${layoutSettings.headerSettings?.borderRadius ?? 8}px`,
               alignItems: "center",
@@ -245,7 +245,9 @@ export default function QuestionPaperPreview({
                   >
                     {layoutSettings.logoSettings.logoUrl ? (
                       <img
-                        src={resolveImageUrl(layoutSettings.logoSettings.logoUrl)}
+                        src={resolveImageUrl(
+                          layoutSettings.logoSettings.logoUrl,
+                        )}
                         className="w-full h-full object-contain"
                         alt="Logo"
                       />
@@ -297,7 +299,9 @@ export default function QuestionPaperPreview({
                   >
                     {layoutSettings.logoSettings.logoUrl ? (
                       <img
-                        src={resolveImageUrl(layoutSettings.logoSettings.logoUrl)}
+                        src={resolveImageUrl(
+                          layoutSettings.logoSettings.logoUrl,
+                        )}
                         className="w-full h-full object-contain"
                         alt="Logo"
                       />
@@ -425,7 +429,9 @@ export default function QuestionPaperPreview({
                   >
                     {layoutSettings.logoSettings.logoUrl ? (
                       <img
-                        src={resolveImageUrl(layoutSettings.logoSettings.logoUrl)}
+                        src={resolveImageUrl(
+                          layoutSettings.logoSettings.logoUrl,
+                        )}
                         className="w-full h-full object-contain"
                         alt="Logo"
                       />
@@ -1244,44 +1250,136 @@ export default function QuestionPaperPreview({
                               {/* General format */}
                               {q.category !== "MCQ" &&
                                 q.category !== "Creative" &&
-                                q.generalData && (
-                                  <div className="space-y-1">
-                                    <div className="font-normal">
-                                      <InlineEditable
-                                        value={q.generalData.questionText || ""}
-                                        inline={false}
-                                        onSave={(val) =>
-                                          handleSaveQuestionEdit(q, {
-                                            generalData: {
-                                              ...q.generalData,
-                                              questionText: val,
+                                q.generalData &&
+                                (() => {
+                                  const parsed = getStructuredGeneralData(
+                                    q.generalData,
+                                  );
+                                  const hasSubQuestions =
+                                    Array.isArray(parsed.subQuestions) &&
+                                    parsed.subQuestions.length > 0;
+
+                                  return (
+                                    <div className="space-y-1">
+                                      {/* Stem / passage comes first if present */}
+                                      {parsed.stem && (
+                                        <div className="text-black">
+                                          <InlineEditable
+                                            value={parsed.stem}
+                                            inline={false}
+                                            onSave={(val) =>
+                                              handleSaveQuestionEdit(q, {
+                                                generalData: {
+                                                  ...q.generalData,
+                                                  stem: val,
+                                                },
+                                              })
+                                            }
+                                            onActivate={handleEditorActivate}
+                                            onDeactivate={
+                                              handleEditorDeactivate
+                                            }
+                                          />
+                                        </div>
+                                      )}
+
+                                      {/* Instruction / Question text */}
+                                      {parsed.instruction && (
+                                        <div className="font-normal">
+                                          <InlineEditable
+                                            value={parsed.instruction}
+                                            inline={false}
+                                            onSave={(val) =>
+                                              handleSaveQuestionEdit(q, {
+                                                generalData: {
+                                                  ...q.generalData,
+                                                  questionText: val,
+                                                },
+                                              })
+                                            }
+                                            onActivate={handleEditorActivate}
+                                            onDeactivate={
+                                              handleEditorDeactivate
+                                            }
+                                          />
+                                        </div>
+                                      )}
+
+                                      {/* Sub-questions formatted identical to Creative */}
+                                      {hasSubQuestions && (
+                                        <div className="space-y-0.5 text-black text-inherit">
+                                          {parsed.subQuestions.map(
+                                            (sq, sqIdx) => {
+                                              const letter =
+                                                sq.identifier?.replace(
+                                                  /[.)]/,
+                                                  "",
+                                                ) ||
+                                                [
+                                                  "ক",
+                                                  "খ",
+                                                  "গ",
+                                                  "ঘ",
+                                                  "ঙ",
+                                                  "চ",
+                                                  "ছ",
+                                                ][sqIdx];
+                                              return (
+                                                <div
+                                                  key={sqIdx}
+                                                  className="flex justify-between items-baseline gap-2"
+                                                >
+                                                  <div className="flex items-start gap-1.5 flex-1">
+                                                    <span className="shrink-0 font-medium">
+                                                      {sq.identifier ||
+                                                        `${letter}.`}
+                                                    </span>
+                                                    <div className="flex-1 text-inherit">
+                                                      <InlineEditable
+                                                        value={sq.text}
+                                                        inline={false}
+                                                        onSave={(val) => {
+                                                          const updatedSub = [
+                                                            ...parsed.subQuestions,
+                                                          ];
+                                                          updatedSub[sqIdx] = {
+                                                            ...sq,
+                                                            text: val,
+                                                          };
+                                                          handleSaveQuestionEdit(
+                                                            q,
+                                                            {
+                                                              generalData: {
+                                                                ...q.generalData,
+                                                                subQuestions:
+                                                                  updatedSub,
+                                                              },
+                                                            },
+                                                          );
+                                                        }}
+                                                        onActivate={
+                                                          handleEditorActivate
+                                                        }
+                                                        onDeactivate={
+                                                          handleEditorDeactivate
+                                                        }
+                                                      />
+                                                    </div>
+                                                  </div>
+                                                  <span className="font-bold shrink-0">
+                                                    {(
+                                                      sq.marks || 2
+                                                    ).toLocaleString("bn-BD")}
+                                                  </span>
+                                                </div>
+                                              );
                                             },
-                                          })
-                                        }
-                                        onActivate={handleEditorActivate}
-                                        onDeactivate={handleEditorDeactivate}
-                                      />
+                                          )}
+                                        </div>
+                                      )}
                                     </div>
-                                    {q.generalData.stem && (
-                                      <div className="text-black">
-                                        <InlineEditable
-                                          value={q.generalData.stem}
-                                          inline={false}
-                                          onSave={(val) =>
-                                            handleSaveQuestionEdit(q, {
-                                              generalData: {
-                                                ...q.generalData,
-                                                stem: val,
-                                              },
-                                            })
-                                          }
-                                          onActivate={handleEditorActivate}
-                                          onDeactivate={handleEditorDeactivate}
-                                        />
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+                                  );
+                                })()}
                             </div>
                           </div>
                           {/* CQ Answer Sheet Attachment (Outer Left Margin Alignment) */}
@@ -1435,8 +1533,7 @@ export default function QuestionPaperPreview({
             style={{
               minHeight: `${layoutSettings.footerSettings?.height || 50}px`,
               background:
-                layoutSettings.footerSettings?.bgColor ||
-                "var(--purple-600)",
+                layoutSettings.footerSettings?.bgColor || "var(--purple-600)",
               color: layoutSettings.footerSettings?.textColor || "#ffffff",
               borderRadius: `${layoutSettings.footerSettings?.borderRadius ?? 8}px`,
               alignItems: "center",

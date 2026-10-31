@@ -1,22 +1,17 @@
-import { useState } from "react";
 import Editor from "@/components/Editor";
 import RichTextRender from "@/components/RichTextRender";
+import { getStructuredGeneralData } from "@/utils/generalQuestionUtils";
 import {
-  HelpCircle,
-  Trash2,
-  CheckCircle2,
-  Sparkles,
-  BookOpen,
-  Award,
-  Layers,
-  FileText,
-  Lightbulb,
-  X,
-  Pencil,
+  Check,
   ChevronDown,
   ChevronUp,
-  Check,
+  Lightbulb,
+  Pencil,
+  Sparkles,
+  Trash2,
+  X,
 } from "lucide-react";
+import { useState } from "react";
 import QuestionImageSlot from "./QuestionImageSlot";
 
 /**
@@ -125,6 +120,7 @@ export default function QuestionPreviewCard({
 }) {
   const [showExplanation, setShowExplanation] = useState(false);
   const [isEditingStem, setIsEditingStem] = useState(false);
+  const [isEditingQuestionText, setIsEditingQuestionText] = useState(false);
 
   // Difficulty badge colors
   const difficulty = question.difficulty || "Medium";
@@ -261,9 +257,13 @@ export default function QuestionPreviewCard({
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                 প্রশ্নের বিবরণ / উদ্দীপক
               </label>
-              {(countImagesInHtml(stemHtml) > 1 || /<table/i.test(stemHtml)) && (
+              {(countImagesInHtml(stemHtml) > 1 ||
+                /<table/i.test(stemHtml)) && (
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
-                  রিচ কন্টেন্ট {countImagesInHtml(stemHtml) > 1 ? `(${countImagesInHtml(stemHtml)}টি চিত্র)` : ""}
+                  রিচ কন্টেন্ট{" "}
+                  {countImagesInHtml(stemHtml) > 1
+                    ? `(${countImagesInHtml(stemHtml)}টি চিত্র)`
+                    : ""}
                 </span>
               )}
             </div>
@@ -279,7 +279,11 @@ export default function QuestionPreviewCard({
               title="এডিটরে উদ্দীপক, একাধিক ছবি, টেবিল বা ফর্মুলা সাজান"
             >
               <Pencil className="size-3" />
-              <span>{isEditingStem ? "এডিটর বন্ধ করুন" : "উদ্দীপক এডিট করুন (একাধিক চিত্র, টেবিল ও লেখা)"}</span>
+              <span>
+                {isEditingStem
+                  ? "এডিটর বন্ধ করুন"
+                  : "উদ্দীপক এডিট করুন (একাধিক চিত্র, টেবিল ও লেখা)"}
+              </span>
               {isEditingStem ? (
                 <ChevronUp className="size-3.5" />
               ) : (
@@ -307,7 +311,9 @@ export default function QuestionPreviewCard({
               </div>
 
               <p className="text-[11px] text-purple-700/80 leading-relaxed">
-                <b>টিপ:</b> এখানে একাধিক ছবি ড্র্যাগ-অ্যান্ড-ড্রপ বা <b>Ctrl+V</b> দিয়ে পেস্ট করতে পারবেন (চিত্র ১, চিত্র ২ ইত্যাদি)। ছবির উপরে-নিচে বর্ণনা লিখুন, টেবিল যুক্ত করুন বা সমীকরণ সাজান।
+                <b>টিপ:</b> এখানে একাধিক ছবি ড্র্যাগ-অ্যান্ড-ড্রপ বা{" "}
+                <b>Ctrl+V</b> দিয়ে পেস্ট করতে পারবেন (চিত্র ১, চিত্র ২ ইত্যাদি)।
+                ছবির উপরে-নিচে বর্ণনা লিখুন, টেবিল যুক্ত করুন বা সমীকরণ সাজান।
               </p>
 
               <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
@@ -368,7 +374,8 @@ export default function QuestionPreviewCard({
         {/* Options Grid */}
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-            অপশনসমূহ (টেক্সট এডিট করতে পারেন বা [✕] চেপে শুধু ছবির অপশন করতে পারেন)
+            অপশনসমূহ (টেক্সট এডিট করতে পারেন বা [✕] চেপে শুধু ছবির অপশন করতে
+            পারেন)
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {(mcq.options || []).map((opt, optIdx) => {
@@ -402,7 +409,9 @@ export default function QuestionPreviewCard({
                       <input
                         type="text"
                         value={optText}
-                        onChange={(e) => handleOptionTextChange(optIdx, e.target.value)}
+                        onChange={(e) =>
+                          handleOptionTextChange(optIdx, e.target.value)
+                        }
                         placeholder={
                           optImage
                             ? "শুধু চিত্র (টেক্সট নেই)"
@@ -412,15 +421,15 @@ export default function QuestionPreviewCard({
                           optText
                             ? "bg-white/90 text-slate-800 border-slate-200 focus:border-purple-400 focus:ring-1 focus:ring-purple-200"
                             : optImage
-                            ? "bg-slate-50/80 text-slate-400 italic border-transparent placeholder:text-slate-400"
-                            : "bg-slate-50/60 text-slate-700 border-dashed border-slate-300 focus:bg-white focus:border-purple-400"
+                              ? "bg-slate-50/80 text-slate-400 italic border-transparent placeholder:text-slate-400"
+                              : "bg-slate-50/60 text-slate-700 border-dashed border-slate-300 focus:bg-white focus:border-purple-400"
                         }`}
                         title={
                           optText
                             ? "টেক্সট পরিবর্তন করতে এখানে লিখুন"
                             : optImage
-                            ? "এই অপশনটিতে শুধু চিত্র রয়েছে (টেক্সট খালি)"
-                            : "অপশন টেক্সট লিখুন"
+                              ? "এই অপশনটিতে শুধু চিত্র রয়েছে (টেক্সট খালি)"
+                              : "অপশন টেক্সট লিখুন"
                         }
                       />
                       {optText && (
@@ -440,7 +449,9 @@ export default function QuestionPreviewCard({
                   <QuestionImageSlot
                     compact
                     imageUrl={optImage}
-                    onImageAttached={(path) => handleOptionImageAttach(optIdx, path)}
+                    onImageAttached={(path) =>
+                      handleOptionImageAttach(optIdx, path)
+                    }
                     onImageRemoved={() => handleOptionImageRemove(optIdx)}
                     label={`অপশন ${letter}`}
                   />
@@ -459,7 +470,9 @@ export default function QuestionPreviewCard({
               className="text-xs font-bold text-purple-700 hover:text-purple-900 flex items-center gap-1.5 cursor-pointer"
             >
               <Lightbulb className="size-3.5 text-amber-500" />
-              <span>{showExplanation ? "ব্যাখ্যা লুকান" : "ব্যাখ্যা দেখুন"}</span>
+              <span>
+                {showExplanation ? "ব্যাখ্যা লুকান" : "ব্যাখ্যা দেখুন"}
+              </span>
             </button>
             {showExplanation && (
               <div className="mt-2 p-2.5 bg-amber-50/60 border border-amber-200/60 rounded-xl text-xs text-slate-700 leading-relaxed animate-in fade-in">
@@ -541,9 +554,13 @@ export default function QuestionPreviewCard({
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                 উদ্দীপক
               </label>
-              {(countImagesInHtml(stemHtml) > 1 || /<table/i.test(stemHtml)) && (
+              {(countImagesInHtml(stemHtml) > 1 ||
+                /<table/i.test(stemHtml)) && (
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
-                  রিচ কন্টেন্ট {countImagesInHtml(stemHtml) > 1 ? `(${countImagesInHtml(stemHtml)}টি চিত্র)` : ""}
+                  রিচ কন্টেন্ট{" "}
+                  {countImagesInHtml(stemHtml) > 1
+                    ? `(${countImagesInHtml(stemHtml)}টি চিত্র)`
+                    : ""}
                 </span>
               )}
             </div>
@@ -559,7 +576,11 @@ export default function QuestionPreviewCard({
               title="এডিটরে উদ্দীপক, একাধিক ছবি, টেবিল বা ফর্মুলা সাজান"
             >
               <Pencil className="size-3" />
-              <span>{isEditingStem ? "এডিটর বন্ধ করুন" : "উদ্দীপক এডিট করুন (একাধিক চিত্র, টেবিল ও লেখা)"}</span>
+              <span>
+                {isEditingStem
+                  ? "এডিটর বন্ধ করুন"
+                  : "উদ্দীপক এডিট করুন (একাধিক চিত্র, টেবিল ও লেখা)"}
+              </span>
               {isEditingStem ? (
                 <ChevronUp className="size-3.5" />
               ) : (
@@ -587,7 +608,9 @@ export default function QuestionPreviewCard({
               </div>
 
               <p className="text-[11px] text-purple-700/80 leading-relaxed">
-                <b>টিপ:</b> এখানে একাধিক ছবি ড্র্যাগ-অ্যান্ড-ড্রপ বা <b>Ctrl+V</b> দিয়ে পেস্ট করতে পারবেন (চিত্র ১, চিত্র ২ ইত্যাদি)। ছবির উপরে-নিচে বর্ণনা লিখুন, টেবিল যুক্ত করুন বা সমীকরণ সাজান।
+                <b>টিপ:</b> এখানে একাধিক ছবি ড্র্যাগ-অ্যান্ড-ড্রপ বা{" "}
+                <b>Ctrl+V</b> দিয়ে পেস্ট করতে পারবেন (চিত্র ১, চিত্র ২ ইত্যাদি)।
+                ছবির উপরে-নিচে বর্ণনা লিখুন, টেবিল যুক্ত করুন বা সমীকরণ সাজান।
               </p>
 
               <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
@@ -670,6 +693,7 @@ export default function QuestionPreviewCard({
 
   // General / Other Categories rendering
   const general = question.generalData || {};
+  const stemHtml = general.stem || "";
   const questionTextHtml = general.questionText || question.questionText || "";
   const questionImage = extractFirstImageSrc(questionTextHtml);
 
@@ -724,111 +748,310 @@ export default function QuestionPreviewCard({
         </button>
       </div>
 
-      {/* Question Text */}
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-              প্রশ্ন বিবরণ
-            </label>
-            {(countImagesInHtml(questionTextHtml) > 1 || /<table/i.test(questionTextHtml)) && (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
-                রিচ কন্টেন্ট {countImagesInHtml(questionTextHtml) > 1 ? `(${countImagesInHtml(questionTextHtml)}টি চিত্র)` : ""}
+      {/* Stimulus / Stem if present */}
+      {stemHtml && (
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                উদ্দীপক / অনুচ্ছেদ
+              </label>
+              {(countImagesInHtml(stemHtml) > 1 ||
+                /<table/i.test(stemHtml)) && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
+                  রিচ কন্টেন্ট{" "}
+                  {countImagesInHtml(stemHtml) > 1
+                    ? `(${countImagesInHtml(stemHtml)}টি চিত্র)`
+                    : ""}
+                </span>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsEditingStem(!isEditingStem)}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg transition cursor-pointer border ${
+                isEditingStem
+                  ? "bg-purple-600 text-white border-purple-600 shadow-2xs"
+                  : "bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200"
+              }`}
+              title="এডিটরে উদ্দীপক সাজান"
+            >
+              <Pencil className="size-3" />
+              <span>
+                {isEditingStem ? "উদ্দীপক এডিটর বন্ধ" : "উদ্দীপক এডিট করুন"}
               </span>
-            )}
+              {isEditingStem ? (
+                <ChevronUp className="size-3.5" />
+              ) : (
+                <ChevronDown className="size-3.5" />
+              )}
+            </button>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsEditingStem(!isEditingStem)}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg transition cursor-pointer border ${
-              isEditingStem
-                ? "bg-purple-600 text-white border-purple-600 shadow-2xs"
-                : "bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200"
-            }`}
-            title="এডিটরে বিবরণ, একাধিক ছবি, টেবিল বা ফর্মুলা সাজান"
-          >
-            <Pencil className="size-3" />
-            <span>{isEditingStem ? "এডিটর বন্ধ করুন" : "প্রশ্ন এডিট করুন (একাধিক চিত্র, টেবিল ও লেখা)"}</span>
-            {isEditingStem ? (
-              <ChevronUp className="size-3.5" />
-            ) : (
-              <ChevronDown className="size-3.5" />
-            )}
-          </button>
-        </div>
-
-        {/* Inline Accordion Rich Editor */}
-        {isEditingStem && (
-          <div className="space-y-2 p-3 sm:p-4 rounded-xl bg-purple-50/50 border border-purple-200/80 animate-in fade-in duration-200">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200/60 pb-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-purple-900">
-                <Sparkles className="size-3.5 text-purple-600" />
-                <span>প্রশ্ন বিবরণ রিচ এডিটর (ইনলাইন)</span>
+          {/* Inline Accordion Rich Editor for Stem */}
+          {isEditingStem && (
+            <div className="space-y-2 p-3 sm:p-4 rounded-xl bg-purple-50/50 border border-purple-200/80 animate-in fade-in duration-200">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200/60 pb-2">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-purple-900">
+                  <Sparkles className="size-3.5 text-purple-600" />
+                  <span>উদ্দীপক / অনুচ্ছেদ রিচ এডিটর (ইনলাইন)</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsEditingStem(false)}
+                  className="px-2.5 py-1 text-xs font-semibold bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition shadow-2xs flex items-center gap-1 cursor-pointer"
+                >
+                  <Check className="size-3.5" />
+                  <span>সম্পন্ন</span>
+                </button>
               </div>
+
+              <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
+                <Editor
+                  key={`general-stem-editor-${index}`}
+                  value={stemHtml}
+                  onChange={(val) => {
+                    onUpdateQuestion({
+                      ...question,
+                      generalData: {
+                        ...general,
+                        stem: val,
+                      },
+                    });
+                  }}
+                  placeholder="উদ্দীপক / অনুচ্ছেদ লিখুন..."
+                  height={220}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Preview Box for Stem - simple display without background or left border */}
+          <div className="py-1 text-sm font-normal text-slate-800 leading-relaxed overflow-x-auto">
+            <RichTextRender html={stemHtml} />
+          </div>
+        </div>
+      )}
+
+      {/* Question Details / Subquestions */}
+      {(() => {
+        const parsed = getStructuredGeneralData(general);
+        const hasSubQuestions =
+          Array.isArray(parsed.subQuestions) && parsed.subQuestions.length > 0;
+
+        if (hasSubQuestions) {
+          return (
+            <div className="space-y-3">
+              {/* Instruction line */}
+              {parsed.instruction && (
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                      নির্দেশনা / ভূমিকা
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setIsEditingQuestionText(!isEditingQuestionText)
+                      }
+                      className="text-xs font-semibold text-purple-700 hover:text-purple-900 flex items-center gap-1 cursor-pointer"
+                    >
+                      <Pencil className="size-3" />
+                      <span>
+                        {isEditingQuestionText ? "বন্ধ করুন" : "এডিট করুন"}
+                      </span>
+                    </button>
+                  </div>
+
+                  {isEditingQuestionText && (
+                    <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs mb-2">
+                      <Editor
+                        key={`general-instruction-editor-${index}`}
+                        value={questionTextHtml}
+                        onChange={(val) => {
+                          onUpdateQuestion({
+                            ...question,
+                            questionText: val,
+                            generalData: {
+                              ...general,
+                              questionText: val,
+                            },
+                          });
+                        }}
+                        placeholder="নির্দেশনা লিখুন..."
+                        height={160}
+                      />
+                    </div>
+                  )}
+
+                  <div className="text-sm font-semibold text-slate-800 leading-relaxed">
+                    <RichTextRender html={parsed.instruction} />
+                  </div>
+                </div>
+              )}
+
+              {/* Sub-questions formatted identical to Creative */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                  উপ-প্রশ্নসমূহ
+                </label>
+                <div className="space-y-2">
+                  {parsed.subQuestions.map((subQ, sIdx) => (
+                    <div
+                      key={sIdx}
+                      className="p-2.5 rounded-xl border border-slate-200/80 bg-slate-50/40 space-y-1.5"
+                    >
+                      <div className="flex items-start gap-2.5">
+                        <span className="size-6 rounded-full bg-purple-100 text-purple-700 text-xs font-bold flex items-center justify-center shrink-0">
+                          {subQ.identifier}
+                        </span>
+                        <div className="flex-1 text-xs font-semibold text-slate-800 leading-relaxed">
+                          <RichTextRender html={subQ.text} />
+                        </div>
+                        <span className="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono font-bold shrink-0">
+                          মান: {subQ.marks || 2}
+                        </span>
+                      </div>
+                      {subQ.answer && (
+                        <div className="ml-8 text-xs text-green-800 leading-relaxed">
+                          <span className="font-bold text-green-700 mr-1.5">
+                            উত্তর:
+                          </span>
+                          <RichTextRender html={subQ.answer} inline={true} />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        // Standard General Question
+        return (
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                  {stemHtml ? "প্রশ্নসমূহ / নির্দেশনা" : "প্রশ্ন বিবরণ"}
+                </label>
+                {(countImagesInHtml(questionTextHtml) > 1 ||
+                  /<table/i.test(questionTextHtml)) && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
+                    রিচ কন্টেন্ট{" "}
+                    {countImagesInHtml(questionTextHtml) > 1
+                      ? `(${countImagesInHtml(questionTextHtml)}টি চিত্র)`
+                      : ""}
+                  </span>
+                )}
+              </div>
+
               <button
                 type="button"
-                onClick={() => setIsEditingStem(false)}
-                className="px-2.5 py-1 text-xs font-semibold bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition shadow-2xs flex items-center gap-1 cursor-pointer"
+                onClick={() => setIsEditingQuestionText(!isEditingQuestionText)}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg transition cursor-pointer border ${
+                  isEditingQuestionText
+                    ? "bg-purple-600 text-white border-purple-600 shadow-2xs"
+                    : "bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200"
+                }`}
+                title="এডিটরে বিবরণ, একাধিক ছবি, টেবিল বা ফর্মুলা সাজান"
               >
-                <Check className="size-3.5" />
-                <span>সম্পন্ন</span>
+                <Pencil className="size-3" />
+                <span>
+                  {isEditingQuestionText
+                    ? "এডিটর বন্ধ করুন"
+                    : "প্রশ্ন এডিট করুন (একাধিক চিত্র, টেবিল ও লেখা)"}
+                </span>
+                {isEditingQuestionText ? (
+                  <ChevronUp className="size-3.5" />
+                ) : (
+                  <ChevronDown className="size-3.5" />
+                )}
               </button>
             </div>
 
-            <p className="text-[11px] text-purple-700/80 leading-relaxed">
-              <b>টিপ:</b> এখানে একাধিক ছবি ড্র্যাগ-অ্যান্ড-ড্রপ বা <b>Ctrl+V</b> দিয়ে পেস্ট করতে পারবেন। ছবির উপরে-নিচে বর্ণনা লিখুন, টেবিল যুক্ত করুন বা সমীকরণ সাজান।
-            </p>
+            {/* Inline Accordion Rich Editor */}
+            {isEditingQuestionText && (
+              <div className="space-y-2 p-3 sm:p-4 rounded-xl bg-purple-50/50 border border-purple-200/80 animate-in fade-in duration-200">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200/60 pb-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-purple-900">
+                    <Sparkles className="size-3.5 text-purple-600" />
+                    <span>প্রশ্ন বিবরণ রিচ এডিটর (ইনলাইন)</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingQuestionText(false)}
+                    className="px-2.5 py-1 text-xs font-semibold bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition shadow-2xs flex items-center gap-1 cursor-pointer"
+                  >
+                    <Check className="size-3.5" />
+                    <span>সম্পন্ন</span>
+                  </button>
+                </div>
 
-            <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
-              <Editor
-                key={`general-editor-${index}`}
-                value={questionTextHtml}
-                onChange={(val) => {
-                  onUpdateQuestion({
-                    ...question,
-                    questionText: val,
-                    generalData: {
-                      ...general,
-                      questionText: val,
-                    },
-                  });
-                }}
-                placeholder="প্রশ্নের বিস্তারিত বিবরণ লিখুন..."
-                height={240}
+                <p className="text-[11px] text-purple-700/80 leading-relaxed">
+                  <b>টিপ:</b> এখানে একাধিক ছবি ড্র্যাগ-অ্যান্ড-ড্রপ বা{" "}
+                  <b>Ctrl+V</b> দিয়ে পেস্ট করতে পারবেন। ছবির উপরে-নিচে বর্ণনা
+                  লিখুন, টেবিল যুক্ত করুন বা সমীকরণ সাজান।
+                </p>
+
+                <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
+                  <Editor
+                    key={`general-editor-${index}`}
+                    value={questionTextHtml}
+                    onChange={(val) => {
+                      onUpdateQuestion({
+                        ...question,
+                        questionText: val,
+                        generalData: {
+                          ...general,
+                          questionText: val,
+                        },
+                      });
+                    }}
+                    placeholder="প্রশ্নের বিস্তারিত বিবরণ লিখুন..."
+                    height={240}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Preview Box */}
+            <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 leading-relaxed overflow-x-auto">
+              <RichTextRender
+                html={
+                  getStimulusPreviewHtml(questionTextHtml, questionImage) ||
+                  "<i>(প্রশ্নের টেক্সট নেই)</i>"
+                }
               />
             </div>
+
+            {/* Quick Single Image Slot */}
+            {countImagesInHtml(questionTextHtml) <= 1 &&
+              !/<table/i.test(questionTextHtml) && (
+                <QuestionImageSlot
+                  imageUrl={questionImage}
+                  onImageAttached={handleGeneralImageAttach}
+                  onImageRemoved={handleGeneralImageRemove}
+                  label="দ্রুত চিত্র যোগ করুন (১-ক্লিক স্ক্রিনশট পেস্ট)"
+                />
+              )}
+
+            {/* Suggested Answer */}
+            {general.suggestedAnswer && (
+              <div className="p-3 bg-purple-50/40 rounded-xl border border-purple-200/60 text-xs text-slate-700 space-y-1">
+                <span className="font-bold text-purple-900 block text-[13px]">
+                  উত্তর নির্দেশিকা:
+                </span>
+                <div className="leading-relaxed text-slate-700 text-sm">
+                  <RichTextRender html={general.suggestedAnswer} />
+                </div>
+              </div>
+            )}
           </div>
-        )}
-
-        {/* Preview Box */}
-        <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 leading-relaxed overflow-x-auto">
-          <RichTextRender
-            html={
-              getStimulusPreviewHtml(questionTextHtml, questionImage) ||
-              "<i>(প্রশ্নের টেক্সট নেই)</i>"
-            }
-          />
-        </div>
-
-        {/* Quick Single Image Slot */}
-        {countImagesInHtml(questionTextHtml) <= 1 && !/<table/i.test(questionTextHtml) && (
-          <QuestionImageSlot
-            imageUrl={questionImage}
-            onImageAttached={handleGeneralImageAttach}
-            onImageRemoved={handleGeneralImageRemove}
-            label="দ্রুত চিত্র যোগ করুন (১-ক্লিক স্ক্রিনশট পেস্ট)"
-          />
-        )}
-      </div>
-
-      {/* Suggested Answer */}
-      {general.suggestedAnswer && (
-        <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700">
-          <span className="font-bold text-slate-600">উত্তর: </span>
-          <span>{general.suggestedAnswer}</span>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
