@@ -24,7 +24,6 @@ import {
   ArrowDownWideNarrow,
   ArrowUpNarrowWide,
   BadgeCheck,
-  Ban,
   BookOpenText,
   CalendarDays,
   Check,
@@ -1192,7 +1191,7 @@ export default function MyQuestions() {
                     {/* Header Row */}
                     <div className="flex flex-wrap justify-between items-center gap-2 border-b border-black/[0.06] pb-3">
                       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-sans font-bold text-slate-500">
-                        {canSelectGroup ? (
+                        {canSelectGroup && (
                           <button
                             type="button"
                             onClick={() =>
@@ -1217,13 +1216,6 @@ export default function MyQuestions() {
                               <span className="w-2.5 h-0.5 bg-[#900EB0] rounded-full" />
                             ) : null}
                           </button>
-                        ) : (
-                          <span
-                            className="size-6 rounded-lg border border-slate-200 bg-slate-100/80 flex items-center justify-center text-slate-300 cursor-not-allowed shrink-0"
-                            title="অনুমোদিত উদ্দীপক গুচ্ছ ডিলিট করা যাবে না"
-                          >
-                            <Ban className="size-3 text-slate-400" />
-                          </span>
                         )}
                         <span className="bg-gradient-to-r from-[#900EB0] to-[#B010CA] text-white px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 font-sans text-xs">
                           <BookOpenText className="size-3.5" />
@@ -1309,7 +1301,7 @@ export default function MyQuestions() {
                             {/* Sub Question Row Header */}
                             <div className="flex flex-wrap justify-between items-center gap-2">
                               <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
-                                {isSubDeletable ? (
+                                {isSubDeletable && (
                                   <button
                                     type="button"
                                     onClick={() => toggleSelectQuestion(q._id)}
@@ -1328,13 +1320,6 @@ export default function MyQuestions() {
                                       <Check className="size-3 stroke-[3]" />
                                     )}
                                   </button>
-                                ) : (
-                                  <span
-                                    className="size-4.5 rounded border border-slate-200 bg-slate-100 flex items-center justify-center cursor-not-allowed shrink-0"
-                                    title="অনুমোদিত প্রশ্ন ডিলিট করা যাবে না"
-                                  >
-                                    <Ban className="size-2.5 text-slate-400" />
-                                  </span>
                                 )}
                                 <span className="text-[#900EB0] font-sans">
                                   প্রশ্ন{" "}
@@ -1643,7 +1628,7 @@ export default function MyQuestions() {
                   <div className="flex items-center justify-between gap-1 sm:gap-2 flex-nowrap w-full">
                     {/* Left Badges Group */}
                     <div className="flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[11px] font-sans font-bold text-slate-500 shrink-0">
-                      {isDeletable ? (
+                      {isDeletable && (
                         <button
                           type="button"
                           onClick={() => toggleSelectQuestion(q._id)}
@@ -1662,13 +1647,6 @@ export default function MyQuestions() {
                             <Check className="size-2.5 sm:size-3.5 stroke-[3]" />
                           )}
                         </button>
-                      ) : (
-                        <span
-                          className="size-4 sm:size-5 rounded sm:rounded-md border border-slate-200 bg-slate-100/70 flex items-center justify-center text-slate-300 cursor-not-allowed shrink-0"
-                          title="অনুমোদিত প্রশ্ন ডিলিট করা যাবে না"
-                        >
-                          <Ban className="size-2.5 sm:size-3 text-slate-400" />
-                        </span>
                       )}
                       {new Date() - new Date(q.createdAt) <
                         24 * 60 * 60 * 1000 && (

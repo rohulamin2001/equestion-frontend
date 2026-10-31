@@ -110,8 +110,17 @@ export function useMyQuestions() {
 
   const handleBulkDeleteConfirm = async () => {
     if (selectedQuestionIds.length === 0) return;
+    const safeIds = selectedQuestionIds.filter((id) => {
+      const q = visibleQuestions.find((item) => item._id === id);
+      return q ? isQuestionDeletable(q) : false;
+    });
+    if (safeIds.length === 0) {
+      setSelectedQuestionIds([]);
+      setBulkDeleteConfirmOpen(false);
+      return;
+    }
     try {
-      await bulkDeleteMutation.mutateAsync(selectedQuestionIds);
+      await bulkDeleteMutation.mutateAsync(safeIds);
     } catch (err) {
       console.error(err);
     }
@@ -353,7 +362,7 @@ export function useMyQuestions() {
   // Bulk selection helper logic
   const isQuestionDeletable = (q) => {
     if (!q) return false;
-    if (isAdmin) return true;
+    // On My Questions page, Approved questions can NEVER be deleted or selected for deletion
     return q.status !== "Approved";
   };
 
@@ -403,7 +412,11 @@ export function useMyQuestions() {
         );
       }
     } else {
-      // Single question toggle
+      // Single question toggle - only allow if question is deletable
+      const targetQ = visibleQuestions.find((q) => q._id === id);
+      if (targetQ && !isQuestionDeletable(targetQ)) {
+        return;
+      }
       setSelectedQuestionIds((prev) =>
         prev.includes(id) ? prev.filter((qId) => qId !== id) : [...prev, id],
       );
