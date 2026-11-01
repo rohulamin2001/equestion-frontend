@@ -3297,16 +3297,8 @@ export default function AddQuestion() {
                             {!["MCQ", "Creative"].includes(q.category) &&
                               q.generalData && (
                                 <div className="space-y-4">
-                                  {q.generalData.stem && (
-                                    <div className="p-4 bg-white/[0.40] border border-black/[0.04] shadow-sm rounded-xl text-sm font-serif">
-                                      <RichTextRender
-                                        content={q.generalData.stem}
-                                      />
-                                    </div>
-                                  )}
-
                                   <div className="text-[15px] flex justify-between items-start gap-4 w-full text-slate-800">
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 font-medium">
                                       <span className="font-normal text-black shrink-0">
                                         {(idx + 1).toLocaleString("bn-BD")}.
                                       </span>
@@ -3325,11 +3317,23 @@ export default function AddQuestion() {
                                     </span>
                                   </div>
 
+                                  {q.generalData.stem && (
+                                    <div className="leading-relaxed text-slate-700 font-serif">
+                                      <RichTextRender
+                                        content={q.generalData.stem}
+                                      />
+                                    </div>
+                                  )}
+
                                   {q.generalData.suggestedAnswer && (
-                                    <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
-                                      <strong className="text-[16px]">
-                                        উত্তর:{" "}
-                                      </strong>
+                                    <div className="text-[15px] font-serif text-slate-700 leading-relaxed pt-1">
+                                      {!/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
+                                        q.generalData.suggestedAnswer,
+                                      ) && (
+                                        <strong className="text-[15px] mr-1.5">
+                                          উত্তর:{" "}
+                                        </strong>
+                                      )}
                                       <RichTextRender
                                         content={q.generalData.suggestedAnswer}
                                         inline

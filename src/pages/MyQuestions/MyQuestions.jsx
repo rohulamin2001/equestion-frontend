@@ -2121,15 +2121,9 @@ export default function MyQuestions() {
                             </span>
 
                             <div className="flex-1 space-y-3">
-                              {/* Stimulus / Stem if present - simple display without background or left border */}
-                              {parsed.stem && (
-                                <div className="leading-relaxed text-slate-700">
-                                  <RichTextRender content={parsed.stem} />
-                                </div>
-                              )}
-
                               {hasSubQuestions ? (
                                 <div className="space-y-3">
+                                  {/* 1. Instruction at top with marks */}
                                   {parsed.instruction && (
                                     <div className="flex justify-between items-start gap-4">
                                       <div className="font-medium text-[15px] text-slate-800 leading-relaxed">
@@ -2145,7 +2139,14 @@ export default function MyQuestions() {
                                     </div>
                                   )}
 
-                                  {/* Sub-questions formatted identical to Creative */}
+                                  {/* 2. Stimulus / Stem directly underneath instruction */}
+                                  {parsed.stem && (
+                                    <div className="leading-relaxed text-slate-700">
+                                      <RichTextRender content={parsed.stem} />
+                                    </div>
+                                  )}
+
+                                  {/* 3. Sub-questions formatted identical to Creative */}
                                   <div className="space-y-2.5 text-[15px] text-slate-700">
                                     {parsed.subQuestions.map((subQ, sIdx) => (
                                       <div
@@ -2184,8 +2185,9 @@ export default function MyQuestions() {
                               ) : (
                                 /* Standard General Question */
                                 <div className="space-y-3">
+                                  {/* 1. Instruction / Question text on top */}
                                   <div className="text-[15px] flex justify-between items-start gap-4">
-                                    <div className="flex-1">
+                                    <div className="flex-1 font-medium text-slate-800">
                                       <RichTextRender
                                         content={q.generalData.questionText}
                                       />
@@ -2197,12 +2199,24 @@ export default function MyQuestions() {
                                     </span>
                                   </div>
 
+                                  {/* 2. Stimulus / Stem directly underneath question text */}
+                                  {parsed.stem && (
+                                    <div className="leading-relaxed text-slate-700">
+                                      <RichTextRender content={parsed.stem} />
+                                    </div>
+                                  )}
+
+                                  {/* 3. Answer as plain text without background */}
                                   {isAnswerVisible &&
                                     q.generalData.suggestedAnswer && (
-                                      <div className="p-3 bg-[#900EB0]/5 border border-[#900EB0]/10 rounded-xl text-[15px] text-slate-700">
-                                        <span className="font-semibold text-[17px]">
-                                          উত্তর:{" "}
-                                        </span>
+                                      <div className="text-[15px] text-slate-700 leading-relaxed pt-1">
+                                        {!/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
+                                          q.generalData.suggestedAnswer,
+                                        ) && (
+                                          <span className="font-bold text-slate-800 mr-1.5">
+                                            উত্তর:{" "}
+                                          </span>
+                                        )}
                                         <RichTextRender
                                           content={
                                             q.generalData.suggestedAnswer

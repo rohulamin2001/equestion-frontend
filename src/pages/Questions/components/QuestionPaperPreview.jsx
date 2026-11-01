@@ -1261,17 +1261,17 @@ export default function QuestionPaperPreview({
 
                                   return (
                                     <div className="space-y-1">
-                                      {/* Stem / passage comes first if present */}
-                                      {parsed.stem && (
-                                        <div className="text-black">
+                                      {/* Instruction / Question text comes first */}
+                                      {parsed.instruction && (
+                                        <div className="font-normal">
                                           <InlineEditable
-                                            value={parsed.stem}
+                                            value={parsed.instruction}
                                             inline={false}
                                             onSave={(val) =>
                                               handleSaveQuestionEdit(q, {
                                                 generalData: {
                                                   ...q.generalData,
-                                                  stem: val,
+                                                  questionText: val,
                                                 },
                                               })
                                             }
@@ -1283,17 +1283,17 @@ export default function QuestionPaperPreview({
                                         </div>
                                       )}
 
-                                      {/* Instruction / Question text */}
-                                      {parsed.instruction && (
-                                        <div className="font-normal">
+                                      {/* Stem / passage comes directly underneath instruction */}
+                                      {parsed.stem && (
+                                        <div className="text-black">
                                           <InlineEditable
-                                            value={parsed.instruction}
+                                            value={parsed.stem}
                                             inline={false}
                                             onSave={(val) =>
                                               handleSaveQuestionEdit(q, {
                                                 generalData: {
                                                   ...q.generalData,
-                                                  questionText: val,
+                                                  stem: val,
                                                 },
                                               })
                                             }

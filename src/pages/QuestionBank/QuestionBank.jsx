@@ -1726,15 +1726,9 @@ export default function QuestionBank() {
                             </span>
 
                             <div className="flex-1 space-y-3">
-                              {/* Stimulus / Stem if present - simple display without background or left border */}
-                              {parsed.stem && (
-                                <div className="leading-relaxed text-slate-700">
-                                  <RichTextRender content={parsed.stem} />
-                                </div>
-                              )}
-
                               {hasSubQuestions ? (
                                 <div className="space-y-3">
+                                  {/* 1. Instruction at top with marks */}
                                   {parsed.instruction && (
                                     <div className="flex justify-between items-start gap-4">
                                       <div className="font-medium text-[15px] text-slate-800 leading-relaxed font-serif">
@@ -1750,7 +1744,14 @@ export default function QuestionBank() {
                                     </div>
                                   )}
 
-                                  {/* Sub-questions formatted identical to Creative */}
+                                  {/* 2. Stimulus / Stem directly underneath instruction */}
+                                  {parsed.stem && (
+                                    <div className="leading-relaxed text-slate-700">
+                                      <RichTextRender content={parsed.stem} />
+                                    </div>
+                                  )}
+
+                                  {/* 3. Sub-questions formatted identical to Creative */}
                                   <div className="space-y-2.5 text-[15px] text-slate-700">
                                     {parsed.subQuestions.map((subQ, sIdx) => (
                                       <div
@@ -1789,8 +1790,9 @@ export default function QuestionBank() {
                               ) : (
                                 /* Standard General Question */
                                 <div className="space-y-3">
+                                  {/* 1. Instruction / Question text on top */}
                                   <div className="text-[15px] flex justify-between items-start gap-4">
-                                    <div className="flex-1">
+                                    <div className="flex-1 font-medium text-slate-800">
                                       <RichTextRender
                                         content={q.generalData.questionText}
                                         className="font-serif"
@@ -1803,12 +1805,24 @@ export default function QuestionBank() {
                                     </span>
                                   </div>
 
+                                  {/* 2. Stimulus / Stem directly underneath question text */}
+                                  {parsed.stem && (
+                                    <div className="leading-relaxed text-slate-700">
+                                      <RichTextRender content={parsed.stem} />
+                                    </div>
+                                  )}
+
+                                  {/* 3. Answer as plain text without background */}
                                   {isAnswerVisible &&
                                     q.generalData.suggestedAnswer && (
-                                      <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] font-serif text-slate-700">
-                                        <span className="font-semibold">
-                                          উত্তর:{" "}
-                                        </span>
+                                      <div className="text-[15px] font-serif text-slate-700 leading-relaxed pt-1">
+                                        {!/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
+                                          q.generalData.suggestedAnswer,
+                                        ) && (
+                                          <span className="font-bold text-slate-800 mr-1.5">
+                                            উত্তর:{" "}
+                                          </span>
+                                        )}
                                         <RichTextRender
                                           content={
                                             q.generalData.suggestedAnswer
@@ -2443,22 +2457,14 @@ export default function QuestionBank() {
                   ) &&
                     selectedPreviewQuestion.generalData && (
                       <div className="space-y-4">
-                        {selectedPreviewQuestion.generalData.stem && (
-                          <div className="p-4 bg-black/[0.02] border border-black/[0.05] rounded-xl text-sm font-serif leading-relaxed backdrop-blur-sm">
-                            <RichTextRender
-                              content={selectedPreviewQuestion.generalData.stem}
-                            />
-                          </div>
-                        )}
-
                         <div className="text-[15px] flex justify-between items-start gap-4 w-full">
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 font-medium text-slate-800">
                             <span className="font-bold shrink-0">১.</span>
                             <RichTextRender
                               content={
                                 selectedPreviewQuestion.generalData.questionText
                               }
-                              className="font-serif inline-block text-slate-800"
+                              className="font-serif inline-block"
                             />
                           </div>
                           <span className="text-slate-505 text-xs font-bold whitespace-nowrap pt-1">
@@ -2469,12 +2475,25 @@ export default function QuestionBank() {
                           </span>
                         </div>
 
+                        {selectedPreviewQuestion.generalData.stem && (
+                          <div className="leading-relaxed text-slate-700 font-serif">
+                            <RichTextRender
+                              content={selectedPreviewQuestion.generalData.stem}
+                            />
+                          </div>
+                        )}
+
                         {selectedPreviewQuestion.generalData
                           .suggestedAnswer && (
-                          <div className="p-4 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] font-serif text-slate-700">
-                            <span className="font-semibold text-[15px]">
-                              উত্তর:{" "}
-                            </span>
+                          <div className="text-[15px] font-serif text-slate-700 leading-relaxed pt-1">
+                            {!/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
+                              selectedPreviewQuestion.generalData
+                                .suggestedAnswer,
+                            ) && (
+                              <span className="font-bold text-slate-800 mr-1.5">
+                                উত্তর:{" "}
+                              </span>
+                            )}
                             <RichTextRender
                               content={
                                 selectedPreviewQuestion.generalData
@@ -2532,7 +2551,7 @@ export default function QuestionBank() {
                           </div>
                           <div className="space-y-0.5">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-bold text-slate-700 font-medium">
+                              <span className="text-xs  text-slate-700 font-medium">
                                 অনুমোদনকারী:{" "}
                                 {selectedPreviewQuestion.approvedBy.fullName}
                               </span>
