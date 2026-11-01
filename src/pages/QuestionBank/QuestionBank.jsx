@@ -49,6 +49,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import React from "react";
+import { toast } from "sonner";
 import RichTextRender from "../../components/RichTextRender.jsx";
 import { useQuestionBank } from "./hook/useQuestionBank";
 
@@ -1100,6 +1101,23 @@ export default function QuestionBank() {
                         <span className="bg-amber-50 text-amber-700 border border-amber-100 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px]">
                           অধ্যায় {qMeta.chapterNumber}
                         </span>
+                        {/* Question UID Badge */}
+                        {qMeta?.questionUid && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(qMeta.questionUid);
+                              toast.success(
+                                `প্রশ্ন আইডি #${qMeta.questionUid} কপি করা হয়েছে`,
+                              );
+                            }}
+                            className="bg-slate-100 hover:bg-slate-200/90 active:scale-95 text-slate-700 border border-slate-200/90 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-mono font-bold tracking-wider flex items-center gap-0.5 cursor-pointer transition select-none"
+                            title="প্রশ্ন আইডি কপি করতে ক্লিক করুন"
+                          >
+                            <span className="text-slate-400">#</span>
+                            <span>{qMeta.questionUid}</span>
+                          </button>
+                        )}
                         <QuestionMetadataTooltip
                           question={qMeta}
                           classLabel={classLabel}
@@ -1383,6 +1401,23 @@ export default function QuestionBank() {
                           <span className="size-1 sm:size-1.5 rounded-full bg-rose-500 animate-ping" />
                           নতুন
                         </span>
+                      )}
+                      {/* Question UID Badge */}
+                      {q.questionUid && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(q.questionUid);
+                            toast.success(
+                              `প্রশ্ন আইডি #${q.questionUid} কপি করা হয়েছে`,
+                            );
+                          }}
+                          className="bg-slate-100 hover:bg-slate-200/90 active:scale-95 text-slate-700 border border-slate-200/90 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-mono font-bold tracking-wider flex items-center gap-0.5 cursor-pointer transition select-none"
+                          title="প্রশ্ন আইডি কপি করতে ক্লিক করুন"
+                        >
+                          <span className="text-slate-400">#</span>
+                          <span>{q.questionUid}</span>
+                        </button>
                       )}
                       <QuestionMetadataTooltip
                         question={q}

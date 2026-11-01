@@ -3767,7 +3767,7 @@ export default function AddQuestion() {
                                   className="font-serif font-normal inline-block"
                                 />
                               </div>
-                              <span className="text-slate-700 text-xs font-sans font-bold whitespace-nowrap pt-1 font-serif">
+                              <span className="text-slate-700 text-xs font-sans font-bold whitespace-nowrap pt-1 ">
                                 {qm.generalMarks}
                               </span>
                             </div>

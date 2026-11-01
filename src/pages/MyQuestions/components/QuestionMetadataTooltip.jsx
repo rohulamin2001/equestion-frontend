@@ -84,6 +84,7 @@ export default function QuestionMetadataTooltip({ question, classLabel }) {
   }
 
   const hasAnyMetadata =
+    q.questionUid ||
     instTypeLabel ||
     formattedSchool ||
     classLabel ||
@@ -162,6 +163,19 @@ export default function QuestionMetadataTooltip({ question, classLabel }) {
             </div>
           ) : (
             <>
+              {/* ০. প্রশ্ন আইডি (UID) */}
+              {q.questionUid && (
+                <div className="grid grid-cols-[82px_1fr] items-center gap-2 py-1.5 px-1 rounded-lg bg-purple-50/40 border-b border-slate-100/80">
+                  <div className="flex items-center gap-1.5 text-slate-500 font-medium text-[11px] shrink-0 select-none">
+                    <Hash className="size-3 text-purple-600/80 shrink-0" />
+                    <span>প্রশ্ন আইডি:</span>
+                  </div>
+                  <div className="text-purple-700 font-mono font-bold text-xs tracking-wider">
+                    #{q.questionUid}
+                  </div>
+                </div>
+              )}
+
               {/* ১. প্রতিষ্ঠান */}
               {formattedSchool && (
                 <div className="grid grid-cols-[82px_1fr] items-baseline gap-2 py-1.5 px-1 rounded-lg hover:bg-purple-50/30 transition-colors border-b border-slate-100/80 last:border-b-0">

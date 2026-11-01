@@ -17,6 +17,27 @@ export const BENGALI_SUB_LETTERS = [
 ];
 
 /**
+ * Normalizes question instruction text when a stimulus/stem is displayed underneath.
+ * Strips words like "উপরের/উপরিউক্ত" (e.g., "উপরের অনুচ্ছেদটির" -> "অনুচ্ছেদটির")
+ * so the instruction remains grammatically and visually correct.
+ */
+export function cleanGeneralQuestionText(text, stem) {
+  if (!text || typeof text !== "string") return text || "";
+  if (stem && stem.trim()) {
+    return text
+      .replace(
+        /(?:উপরের|উপরিউক্ত|উপরোক্ত)\s+(অনুচ্ছেদ|কবিতাংশ|অংশ|ইঙ্গিত|পয়েন্ট)/gi,
+        "$1",
+      )
+      .replace(
+        /(?:উপরের|উপরিউক্ত|উপরোক্ত)\s+(?:বর্ণিত\s+)?(অনুচ্ছেদ|কবিতাংশ|অংশ|ইঙ্গিত|পয়েন্ট)/gi,
+        "$1",
+      );
+  }
+  return text;
+}
+
+/**
  * Normalizes generalData so that sub-questions (whether provided as an array or
  * embedded in questionText / suggestedAnswer) are uniformly extracted and structured.
  */
@@ -25,6 +46,7 @@ export function getStructuredGeneralData(generalData) {
     return {
       stem: "",
       instruction: "",
+      questionText: "",
       subQuestions: null,
       suggestedAnswer: "",
       marks: 0,
@@ -33,6 +55,8 @@ export function getStructuredGeneralData(generalData) {
 
   const stem = generalData.stem || "";
   const marks = generalData.marks || 0;
+  const rawQHtml = generalData.questionText || "";
+  const cleanedQHtml = cleanGeneralQuestionText(rawQHtml, stem);
 
   // Case 1: Structured subQuestions array is already present
   if (
@@ -41,7 +65,8 @@ export function getStructuredGeneralData(generalData) {
   ) {
     return {
       stem,
-      instruction: generalData.questionText || "",
+      instruction: cleanedQHtml,
+      questionText: cleanedQHtml,
       subQuestions: generalData.subQuestions.map((sq, idx) => ({
         identifier: sq.identifier || BENGALI_SUB_LETTERS[idx] || `${idx + 1}.`,
         text: sq.text || "",
@@ -54,17 +79,16 @@ export function getStructuredGeneralData(generalData) {
   }
 
   // Case 2: Check if questionText has sub-questions with Bengali markers (ক., খ., etc.)
-  const qHtml = generalData.questionText || "";
   const aHtml = generalData.suggestedAnswer || "";
 
   // Regular expression to find markers like ক., খ., ক), খ)
   const markerRegex =
     /(?:^|>|\s)([ক-ঞ][.)])\s*([\s\S]*?)(?=(?:(?:^|>|\s)[ক-ঞ][.)]|$))/g;
-  const qMatches = [...qHtml.matchAll(markerRegex)];
+  const qMatches = [...cleanedQHtml.matchAll(markerRegex)];
 
   if (qMatches.length >= 2) {
-    const firstMatchIdx = qHtml.indexOf(qMatches[0][0]);
-    let instruction = qHtml.substring(0, firstMatchIdx).trim();
+    const firstMatchIdx = cleanedQHtml.indexOf(qMatches[0][0]);
+    let instruction = cleanedQHtml.substring(0, firstMatchIdx).trim();
     instruction = instruction.replace(/<p>\s*<\/p>$/i, "").trim();
 
     // Parse answers by marker
@@ -99,7 +123,8 @@ export function getStructuredGeneralData(generalData) {
 
     return {
       stem,
-      instruction,
+      instruction: cleanGeneralQuestionText(instruction, stem),
+      questionText: cleanedQHtml,
       subQuestions: parsedSubs,
       suggestedAnswer: aHtml,
       marks,
@@ -109,7 +134,8 @@ export function getStructuredGeneralData(generalData) {
   // Case 3: Regular general question without sub-questions
   return {
     stem,
-    instruction: qHtml,
+    instruction: cleanedQHtml,
+    questionText: cleanedQHtml,
     subQuestions: null,
     suggestedAnswer: aHtml,
     marks,
