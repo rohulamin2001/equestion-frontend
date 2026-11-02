@@ -32,6 +32,8 @@ export default function MathFormulaDialog({
   const [displayMode, setDisplayMode] = useState(Boolean(initialDisplayMode));
   const [activeCategory, setActiveCategory] = useState("arithmetic");
   const [showAdvancedMode, setShowAdvancedMode] = useState(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(300);
   const editorRef = useRef(null);
 
   // Focus mathfield when dialog opens
@@ -41,8 +43,50 @@ export default function MathFormulaDialog({
         editorRef.current?.focus();
       }, 100);
       return () => clearTimeout(timer);
+    } else {
+      // Hide virtual keyboard when dialog closes
+      if (typeof window !== "undefined" && window.mathVirtualKeyboard) {
+        window.mathVirtualKeyboard.hide();
+      }
     }
   }, [open]);
+
+  // Track virtual keyboard visibility and height to adjust dialog layout
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.mathVirtualKeyboard) return;
+    const handleGeometry = () => {
+      const isVisible = Boolean(window.mathVirtualKeyboard.visible);
+      setIsKeyboardVisible(isVisible);
+      const h = window.mathVirtualKeyboard.boundingRect?.height;
+      if (h && h > 0) {
+        setKeyboardHeight(h);
+      }
+    };
+    window.mathVirtualKeyboard.addEventListener(
+      "geometrychange",
+      handleGeometry,
+    );
+    return () => {
+      window.mathVirtualKeyboard.removeEventListener(
+        "geometrychange",
+        handleGeometry,
+      );
+    };
+  }, []);
+
+  const handleToggleKeyboard = () => {
+    if (editorRef.current) {
+      editorRef.current.toggleVirtualKeyboard();
+      setTimeout(() => {
+        if (typeof window !== "undefined" && window.mathVirtualKeyboard) {
+          const isVisible = Boolean(window.mathVirtualKeyboard.visible);
+          setIsKeyboardVisible(isVisible);
+          const h = window.mathVirtualKeyboard.boundingRect?.height;
+          if (h && h > 0) setKeyboardHeight(h);
+        }
+      }, 50);
+    }
+  };
 
   // Validation
   const validation = useMemo(() => {
@@ -90,7 +134,29 @@ export default function MathFormulaDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl w-[95vw] max-h-[92vh] flex flex-col p-0 gap-0 overflow-hidden bg-white dark:bg-slate-950 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800">
+      <DialogContent
+        containerClassName={
+          isKeyboardVisible ? "!items-start pt-2 sm:pt-3 pb-0" : "items-center"
+        }
+        onPointerDownOutside={(e) => {
+          const target = e.target;
+          if (
+            target &&
+            (target.closest(".ML__keyboard") ||
+              target.closest(".MLK__backdrop") ||
+              target.closest("math-virtual-keyboard") ||
+              target.closest("[data-ml-keyboard]"))
+          ) {
+            e.preventDefault();
+          }
+        }}
+        style={{
+          maxHeight: isKeyboardVisible
+            ? `calc(100dvh - ${keyboardHeight + 20}px)`
+            : "92vh",
+        }}
+        className="max-w-3xl w-[95vw] flex flex-col p-0 gap-0 overflow-hidden bg-white dark:bg-slate-950 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 transition-all duration-200"
+      >
         {/* Header */}
         <DialogHeader className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/60">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -142,7 +208,11 @@ export default function MathFormulaDialog({
         </DialogHeader>
 
         {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+        <div
+          className={`flex-1 overflow-y-auto px-6 ${
+            isKeyboardVisible ? "py-2.5 space-y-2.5" : "py-4 space-y-4"
+          }`}
+        >
           {/* Formula Categories Tabs */}
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
@@ -170,8 +240,10 @@ export default function MathFormulaDialog({
           </div>
 
           {/* Symbol Buttons Grid */}
-          <div className="p-3 bg-slate-50/70 dark:bg-slate-900/40 rounded-xl border border-slate-200/70 dark:border-slate-800">
-            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 gap-1.5 max-h-36 overflow-y-auto p-0.5">
+          <div className="p-2.5 bg-slate-50/70 dark:bg-slate-900/40 rounded-xl border border-slate-200/70 dark:border-slate-800">
+            <div
+              className={`grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 gap-1.5 ${isKeyboardVisible ? "max-h-20" : "max-h-36"} overflow-y-auto p-0.5`}
+            >
               {currentCategory.symbols.map((sym, index) => (
                 <button
                   key={index}
@@ -199,12 +271,22 @@ export default function MathFormulaDialog({
               <div className="flex items-center gap-1">
                 <button
                   type="button"
-                  onClick={() => editorRef.current?.toggleVirtualKeyboard()}
-                  className="px-2 py-1 text-xs rounded-md text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-1"
-                  title="অন-স্ক্রিন ভার্চুয়াল কিবোর্ড টগল করুন"
+                  onClick={handleToggleKeyboard}
+                  className={`px-2 py-1 text-xs rounded-md flex items-center gap-1 transition ${
+                    isKeyboardVisible
+                      ? "bg-indigo-600 text-white font-semibold shadow-xs"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  }`}
+                  title={
+                    isKeyboardVisible
+                      ? "অন-স্ক্রিন ভার্চুয়াল কিবোর্ড লুকান"
+                      : "অন-স্ক্রিন ভার্চুয়াল কিবোর্ড দেখান"
+                  }
                 >
                   <Keyboard className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">ভার্চুয়াল কিবোর্ড</span>
+                  <span className="hidden sm:inline">
+                    {isKeyboardVisible ? "কিবোর্ড লুকান" : "ভার্চুয়াল কিবোর্ড"}
+                  </span>
                 </button>
                 <button
                   type="button"
@@ -299,7 +381,11 @@ export default function MathFormulaDialog({
         </div>
 
         {/* Footer Actions */}
-        <DialogFooter className="px-6 py-3.5 bg-slate-50/80 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800 flex flex-row items-center justify-between sm:justify-between">
+        <DialogFooter
+          className={`px-6 ${
+            isKeyboardVisible ? "py-2.5" : "py-3.5"
+          } bg-slate-50/80 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800 flex flex-row items-center justify-between sm:justify-between`}
+        >
           <button
             type="button"
             onClick={() => onOpenChange(false)}

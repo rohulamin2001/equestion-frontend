@@ -75,7 +75,7 @@ const MathFormulaEditor = forwardRef(function MathFormulaEditor(
     mf.readOnly = readOnly;
     mf.smartFence = true;
     mf.smartMode = true;
-    mf.mathVirtualKeyboardPolicy = "auto";
+    mf.mathVirtualKeyboardPolicy = "manual";
 
     // Handle user typing and editing
     const handleInput = () => {

@@ -64,6 +64,7 @@ const DialogContent = React.forwardRef(
   (
     {
       className,
+      containerClassName,
       children,
       showCloseButton = true,
       from = "top",
@@ -110,7 +111,12 @@ const DialogContent = React.forwardRef(
           onPointerDownOutside={onPointerDownOutside}
           onEscapeKeyDown={onEscapeKeyDown}
         >
-          <div className="fixed inset-0 z-[10050] flex items-center justify-center p-4">
+          <div
+            className={cn(
+              "fixed inset-0 z-[10050] flex items-center justify-center p-4",
+              containerClassName,
+            )}
+          >
             <motion.div
               initial={directionVariants.initial}
               animate={directionVariants.animate}

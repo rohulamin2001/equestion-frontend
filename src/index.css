@@ -857,3 +857,15 @@ img[class*="question-image"],
   justify-content: center;
   margin: 0.75rem 0;
 }
+
+/* MathLive Virtual Keyboard Z-Index and Styling */
+:root {
+  --keyboard-zindex: 100200;
+}
+
+.ML__keyboard,
+.MLK__backdrop,
+math-virtual-keyboard,
+div[data-ml-keyboard] {
+  z-index: 100200 !important;
+}
