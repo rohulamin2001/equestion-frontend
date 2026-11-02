@@ -1,7 +1,12 @@
 import apiClient, { getAccessToken } from "@/lib/apiClient";
 import JoditEditor from "jodit-react";
-import { useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import MathFormulaDialog from "./MathEditor/MathFormulaDialog";
+import {
+  createMathEditorPill,
+  extractLatexFromPill,
+} from "./MathEditor/mathUtils";
 
 // Utility to resolve relative R2 image paths (e.g. questions/...) to full CDN URLs for Jodit Editor
 function resolveEditorImages(html) {
@@ -32,10 +37,51 @@ export default function Editor({
   height = 300,
   ...props
 }) {
+  const activeEditorRef = useRef(null);
+  const savedRangeRef = useRef(null);
+  const [isFormulaDialogOpen, setIsFormulaDialogOpen] = useState(false);
+  const [formulaDialogLatex, setFormulaDialogLatex] = useState("");
+  const [formulaDialogDisplayMode, setFormulaDialogDisplayMode] =
+    useState(false);
+  const [editingTargetNode, setEditingTargetNode] = useState(null);
+
   // Resolve relative R2 paths so Jodit Editor displays images properly
   const resolvedValue = useMemo(() => {
     return resolveEditorImages(value);
   }, [value]);
+
+  const handleInsertFormula = ({ latex, displayMode }) => {
+    const editor = activeEditorRef.current;
+    if (!editor) return;
+
+    const pillHtml = createMathEditorPill(latex, displayMode);
+
+    if (editingTargetNode && editingTargetNode.parentNode) {
+      // Editing existing formula: replace in DOM
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = pillHtml;
+      const newNode = tempDiv.firstElementChild;
+      editingTargetNode.parentNode.replaceChild(newNode, editingTargetNode);
+      setEditingTargetNode(null);
+      // Trigger onChange with updated HTML
+      onChange(editor.value);
+    } else {
+      // Inserting new formula at saved selection
+      if (savedRangeRef.current) {
+        try {
+          editor.selection.restore(savedRangeRef.current);
+        } catch (e) {
+          console.warn("Could not restore selection range", e);
+        }
+        savedRangeRef.current = null;
+      }
+      const toInsert = displayMode
+        ? `<p></p>${pillHtml}<p></p>`
+        : `${pillHtml}&nbsp;`;
+      editor.selection.insertHTML(toInsert);
+      onChange(editor.value);
+    }
+  };
 
   const config = useMemo(() => {
     const apiBaseUrl = (
@@ -56,6 +102,46 @@ export default function Editor({
         editSize: true,
         editSrc: true,
       },
+      controls: {
+        formula: {
+          name: "formula",
+          text: "fx",
+          tooltip: "গাণিতিক ও বৈজ্ঞানিক সূত্র (Insert Math Formula)",
+          icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4"/><path d="M14 4h6"/><path d="m8 20 6-16"/><path d="m4 12h8"/><path d="m15 15 5 5"/><path d="m20 15-5 5"/></svg>`,
+          exec: (editor) => {
+            activeEditorRef.current = editor;
+            try {
+              savedRangeRef.current = editor.selection.save();
+            } catch (e) {
+              console.warn("Could not save selection range", e);
+            }
+            setEditingTargetNode(null);
+            setFormulaDialogLatex("");
+            setFormulaDialogDisplayMode(false);
+            setIsFormulaDialogOpen(true);
+          },
+        },
+      },
+      events: {
+        afterInit: (editor) => {
+          activeEditorRef.current = editor;
+          // Bind double click listener to open formula editor on existing math formula pill
+          editor.e.on(editor.editor, "dblclick", (e) => {
+            const target = e.target;
+            const pill = target ? target.closest(".math-formula-pill") : null;
+            if (pill) {
+              e.preventDefault();
+              e.stopPropagation();
+              activeEditorRef.current = editor;
+              const { latex, displayMode } = extractLatexFromPill(pill);
+              setEditingTargetNode(pill);
+              setFormulaDialogLatex(latex);
+              setFormulaDialogDisplayMode(displayMode);
+              setIsFormulaDialogOpen(true);
+            }
+          });
+        },
+      },
       buttons: [
         "bold",
         "italic",
@@ -64,6 +150,7 @@ export default function Editor({
         "|",
         "superscript",
         "subscript",
+        "formula",
         "|",
         "ul",
         "ol",
@@ -159,13 +246,29 @@ export default function Editor({
   }, [placeholder, height]);
 
   return (
-    <div className="jodit-editor-wrapper bg-white rounded-xl overflow-hidden border border-black/[0.08] focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-500 transition shadow-sm">
-      <JoditEditor
-        value={resolvedValue}
-        config={config}
-        onBlur={(newContent) => onChange(newContent)} // Use onBlur for performance
-        {...props}
+    <>
+      <div className="jodit-editor-wrapper bg-white rounded-xl overflow-hidden border border-black/[0.08] focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-500 transition shadow-sm">
+        <JoditEditor
+          value={resolvedValue}
+          config={config}
+          onBlur={(newContent) => onChange(newContent)} // Use onBlur for performance
+          {...props}
+        />
+      </div>
+
+      <MathFormulaDialog
+        key={
+          isFormulaDialogOpen
+            ? `${formulaDialogLatex}-${formulaDialogDisplayMode}-${editingTargetNode ? "edit" : "new"}`
+            : "closed"
+        }
+        open={isFormulaDialogOpen}
+        onOpenChange={setIsFormulaDialogOpen}
+        initialLatex={formulaDialogLatex}
+        initialDisplayMode={formulaDialogDisplayMode}
+        onInsert={handleInsertFormula}
+        isEditing={Boolean(editingTargetNode)}
       />
-    </div>
+    </>
   );
 }

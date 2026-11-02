@@ -823,3 +823,37 @@ img[class*="question-image"],
     border-color: #000;
   }
 }
+
+
+/* Prevent formula splitting across pages and ensure crisp typography in print */
+@media print {
+  .katex {
+    font-size: 1.05em;
+    text-rendering: optimizeLegibility;
+  }
+  .katex-block-wrapper,
+  .math-block-pill {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+/* Mathematical and Scientific Formula Styling for WYSIWYG Editor */
+.jodit-wysiwyg .math-formula-pill {
+  user-select: all;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: baseline;
+  transition: all 0.15s ease;
+}
+
+.jodit-wysiwyg .math-formula-pill:hover {
+  outline: 2px solid #6366f1;
+  background-color: rgba(99, 102, 241, 0.12);
+}
+
+.jodit-wysiwyg .math-formula-pill.math-block-pill {
+  display: flex;
+  justify-content: center;
+  margin: 0.75rem 0;
+}

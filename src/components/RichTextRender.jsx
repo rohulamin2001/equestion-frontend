@@ -1,5 +1,7 @@
 import katex from "katex";
 import "katex/dist/katex.min.css";
+// Enable mhchem extension for chemistry equations (\ce{...})
+import "katex/dist/contrib/mhchem.min.js";
 import { useMemo } from "react";
 
 // Utility to resolve relative Cloudflare R2 image paths (e.g. questions/..., profiles/...) to full CDN URLs
@@ -46,7 +48,36 @@ function parseAndRenderMath(html) {
 
   let processedHtml = html;
 
-  // 1. Process block formulas $$ ... $$ or \[ ... \]
+  // 1. Process structured math formula pills (from MathLive authoring engine)
+  const pillRegex =
+    /<(span|div)[^>]*\bclass=["'][^"']*math-formula-pill[^"']*["'][^>]*data-latex=["']([^"']+)["'][^>]*>[\s\S]*?<\/\1>/gi;
+  processedHtml = processedHtml.replace(pillRegex, (match, tag, rawLatex) => {
+    let latex = rawLatex;
+    try {
+      latex = decodeURIComponent(rawLatex);
+    } catch {
+      // keep rawLatex on decode error
+    }
+    const isBlock =
+      match.includes('data-display-mode="block"') ||
+      tag.toLowerCase() === "div";
+
+    try {
+      const rendered = katex.renderToString(latex.trim(), {
+        displayMode: isBlock,
+        throwOnError: false,
+      });
+      if (isBlock) {
+        return `<div class="katex-block-wrapper my-4 flex justify-center overflow-x-auto">${rendered}</div>`;
+      }
+      return rendered;
+    } catch (err) {
+      console.warn("KaTeX Pill Rendering Error:", err);
+      return match;
+    }
+  });
+
+  // 2. Process block formulas $$ ... $$ or \[ ... \]
   const blockRegex = /\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\]/g;
   processedHtml = processedHtml.replace(blockRegex, (match, p1, p2) => {
     const formula = p1 || p2;
@@ -64,7 +95,7 @@ function parseAndRenderMath(html) {
     }
   });
 
-  // 2. Process inline formulas $ ... $ or \( ... \)
+  // 3. Process inline formulas $ ... $ or \( ... \)
   const inlineRegex = /\$([^$\n]+?)\$|\\\(([\s\S]*?)\\\)/g;
   processedHtml = processedHtml.replace(inlineRegex, (match, p1, p2) => {
     const formula = p1 || p2;
