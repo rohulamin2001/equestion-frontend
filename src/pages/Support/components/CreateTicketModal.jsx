@@ -61,7 +61,7 @@ export function CreateTicketModal({
             <label className="text-xs font-bold text-slate-600">
               সমস্যার ক্যাটাগরি *
             </label>
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
@@ -73,7 +73,7 @@ export function CreateTicketModal({
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="start"
-                className="bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] w-full min-w-[240px] font-bengali"
+                className="bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060] w-full min-w-[240px] font-bengali"
               >
                 {categoryOptions.map((cat) => (
                   <DropdownMenuItem

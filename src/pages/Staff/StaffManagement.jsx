@@ -299,6 +299,7 @@ export default function StaffManagement() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         {canModifyRole ? (
                           <DropdownMenu
+                            modal={false}
                             open={activeDropdownMemberId === member._id}
                             onOpenChange={(open) =>
                               setActiveDropdownMemberId(
@@ -334,7 +335,7 @@ export default function StaffManagement() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                               align="start"
-                              className="w-[260px] bg-white border border-slate-100 rounded-xl shadow-xl p-1.5 space-y-1 z-[100]"
+                              className="w-[260px] bg-white border border-slate-100 rounded-xl shadow-xl p-1.5 space-y-1 z-[10060]"
                             >
                               <div className="px-2.5 py-1.5 border-b border-slate-100 flex items-center justify-between">
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-sans">
@@ -602,6 +603,7 @@ export default function StaffManagement() {
                 </div>
 
                 <DropdownMenu
+                  modal={false}
                   open={isRoleDropdownOpen}
                   onOpenChange={setIsRoleDropdownOpen}
                 >
@@ -623,7 +625,7 @@ export default function StaffManagement() {
 
                   <DropdownMenuContent
                     align="start"
-                    className="w-[var(--radix-dropdown-menu-trigger-width)] bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-xl shadow-xl p-1.5 space-y-1 z-[100]"
+                    className="w-[var(--radix-dropdown-menu-trigger-width)] bg-glass-elevated backdrop-blur-xl border border-slate-200/50 rounded-xl shadow-xl p-1.5 space-y-1 z-[10060]"
                   >
                     {[
                       "Admin",

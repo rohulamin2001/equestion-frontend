@@ -53,7 +53,7 @@ export function CannedResponseModal({
               className="h-9 text-xs bg-white rounded-xl border-black/[0.08]"
               required
             />
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
@@ -67,7 +67,7 @@ export function CannedResponseModal({
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="start"
-                className="bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] min-w-[180px] font-bengali"
+                className="bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060] min-w-[180px] font-bengali"
               >
                 {Object.entries(categoryLabels).map(([key, label]) => (
                   <DropdownMenuItem

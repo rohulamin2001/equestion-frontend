@@ -93,7 +93,7 @@ export function AdminTicketManageModal({
                 {/* Quick Controls */}
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   {/* Status Dropdown */}
-                  <DropdownMenu>
+                  <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                       <button className="h-7 sm:h-8 px-2 sm:px-3 bg-white/15 hover:bg-white/25 text-white border border-white/25 rounded-xl text-[11px] sm:text-xs font-semibold backdrop-blur-md transition flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-2xs">
                         <span>
@@ -105,7 +105,7 @@ export function AdminTicketManageModal({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="bg-slate-900/95 backdrop-blur-xl border border-white/10 text-white rounded-xl shadow-2xl p-1.5 space-y-0.5 z-[100] min-w-[170px]"
+                      className="bg-slate-900/95 backdrop-blur-xl border border-white/10 text-white rounded-xl shadow-2xl p-1.5 space-y-0.5 z-[10060] min-w-[170px]"
                     >
                       {Object.entries(statusConfig).map(([key, config]) => (
                         <DropdownMenuItem
@@ -127,7 +127,7 @@ export function AdminTicketManageModal({
                   </DropdownMenu>
 
                   {/* Priority Dropdown */}
-                  <DropdownMenu>
+                  <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                       <button className="h-7 sm:h-8 px-2 sm:px-3 bg-white/15 hover:bg-white/25 text-white border border-white/25 rounded-xl text-[11px] sm:text-xs font-semibold backdrop-blur-md transition flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-2xs">
                         <span>
@@ -139,7 +139,7 @@ export function AdminTicketManageModal({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="bg-slate-900/95 backdrop-blur-xl border border-white/10 text-white rounded-xl shadow-2xl p-1.5 space-y-0.5 z-[100] min-w-[160px]"
+                      className="bg-slate-900/95 backdrop-blur-xl border border-white/10 text-white rounded-xl shadow-2xl p-1.5 space-y-0.5 z-[10060] min-w-[160px]"
                     >
                       {Object.entries(priorityConfig).map(([key, config]) => (
                         <DropdownMenuItem
@@ -288,7 +288,7 @@ export function AdminTicketManageModal({
                 </div>
 
                 {cannedResponses.length > 0 && !isInternalNote && (
-                  <DropdownMenu>
+                  <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                       <button
                         type="button"
@@ -300,7 +300,7 @@ export function AdminTicketManageModal({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-xl shadow-xl p-1.5 space-y-1 z-[100] w-72 sm:w-80 max-h-60 overflow-y-auto font-bengali"
+                      className="bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-xl shadow-xl p-1.5 space-y-1 z-[10060] w-72 sm:w-80 max-h-60 overflow-y-auto font-bengali"
                     >
                       <div className="px-2 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                         সংরক্ষিত টেমপ্লেটসমূহ (ক্লিক করে ইনসার্ট করুন):

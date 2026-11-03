@@ -460,7 +460,8 @@ export default function SyllabusManagement() {
           from="top"
           showCloseButton={!formLoading}
           onPointerDownOutside={(e) => {
-            if (formLoading) e.preventDefault();
+            // Prevent accidental dialog closing when clicking on portaled dropdowns or outside the form
+            e.preventDefault();
           }}
           onEscapeKeyDown={(e) => {
             if (formLoading) e.preventDefault();
@@ -516,6 +517,7 @@ export default function SyllabusManagement() {
                         <span>প্রতিষ্ঠান এর ধরণ (Type)</span>
                       </label>
                       <DropdownMenu
+                        modal={false}
                         open={isFormTypeDropdownOpen}
                         onOpenChange={(open) => {
                           if (!formLoading && !editingSyllabus) {
@@ -541,7 +543,7 @@ export default function SyllabusManagement() {
 
                         <DropdownMenuContent
                           align="start"
-                          className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
+                          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060]"
                         >
                           {formActiveTypes.map((type) => {
                             const isSelected = formType === type;
@@ -573,6 +575,7 @@ export default function SyllabusManagement() {
                         <span>শিক্ষার স্তর (Level)</span>
                       </label>
                       <DropdownMenu
+                        modal={false}
                         open={isFormLevelDropdownOpen}
                         onOpenChange={(open) => {
                           if (!formLoading && !editingSyllabus) {
@@ -598,7 +601,7 @@ export default function SyllabusManagement() {
 
                         <DropdownMenuContent
                           align="start"
-                          className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
+                          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060]"
                         >
                           {formActiveLevels.map((level) => {
                             const isSelected = formLevel === level;
@@ -630,6 +633,7 @@ export default function SyllabusManagement() {
                         <span>শ্রেণী নির্বাচন (Class)</span>
                       </label>
                       <DropdownMenu
+                        modal={false}
                         open={isFormClassDropdownOpen}
                         onOpenChange={(open) => {
                           if (!formLoading && !editingSyllabus) {
@@ -657,7 +661,7 @@ export default function SyllabusManagement() {
 
                         <DropdownMenuContent
                           align="start"
-                          className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100]"
+                          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060]"
                         >
                           {formActiveClasses.map((cls) => {
                             const isSelected = formClass === cls.value;
@@ -751,6 +755,7 @@ export default function SyllabusManagement() {
                         <span>বিষয় নির্বাচন (Subject)</span>
                       </label>
                       <DropdownMenu
+                        modal={false}
                         open={isFormSubjectDropdownOpen}
                         onOpenChange={(open) => {
                           if (!formLoading && !editingSyllabus) {
@@ -789,7 +794,7 @@ export default function SyllabusManagement() {
 
                         <DropdownMenuContent
                           align="start"
-                          className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[100] max-h-[220px] overflow-y-auto"
+                          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060] max-h-[220px] overflow-y-auto"
                         >
                           {formSubjects.length === 0 ? (
                             <p className="text-xs text-slate-400 italic text-center py-2.5">
