@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useQuestionHierarchy } from "./useQuestionHierarchy";
 
 export function useMyQuestions() {
   const navigate = useNavigate();
@@ -14,6 +15,25 @@ export function useMyQuestions() {
 
   const [pageSize, setPageSizeState] = useState(10);
   const qm = useQuestionManagement({ isPersonalOnly: true, pageSize });
+
+  // Hierarchical Folder Navigation
+  const hierarchy = useQuestionHierarchy({
+    scope: "personal",
+    onFilterChange: ({
+      type,
+      className,
+      subjectId,
+      chapterNumber,
+      category,
+    }) => {
+      if (type !== undefined) qm.setFilterType(type);
+      if (className !== undefined) qm.setFilterClass(className);
+      if (subjectId !== undefined) qm.setFilterSubjectId(subjectId);
+      if (chapterNumber !== undefined)
+        qm.setFilterChapter(chapterNumber !== "" ? Number(chapterNumber) : "");
+      if (category !== undefined) qm.setFilterCategory(category);
+    },
+  });
 
   // Bulk Selection State
   const [selectedQuestionIds, setSelectedQuestionIds] = useState([]);
@@ -229,6 +249,7 @@ export function useMyQuestions() {
   const filterChapters = selectedSyllabusObj?.chapters || [];
 
   const handleResetFilters = () => {
+    hierarchy.resetToRoot();
     qm.setFilterType("");
     qm.setFilterLevel("");
     qm.setFilterClass("");
@@ -501,5 +522,6 @@ export function useMyQuestions() {
     isQuestionSelected,
     isGroupFullySelected,
     isGroupPartiallySelected,
+    hierarchy,
   };
 }

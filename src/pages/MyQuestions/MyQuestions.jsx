@@ -61,6 +61,7 @@ import { AnimatePresence, motion } from "motion/react";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import QuestionMetadataTooltip from "./components/QuestionMetadataTooltip.jsx";
+import QuestionFolderExplorer from "./components/QuestionFolderExplorer.jsx";
 import UpdateQuestionImageModal from "./components/UpdateQuestionImageModal.jsx";
 import { useMyQuestions } from "./hook/useMyQuestions";
 
@@ -171,6 +172,7 @@ export default function MyQuestions() {
     isQuestionSelected,
     isGroupFullySelected,
     isGroupPartiallySelected,
+    hierarchy,
   } = useMyQuestions();
 
   const questionsWithSerials = visibleQuestions.map((q, idx) => {
@@ -434,6 +436,9 @@ export default function MyQuestions() {
           })}
         </motion.div>
       </div>
+
+      {/* Question Folder Explorer (Hierarchical drill-down) */}
+      <QuestionFolderExplorer hierarchy={hierarchy} />
 
       {/* Filters Panel */}
       <div className="bg-glass p-3.5 sm:p-5 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-3 sm:space-y-4">
