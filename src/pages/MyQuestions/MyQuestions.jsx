@@ -60,8 +60,8 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import QuestionMetadataTooltip from "./components/QuestionMetadataTooltip.jsx";
 import QuestionFolderExplorer from "./components/QuestionFolderExplorer.jsx";
+import QuestionMetadataTooltip from "./components/QuestionMetadataTooltip.jsx";
 import UpdateQuestionImageModal from "./components/UpdateQuestionImageModal.jsx";
 import { useMyQuestions } from "./hook/useMyQuestions";
 
@@ -260,7 +260,7 @@ export default function MyQuestions() {
             নতুন প্রশ্ন যোগ করুন
           </Button>
         </div>
-        <p className="text-slate-500 text-[11px] sm:text-sm leading-snug pl-[3.25rem]">
+        <p className="text-slate-500 text-[11px] sm:text-sm leading-snug pl-12">
           আপনার পূর্বে প্রস্তুতকৃত এবং সেভ করা সকল প্রশ্নপত্রসমূহ
         </p>
       </div>
