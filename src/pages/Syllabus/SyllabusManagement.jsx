@@ -543,7 +543,16 @@ export default function SyllabusManagement() {
 
                         <DropdownMenuContent
                           align="start"
-                          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060]"
+                          onWheel={(e) => {
+                            e.stopPropagation();
+                            if (
+                              e.currentTarget.scrollHeight >
+                              e.currentTarget.clientHeight
+                            ) {
+                              e.currentTarget.scrollTop += e.deltaY;
+                            }
+                          }}
+                          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060] max-h-[260px] overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-purple-200 hover:scrollbar-thumb-purple-300"
                         >
                           {formActiveTypes.map((type) => {
                             const isSelected = formType === type;
@@ -601,7 +610,16 @@ export default function SyllabusManagement() {
 
                         <DropdownMenuContent
                           align="start"
-                          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060]"
+                          onWheel={(e) => {
+                            e.stopPropagation();
+                            if (
+                              e.currentTarget.scrollHeight >
+                              e.currentTarget.clientHeight
+                            ) {
+                              e.currentTarget.scrollTop += e.deltaY;
+                            }
+                          }}
+                          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060] max-h-[260px] overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-purple-200 hover:scrollbar-thumb-purple-300"
                         >
                           {formActiveLevels.map((level) => {
                             const isSelected = formLevel === level;
@@ -661,7 +679,16 @@ export default function SyllabusManagement() {
 
                         <DropdownMenuContent
                           align="start"
-                          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060]"
+                          onWheel={(e) => {
+                            e.stopPropagation();
+                            if (
+                              e.currentTarget.scrollHeight >
+                              e.currentTarget.clientHeight
+                            ) {
+                              e.currentTarget.scrollTop += e.deltaY;
+                            }
+                          }}
+                          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060] max-h-[260px] overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-purple-200 hover:scrollbar-thumb-purple-300"
                         >
                           {formActiveClasses.map((cls) => {
                             const isSelected = formClass === cls.value;
@@ -794,7 +821,16 @@ export default function SyllabusManagement() {
 
                         <DropdownMenuContent
                           align="start"
-                          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060] max-h-[220px] overflow-y-auto"
+                          onWheel={(e) => {
+                            e.stopPropagation();
+                            if (
+                              e.currentTarget.scrollHeight >
+                              e.currentTarget.clientHeight
+                            ) {
+                              e.currentTarget.scrollTop += e.deltaY;
+                            }
+                          }}
+                          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[220px] bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-0.5 z-[10060] max-h-[260px] overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-purple-200 hover:scrollbar-thumb-purple-300"
                         >
                           {formSubjects.length === 0 ? (
                             <p className="text-xs text-slate-400 italic text-center py-2.5">

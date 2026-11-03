@@ -1,6 +1,7 @@
 "use client";
 
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
@@ -30,14 +31,55 @@ function DropdownMenuContent({
   sideOffset = 4,
   ...props
 }) {
+  const innerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const node = innerRef.current;
+    if (!node) return;
+
+    const handleWheel = (e) => {
+      // Stop propagation to prevent document-level react-remove-scroll (from Dialog) from cancelling the event
+      e.stopPropagation();
+      if (node.scrollHeight > node.clientHeight) {
+        node.scrollTop += e.deltaY;
+      }
+    };
+
+    let startY = 0;
+    const handleTouchStart = (e) => {
+      startY = e.touches[0]?.clientY || 0;
+    };
+
+    const handleTouchMove = (e) => {
+      e.stopPropagation();
+      const currentY = e.touches[0]?.clientY || 0;
+      const deltaY = startY - currentY;
+      startY = currentY;
+      if (node.scrollHeight > node.clientHeight) {
+        node.scrollTop += deltaY;
+      }
+    };
+
+    node.addEventListener("wheel", handleWheel, { passive: false });
+    node.addEventListener("touchstart", handleTouchStart, { passive: true });
+    node.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+    return () => {
+      node.removeEventListener("wheel", handleWheel);
+      node.removeEventListener("touchstart", handleTouchStart);
+      node.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, []);
+
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
+        ref={innerRef}
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         align={align}
         className={cn(
-          "z-[10060] max-h-(--radix-dropdown-menu-content-available-height) w-(--radix-dropdown-menu-trigger-width) min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:overflow-hidden data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "z-[10060] max-h-(--radix-dropdown-menu-content-available-height) w-(--radix-dropdown-menu-trigger-width) min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:overflow-hidden data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className,
         )}
         {...props}
