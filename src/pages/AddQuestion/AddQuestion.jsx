@@ -1,3 +1,4 @@
+import JsonCodeEditor from "@/components/CodeEditor/JsonCodeEditor";
 import Editor from "@/components/Editor";
 import RichTextRender from "@/components/RichTextRender";
 import { Button } from "@/components/ui/button";
@@ -1177,47 +1178,47 @@ export default function AddQuestion() {
                     </div>
                   )}
 
-                  {/* Textarea */}
-                  <div className="relative group">
-                    <textarea
-                      rows={14}
-                      value={qm.rawPastedJsonText}
-                      onChange={(e) => qm.setRawPastedJsonText(e.target.value)}
-                      placeholder={getJsonPlaceholder(
-                        qm.formCategory,
-                        jsonMcqSubType,
-                      )}
-                      className="w-full p-4 pt-11 font-mono text-xs bg-slate-900 text-slate-100 rounded-2xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500/50 shadow-inner resize-y leading-relaxed"
-                    />
-                    <div className="absolute top-2.5 right-3 flex items-center gap-1.5 z-10">
-                      {isCheckingServerDuplicates && (
-                        <span className="text-[11px] font-semibold text-amber-300 bg-slate-800/90 px-2.5 py-1 rounded-lg border border-slate-700 flex items-center gap-1.5 backdrop-blur-sm shadow-md">
-                          <Loader2 className="size-3 animate-spin text-amber-400" />
-                          <span>ডুপ্লিকেট চেকিং...</span>
-                        </span>
-                      )}
-                      <button
-                        type="button"
-                        onClick={handlePasteFromClipboard}
-                        className="text-[11px] font-bold text-emerald-300 hover:text-white bg-slate-800/90 hover:bg-emerald-700 px-2.5 py-1 rounded-lg border border-slate-700 hover:border-emerald-500 transition shadow-md flex items-center gap-1.5 cursor-pointer backdrop-blur-sm"
-                        title="ক্লিপবোর্ড থেকে অটো-পেস্ট করুন"
-                      >
-                        <ClipboardPaste className="size-3.5 text-emerald-400" />
-                        <span>পেস্ট</span>
-                      </button>
-                      {qm.rawPastedJsonText && (
+                  {/* Smart JSON Code Editor with Line Numbers */}
+                  <JsonCodeEditor
+                    value={qm.rawPastedJsonText}
+                    onChange={(newVal) => qm.setRawPastedJsonText(newVal)}
+                    placeholder={getJsonPlaceholder(
+                      qm.formCategory,
+                      jsonMcqSubType,
+                    )}
+                    minHeight="300px"
+                    maxHeight="500px"
+                    headerActions={
+                      <>
+                        {isCheckingServerDuplicates && (
+                          <span className="text-[11px] font-semibold text-amber-300 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700 flex items-center gap-1.5 shadow-md">
+                            <Loader2 className="size-3 animate-spin text-amber-400" />
+                            <span>ডুপ্লিকেট চেকিং...</span>
+                          </span>
+                        )}
                         <button
                           type="button"
-                          onClick={() => qm.setRawPastedJsonText("")}
-                          className="text-[11px] font-bold text-rose-300 hover:text-white bg-slate-800/90 hover:bg-rose-700 px-2.5 py-1 rounded-lg border border-slate-700 hover:border-rose-500 transition shadow-md flex items-center gap-1.5 cursor-pointer backdrop-blur-sm"
-                          title="লেখা ক্লিয়ার করুন"
+                          onClick={handlePasteFromClipboard}
+                          className="text-[11px] font-bold text-emerald-300 hover:text-white bg-slate-800 hover:bg-emerald-700 px-2.5 py-1 rounded-lg border border-slate-700 hover:border-emerald-500 transition shadow-md flex items-center gap-1.5 cursor-pointer"
+                          title="ক্লিপবোর্ড থেকে অটো-পেস্ট করুন"
                         >
-                          <Trash2 className="size-3.5 text-rose-400" />
-                          <span>ক্লিয়ার</span>
+                          <ClipboardPaste className="size-3.5 text-emerald-400" />
+                          <span>পেস্ট</span>
                         </button>
-                      )}
-                    </div>
-                  </div>
+                        {qm.rawPastedJsonText && (
+                          <button
+                            type="button"
+                            onClick={() => qm.setRawPastedJsonText("")}
+                            className="text-[11px] font-bold text-rose-300 hover:text-white bg-slate-800 hover:bg-rose-700 px-2.5 py-1 rounded-lg border border-slate-700 hover:border-rose-500 transition shadow-md flex items-center gap-1.5 cursor-pointer"
+                            title="লেখা ক্লিয়ার করুন"
+                          >
+                            <Trash2 className="size-3.5 text-rose-400" />
+                            <span>ক্লিয়ার</span>
+                          </button>
+                        )}
+                      </>
+                    }
+                  />
 
                   {/* Live Validation Box */}
                   {(() => {
