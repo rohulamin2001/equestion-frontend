@@ -168,6 +168,7 @@ export default function QuestionFolderExplorer({
                       <FolderCard
                         key={cls.id}
                         title={cls.label}
+                        classId={cls.id}
                         subtitle={`${cls.subjects?.length || 0}টি বিষয়`}
                         count={cls.count}
                         level={1}
@@ -197,7 +198,7 @@ export default function QuestionFolderExplorer({
                         key={sub.id}
                         title={sub.name}
                         code={sub.code}
-                        subtitle={`${sub.chapters?.length || 0}টি অধ্যায়`}
+                        subtitle={`${sub.chapters?.length || 0}টি অধ্যায় • ${sub.categories?.length || 0}টি ক্যাটাগরি`}
                         count={sub.count}
                         level={2}
                         onClick={() => selectSubject(sub)}
@@ -205,13 +206,13 @@ export default function QuestionFolderExplorer({
                     ))}
                     {selectedClass.subjects.length === 0 && (
                       <div className="col-span-full py-6 text-center text-xs text-slate-400">
-                        এই ক্লাসে এখনো কোনো বিষয়ের প্রশ্ন নেই।
+                        এই ক্লাসে এখনো কোনো বিষয় যোগ করা হয়নি।
                       </div>
                     )}
                   </motion.div>
                 )}
 
-                {/* Level 3: Chapters */}
+                {/* Level 3: Chapters + Subject Category Breakdown */}
                 {currentLevel === 3 && selectedSubject && (
                   <motion.div
                     key="level-3"
@@ -219,25 +220,52 @@ export default function QuestionFolderExplorer({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.16 }}
-                    className="space-y-3"
+                    className="space-y-4"
                   >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
-                      {selectedSubject.chapters.map((ch) => (
-                        <FolderCard
-                          key={ch.chapterNumber}
-                          title={ch.chapterName}
-                          subtitle={`${ch.categories?.length || 0}টি ক্যাটাগরির প্রশ্ন`}
-                          count={ch.count}
-                          level={3}
-                          onClick={() => selectChapter(ch)}
-                        />
-                      ))}
-                    </div>
-                    {selectedSubject.chapters.length === 0 && (
-                      <div className="py-6 text-center text-xs text-slate-400">
-                        এই বিষয়ে কোনো অধ্যায়ের প্রশ্ন তৈরি করা হয়নি।
+                    {/* 1. Subject-level Categories Breakdown */}
+                    <CategoryStatsBreakdown
+                      title={`${selectedSubject.name} - বিষয়ভিত্তিক সকল ক্যাটাগরি`}
+                      subtitle="অনুমোদিত ক্যাটাগরিসমূহে মোট তৈরি করা প্রশ্ন সংখ্যা"
+                      categories={selectedSubject.categories || []}
+                      selectedCategory={currentPath.category}
+                      onSelectCategory={selectCategory}
+                      emptyMessage="এই বিষয়ে কোনো ক্যাটাগরি বরাদ্দ নেই।"
+                    />
+
+                    {/* 2. Chapters Grid */}
+                    <div className="space-y-2.5 pt-1">
+                      <div className="flex items-center justify-between px-0.5">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-800">
+                          অধ্যায়সমূহ (
+                          {selectedSubject.chapters?.length?.toLocaleString(
+                            "bn-BD",
+                          ) || "০"}
+                          টি)
+                        </h4>
+                        <span className="text-[10px] sm:text-[11px] text-slate-400">
+                          নির্দিষ্ট অধ্যায়ের ক্যাটাগরি দেখতে ক্লিক করুন
+                        </span>
                       </div>
-                    )}
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+                        {selectedSubject.chapters.map((ch) => (
+                          <FolderCard
+                            key={ch.chapterNumber}
+                            title={ch.chapterName}
+                            subtitle={`${ch.categories?.length || 0}টি ক্যাটাগরির প্রশ্ন`}
+                            count={ch.count}
+                            level={3}
+                            onClick={() => selectChapter(ch)}
+                          />
+                        ))}
+                      </div>
+
+                      {selectedSubject.chapters.length === 0 && (
+                        <div className="py-6 text-center text-xs text-slate-400">
+                          এই বিষয়ে কোনো অধ্যায় বা সিলেবাস পাওয়া যায়নি।
+                        </div>
+                      )}
+                    </div>
                   </motion.div>
                 )}
 
@@ -252,7 +280,7 @@ export default function QuestionFolderExplorer({
                   >
                     <CategoryStatsBreakdown
                       chapterName={selectedChapter.chapterName}
-                      categories={selectedChapter.categories}
+                      categories={selectedChapter.categories || []}
                       selectedCategory={currentPath.category}
                       onSelectCategory={selectCategory}
                     />
