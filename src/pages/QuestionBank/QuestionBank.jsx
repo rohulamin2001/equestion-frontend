@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
 import { groupPassageQuestions } from "@/lib/questionUtils";
+import QuestionFolderExplorer from "@/pages/MyQuestions/components/QuestionFolderExplorer";
 import QuestionMetadataTooltip from "@/pages/MyQuestions/components/QuestionMetadataTooltip";
 import { getStructuredGeneralData } from "@/utils/generalQuestionUtils";
 import {
@@ -119,6 +120,7 @@ const cardVariants = {
 
 export default function QuestionBank() {
   const {
+    hierarchy,
     navigate,
     qm,
     role,
@@ -362,6 +364,9 @@ export default function QuestionBank() {
           );
         })}
       </motion.div>
+
+      {/* Question Folder Explorer (Hierarchical drill-down) */}
+      <QuestionFolderExplorer hierarchy={hierarchy} />
 
       {/* Filters Panel */}
       <div className="bg-glass p-3.5 sm:p-5 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-3 sm:space-y-4">

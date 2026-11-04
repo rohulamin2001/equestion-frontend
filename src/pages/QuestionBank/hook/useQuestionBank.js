@@ -2,6 +2,7 @@ import { CATEGORIES_MAP } from "@/constants/categories";
 import { useUserContext } from "@/context/UserContext";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
 import apiClient from "@/lib/apiClient";
+import { useQuestionHierarchy } from "@/pages/MyQuestions/hook/useQuestionHierarchy";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -30,6 +31,25 @@ export function useQuestionBank() {
   const [pageSize, setPageSizeState] = useState(10);
   const qm = useQuestionManagement({ isPersonalOnly: false, pageSize });
   const { userProfile, role } = useUserContext();
+
+  // Hierarchical Folder Navigation (Global Question Bank)
+  const hierarchy = useQuestionHierarchy({
+    scope: "global",
+    onFilterChange: ({
+      type,
+      className,
+      subjectId,
+      chapterNumber,
+      category,
+    }) => {
+      if (type !== undefined) qm.setFilterType(type);
+      if (className !== undefined) qm.setFilterClass(className);
+      if (subjectId !== undefined) qm.setFilterSubjectId(subjectId);
+      if (chapterNumber !== undefined)
+        qm.setFilterChapter(chapterNumber !== "" ? Number(chapterNumber) : "");
+      if (category !== undefined) qm.setFilterCategory(category);
+    },
+  });
 
   // Dialog / Modal States
   const [selectedPreviewQuestion, setSelectedPreviewQuestion] = useState(null);
@@ -267,6 +287,7 @@ export function useQuestionBank() {
   const hasMore = hasNextPage;
 
   return {
+    hierarchy,
     navigate,
     qm,
     role,
