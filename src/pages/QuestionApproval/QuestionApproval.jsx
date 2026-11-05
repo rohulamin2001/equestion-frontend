@@ -1788,37 +1788,54 @@ export default function QuestionApproval() {
 
                                 {/* 3. Answer as plain text without background */}
                                 {isAnswerVisible &&
-                                  q.generalData.suggestedAnswer && (
-                                    <div
-                                      className={
-                                        q.category === "Amplification"
-                                          ? "amplification-solution text-sm text-slate-700 leading-relaxed pt-1 space-y-2 [&_p]:mb-2.5 last:[&_p]:mb-0"
-                                          : "text-[15px] font-serif text-slate-700 leading-relaxed pt-1"
-                                      }
-                                    >
-                                      {q.category !== "Amplification" &&
-                                        !/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
-                                          q.generalData.suggestedAnswer,
-                                        ) && (
-                                          <span className="font-bold text-slate-800 mr-1.5">
-                                            {q.category === "Summary"
-                                              ? "সারাংশ: "
-                                              : q.category === "Substance"
-                                                ? "সারমর্ম: "
-                                                : "উত্তর: "}
-                                          </span>
-                                        )}
-                                      <RichTextRender
-                                        content={q.generalData.suggestedAnswer}
+                                  q.generalData.suggestedAnswer && (() => {
+                                    const isBlockFormatted =
+                                      ["LetterWriting", "Amplification", "Essay", "ReportWriting"].includes(
+                                        q.category,
+                                      ) ||
+                                      (q.generalData.suggestedAnswer.match(/<p[\s>]/gi) || []).length > 1;
+
+                                    return (
+                                      <div
                                         className={
                                           q.category === "Amplification"
-                                            ? "block"
-                                            : "inline-block font-serif"
+                                            ? "amplification-solution text-sm text-slate-700 leading-relaxed pt-1 space-y-2 [&_p]:mb-2.5 last:[&_p]:mb-0"
+                                            : "text-[14px] font-serif text-slate-700 leading-relaxed pt-1 space-y-1"
                                         }
-                                        inline={q.category !== "Amplification"}
-                                      />
-                                    </div>
-                                  )}
+                                      >
+                                        {isBlockFormatted ? (
+                                          ["Summary", "Substance"].includes(q.category) && (
+                                            <span className="font-bold text-slate-800 block text-xs uppercase tracking-wider">
+                                              {q.category === "Summary"
+                                                ? "সারাংশ:"
+                                                : "সারমর্ম:"}
+                                            </span>
+                                          )
+                                        ) : (
+                                          !/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
+                                            q.generalData.suggestedAnswer,
+                                          ) && (
+                                            <span className="font-bold text-slate-800 mr-1.5">
+                                              {q.category === "Summary"
+                                                ? "সারাংশ: "
+                                                : q.category === "Substance"
+                                                  ? "সারমর্ম: "
+                                                  : "উত্তর: "}
+                                            </span>
+                                          )
+                                        )}
+                                        <RichTextRender
+                                          content={q.generalData.suggestedAnswer}
+                                          className={
+                                            isBlockFormatted
+                                              ? "block"
+                                              : "inline-block font-serif"
+                                          }
+                                          inline={!isBlockFormatted}
+                                        />
+                                      </div>
+                                    );
+                                  })()}
                               </div>
                             )}
                           </div>
@@ -2781,7 +2798,13 @@ export default function QuestionApproval() {
                                       selectedPreviewQuestion.generalData
                                         .suggestedAnswer
                                     }
-                                    inline
+                                    inline={
+                                      !["LetterWriting", "Amplification", "Essay", "ReportWriting"].includes(
+                                        selectedPreviewQuestion.category,
+                                      ) &&
+                                      (selectedPreviewQuestion.generalData.suggestedAnswer.match(/<p[\s>]/gi) || []).length <= 1
+                                    }
+                                    className="block"
                                   />
                                 </motion.div>
                               )}

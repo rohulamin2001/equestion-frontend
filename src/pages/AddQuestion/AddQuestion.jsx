@@ -3326,39 +3326,54 @@ export default function AddQuestion() {
                                     </div>
                                   )}
 
-                                  {q.generalData.suggestedAnswer && (
-                                    <div
-                                      className={
-                                        q.category === "Amplification"
-                                          ? "amplification-solution text-sm text-slate-700 leading-relaxed pt-1 space-y-2 [&_p]:mb-2.5 last:[&_p]:mb-0"
-                                          : "text-[15px] font-serif text-slate-700 leading-relaxed pt-1"
-                                      }
-                                    >
-                                      {q.category !== "Amplification" &&
-                                        !/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
-                                          q.generalData.suggestedAnswer,
-                                        ) && (
-                                          <strong className="text-inherit mr-1.5">
-                                            {q.category === "Summary"
-                                              ? "সারাংশ: "
-                                              : q.category === "Substance"
-                                                ? "সারমর্ম: "
-                                                : "উত্তর: "}
-                                          </strong>
-                                        )}
-                                      <RichTextRender
-                                        content={q.generalData.suggestedAnswer}
+                                  {q.generalData.suggestedAnswer && (() => {
+                                    const isBlockFormatted =
+                                      ["LetterWriting", "Amplification", "Essay", "ReportWriting"].includes(
+                                        q.category,
+                                      ) ||
+                                      (q.generalData.suggestedAnswer.match(/<p[\s>]/gi) || []).length > 1;
+
+                                    return (
+                                      <div
                                         className={
                                           q.category === "Amplification"
-                                            ? "block"
-                                            : "inline-block font-serif"
+                                            ? "amplification-solution text-sm text-slate-700 leading-relaxed pt-1 space-y-2 [&_p]:mb-2.5 last:[&_p]:mb-0"
+                                            : "text-[14px] text-slate-700 leading-relaxed pt-1 space-y-1"
                                         }
-                                        inline={
-                                          q.category !== "Amplification"
-                                        }
-                                      />
-                                    </div>
-                                  )}
+                                      >
+                                        {isBlockFormatted ? (
+                                          ["Summary", "Substance"].includes(q.category) && (
+                                            <span className="font-bold text-slate-800 block text-xs uppercase tracking-wider">
+                                              {q.category === "Summary"
+                                                ? "সারাংশ:"
+                                                : "সারমর্ম:"}
+                                            </span>
+                                          )
+                                        ) : (
+                                          !/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
+                                            q.generalData.suggestedAnswer,
+                                          ) && (
+                                            <strong className="text-inherit mr-1.5">
+                                              {q.category === "Summary"
+                                                ? "সারাংশ: "
+                                                : q.category === "Substance"
+                                                  ? "সারমর্ম: "
+                                                  : "উত্তর: "}
+                                            </strong>
+                                          )
+                                        )}
+                                        <RichTextRender
+                                          content={q.generalData.suggestedAnswer}
+                                          className={
+                                            isBlockFormatted
+                                              ? "block"
+                                              : "inline-block font-serif"
+                                          }
+                                          inline={!isBlockFormatted}
+                                        />
+                                      </div>
+                                    );
+                                  })()}
                                 </div>
                               )}
                           </div>
@@ -3791,17 +3806,25 @@ export default function AddQuestion() {
                               </span>
                             </div>
 
-                            {qm.generalSuggestedAnswer && (
-                              <div className="p-3 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[15px] text-slate-700">
-                                <span className="font-semibold text-[16px]">
-                                  উত্তর:{" "}
-                                </span>
-                                <RichTextRender
-                                  content={qm.generalSuggestedAnswer}
-                                  inline
-                                />
-                              </div>
-                            )}
+                            {qm.generalSuggestedAnswer && (() => {
+                              const isBlockFormatted =
+                                ["LetterWriting", "Amplification", "Essay", "ReportWriting"].includes(
+                                  qm.formCategory,
+                                ) ||
+                                (qm.generalSuggestedAnswer.match(/<p[\s>]/gi) || []).length > 1;
+
+                              return (
+                                <div className="p-3.5 bg-[#4F46E5]/5 border border-[#4F46E5]/10 rounded-xl text-[14px] text-slate-700">
+                                  <div className="leading-relaxed text-slate-800">
+                                    <RichTextRender
+                                      content={qm.generalSuggestedAnswer}
+                                      inline={!isBlockFormatted}
+                                      className="block"
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })()}
                           </div>
                         )}
                     </div>

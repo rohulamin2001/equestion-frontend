@@ -1051,10 +1051,7 @@ export default function QuestionPreviewCard({
 
             {/* Suggested Answer */}
             {general.suggestedAnswer && (
-              <div className="text-[14px] text-slate-700 leading-relaxed pt-1 space-y-1">
-                <span className="font-bold text-slate-800 block text-xs uppercase tracking-wider">
-                  উত্তর নির্দেশিকা:
-                </span>
+              <div className="text-[14px] text-slate-700 leading-relaxed pt-1">
                 <div className="leading-relaxed text-slate-700 text-sm">
                   <RichTextRender html={general.suggestedAnswer} />
                 </div>
