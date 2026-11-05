@@ -25,7 +25,7 @@ import {
   ArrowDownWideNarrow,
   ArrowUpNarrowWide,
   BookOpen,
-  Calendar,
+  CalendarDays,
   Check,
   CheckCircle,
   CheckCircle2,
@@ -78,27 +78,21 @@ const DIFFICULTY_MAP = {
   },
 };
 
-const formatBengaliDate = (dateString) => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  const day = date.getDate().toLocaleString("bn-BD");
-  const month = date.toLocaleString("bn-BD", { month: "long" });
-  const year = date.getFullYear().toLocaleString("bn-BD").replace(/,/g, "");
-  return `${day} ${month}, ${year}`;
-};
-
 const formatBengaliDateTime = (dateString) => {
   if (!dateString) return "";
   const date = new Date(dateString);
-  const day = date.getDate().toLocaleString("bn-BD");
-  const month = date.toLocaleString("bn-BD", { month: "long" });
-  const year = date.getFullYear().toLocaleString("bn-BD").replace(/,/g, "");
-  const time = date.toLocaleTimeString("bn-BD", {
+  const datePart = date.toLocaleDateString("bn-BD", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const timePart = date.toLocaleTimeString("bn-BD", {
     hour: "2-digit",
     minute: "2-digit",
+    second: "2-digit",
     hour12: true,
   });
-  return `${day} ${month}, ${year} (সময়: ${time})`;
+  return `${datePart} (সময়: ${timePart})`;
 };
 
 const getFormattedTagValue = (val) => {
@@ -1240,8 +1234,10 @@ export default function QuestionApproval() {
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Calendar className="size-3 sm:size-3.5 text-slate-400" />
-                        <span>তারিখ: {formatBengaliDate(qMeta.createdAt)}</span>
+                        <CalendarDays className="size-3 sm:size-3.5 text-slate-400 shrink-0" />
+                        <span>
+                          সংরক্ষণকাল: {formatBengaliDateTime(qMeta.createdAt)}
+                        </span>
                       </div>
                       {qMeta.status === "Approved" &&
                         qMeta.approvedBy?.fullName && (
@@ -1819,9 +1815,7 @@ export default function QuestionApproval() {
                                             ? "block"
                                             : "inline-block font-serif"
                                         }
-                                        inline={
-                                          q.category !== "Amplification"
-                                        }
+                                        inline={q.category !== "Amplification"}
                                       />
                                     </div>
                                   )}
@@ -1848,8 +1842,10 @@ export default function QuestionApproval() {
                       </span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Calendar className="size-3 sm:size-3.5 text-slate-400" />
-                      <span>তারিখ: {formatBengaliDate(q.createdAt)}</span>
+                      <CalendarDays className="size-3 sm:size-3.5 text-slate-400 shrink-0" />
+                      <span>
+                        সংরক্ষণকাল: {formatBengaliDateTime(q.createdAt)}
+                      </span>
                     </div>
                     {q.status === "Approved" && q.approvedBy?.fullName && (
                       <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/5 px-1.5 sm:px-2 py-0.5 rounded border border-emerald-500/10">
@@ -2819,10 +2815,10 @@ export default function QuestionApproval() {
                           </span>
                         </div>
                         <div className="flex items-center gap-1 text-[10px] text-slate-500 font-sans">
-                          <Calendar className="size-3 text-slate-400" />
+                          <CalendarDays className="size-3 text-slate-400 shrink-0" />
                           <span>
-                            তৈরির তারিখ:{" "}
-                            {formatBengaliDate(
+                            সংরক্ষণকাল:{" "}
+                            {formatBengaliDateTime(
                               selectedPreviewQuestion.createdAt,
                             )}
                           </span>
