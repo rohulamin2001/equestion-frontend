@@ -26,8 +26,7 @@ export const CATEGORIES_MAP = [
   { value: "SadhuCholit", label: "সাধু ও চলিত রূপ" },
   { value: "ComprehensionQuestion", label: "অনুচ্ছেদ থেকে প্রশ্ন" },
   { value: "ProseTheme", label: "অনুচ্ছেদের মূলভাব" },
-  { value: "Application", label: "আবেদন পত্র" },
-  { value: "LetterWriting", label: "চিঠি পত্র" },
+  { value: "LetterWriting", label: "পত্র রচনা" },
   { value: "ReportWriting", label: "প্রতিবেদন" },
   { value: "Summary", label: "সারাংশ" },
   { value: "Substance", label: "সারমর্ম" },
@@ -39,9 +38,10 @@ export const CATEGORIES_MAP = [
 
 export const CATEGORY_VALUES = CATEGORIES_MAP.map((c) => c.value);
 
-export const CATEGORY_LABELS = Object.fromEntries(
-  CATEGORIES_MAP.map((c) => [c.value, c.label]),
-);
+export const CATEGORY_LABELS = {
+  ...Object.fromEntries(CATEGORIES_MAP.map((c) => [c.value, c.label])),
+  Application: "পত্র রচনা", // legacy fallback alias
+};
 
 export const CATEGORY_ORDER = [
   "Creative",
