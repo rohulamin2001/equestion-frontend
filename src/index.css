@@ -869,3 +869,19 @@ math-virtual-keyboard,
 div[data-ml-keyboard] {
   z-index: 100200 !important;
 }
+
+/* Amplification (ভাবসম্প্রসারণ) Solution Typography - strictly matches Creative Question font size (text-sm / 14px) and line height */
+.amplification-solution,
+.amplification-solution * {
+  font-size: 0.875rem !important; /* 14px / text-sm */
+  line-height: 1.625 !important;  /* leading-relaxed */
+  font-family: inherit !important;
+}
+
+.amplification-solution p {
+  margin-bottom: 0.75rem;
+}
+
+.amplification-solution p:last-child {
+  margin-bottom: 0;
+}

@@ -42,6 +42,22 @@ function sanitizeQuestionImageHtml(html) {
   });
 }
 
+/**
+ * Strips pasted web artifacts (e.g. Gemini / AI overview web components, citation tags)
+ * and empty paragraph spacers so typography remains clean.
+ */
+function sanitizePastedWebArtifacts(html) {
+  if (!html || typeof html !== "string") return html;
+  return html
+    .replace(
+      /<(response-element|source-footnote|sources-carousel-inline|source-inline-chip)\b[^>]*>[\s\S]*?<\/\1>/gi,
+      "",
+    )
+    .replace(/<source-footnote\b[^>]*\/?>/gi, "")
+    .replace(/<p\b[^>]*>\s*<br\s*\/?>\s*<\/p>/gi, "")
+    .replace(/<span\b[^>]*>\s*<br\s*\/?>\s*<\/span>/gi, "");
+}
+
 // Utility to find LaTeX syntax in HTML and render it to KaTeX HTML
 function parseAndRenderMath(html) {
   if (!html) return "";
@@ -154,7 +170,8 @@ export default function RichTextRender({
     const rawContent = content || html;
     const resolvedHtml = resolveRelativeHtmlImages(rawContent);
     const sanitizedHtml = sanitizeQuestionImageHtml(resolvedHtml);
-    const parsed = parseAndRenderMath(sanitizedHtml);
+    const cleanedArtifacts = sanitizePastedWebArtifacts(sanitizedHtml);
+    const parsed = parseAndRenderMath(cleanedArtifacts);
     return inline ? stripOuterP(parsed) : parsed;
   }, [content, html, inline]);
 

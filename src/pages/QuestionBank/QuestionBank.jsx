@@ -1855,20 +1855,37 @@ export default function QuestionBank() {
                                   {/* 3. Answer as plain text without background */}
                                   {isAnswerVisible &&
                                     q.generalData.suggestedAnswer && (
-                                      <div className="text-[15px] font-serif text-slate-700 leading-relaxed pt-1">
-                                        {!/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
-                                          q.generalData.suggestedAnswer,
-                                        ) && (
-                                          <span className="font-bold text-slate-800 mr-1.5">
-                                            উত্তর:{" "}
-                                          </span>
-                                        )}
+                                      <div
+                                        className={
+                                          q.category === "Amplification"
+                                            ? "amplification-solution text-sm text-slate-700 leading-relaxed pt-1 space-y-2 [&_p]:mb-2.5 last:[&_p]:mb-0"
+                                            : "text-[15px] font-serif text-slate-700 leading-relaxed pt-1"
+                                        }
+                                      >
+                                        {q.category !== "Amplification" &&
+                                          !/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
+                                            q.generalData.suggestedAnswer,
+                                          ) && (
+                                            <span className="font-bold text-slate-800 mr-1.5">
+                                              {q.category === "Summary"
+                                                ? "সারাংশ: "
+                                                : q.category === "Substance"
+                                                  ? "সারমর্ম: "
+                                                  : "উত্তর: "}
+                                            </span>
+                                          )}
                                         <RichTextRender
                                           content={
                                             q.generalData.suggestedAnswer
                                           }
-                                          className="inline-block font-serif"
-                                          inline
+                                          className={
+                                            q.category === "Amplification"
+                                              ? "block"
+                                              : "inline-block font-serif"
+                                          }
+                                          inline={
+                                            q.category !== "Amplification"
+                                          }
                                         />
                                       </div>
                                     )}
@@ -2525,22 +2542,39 @@ export default function QuestionBank() {
 
                         {selectedPreviewQuestion.generalData
                           .suggestedAnswer && (
-                          <div className="text-[15px] font-serif text-slate-700 leading-relaxed pt-1">
-                            {!/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
-                              selectedPreviewQuestion.generalData
-                                .suggestedAnswer,
-                            ) && (
-                              <span className="font-bold text-slate-800 mr-1.5">
-                                উত্তর:{" "}
-                              </span>
-                            )}
+                          <div
+                            className={
+                              selectedPreviewQuestion.category === "Amplification"
+                                ? "amplification-solution text-sm text-slate-700 leading-relaxed pt-1 space-y-2 [&_p]:mb-2.5 last:[&_p]:mb-0"
+                                : "text-[15px] font-serif text-slate-700 leading-relaxed pt-1"
+                            }
+                          >
+                            {selectedPreviewQuestion.category !== "Amplification" &&
+                              !/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
+                                selectedPreviewQuestion.generalData
+                                  .suggestedAnswer,
+                              ) && (
+                                <span className="font-bold text-slate-800 mr-1.5">
+                                  {selectedPreviewQuestion.category === "Summary"
+                                    ? "সারাংশ: "
+                                    : selectedPreviewQuestion.category === "Substance"
+                                      ? "সারমর্ম: "
+                                      : "উত্তর: "}
+                                </span>
+                              )}
                             <RichTextRender
                               content={
                                 selectedPreviewQuestion.generalData
                                   .suggestedAnswer
                               }
-                              className="inline-block font-serif"
-                              inline
+                              className={
+                                selectedPreviewQuestion.category === "Amplification"
+                                  ? "block"
+                                  : "inline-block font-serif"
+                              }
+                              inline={
+                                selectedPreviewQuestion.category !== "Amplification"
+                              }
                             />
                           </div>
                         )}
