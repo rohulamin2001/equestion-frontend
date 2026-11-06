@@ -3328,7 +3328,7 @@ export default function AddQuestion() {
 
                                   {q.generalData.suggestedAnswer && (() => {
                                     const isBlockFormatted =
-                                      ["LetterWriting", "Amplification", "Essay", "ReportWriting"].includes(
+                                      ["LetterWriting", "Amplification", "Essay", "ReportWriting", "Paragraph", "BroadQuestion", "DescriptiveQuestion", "Translation"].includes(
                                         q.category,
                                       ) ||
                                       (q.generalData.suggestedAnswer.match(/<p[\s>]/gi) || []).length > 1;
@@ -3808,7 +3808,7 @@ export default function AddQuestion() {
 
                             {qm.generalSuggestedAnswer && (() => {
                               const isBlockFormatted =
-                                ["LetterWriting", "Amplification", "Essay", "ReportWriting"].includes(
+                                ["LetterWriting", "Amplification", "Essay", "ReportWriting", "Paragraph", "BroadQuestion", "DescriptiveQuestion", "Translation"].includes(
                                   qm.formCategory,
                                 ) ||
                                 (qm.generalSuggestedAnswer.match(/<p[\s>]/gi) || []).length > 1;
