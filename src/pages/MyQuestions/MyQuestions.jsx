@@ -2233,7 +2233,7 @@ export default function MyQuestions() {
                                   {isAnswerVisible &&
                                     q.generalData.suggestedAnswer && (() => {
                                       const isBlockFormatted =
-                                        ["LetterWriting", "Amplification", "Essay", "ReportWriting", "Paragraph", "BroadQuestion", "DescriptiveQuestion", "Translation"].includes(
+                                        ["LetterWriting", "Amplification", "Essay", "ReportWriting", "Paragraph", "BroadQuestion", "DescriptiveQuestion", "Translation", "Poem", "PoemTheme", "ProseTheme"].includes(
                                           q.category,
                                         ) ||
                                         (q.generalData.suggestedAnswer.match(/<p[\s>]/gi) || []).length > 1;
