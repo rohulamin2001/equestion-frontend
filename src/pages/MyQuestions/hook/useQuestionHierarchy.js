@@ -190,7 +190,7 @@ export function useQuestionHierarchy({
     const newPath = {
       ...currentPath,
       chapterNumber: ch.chapterNumber,
-      category: null,
+      category: currentPath.category || null,
     };
     setCurrentPath(newPath);
     if (onFilterChange) {
@@ -199,15 +199,19 @@ export function useQuestionHierarchy({
         className: currentPath.className,
         subjectId: currentPath.subjectId,
         chapterNumber: ch.chapterNumber,
-        category: "",
+        category: currentPath.category || "",
       });
     }
   };
 
   const selectCategory = (cat) => {
+    const targetCategory =
+      !cat?.category || currentPath.category === cat.category
+        ? null
+        : cat.category;
     const newPath = {
       ...currentPath,
-      category: currentPath.category === cat.category ? null : cat.category,
+      category: targetCategory,
     };
     setCurrentPath(newPath);
     if (onFilterChange) {
@@ -216,7 +220,7 @@ export function useQuestionHierarchy({
         className: currentPath.className,
         subjectId: currentPath.subjectId,
         chapterNumber: currentPath.chapterNumber,
-        category: currentPath.category === cat.category ? "" : cat.category,
+        category: targetCategory || "",
       });
     }
   };

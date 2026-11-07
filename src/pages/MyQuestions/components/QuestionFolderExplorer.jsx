@@ -1,3 +1,4 @@
+import { CATEGORIES_MAP } from "@/constants/categories";
 import {
   ChevronDown,
   ChevronUp,
@@ -10,6 +11,11 @@ import { useState } from "react";
 import CategoryStatsBreakdown from "./CategoryStatsBreakdown.jsx";
 import FolderBreadcrumb from "./FolderBreadcrumb.jsx";
 import FolderCard from "./FolderCard.jsx";
+
+const getCategoryLabel = (cat) => {
+  const found = CATEGORIES_MAP.find((c) => c.value === cat);
+  return found ? found.label : cat;
+};
 
 export default function QuestionFolderExplorer({
   hierarchy,
@@ -213,61 +219,94 @@ export default function QuestionFolderExplorer({
                 )}
 
                 {/* Level 3: Chapters + Subject Category Breakdown */}
-                {currentLevel === 3 && selectedSubject && (
-                  <motion.div
-                    key="level-3"
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.16 }}
-                    className="space-y-4"
-                  >
-                    {/* 1. Subject-level Categories Breakdown */}
-                    <CategoryStatsBreakdown
-                      title={`${selectedSubject.name} - বিষয়ভিত্তিক সকল ক্যাটাগরি`}
-                      subtitle="অনুমোদিত ক্যাটাগরিসমূহে মোট তৈরি করা প্রশ্ন সংখ্যা"
-                      categories={selectedSubject.categories || []}
-                      selectedCategory={currentPath.category}
-                      onSelectCategory={selectCategory}
-                      emptyMessage="এই বিষয়ে কোনো ক্যাটাগরি বরাদ্দ নেই।"
-                    />
+                {currentLevel === 3 && selectedSubject && (() => {
+                  const selectedCat = currentPath.category;
+                  const selectedCatLabel = selectedCat ? getCategoryLabel(selectedCat) : null;
+                  const selectedCatTotal = selectedCat
+                    ? selectedSubject.categories?.find((c) => c.category === selectedCat)?.count || 0
+                    : null;
 
-                    {/* 2. Chapters Grid */}
-                    <div className="space-y-2.5 pt-1">
-                      <div className="flex items-center justify-between px-0.5">
-                        <h4 className="text-xs sm:text-sm font-bold text-slate-800">
-                          অধ্যায়সমূহ (
-                          {selectedSubject.chapters?.length?.toLocaleString(
-                            "bn-BD",
-                          ) || "০"}
-                          টি)
-                        </h4>
-                        <span className="text-[10px] sm:text-[11px] text-slate-400">
-                          নির্দিষ্ট অধ্যায়ের ক্যাটাগরি দেখতে ক্লিক করুন
-                        </span>
-                      </div>
+                  return (
+                    <motion.div
+                      key="level-3"
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.16 }}
+                      className="space-y-4"
+                    >
+                      {/* 1. Subject-level Categories Breakdown */}
+                      <CategoryStatsBreakdown
+                        title={`${selectedSubject.name} - বিষয়ভিত্তিক সকল ক্যাটাগরি`}
+                        subtitle="অনুমোদিত ক্যাটাগরিসমূহে মোট তৈরি করা প্রশ্ন সংখ্যা"
+                        categories={selectedSubject.categories || []}
+                        selectedCategory={currentPath.category}
+                        onSelectCategory={selectCategory}
+                        emptyMessage="এই বিষয়ে কোনো ক্যাটাগরি বরাদ্দ নেই।"
+                      />
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
-                        {selectedSubject.chapters.map((ch) => (
-                          <FolderCard
-                            key={ch.chapterNumber}
-                            title={ch.chapterName}
-                            subtitle={`${ch.categories?.length || 0}টি ক্যাটাগরির প্রশ্ন`}
-                            count={ch.count}
-                            level={3}
-                            onClick={() => selectChapter(ch)}
-                          />
-                        ))}
-                      </div>
-
-                      {selectedSubject.chapters.length === 0 && (
-                        <div className="py-6 text-center text-xs text-slate-400">
-                          এই বিষয়ে কোনো অধ্যায় বা সিলেবাস পাওয়া যায়নি।
+                      {/* 2. Chapters Grid */}
+                      <div className="space-y-2.5 pt-1">
+                        <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h4 className="text-xs sm:text-sm font-bold text-slate-800">
+                              অধ্যায়সমূহ (
+                              {selectedSubject.chapters?.length?.toLocaleString(
+                                "bn-BD",
+                              ) || "০"}
+                              টি)
+                            </h4>
+                            {selectedCat && (
+                              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-purple-50 text-[var(--purple-700)] border border-purple-200/70 animate-in fade-in duration-200">
+                                <span>ক্যাটাগরি: {selectedCatLabel}</span>
+                                <span className="font-bold">
+                                  ({selectedCatTotal?.toLocaleString("bn-BD")}টি)
+                                </span>
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[10px] sm:text-[11px] text-slate-400">
+                            {selectedCat
+                              ? "প্রতিটি অধ্যায়ের নির্দিষ্ট ক্যাটাগরির প্রশ্ন সংখ্যা"
+                              : "নির্দিষ্ট অধ্যায়ের ক্যাটাগরি দেখতে ক্লিক করুন"}
+                          </span>
                         </div>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+                          {selectedSubject.chapters.map((ch) => {
+                            const catEntry = selectedCat
+                              ? ch.categories?.find((c) => c.category === selectedCat)
+                              : null;
+                            const catCount = catEntry?.count || 0;
+                            const count = selectedCat ? catCount : ch.count;
+                            const subtitle = selectedCat
+                              ? catCount > 0
+                                ? `${selectedCatLabel}`
+                                : `${selectedCatLabel} নেই`
+                              : `${ch.categories?.length || 0}টি ক্যাটাগরির প্রশ্ন`;
+
+                            return (
+                              <FolderCard
+                                key={ch.chapterNumber}
+                                title={ch.chapterName}
+                                subtitle={subtitle}
+                                count={count}
+                                level={3}
+                                onClick={() => selectChapter(ch)}
+                              />
+                            );
+                          })}
+                        </div>
+
+                        {selectedSubject.chapters.length === 0 && (
+                          <div className="py-6 text-center text-xs text-slate-400">
+                            এই বিষয়ে কোনো অধ্যায় বা সিলেবাস পাওয়া যায়নি।
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })()}
 
                 {/* Level 4: Categories Breakdown for Chapter */}
                 {currentLevel === 4 && selectedChapter && (
