@@ -46,6 +46,7 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 import { toast } from "sonner";
+import QuestionFolderExplorer from "@/pages/MyQuestions/components/QuestionFolderExplorer";
 import { useQuestionApproval } from "./hook/useQuestionApproval";
 
 const TYPE_LABELS = {
@@ -159,6 +160,7 @@ export default function QuestionApproval() {
     handleResetFilters,
     getActiveCategories,
     hasActiveFilters,
+    hierarchy,
   } = useQuestionApproval();
 
   const [prevQuestionId, setPrevQuestionId] = React.useState(null);
@@ -303,6 +305,9 @@ export default function QuestionApproval() {
           );
         })}
       </motion.div>
+
+      {/* Question Folder Explorer (Hierarchical drill-down) */}
+      <QuestionFolderExplorer hierarchy={hierarchy} />
 
       {/* Filters & Control bar */}
       <div className="bg-glass p-3.5 sm:p-5 rounded-2xl border border-black/[0.05] backdrop-blur-md shadow-sm space-y-3 sm:space-y-4">

@@ -1,6 +1,7 @@
 import { CATEGORIES_MAP } from "@/constants/categories";
 import { useQuestionManagement } from "@/hooks/useQuestionManagement";
 import apiClient from "@/lib/apiClient";
+import { useQuestionHierarchy } from "@/pages/MyQuestions/hook/useQuestionHierarchy";
 import {
   useInfiniteQuery,
   useMutation,
@@ -19,6 +20,25 @@ export function useQuestionApproval() {
     isPersonalOnly: false,
     pageSize,
     skipFetch: true,
+  });
+
+  // Hierarchical Folder Navigation (Unrestricted / All Questions for Approval)
+  const hierarchy = useQuestionHierarchy({
+    scope: "all",
+    onFilterChange: ({
+      type,
+      className,
+      subjectId,
+      chapterNumber,
+      category,
+    }) => {
+      if (type !== undefined) qm.setFilterType(type);
+      if (className !== undefined) qm.setFilterClass(className);
+      if (subjectId !== undefined) qm.setFilterSubjectId(subjectId);
+      if (chapterNumber !== undefined)
+        qm.setFilterChapter(chapterNumber !== "" ? Number(chapterNumber) : "");
+      if (category !== undefined) qm.setFilterCategory(category);
+    },
   });
 
   const [showFilters, setShowFilters] = useState(false);
@@ -188,8 +208,10 @@ export function useQuestionApproval() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["questionStats"] });
       queryClient.invalidateQueries({ queryKey: ["approvalQuestionsList"] });
+      queryClient.invalidateQueries({ queryKey: ["questionHierarchyStats"] });
       refetchStats();
       refetchQuestions();
+      hierarchy.refetch();
       toast.success("প্রশ্নের স্ট্যাটাস সফলভাবে আপডেট করা হয়েছে!");
       setSelectedPreviewQuestion(null);
     },
@@ -224,6 +246,7 @@ export function useQuestionApproval() {
 
   // Reset all filters
   const handleResetFilters = () => {
+    hierarchy.resetToRoot();
     qm.setFilterType("");
     qm.setFilterLevel("");
     qm.setFilterClass("");
@@ -305,7 +328,8 @@ export function useQuestionApproval() {
     qm.filterCategory ||
     qm.filterDifficulty ||
     qm.filterSearch ||
-    qm.filterVersion;
+    qm.filterVersion ||
+    hierarchy.currentLevel > 0;
 
   return {
     filterStatus,
@@ -339,5 +363,6 @@ export function useQuestionApproval() {
     handleResetFilters,
     getActiveCategories,
     hasActiveFilters,
+    hierarchy,
   };
 }
