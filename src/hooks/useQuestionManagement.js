@@ -362,31 +362,34 @@ export function useQuestionManagement(options = {}) {
       if (resetStepAndMeta) {
         if (!keepCurrentStep) {
           setActiveStep(1);
-        }
-        setFormType(filterType);
-        setFormLevel(filterLevel);
-        setFormClass(filterClass);
-        setUserFormVersion(null);
-        setFormSubjectId("");
-        setFormGroup("General");
-        setFormChapterNumber("");
-        setFormTopics([]);
-        setFormCategory("MCQ");
-        setFormDifficulty("Medium");
+          setFormType(filterType);
+          setFormLevel(filterLevel);
+          setFormClass(filterClass);
+          setUserFormVersion(null);
+          setFormSubjectId("");
+          setFormGroup("General");
+          setFormChapterNumber("");
+          setFormTopics([]);
+          setFormCategory("MCQ");
+          setFormDifficulty("Medium");
 
-        // Reset metadata
-        setFormYear([]);
-        setFormBoard([]);
-        setFormExamHistory([{ board: "", years: [] }]);
-        setFormSchool([]);
-        setFormLevelTag("");
-        setFormSpecialSearch([]);
+          // Reset metadata
+          setFormYear([]);
+          setFormBoard([]);
+          setFormExamHistory([{ board: "", years: [] }]);
+          setFormSchool([]);
+          setFormLevelTag("");
+          setFormSpecialSearch([]);
+          setStep2EditorMode("form");
+        }
       }
 
       setQuestionsList([]);
       setEditingDraftId(null);
       setEditingPassageGroup(null);
-      setStep2EditorMode("form");
+      if (!keepCurrentStep) {
+        setStep2EditorMode("form");
+      }
       setRawPastedJsonText("");
 
       setIsGroupedMcq(false);

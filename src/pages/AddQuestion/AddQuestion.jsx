@@ -891,6 +891,203 @@ export default function AddQuestion() {
                 })()}
               </div>
 
+              {/* Chapter & Difficulty Selection at the top of Step 2 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 bg-black/[0.01] p-3 sm:p-4 rounded-xl border border-black/[0.03]">
+                {/* Chapter Selection */}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center h-4">
+                    <label
+                      className={`text-xs font-bold uppercase tracking-wider block ${showStep2Error && !qm.formChapterNumber ? "text-red-500 animate-pulse" : "text-slate-500"}`}
+                    >
+                      অধ্যায় (Chapter)
+                    </label>
+                    {showStep2Error && !qm.formChapterNumber && (
+                      <span className="text-[11px] font-bold text-red-500 animate-pulse font-sans">
+                        অধ্যায় নির্বাচন করা আবশ্যক
+                      </span>
+                    )}
+                  </div>
+                  <div
+                    className={`relative ${activeDropdown === "chapter" ? "z-30" : "z-10"}`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveDropdown(
+                          activeDropdown === "chapter" ? null : "chapter",
+                        )
+                      }
+                      className={`w-full px-4 rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm transition-all border ${
+                        showStep2Error && !qm.formChapterNumber
+                          ? "border-red-500 bg-red-50/10 focus:ring-red-500/10 focus:border-red-500 hover:bg-red-50/20"
+                          : activeDropdown === "chapter"
+                            ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
+                            : qm.formChapterNumber
+                              ? "border-purple-600/50 bg-white hover:bg-slate-50"
+                              : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
+                      }`}
+                    >
+                      <span className="truncate pr-2 text-left">
+                        {qm.formChapters.find(
+                          (c) =>
+                            c.chapterNumber.toString() ===
+                            qm.formChapterNumber,
+                        )
+                          ? `অধ্যায় ${qm.formChapterNumber}: ${qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber).chapterName}`
+                          : "অধ্যায় নির্বাচন করুন"}
+                      </span>
+                      <ChevronRight
+                        className={`size-4 shrink-0 transition-transform duration-200 ${
+                          showStep2Error && !qm.formChapterNumber
+                            ? "text-red-500"
+                            : "text-slate-400"
+                        } ${activeDropdown === "chapter" ? "rotate-90" : ""}`}
+                      />
+                    </button>
+
+                    {activeDropdown === "chapter" && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-10"
+                          onClick={() => setActiveDropdown(null)}
+                        />
+                        <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-2xl z-40 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                          {qm.formChapters.map((chap) => (
+                            <button
+                              key={chap.chapterNumber}
+                              type="button"
+                              onClick={() => {
+                                handleChapterSelect(
+                                  chap.chapterNumber.toString(),
+                                );
+                                setActiveDropdown(null);
+                              }}
+                              className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
+                                qm.formChapterNumber ===
+                                chap.chapterNumber.toString()
+                                  ? "bg-purple-50 text-purple-700 font-bold"
+                                  : "text-slate-700 hover:bg-slate-50"
+                              }`}
+                            >
+                              {chap.chapterNumber}. {chap.chapterName}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Difficulty Selection */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                    কাঠিন্যের স্তর (Difficulty)
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {Object.keys(DIFFICULTY_MAP).map((diffKey) => {
+                      const isSelected = qm.formDifficulty === diffKey;
+                      const config = DIFFICULTY_MAP[diffKey];
+                      return (
+                        <button
+                          key={diffKey}
+                          type="button"
+                          onClick={() => qm.setFormDifficulty(diffKey)}
+                          className={`px-3 py-2 rounded-xl border text-sm font-semibold transition cursor-pointer flex justify-center items-center h-10 ${
+                            isSelected
+                              ? config.color + " ring-4 ring-purple-600/10"
+                              : "bg-white border-black/[0.08] text-slate-600 hover:bg-slate-50"
+                          }`}
+                        >
+                          {config.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Topics tags multi selection */}
+                {qm.formChapterNumber && (
+                  <div className="md:col-span-2 space-y-2 pt-2 border-t border-black/[0.03] animate-in fade-in duration-300">
+                    <div className="flex justify-between items-center">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                        নির্দিষ্ট টপিক সিলেক্ট করুন (ঐচ্ছিক)
+                      </label>
+                      {(
+                        qm.formChapters.find(
+                          (c) =>
+                            c.chapterNumber.toString() ===
+                            qm.formChapterNumber,
+                        )?.topics || []
+                      ).length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const currentTopics =
+                              qm.formChapters.find(
+                                (c) =>
+                                  c.chapterNumber.toString() ===
+                                  qm.formChapterNumber,
+                              )?.topics || [];
+                            const textToCopy = currentTopics
+                              .map((t) => t.replace(/^#/, "").trim())
+                              .join(";");
+                            navigator.clipboard.writeText(textToCopy);
+                            setCopiedTopics(true);
+                            toast.success("টপিকসমূহ কপি করা হয়েছে!");
+                            setTimeout(() => setCopiedTopics(false), 2000);
+                          }}
+                          title="সকল টপিক কপি করুন (topic;topic;topic)"
+                          className="p-1 rounded-lg text-slate-400 hover:text-purple-600 hover:bg-purple-50 transition-colors cursor-pointer flex items-center gap-1"
+                        >
+                          {copiedTopics ? (
+                            <Check className="size-4 text-emerald-600" />
+                          ) : (
+                            <Copy className="size-4" />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {(
+                        qm.formChapters.find(
+                          (c) =>
+                            c.chapterNumber.toString() ===
+                            qm.formChapterNumber,
+                        )?.topics || []
+                      ).map((topic, index) => {
+                        const isSelected = qm.formTopics.includes(topic);
+                        return (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => handleTopicToggle(topic)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
+                              isSelected
+                                ? "bg-purple-600/10 border-purple-600/30 text-purple-600 font-bold"
+                                : "bg-white border-black/[0.06] text-slate-600 hover:bg-slate-50"
+                            }`}
+                          >
+                            {isSelected ? `✓ #${topic}` : `#${topic}`}
+                          </button>
+                        );
+                      })}
+                      {(
+                        qm.formChapters.find(
+                          (c) =>
+                            c.chapterNumber.toString() ===
+                            qm.formChapterNumber,
+                        )?.topics || []
+                      ).length === 0 && (
+                        <p className="text-xs text-slate-400 italic">
+                          এই অধ্যায়ের অধীনে কোনো নির্দিষ্ট টপিক যুক্ত করা
+                          হয়নি।
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Step 2 Editor Mode Switcher Tab (Form vs JSON Paste) */}
               <div className="flex items-center justify-center sm:justify-start gap-2 p-1 bg-slate-100/90 rounded-xl border border-slate-200/80 w-fit mx-auto sm:mx-0">
                 <button
@@ -921,48 +1118,6 @@ export default function AddQuestion() {
 
               {qm.step2EditorMode === "json" ? (
                 <div className="space-y-4 animate-in fade-in duration-200 pt-2">
-                  {/* Selected Class, Subject & Chapter Info Pill for Smart JSON */}
-                  {(() => {
-                    const selectedClass = CLASSES_MAP.find(
-                      (c) => c.value === qm.formClass,
-                    )?.label;
-                    const selectedSubject = qm.formSubjects.find(
-                      (s) => s._id === qm.formSubjectId,
-                    )?.subjectName;
-                    const selectedChapterObj = qm.formChapters?.find(
-                      (ch) =>
-                        String(ch.chapterNumber) ===
-                        String(qm.formChapterNumber),
-                    );
-                    const chapterText = qm.formChapterNumber
-                      ? selectedChapterObj?.chapterName
-                        ? `অধ্যায় ${qm.formChapterNumber}: ${selectedChapterObj.chapterName}`
-                        : `অধ্যায় ${qm.formChapterNumber}`
-                      : "অধ্যায় সিলেক্ট করা নেই";
-
-                    return (
-                      <div className="w-full bg-purple-50/90 border border-purple-200/90 backdrop-blur-sm text-purple-950 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-2xl shadow-2xs flex items-center gap-2 flex-wrap">
-                        <span className="size-2 rounded-full bg-purple-600 animate-pulse shrink-0" />
-                        {selectedClass && <span>{selectedClass}</span>}
-                        {selectedSubject && (
-                          <>
-                            <span>•</span>
-                            <span>{selectedSubject}</span>
-                          </>
-                        )}
-                        <span>•</span>
-                        <span
-                          className={
-                            !qm.formChapterNumber
-                              ? "text-amber-700 font-semibold"
-                              : ""
-                          }
-                        >
-                          {chapterText}
-                        </span>
-                      </div>
-                    );
-                  })()}
 
                   {/* Info Notice */}
                   <div className="p-3.5 sm:p-4 bg-purple-50/80 border border-purple-200/80 rounded-2xl flex items-start gap-3">
@@ -1310,203 +1465,6 @@ export default function AddQuestion() {
                 </div>
               ) : (
                 <>
-                  {/* Chapter & Difficulty Selection at the top of Step 2 */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 bg-black/[0.01] p-3 sm:p-4 rounded-xl border border-black/[0.03]">
-                    {/* Chapter Selection */}
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between items-center h-4">
-                        <label
-                          className={`text-xs font-bold uppercase tracking-wider block ${showStep2Error && !qm.formChapterNumber ? "text-red-500 animate-pulse" : "text-slate-500"}`}
-                        >
-                          অধ্যায় (Chapter)
-                        </label>
-                        {showStep2Error && !qm.formChapterNumber && (
-                          <span className="text-[11px] font-bold text-red-500 animate-pulse font-sans">
-                            অধ্যায় নির্বাচন করা আবশ্যক
-                          </span>
-                        )}
-                      </div>
-                      <div
-                        className={`relative ${activeDropdown === "chapter" ? "z-30" : "z-10"}`}
-                      >
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setActiveDropdown(
-                              activeDropdown === "chapter" ? null : "chapter",
-                            )
-                          }
-                          className={`w-full px-4 rounded-xl text-sm font-semibold text-slate-700 flex justify-between items-center h-10 shadow-sm transition-all border ${
-                            showStep2Error && !qm.formChapterNumber
-                              ? "border-red-500 bg-red-50/10 focus:ring-red-500/10 focus:border-red-500 hover:bg-red-50/20"
-                              : activeDropdown === "chapter"
-                                ? "border-purple-600 ring-4 ring-purple-600/10 bg-white"
-                                : qm.formChapterNumber
-                                  ? "border-purple-600/50 bg-white hover:bg-slate-50"
-                                  : "border-black/[0.08] bg-white hover:bg-slate-50 hover:border-purple-600/40"
-                          }`}
-                        >
-                          <span className="truncate pr-2 text-left">
-                            {qm.formChapters.find(
-                              (c) =>
-                                c.chapterNumber.toString() ===
-                                qm.formChapterNumber,
-                            )
-                              ? `অধ্যায় ${qm.formChapterNumber}: ${qm.formChapters.find((c) => c.chapterNumber.toString() === qm.formChapterNumber).chapterName}`
-                              : "অধ্যায় নির্বাচন করুন"}
-                          </span>
-                          <ChevronRight
-                            className={`size-4 shrink-0 transition-transform duration-200 ${
-                              showStep2Error && !qm.formChapterNumber
-                                ? "text-red-500"
-                                : "text-slate-400"
-                            } ${activeDropdown === "chapter" ? "rotate-90" : ""}`}
-                          />
-                        </button>
-
-                        {activeDropdown === "chapter" && (
-                          <>
-                            <div
-                              className="fixed inset-0 z-10"
-                              onClick={() => setActiveDropdown(null)}
-                            />
-                            <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-2xl z-40 max-h-56 overflow-y-auto p-1.5 space-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
-                              {qm.formChapters.map((chap) => (
-                                <button
-                                  key={chap.chapterNumber}
-                                  type="button"
-                                  onClick={() => {
-                                    handleChapterSelect(
-                                      chap.chapterNumber.toString(),
-                                    );
-                                    setActiveDropdown(null);
-                                  }}
-                                  className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
-                                    qm.formChapterNumber ===
-                                    chap.chapterNumber.toString()
-                                      ? "bg-purple-50 text-purple-700 font-bold"
-                                      : "text-slate-700 hover:bg-slate-50"
-                                  }`}
-                                >
-                                  {chap.chapterNumber}. {chap.chapterName}
-                                </button>
-                              ))}
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Difficulty Selection */}
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                        কাঠিন্যের স্তর (Difficulty)
-                      </label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {Object.keys(DIFFICULTY_MAP).map((diffKey) => {
-                          const isSelected = qm.formDifficulty === diffKey;
-                          const config = DIFFICULTY_MAP[diffKey];
-                          return (
-                            <button
-                              key={diffKey}
-                              type="button"
-                              onClick={() => qm.setFormDifficulty(diffKey)}
-                              className={`px-3 py-2 rounded-xl border text-sm font-semibold transition cursor-pointer flex justify-center items-center h-10 ${
-                                isSelected
-                                  ? config.color + " ring-4 ring-purple-600/10"
-                                  : "bg-white border-black/[0.08] text-slate-600 hover:bg-slate-50"
-                              }`}
-                            >
-                              {config.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Topics tags multi selection */}
-                    {qm.formChapterNumber && (
-                      <div className="md:col-span-2 space-y-2 pt-2 border-t border-black/[0.03] animate-in fade-in duration-300">
-                        <div className="flex justify-between items-center">
-                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                            নির্দিষ্ট টপিক সিলেক্ট করুন (ঐচ্ছিক)
-                          </label>
-                          {(
-                            qm.formChapters.find(
-                              (c) =>
-                                c.chapterNumber.toString() ===
-                                qm.formChapterNumber,
-                            )?.topics || []
-                          ).length > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const currentTopics =
-                                  qm.formChapters.find(
-                                    (c) =>
-                                      c.chapterNumber.toString() ===
-                                      qm.formChapterNumber,
-                                  )?.topics || [];
-                                const textToCopy = currentTopics
-                                  .map((t) => t.replace(/^#/, "").trim())
-                                  .join(";");
-                                navigator.clipboard.writeText(textToCopy);
-                                setCopiedTopics(true);
-                                toast.success("টপিকসমূহ কপি করা হয়েছে!");
-                                setTimeout(() => setCopiedTopics(false), 2000);
-                              }}
-                              title="সকল টপিক কপি করুন (topic;topic;topic)"
-                              className="p-1 rounded-lg text-slate-400 hover:text-purple-600 hover:bg-purple-50 transition-colors cursor-pointer flex items-center gap-1"
-                            >
-                              {copiedTopics ? (
-                                <Check className="size-4 text-emerald-600" />
-                              ) : (
-                                <Copy className="size-4" />
-                              )}
-                            </button>
-                          )}
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {(
-                            qm.formChapters.find(
-                              (c) =>
-                                c.chapterNumber.toString() ===
-                                qm.formChapterNumber,
-                            )?.topics || []
-                          ).map((topic, index) => {
-                            const isSelected = qm.formTopics.includes(topic);
-                            return (
-                              <button
-                                key={index}
-                                type="button"
-                                onClick={() => handleTopicToggle(topic)}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
-                                  isSelected
-                                    ? "bg-purple-600/10 border-purple-600/30 text-purple-600 font-bold"
-                                    : "bg-white border-black/[0.06] text-slate-600 hover:bg-slate-50"
-                                }`}
-                              >
-                                {isSelected ? `✓ #${topic}` : `#${topic}`}
-                              </button>
-                            );
-                          })}
-                          {(
-                            qm.formChapters.find(
-                              (c) =>
-                                c.chapterNumber.toString() ===
-                                qm.formChapterNumber,
-                            )?.topics || []
-                          ).length === 0 && (
-                            <p className="text-xs text-slate-400 italic">
-                              এই অধ্যায়ের অধীনে কোনো নির্দিষ্ট টপিক যুক্ত করা
-                              হয়নি।
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
                   {/* DYNAMIC FORMS BASED ON CATEGORY */}
                   {qm.formCategory === "MCQ" && (
                     <div className="space-y-6">
