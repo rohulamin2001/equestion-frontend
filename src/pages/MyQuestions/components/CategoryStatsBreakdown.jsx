@@ -72,7 +72,7 @@ export default function CategoryStatsBreakdown({
                 type="button"
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onSelectCategory(catItem)}
-                className={`p-2.5 sm:p-3 rounded-xl border text-left transition-colors flex flex-col justify-between gap-1.5 sm:gap-2 cursor-pointer relative overflow-hidden min-h-[64px] sm:min-h-[72px] ${
+                className={`p-2.5 sm:p-3 rounded-xl border text-left transition-colors flex flex-col justify-between gap-1.5 sm:gap-2 cursor-pointer relative overflow-hidden min-h-[60px] sm:min-h-[68px] ${
                   isSelected
                     ? "bg-white border-[var(--purple-600)] shadow-xs ring-2 ring-[var(--purple-600)]/20"
                     : hasQuestions
@@ -86,18 +86,9 @@ export default function CategoryStatsBreakdown({
                   </div>
                 )}
 
-                <div className="space-y-0.5 pr-4">
-                  <span
-                    className={`text-[9px] sm:text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded-md inline-block ${
-                      hasQuestions
-                        ? "bg-purple-50 text-[var(--purple-700)]"
-                        : "bg-slate-100 text-slate-400"
-                    }`}
-                  >
-                    {catItem.category}
-                  </span>
+                <div className="pr-4">
                   <p
-                    className={`text-[11px] sm:text-xs font-semibold line-clamp-1 ${
+                    className={`text-xs sm:text-sm font-semibold line-clamp-1 ${
                       hasQuestions ? "text-slate-800" : "text-slate-500"
                     }`}
                   >
