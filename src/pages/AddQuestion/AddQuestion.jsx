@@ -48,6 +48,10 @@ import QuestionImageSlot from "./components/QuestionImageSlot";
 import SmartJsonPreviewCards from "./components/SmartJsonPreviewCards";
 import {
   CATEGORIES_MAP,
+  getCategoryDisplayName,
+  isEnglishSubject,
+} from "@/constants/categories";
+import {
   CLASSES_MAP,
   DIFFICULTY_MAP,
   LEVEL_LABELS,
@@ -793,6 +797,10 @@ export default function AddQuestion() {
                       );
                     }
 
+                    const currentSub =
+                      qm.selectedSyllabusObj?.subjectId || qm.selectedSyllabusObj;
+                    const isEnglish = isEnglishSubject(currentSub);
+
                     let activeCategories = [];
                     if (
                       subjectConfiguredCategories &&
@@ -804,7 +812,12 @@ export default function AddQuestion() {
                           const matched = ALL_CATEGORIES.find(
                             (c) => c.value === catVal,
                           );
-                          return matched || { value: catVal, label: catVal };
+                          const label = matched
+                            ? isEnglish
+                              ? matched.englishLabel || matched.label
+                              : matched.label
+                            : catVal;
+                          return { value: catVal, label };
                         },
                       );
                     }
@@ -869,10 +882,10 @@ export default function AddQuestion() {
                   <HelpCircle className="size-4 sm:size-5 text-purple-600" />
                   <span>
                     প্রশ্ন এডিটর -{" "}
-                    {
-                      CATEGORIES_MAP.find((c) => c.value === qm.formCategory)
-                        ?.label
-                    }
+                    {getCategoryDisplayName(
+                      qm.formCategory,
+                      qm.selectedSyllabusObj?.subjectId || qm.selectedSyllabusObj,
+                    )}
                   </span>
                 </h3>
                 {(() => {
@@ -1147,10 +1160,10 @@ export default function AddQuestion() {
                   {/* Header & Action Buttons */}
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pt-1">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                      {
-                        CATEGORIES_MAP.find((c) => c.value === qm.formCategory)
-                          ?.label
-                      }{" "}
+                      {getCategoryDisplayName(
+                        qm.formCategory,
+                        qm.selectedSyllabusObj?.subjectId || qm.selectedSyllabusObj,
+                      )}{" "}
                       প্রশ্নের JSON টেক্সট পেস্ট করুন
                     </label>
                     <button
@@ -2713,8 +2726,11 @@ export default function AddQuestion() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-48 overflow-y-auto pr-1">
                         {qm.questionsList.map((q, idx) => {
                           const catLabel =
-                            CATEGORIES_MAP.find((c) => c.value === q.category)
-                              ?.label || q.category;
+                            getCategoryDisplayName(
+                              q.category,
+                              qm.selectedSyllabusObj?.subjectId ||
+                                qm.selectedSyllabusObj,
+                            ) || q.category;
                           const isEditingThis = qm.editingDraftId === q.id;
                           return (
                             <div
@@ -2912,8 +2928,11 @@ export default function AddQuestion() {
                         const diffConfig =
                           DIFFICULTY_MAP[q.difficulty] || DIFFICULTY_MAP.Medium;
                         const catLabel =
-                          CATEGORIES_MAP.find((c) => c.value === q.category)
-                            ?.label || q.category;
+                          getCategoryDisplayName(
+                            q.category,
+                            qm.selectedSyllabusObj?.subjectId ||
+                              qm.selectedSyllabusObj,
+                          ) || q.category;
 
                         return (
                           <div
@@ -3348,9 +3367,11 @@ export default function AddQuestion() {
                         qm.formSpecialSearch.length > 0) && (
                         <div className="flex flex-wrap gap-2 items-center text-[10px] font-sans font-bold text-slate-400 mb-2 border-b border-black/[0.03] pb-2">
                           <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded uppercase">
-                            {CATEGORIES_MAP.find(
-                              (c) => c.value === qm.formCategory,
-                            )?.label || qm.formCategory}
+                            {getCategoryDisplayName(
+                              qm.formCategory,
+                              qm.selectedSyllabusObj?.subjectId ||
+                                qm.selectedSyllabusObj,
+                            ) || qm.formCategory}
                           </span>
                           <span>•</span>
                           <span

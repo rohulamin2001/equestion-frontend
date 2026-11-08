@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import {
   CATEGORY_LABELS,
   CATEGORY_ORDER,
+  getCategoryDisplayName,
+  isEnglishSubject,
 } from "../../../constants/categories";
 import { CLASSES_MAP } from "../../../constants/classes";
 import { useUserContext } from "../../../context/UserContext.jsx";
@@ -206,6 +208,7 @@ export function useQuestionPreview() {
     }
 
     const orderedGroups = [];
+    const isEnglish = isEnglishSubject(activeSet?.subjectName);
 
     finalOrder.forEach((cat) => {
       if (groups[cat] && groups[cat].length > 0) {
@@ -216,7 +219,10 @@ export function useQuestionPreview() {
         }));
         orderedGroups.push({
           category: cat,
-          label: CATEGORY_LABELS[cat] || "সাধারণ প্রশ্ন",
+          label:
+            getCategoryDisplayName(cat, isEnglish) ||
+            CATEGORY_LABELS[cat] ||
+            "সাধারণ প্রশ্ন",
           questions: qsWithSerial,
         });
         delete groups[cat];
@@ -231,13 +237,16 @@ export function useQuestionPreview() {
       }));
       orderedGroups.push({
         category: cat,
-        label: CATEGORY_LABELS[cat] || cat,
+        label:
+          getCategoryDisplayName(cat, isEnglish) ||
+          CATEGORY_LABELS[cat] ||
+          cat,
         questions: qsWithSerial,
       });
     });
 
     return orderedGroups;
-  }, [questions, activeSet?.category, activeSet?.className]);
+  }, [questions, activeSet?.category, activeSet?.className, activeSet?.subjectName]);
 
   const handleSaveSetField = (field, value) => {
     if (!activeSet) return;

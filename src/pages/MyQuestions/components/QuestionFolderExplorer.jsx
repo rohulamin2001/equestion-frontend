@@ -1,4 +1,8 @@
-import { CATEGORIES_MAP } from "@/constants/categories";
+import {
+  CATEGORIES_MAP,
+  getCategoryDisplayName,
+  isEnglishSubject,
+} from "@/constants/categories";
 import {
   ChevronDown,
   ChevronUp,
@@ -220,8 +224,13 @@ export default function QuestionFolderExplorer({
 
                 {/* Level 3: Chapters + Subject Category Breakdown */}
                 {currentLevel === 3 && selectedSubject && (() => {
+                  const isSubjectEnglish = isEnglishSubject(
+                    selectedSubject.name || selectedSubject.subjectName,
+                  );
                   const selectedCat = currentPath.category;
-                  const selectedCatLabel = selectedCat ? getCategoryLabel(selectedCat) : null;
+                  const selectedCatLabel = selectedCat
+                    ? getCategoryDisplayName(selectedCat, isSubjectEnglish)
+                    : null;
                   const selectedCatTotal = selectedCat
                     ? selectedSubject.categories?.find((c) => c.category === selectedCat)?.count || 0
                     : null;
@@ -243,6 +252,7 @@ export default function QuestionFolderExplorer({
                         selectedCategory={currentPath.category}
                         onSelectCategory={selectCategory}
                         emptyMessage="এই বিষয়ে কোনো ক্যাটাগরি বরাদ্দ নেই।"
+                        isEnglish={isSubjectEnglish}
                       />
 
                       {/* 2. Chapters Grid */}
@@ -322,6 +332,9 @@ export default function QuestionFolderExplorer({
                       categories={selectedChapter.categories || []}
                       selectedCategory={currentPath.category}
                       onSelectCategory={selectCategory}
+                      isEnglish={isEnglishSubject(
+                        selectedSubject?.name || selectedSubject?.subjectName,
+                      )}
                     />
                   </motion.div>
                 )}

@@ -1,11 +1,6 @@
-import { CATEGORIES_MAP } from "@/constants/categories";
+import { getCategoryDisplayName } from "@/constants/categories";
 import { Check, Layers3 } from "lucide-react";
 import { motion } from "motion/react";
-
-const getCategoryLabel = (cat) => {
-  const found = CATEGORIES_MAP.find((c) => c.value === cat);
-  return found ? found.label : cat;
-};
 
 export default function CategoryStatsBreakdown({
   categories = [],
@@ -15,6 +10,7 @@ export default function CategoryStatsBreakdown({
   title = "",
   subtitle = "",
   emptyMessage = "",
+  isEnglish = false,
 }) {
   const totalInScope = categories.reduce((sum, c) => sum + (c.count || 0), 0);
   const displayTitle =
@@ -67,7 +63,7 @@ export default function CategoryStatsBreakdown({
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-2.5">
           {categories.map((catItem) => {
             const isSelected = selectedCategory === catItem.category;
-            const label = getCategoryLabel(catItem.category);
+            const label = getCategoryDisplayName(catItem.category, isEnglish);
             const hasQuestions = (catItem.count || 0) > 0;
 
             return (

@@ -15,7 +15,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { CATEGORIES_MAP } from "@/constants/categories";
+import {
+  CATEGORIES_MAP,
+  getCategoryDisplayName,
+} from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
 import { groupPassageQuestions } from "@/lib/questionUtils";
 import QuestionFolderExplorer from "@/pages/MyQuestions/components/QuestionFolderExplorer";
@@ -1165,8 +1168,10 @@ export default function QuestionBank() {
                         const isAnswerVisible =
                           showAnswers || !!expandedAnswerIds[q._id];
                         const subCatLabel =
-                          CATEGORIES_MAP.find((c) => c.value === q.category)
-                            ?.label || q.category;
+                          getCategoryDisplayName(
+                            q.category,
+                            q.subjectId?.subjectName || q.subjectName,
+                          ) || q.category;
                         const subDiffConfig = DIFFICULTY_MAP[q.difficulty] || {
                           label: q.difficulty,
                           color: "text-slate-600 border-slate-200 bg-slate-50",
@@ -1378,8 +1383,10 @@ export default function QuestionBank() {
                 CLASSES_MAP.find((c) => c.value === q.className)?.label ||
                 q.className;
               const catLabel =
-                CATEGORIES_MAP.find((c) => c.value === q.category)?.label ||
-                q.category;
+                getCategoryDisplayName(
+                  q.category,
+                  q.subjectId?.subjectName || q.subjectName,
+                ) || q.category;
               const diffConfig = DIFFICULTY_MAP[q.difficulty] || {
                 label: q.difficulty,
                 color: "text-slate-600 border-slate-200 bg-slate-50",

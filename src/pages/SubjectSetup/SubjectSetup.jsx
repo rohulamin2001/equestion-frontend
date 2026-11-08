@@ -47,6 +47,7 @@ import {
   Tag,
   Trash2,
 } from "lucide-react";
+import { isEnglishSubject } from "@/constants/categories";
 import {
   LEVEL_LABELS,
   PREDEFINED_CATEGORIES,
@@ -460,51 +461,58 @@ export default function SubjectSetup() {
                 <span>প্রশ্নের ক্যাটাগরি</span>
               </label>
               <div className="grid grid-cols-2 gap-2">
-                {PREDEFINED_CATEGORIES.map((cat) => {
-                  const isChecked = subjectCategories.includes(cat.value);
-                  return (
-                    <label
-                      key={cat.value}
-                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all duration-150 ${
-                        isChecked
-                          ? "bg-purple-50 border-purple-300 text-purple-700 shadow-sm"
-                          : "bg-white/60 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-white/80"
-                      }`}
-                    >
-                      <span
-                        className={`size-4 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
+                {(() => {
+                  const isEnglishNew =
+                    isEnglishSubject(subjectName) || subjectVersion === "English";
+                  return PREDEFINED_CATEGORIES.map((cat) => {
+                    const isChecked = subjectCategories.includes(cat.value);
+                    const displayLabel = isEnglishNew
+                      ? cat.englishLabel || cat.label
+                      : cat.label;
+                    return (
+                      <label
+                        key={cat.value}
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all duration-150 ${
                           isChecked
-                            ? "bg-primary border-primary"
-                            : "bg-white border-slate-300"
+                            ? "bg-purple-50 border-purple-300 text-purple-700 shadow-sm"
+                            : "bg-white/60 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-white/80"
                         }`}
                       >
-                        {isChecked && (
-                          <svg
-                            className="size-2.5 text-white"
-                            viewBox="0 0 10 10"
-                            fill="none"
-                          >
-                            <path
-                              d="M1.5 5L4 7.5L8.5 2.5"
-                              stroke="currentColor"
-                              strokeWidth="1.8"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        )}
-                      </span>
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => handleToggleCategory(cat.value)}
-                        disabled={addSubjectMutation.isPending}
-                        className="sr-only"
-                      />
-                      <span className="leading-tight">{cat.label}</span>
-                    </label>
-                  );
-                })}
+                        <span
+                          className={`size-4 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
+                            isChecked
+                              ? "bg-primary border-primary"
+                              : "bg-white border-slate-300"
+                          }`}
+                        >
+                          {isChecked && (
+                            <svg
+                              className="size-2.5 text-white"
+                              viewBox="0 0 10 10"
+                              fill="none"
+                            >
+                              <path
+                                d="M1.5 5L4 7.5L8.5 2.5"
+                                stroke="currentColor"
+                                strokeWidth="1.8"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          )}
+                        </span>
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleToggleCategory(cat.value)}
+                          disabled={addSubjectMutation.isPending}
+                          className="sr-only"
+                        />
+                        <span className="leading-tight">{displayLabel}</span>
+                      </label>
+                    );
+                  });
+                })()}
               </div>
             </div>
 
@@ -682,15 +690,26 @@ export default function SubjectSetup() {
                       ক্যাটাগরি:
                     </span>
                     {sub.categories && sub.categories.length > 0 ? (
-                      sub.categories.map((cat) => (
-                        <span
-                          key={cat}
-                          className="bg-purple-50/80 border border-purple-100 text-purple-700 font-semibold text-[11px] px-2 py-0.5 rounded-md"
-                        >
-                          {PREDEFINED_CATEGORIES.find((c) => c.value === cat)
-                            ?.label ?? cat}
-                        </span>
-                      ))
+                      sub.categories.map((cat) => {
+                        const isEnglishRow =
+                          isEnglishSubject(sub.subjectName) || sub.version === "English";
+                        const matched = PREDEFINED_CATEGORIES.find(
+                          (c) => c.value === cat,
+                        );
+                        const badgeText = matched
+                          ? isEnglishRow
+                            ? matched.englishLabel || matched.label
+                            : matched.label
+                          : cat;
+                        return (
+                          <span
+                            key={cat}
+                            className="bg-purple-50/80 border border-purple-100 text-purple-700 font-semibold text-[11px] px-2 py-0.5 rounded-md"
+                          >
+                            {badgeText}
+                          </span>
+                        );
+                      })
                     ) : (
                       <span className="text-[10px] text-slate-400 italic">
                         কোনোটি নয় (ডিফল্ট)
@@ -943,55 +962,63 @@ export default function SubjectSetup() {
                     প্রশ্নের ক্যাটাগরি
                   </label>
                   <div className="grid grid-cols-2 gap-2">
-                    {PREDEFINED_CATEGORIES.map((cat) => {
-                      const isChecked = (
-                        editingSubject.categories || []
-                      ).includes(cat.value);
-                      return (
-                        <label
-                          key={cat.value}
-                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all duration-150 ${
-                            isChecked
-                              ? "bg-purple-50 border-purple-300 text-purple-700 shadow-sm"
-                              : "bg-white/60 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-white/80"
-                          }`}
-                        >
-                          <span
-                            className={`size-4 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
+                    {(() => {
+                      const isEnglishEdit =
+                        isEnglishSubject(editingSubject?.subjectName) ||
+                        editingSubject?.version === "English";
+                      return PREDEFINED_CATEGORIES.map((cat) => {
+                        const isChecked = (
+                          editingSubject.categories || []
+                        ).includes(cat.value);
+                        const displayLabel = isEnglishEdit
+                          ? cat.englishLabel || cat.label
+                          : cat.label;
+                        return (
+                          <label
+                            key={cat.value}
+                            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all duration-150 ${
                               isChecked
-                                ? "bg-primary border-primary"
-                                : "bg-white border-slate-300"
+                                ? "bg-purple-50 border-purple-300 text-purple-700 shadow-sm"
+                                : "bg-white/60 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-white/80"
                             }`}
                           >
-                            {isChecked && (
-                              <svg
-                                className="size-2.5 text-white"
-                                viewBox="0 0 10 10"
-                                fill="none"
-                              >
-                                <path
-                                  d="M1.5 5L4 7.5L8.5 2.5"
-                                  stroke="currentColor"
-                                  strokeWidth="1.8"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                            )}
-                          </span>
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() =>
-                              handleToggleCategory(cat.value, true)
-                            }
-                            disabled={updateSubjectMutation.isPending}
-                            className="sr-only"
-                          />
-                          <span className="leading-tight">{cat.label}</span>
-                        </label>
-                      );
-                    })}
+                            <span
+                              className={`size-4 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
+                                isChecked
+                                  ? "bg-primary border-primary"
+                                  : "bg-white border-slate-300"
+                              }`}
+                            >
+                              {isChecked && (
+                                <svg
+                                  className="size-2.5 text-white"
+                                  viewBox="0 0 10 10"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M1.5 5L4 7.5L8.5 2.5"
+                                    stroke="currentColor"
+                                    strokeWidth="1.8"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              )}
+                            </span>
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() =>
+                                handleToggleCategory(cat.value, true)
+                              }
+                              disabled={updateSubjectMutation.isPending}
+                              className="sr-only"
+                            />
+                            <span className="leading-tight">{displayLabel}</span>
+                          </label>
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
               </div>

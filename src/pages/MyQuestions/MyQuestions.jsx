@@ -15,7 +15,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { CATEGORIES_MAP } from "@/constants/categories";
+import {
+  CATEGORIES_MAP,
+  getCategoryDisplayName,
+} from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
 import { groupPassageQuestions } from "@/lib/questionUtils";
 import { getStructuredGeneralData } from "@/utils/generalQuestionUtils";
@@ -1286,8 +1289,10 @@ export default function MyQuestions() {
                         const isAnswerVisible =
                           showAnswers || !!expandedAnswerIds[q._id];
                         const subCatLabel =
-                          CATEGORIES_MAP.find((c) => c.value === q.category)
-                            ?.label || q.category;
+                          getCategoryDisplayName(
+                            q.category,
+                            q.subjectId?.subjectName || q.subjectName,
+                          ) || q.category;
                         const subDiffConfig = DIFFICULTY_MAP[q.difficulty] || {
                           label: q.difficulty,
                           color: "bg-slate-50 border-slate-100 text-slate-600",
@@ -1614,8 +1619,10 @@ export default function MyQuestions() {
                 color: "bg-slate-50 border-slate-100 text-slate-600",
               };
               const catLabel =
-                CATEGORIES_MAP.find((c) => c.value === q.category)?.label ||
-                q.category;
+                getCategoryDisplayName(
+                  q.category,
+                  q.subjectId?.subjectName || q.subjectName,
+                ) || q.category;
               const isAnswerVisible = showAnswers || !!expandedAnswerIds[q._id];
               const isSelected = isQuestionSelected(q._id);
               const isDeletable = isQuestionDeletable(q);

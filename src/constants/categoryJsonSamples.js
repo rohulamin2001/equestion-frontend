@@ -708,6 +708,381 @@ export const CATEGORY_JSON_SAMPLES = {
       },
     },
   ],
+
+  // ২৩. ইংরেজি ক্যাটাগরিসমূহ (English Categories - Class 3 to 10 / SSC)
+  SeenPassage: [
+    {
+      difficulty: "Medium",
+      topics: ["English For Today", "Seen Passage"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Rajuk Uttara Model College"],
+      level: "অনুধাবন",
+      specialSearch: ["Seen Passage", "Reading Comprehension"],
+      generalData: {
+        stem: "<p><strong>Read the following text and answer the questions that follow:</strong></p><p>Sima and Tamal are in the Town Hall Language Club. They come to the club to practice speaking English. They listen to CDs and watch DVDs in English, or speak English with friends. Today there is a new person in the club. He is a young man. He is reading a book about Bangladesh.</p>",
+        questionText:
+          "<p><strong>Read the text carefully and answer the questions below:</strong></p><p>Sima and Tamal are in the Town Hall Language Club. They come to the club to practice speaking English. They listen to CDs and watch DVDs in English, or speak English with friends. Today there is a new person in the club. He is a young man. He is reading a book about Bangladesh.</p>",
+        suggestedAnswer:
+          "<p>The passage describes Sima and Tamal visiting the Town Hall Language Club to practice their English skills.</p>",
+        marks: 10,
+      },
+    },
+  ],
+
+  UnseenPassage: [
+    {
+      difficulty: "Medium",
+      topics: ["Unseen Comprehension"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Viqarunnisa Noon School & College"],
+      level: "অনুধাবন",
+      specialSearch: ["Unseen Passage", "Reading Text"],
+      generalData: {
+        stem: "<p><strong>Read the text and answer questions 4, 5, 6, and 7:</strong></p><p>Bayazid was a small boy. His mother was ill. One night, he was studying by the bed of his sick mother. All on a sudden, his mother woke up, raised her head and said, 'Water, give me some water.' Bayazid went to the pitcher to fetch water, but found it empty.</p>",
+        questionText:
+          "<p><strong>Read the text carefully and answer the questions below:</strong></p><p>Bayazid was a small boy. His mother was ill. One night, he was studying by the bed of his sick mother. All on a sudden, his mother woke up, raised her head and said, 'Water, give me some water.' Bayazid went to the pitcher to fetch water, but found it empty.</p>",
+        suggestedAnswer:
+          "<p>This is a well-known story of filial piety and devotion of Bayazid Bostami towards his mother.</p>",
+        marks: 10,
+      },
+    },
+  ],
+
+  Rearrange: [
+    {
+      difficulty: "Medium",
+      topics: ["Rearrange", "Sentence Structure"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Ideal School and College"],
+      level: "প্রয়োগ",
+      specialSearch: ["Rearrange", "Jumbled Words", "Sentence Ordering"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Rearrange the following words to make meaningful sentences:</strong></p><ol type='a'><li>old / how / you / are / ?</li><li>name / your / what / is / ?</li><li>am / fine / I / thank / you / .</li><li>live / Dhaka / in / I / .</li><li>class / what / in / read / do / you / ?</li></ol>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol type='a'><li>How old are you?</li><li>What is your name?</li><li>I am fine, thank you.</li><li>I live in Dhaka.</li><li>What class do you read in?</li></ol>",
+        marks: 10,
+      },
+    },
+  ],
+
+  SubstitutionTable: [
+    {
+      difficulty: "Medium",
+      topics: ["Substitution Table", "Grammar"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Motijheel Government Boys' High School"],
+      level: "প্রয়োগ",
+      specialSearch: ["Substitution Table", "Table to Sentences"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Make five meaningful sentences using parts of sentences from each column of the table below:</strong></p><table class='w-full border-collapse border border-slate-300 text-sm'><thead><tr class='bg-slate-100'><th class='border border-slate-300 p-2'>Column A</th><th class='border border-slate-300 p-2'>Column B</th><th class='border border-slate-300 p-2'>Column C</th></tr></thead><tbody><tr><td class='border border-slate-300 p-2'>Character</td><td class='border border-slate-300 p-2'>is</td><td class='border border-slate-300 p-2'>the crown of human life.</td></tr><tr><td class='border border-slate-300 p-2'>It</td><td class='border border-slate-300 p-2'>means</td><td class='border border-slate-300 p-2'>the combination of good qualities.</td></tr><tr><td class='border border-slate-300 p-2'>A person of character</td><td class='border border-slate-300 p-2'>is respected</td><td class='border border-slate-300 p-2'>everywhere in society.</td></tr><tr><td class='border border-slate-300 p-2'>Good character</td><td class='border border-slate-300 p-2'>helps</td><td class='border border-slate-300 p-2'>a person to attain peace and success.</td></tr><tr><td class='border border-slate-300 p-2'>Everybody</td><td class='border border-slate-300 p-2'>should build up</td><td class='border border-slate-300 p-2'>moral character from early life.</td></tr></tbody></table>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol><li>Character is the crown of human life.</li><li>It means the combination of good qualities.</li><li>A person of character is respected everywhere in society.</li><li>Good character helps a person to attain peace and success.</li><li>Everybody should build up moral character from early life.</li></ol>",
+        marks: 5,
+      },
+    },
+  ],
+
+  RightFormOfVerbs: [
+    {
+      difficulty: "Medium",
+      topics: ["Right Form of Verbs", "Grammar"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Rajuk Uttara Model College"],
+      level: "প্রয়োগ",
+      specialSearch: ["Right Form of Verbs", "Verbs"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Complete the following text with suitable verbs from the box. Give their correct forms:</strong></p><div class='p-3 bg-slate-50 border rounded mb-3 text-center'>[ prepare | be | study | succeed | waste ]</div><p>Student life (a) _____ the golden season of life. A student should (b) _____ his time properly. If he does not (c) _____ hard, he cannot (d) _____ in life. Therefore, every student must (e) _____ his lessons attentively.</p>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><p>(a) is<br/>(b) not waste<br/>(c) study<br/>(d) succeed<br/>(e) prepare</p>",
+        marks: 5,
+      },
+    },
+  ],
+
+  ChangingSentences: [
+    {
+      difficulty: "Hard",
+      topics: ["Changing Sentences", "Transformation"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Dhaka Residential Model College"],
+      level: "উচ্চতর দক্ষতা",
+      specialSearch: [
+        "Changing Sentences",
+        "Transformation of Sentences",
+        "Voice",
+        "Degree",
+      ],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Change the following sentences according to the directions given in brackets:</strong></p><ol type='a'><li>Internet is a wonderful invention of modern science. (Exclamatory)</li><li>It is used by people of all ages. (Active)</li><li>No other invention is as useful as computer. (Comparative)</li><li>We should use it properly so that we can prosper. (Simple)</li><li>Though it has some disadvantages, it is indispensable. (Compound)</li></ol>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol type='a'><li>What a wonderful invention of modern science internet is!</li><li>People of all ages use it.</li><li>Computer is more useful than any other invention.</li><li>We should use it properly to prosper.</li><li>It has some disadvantages, but it is indispensable.</li></ol>",
+        marks: 5,
+      },
+    },
+  ],
+
+  CompletingStory: [
+    {
+      difficulty: "Medium",
+      topics: ["Completing Story", "Writing"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["St. Joseph Higher Secondary School"],
+      level: "সৃজনশীলতা",
+      specialSearch: ["Completing Story", "Story Writing"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Read the beginning of the following story and complete it with a suitable title:</strong></p><p>Once upon a time, there lived a poor woodcutter in a village. One day, he was cutting wood near a deep river. Suddenly, his axe slipped from his hand and fell into the water. The river was very deep, and the poor woodcutter did not know how to swim...</p>",
+        suggestedAnswer:
+          "<p><strong>Title: The Honest Woodcutter</strong></p><p>...He sat by the riverbank and began to weep bitterly. Hearing his cries, Mercury, the god of water, appeared before him. Learning of his misfortune, Mercury dove into the river and came up with a golden axe. The woodcutter said, 'This is not mine.' The god dove again and brought a silver axe. The honest woodcutter refused this as well. Finally, Mercury brought out the woodcutter's own iron axe. The woodcutter cried out in joy, 'Yes! This is my axe!' Pleased with his honesty, the god rewarded him with all three axes.</p><p><em>Moral: Honesty is the best policy.</em></p>",
+        marks: 10,
+      },
+    },
+  ],
+
+  Dialogue: [
+    {
+      difficulty: "Medium",
+      topics: ["Dialogue Writing", "Writing"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Viqarunnisa Noon School & College"],
+      level: "প্রয়োগ",
+      specialSearch: ["Dialogue Writing", "Conversation"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Write a dialogue between you and your friend about the importance of reading newspapers.</strong></p>",
+        suggestedAnswer:
+          "<p><strong>Myself:</strong> Hello Rony, how are you?<br/><strong>Rony:</strong> I am fine, thank you. What about you?<br/><strong>Myself:</strong> I am doing great. What are you reading so attentively?<br/><strong>Rony:</strong> I am reading today's 'The Daily Star'.<br/><strong>Myself:</strong> That's very good! Do you read newspapers regularly?<br/><strong>Rony:</strong> Yes, absolutely. Reading newspapers keeps us updated with current affairs, national and global news, and sports.<br/><strong>Myself:</strong> That is true. It also enriches our vocabulary and general knowledge.<br/><strong>Rony:</strong> Exactly! Everyone should develop the habit of reading newspapers daily.<br/><strong>Myself:</strong> Thank you, Rony, for this nice discussion.<br/><strong>Rony:</strong> You are welcome!</p>",
+        marks: 10,
+      },
+    },
+  ],
+
+  WhQuestions: [
+    {
+      difficulty: "Easy",
+      topics: ["Wh-Questions", "Grammar"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Motijheel Model School & College"],
+      level: "প্রয়োগ",
+      specialSearch: ["Wh-Questions", "Primary English Questions"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Make Wh-questions from the given sentences using Who, What, When, Where, Why, Which, and How with the underlined words:</strong></p><ol type='a'><li>Sima is at home <u>because she has flu</u>.</li><li>Tamal is <u>in the library</u>.</li><li>Jessica is going to <u>Chittagong</u>.</li><li>The train leaves at <u>8:00 AM</u>.</li><li><u>Mr. Karim</u> is a doctor.</li></ol>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol type='a'><li>Why is Sima at home?</li><li>Where is Tamal?</li><li>Where is Jessica going?</li><li>When does the train leave?</li><li>Who is a doctor?</li></ol>",
+        marks: 10,
+      },
+    },
+  ],
+
+  Narration: [
+    {
+      difficulty: "Hard",
+      topics: ["Narration", "Speech Transformation"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Rajuk Uttara Model College"],
+      level: "উচ্চতর দক্ষতা",
+      specialSearch: [
+        "Narration",
+        "Direct to Indirect Speech",
+        "Passage Narration",
+      ],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Change the narrative style of the following passage:</strong></p><p>'Where are you going?' said the teacher. 'I am going to the library to borrow some books,' replied Rony. 'Did you return the books you borrowed last week?' 'No sir, I will return them tomorrow,' said Rony.</p>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><p>The teacher asked Rony where he was going. Rony replied that he was going to the library to borrow some books. Then the teacher asked him if he had returned the books he had borrowed the previous week. Respectfully, Rony replied in the negative and added that he would return them the next day.</p>",
+        marks: 5,
+      },
+    },
+  ],
+
+  TagQuestions: [
+    {
+      difficulty: "Medium",
+      topics: ["Tag Questions", "Grammar"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Mirzapur Cadet College"],
+      level: "প্রয়োগ",
+      specialSearch: ["Tag Questions", "Question Tags"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Add tag questions to the following statements:</strong></p><ol type='a'><li>Nothing is impossible, _____?</li><li>Let's go for a walk in the open field, _____?</li><li>Birds fly in the sky, _____?</li><li>Everybody loves flowers, _____?</li><li>He seldom comes here, _____?</li></ol>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol type='a'><li>Nothing is impossible, <u>is it</u>?</li><li>Let's go for a walk in the open field, <u>shall we</u>?</li><li>Birds fly in the sky, <u>don't they</u>?</li><li>Everybody loves flowers, <u>don't they</u>?</li><li>He seldom comes here, <u>does he</u>?</li></ol>",
+        marks: 5,
+      },
+    },
+  ],
+
+  SuffixPrefix: [
+    {
+      difficulty: "Medium",
+      topics: ["Suffixes and Prefixes", "Grammar"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Ideal School and College"],
+      level: "প্রয়োগ",
+      specialSearch: ["Suffix", "Prefix", "Word Formation"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Complete the text adding suffixes, prefixes or both to the root words given in brackets:</strong></p><p>Trees are vital for our (a) _____ (exist). They supply oxygen without which no animal can (b) _____ (breath). Unfortunately, many people cut down trees (c) _____ (thought) for their personal gain. This causes (d) _____ (balance) in ecology and leads to natural (e) _____ (disaster).</p>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><p>(a) existence<br/>(b) breathe<br/>(c) thoughtlessly<br/>(d) imbalance<br/>(e) disasters</p>",
+        marks: 5,
+      },
+    },
+  ],
+
+  Connectors: [
+    {
+      difficulty: "Medium",
+      topics: ["Sentence Connectors", "Linking Words"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Dhaka College"],
+      level: "প্রয়োগ",
+      specialSearch: ["Sentence Connectors", "Linking Words"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Complete the passage using suitable sentence connectors:</strong></p><p>Honesty is a noble virtue. (a) _____ a man possesses this virtue, he is respected by all. (b) _____ an honest person faces difficulties, he never deviates from truth. (c) _____ dishonest people prosper temporarily, (d) _____ they suffer in the long run. (e) _____ we should practice honesty from childhood.</p>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><p>(a) If / When<br/>(b) Even if / Although<br/>(c) Though / Although<br/>(d) ultimately / yet<br/>(e) Therefore / So</p>",
+        marks: 5,
+      },
+    },
+  ],
+
+  InformationTransfer: [
+    {
+      difficulty: "Medium",
+      topics: ["Information Transfer", "Reading Skills"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Viqarunnisa Noon School & College"],
+      level: "অনুধাবন",
+      specialSearch: ["Information Transfer", "Grid Completion"],
+      generalData: {
+        stem: "<p>Kazi Nazrul Islam is the national poet of Bangladesh. He was born on 24 May 1899 in Churulia, West Bengal. He wrote poems, songs, novels, and plays. In 1972, he was brought to Bangladesh. He died on 29 August 1976 in Dhaka.</p>",
+        questionText:
+          "<p><strong>Complete the following table with the information from the passage:</strong></p><table class='w-full border-collapse border border-slate-300 text-sm'><thead><tr class='bg-slate-100'><th class='border border-slate-300 p-2'>Who / What</th><th class='border border-slate-300 p-2'>Event / Activity</th><th class='border border-slate-300 p-2'>Time / Place</th></tr></thead><tbody><tr><td class='border border-slate-300 p-2'>Kazi Nazrul Islam</td><td class='border border-slate-300 p-2'>born</td><td class='border border-slate-300 p-2'>(i) _____</td></tr><tr><td class='border border-slate-300 p-2'>He</td><td class='border border-slate-300 p-2'>brought to Bangladesh</td><td class='border border-slate-300 p-2'>(ii) _____</td></tr><tr><td class='border border-slate-300 p-2'>(iii) _____</td><td class='border border-slate-300 p-2'>passed away</td><td class='border border-slate-300 p-2'>in Dhaka in 1976</td></tr></tbody></table>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><p>(i) 24 May 1899 / Churulia, West Bengal<br/>(ii) in 1972<br/>(iii) Kazi Nazrul Islam</p>",
+        marks: 5,
+      },
+    },
+  ],
+
+  NumbersInWords: [
+    {
+      difficulty: "Easy",
+      topics: ["Numbers in Words", "Primary English"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Primary School"],
+      level: "জ্ঞান",
+      specialSearch: [
+        "Numbers in Words",
+        "Cardinal Numbers",
+        "Ordinal Numbers",
+      ],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Write the following numbers in words (both cardinal and ordinal):</strong></p><ol type='a'><li>12 = _____</li><li>25 = _____</li><li>1st = _____</li><li>2nd = _____</li><li>3rd = _____</li></ol>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol type='a'><li>Twelve</li><li>Twenty-five</li><li>First</li><li>Second</li><li>Third</li></ol>",
+        marks: 5,
+      },
+    },
+  ],
+
+  SingularPlural: [
+    {
+      difficulty: "Easy",
+      topics: ["Singular and Plural", "Number"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Primary School"],
+      level: "জ্ঞান",
+      specialSearch: ["Singular Plural", "Number Transformation"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Change the following words from Singular to Plural:</strong></p><ol type='a'><li>Book - _____</li><li>Child - _____</li><li>Baby - _____</li><li>Leaf - _____</li><li>Man - _____</li></ol>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol type='a'><li>Book - Books</li><li>Child - Children</li><li>Baby - Babies</li><li>Leaf - Leaves</li><li>Man - Men</li></ol>",
+        marks: 5,
+      },
+    },
+  ],
+
+  Preposition: [
+    {
+      difficulty: "Easy",
+      topics: ["Prepositions", "Grammar"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Ideal School and College"],
+      level: "প্রয়োগ",
+      specialSearch: ["Preposition", "Appropriate Prepositions"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Fill in the blanks with appropriate prepositions (in, on, at, to, with, of):</strong></p><ol type='a'><li>The cat is sleeping _____ the table.</li><li>He lives _____ Dhaka.</li><li>She goes to school _____ bus.</li><li>He is fond _____ sweets.</li><li>We should be kind _____ animals.</li></ol>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol type='a'><li>on</li><li>in</li><li>by</li><li>of</li><li>to</li></ol>",
+        marks: 5,
+      },
+    },
+  ],
+
+  Articles: [
+    {
+      difficulty: "Easy",
+      topics: ["Articles", "Grammar"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Viqarunnisa Noon School & College"],
+      level: "প্রয়োগ",
+      specialSearch: ["Articles", "a an the"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Fill in the blanks with 'a', 'an' or 'the'. Put a cross (x) where no article is needed:</strong></p><ol type='a'><li>He is _____ honest boy.</li><li>I saw _____ bird in the cage.</li><li>_____ Padma is a big river.</li><li>He drinks _____ milk every morning.</li><li>Mr. Rahman is _____ M.A.</li></ol>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol type='a'><li>an</li><li>a</li><li>The</li><li>x</li><li>an</li></ol>",
+        marks: 5,
+      },
+    },
+  ],
+
+  PartsOfSpeech: [
+    {
+      difficulty: "Easy",
+      topics: ["Parts of Speech", "Grammar"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Primary School"],
+      level: "জ্ঞান",
+      specialSearch: ["Parts of Speech", "Noun", "Pronoun", "Verb"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Identify the parts of speech of the underlined words (Noun, Pronoun, Verb, Adjective, Adverb):</strong></p><ol type='a'><li>Dhaka is a <u>large</u> city.</li><li><u>She</u> sings beautifully.</li><li>Birds <u>fly</u> in the sky.</li><li><u>Honesty</u> is rewarded.</li><li>He runs <u>fast</u>.</li></ol>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol type='a'><li>large - Adjective</li><li>She - Pronoun</li><li>fly - Verb</li><li>Honesty - Noun</li><li>fast - Adverb</li></ol>",
+        marks: 5,
+      },
+    },
+  ],
 };
 
 /**

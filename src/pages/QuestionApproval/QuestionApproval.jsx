@@ -15,7 +15,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { CATEGORIES_MAP } from "@/constants/categories";
+import {
+  CATEGORIES_MAP,
+  getCategoryDisplayName,
+} from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
 import { groupPassageQuestions } from "@/lib/questionUtils";
 import QuestionMetadataTooltip from "@/pages/MyQuestions/components/QuestionMetadataTooltip";
@@ -1061,8 +1064,10 @@ export default function QuestionApproval() {
                       const isAnswerVisible =
                         showAnswers || !!expandedAnswerIds[q._id];
                       const subCatLabel =
-                        CATEGORIES_MAP.find((c) => c.value === q.category)
-                          ?.label || q.category;
+                        getCategoryDisplayName(
+                          q.category,
+                          q.subjectId?.subjectName || q.subjectName,
+                        ) || q.category;
 
                       return (
                         <div
@@ -1372,7 +1377,10 @@ export default function QuestionApproval() {
                     </div>
                     {categoryObj && (
                       <span className="bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/10 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px]">
-                        {categoryObj.label}
+                        {getCategoryDisplayName(
+                          q.category,
+                          q.subjectId?.subjectName || q.subjectName,
+                        )}
                       </span>
                     )}
                     <span
