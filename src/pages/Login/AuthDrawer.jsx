@@ -1,4 +1,4 @@
-import { BookOpen, X } from "lucide-react";
+import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import Sms2FALoginModal from "../../components/auth/Sms2FALoginModal";
@@ -198,22 +198,14 @@ export default function AuthDrawer() {
 
                 {/* Brand */}
                 <div className="flex items-center gap-2.5 mb-4">
-                  <div
-                    className="p-2 rounded-xl"
-                    style={{
-                      background: "rgba(255,255,255,0.08)",
-                      border: "1px solid rgba(255,255,255,0.12)",
-                    }}
-                  >
-                    <BookOpen
-                      className="h-5 w-5"
-                      style={{ color: "#d8b4fe" }}
+                  <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-white p-1 shrink-0">
+                    <img
+                      src="/logo.svg"
+                      alt="স্মার্ট প্রশ্নব্যাংক"
+                      className="w-full h-full object-contain"
                     />
                   </div>
-                  <span
-                    className="text-sm font-semibold tracking-wide"
-                    style={{ color: "rgba(216,180,254,0.85)" }}
-                  >
+                  <span className="text-base font-extrabold text-white font-sans tracking-wide">
                     স্মার্ট প্রশ্নব্যাংক
                   </span>
                 </div>

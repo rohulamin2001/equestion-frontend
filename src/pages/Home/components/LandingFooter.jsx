@@ -1,4 +1,4 @@
-import { BookOpen, Link2, PlayCircle, Share2 } from "lucide-react";
+import { Link2, PlayCircle, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import footerBg from "../../../assets/landing/footer-bg.png";
 import { FOOTER_COLUMNS } from "../data/landingContent";
@@ -62,15 +62,16 @@ export default function LandingFooter() {
       <div className="relative z-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-10 sm:pt-14 pb-7 sm:pb-8">
           <div className="mb-8 sm:mb-10 flex flex-col xs:flex-row xs:items-center gap-5 justify-between border-b border-white/15 pb-7 sm:pb-8">
-            <div className="flex items-start gap-3 min-w-0">
-              <div
-                className="flex size-11 shrink-0 items-center justify-center rounded-2xl text-primary-foreground shadow-soft ring-1 ring-white/25"
-                style={{ background: "var(--landing-hero-gradient)" }}
-              >
-                <BookOpen className="size-5" />
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="flex aspect-square size-11 shrink-0 items-center justify-center rounded-2xl bg-white p-1.5 shadow-soft ring-1 ring-white/25">
+                <img
+                  src="/logo.svg"
+                  alt="স্মার্ট প্রশ্নব্যাংক"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div className="min-w-0">
-                <p className="font-extrabold text-white text-base sm:text-lg tracking-tight">
+                <p className="font-extrabold text-white text-base sm:text-lg tracking-tight font-sans">
                   স্মার্ট প্রশ্নব্যাংক
                 </p>
                 <p className="mt-1 text-[11px] xs:text-xs sm:text-sm text-white/70 leading-relaxed max-w-sm">

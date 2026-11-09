@@ -1,4 +1,4 @@
-import { BookOpen, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext";
@@ -17,8 +17,12 @@ export default function NotFoundNav() {
           className="flex items-center gap-2.5 sm:gap-3 text-white/90 hover:text-white transition-colors"
           onClick={closeMenu}
         >
-          <div className="p-2 bg-white/10 border border-white/15 text-white rounded-xl">
-            <BookOpen className="h-5 w-5 sm:h-6 sm:w-6" />
+          <div className="flex aspect-square size-9 sm:size-10 items-center justify-center rounded-xl bg-white p-1 shrink-0">
+            <img
+              src="/logo.svg"
+              alt="স্মার্ট প্রশ্নব্যাংক"
+              className="w-full h-full object-contain"
+            />
           </div>
           <span className="text-base sm:text-lg font-extrabold tracking-tight font-sans">
             স্মার্ট প্রশ্নব্যাংক

@@ -1,4 +1,4 @@
-import { BookOpen, Menu, Sparkles, X } from "lucide-react";
+import { Menu, Sparkles, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { NAV_LINKS } from "../data/landingContent";
@@ -49,20 +49,20 @@ export default function LandingNavbar({ onLogin }) {
             e.preventDefault();
             go("#home");
           }}
-          className="flex min-w-0 items-center gap-2 sm:gap-2.5"
+          className="flex min-w-0 items-center gap-3"
         >
-          <div
-            className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-xl text-primary-foreground shadow-soft"
-            style={{ background: "var(--landing-hero-gradient)" }}
-          >
-            <BookOpen className="size-4 sm:size-5" />
+          <div className="flex aspect-square size-9 sm:size-10 items-center justify-center rounded-xl transition-all duration-300 shrink-0">
+            <img
+              src="/logo.svg"
+              alt="Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
-          <span
-            className="truncate text-sm xs:text-base sm:text-lg font-extrabold tracking-tight bg-clip-text text-transparent font-bengali"
-            style={{ backgroundImage: "var(--landing-hero-gradient)" }}
-          >
-            স্মার্ট প্রশ্নব্যাংক
-          </span>
+          <div className="grid flex-1 text-left text-base sm:text-lg md:text-[20px] leading-tight">
+            <span className="truncate font-extrabold text-[#270950] font-sans pt-1">
+              <span className="text-[#ED6B18]">স্মার্ট</span> প্রশ্নব্যাংক
+            </span>
+          </div>
         </a>
 
         <nav className="hidden lg:flex items-center gap-1">
