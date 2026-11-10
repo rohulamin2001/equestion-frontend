@@ -15,10 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-  CATEGORIES_MAP,
-  getCategoryDisplayName,
-} from "@/constants/categories";
+import { CATEGORIES_MAP, getCategoryDisplayName } from "@/constants/categories";
 import { CLASSES_MAP } from "@/constants/classes";
 import { groupPassageQuestions } from "@/lib/questionUtils";
 import QuestionFolderExplorer from "@/pages/MyQuestions/components/QuestionFolderExplorer";
@@ -1861,12 +1858,27 @@ export default function QuestionBank() {
 
                                   {/* 3. Answer as plain text without background */}
                                   {isAnswerVisible &&
-                                    q.generalData.suggestedAnswer && (() => {
+                                    q.generalData.suggestedAnswer &&
+                                    (() => {
                                       const isBlockFormatted =
-                                        ["LetterWriting", "Amplification", "Essay", "ReportWriting", "Paragraph", "BroadQuestion", "DescriptiveQuestion", "Translation", "Poem", "PoemTheme", "ProseTheme"].includes(
-                                          q.category,
-                                        ) ||
-                                        (q.generalData.suggestedAnswer.match(/<p[\s>]/gi) || []).length > 1;
+                                        [
+                                          "LetterWriting",
+                                          "Amplification",
+                                          "Essay",
+                                          "ReportWriting",
+                                          "Paragraph",
+                                          "BroadQuestion",
+                                          "DescriptiveQuestion",
+                                          "Translation",
+                                          "Poem",
+                                          "PoemTheme",
+                                          "ProseTheme",
+                                        ].includes(q.category) ||
+                                        (
+                                          q.generalData.suggestedAnswer.match(
+                                            /<p[\s>]/gi,
+                                          ) || []
+                                        ).length > 1;
 
                                       return (
                                         <div
@@ -1876,29 +1888,31 @@ export default function QuestionBank() {
                                               : "text-[14px] font-serif text-slate-700 leading-relaxed pt-1 space-y-1"
                                           }
                                         >
-                                          {isBlockFormatted ? (
-                                            ["Summary", "Substance"].includes(q.category) && (
-                                              <span className="font-bold text-slate-800 block text-xs uppercase tracking-wider">
-                                                {q.category === "Summary"
-                                                  ? "সারাংশ:"
-                                                  : "সারমর্ম:"}
-                                              </span>
-                                            )
-                                          ) : (
-                                            !/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
-                                              q.generalData.suggestedAnswer,
-                                            ) && (
-                                              <span className="font-bold text-slate-800 mr-1.5">
-                                                {q.category === "Summary"
-                                                  ? "সারাংশ: "
-                                                  : q.category === "Substance"
-                                                    ? "সারমর্ম: "
-                                                    : "উত্তর: "}
-                                              </span>
-                                            )
-                                          )}
+                                          {isBlockFormatted
+                                            ? ["Summary", "Substance"].includes(
+                                                q.category,
+                                              ) && (
+                                                <span className="font-bold text-slate-800 block text-xs uppercase tracking-wider">
+                                                  {q.category === "Summary"
+                                                    ? "সারাংশ:"
+                                                    : "সারমর্ম:"}
+                                                </span>
+                                              )
+                                            : !/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
+                                                q.generalData.suggestedAnswer,
+                                              ) && (
+                                                <span className="font-bold text-slate-800 mr-1.5">
+                                                  {q.category === "Summary"
+                                                    ? "সারাংশ: "
+                                                    : q.category === "Substance"
+                                                      ? "সারমর্ম: "
+                                                      : "উত্তর: "}
+                                                </span>
+                                              )}
                                           <RichTextRender
-                                            content={q.generalData.suggestedAnswer}
+                                            content={
+                                              q.generalData.suggestedAnswer
+                                            }
                                             className={
                                               isBlockFormatted
                                                 ? "block"
@@ -2564,20 +2578,24 @@ export default function QuestionBank() {
                           .suggestedAnswer && (
                           <div
                             className={
-                              selectedPreviewQuestion.category === "Amplification"
+                              selectedPreviewQuestion.category ===
+                              "Amplification"
                                 ? "amplification-solution text-sm text-slate-700 leading-relaxed pt-1 space-y-2 [&_p]:mb-2.5 last:[&_p]:mb-0"
                                 : "text-[15px] font-serif text-slate-700 leading-relaxed pt-1"
                             }
                           >
-                            {selectedPreviewQuestion.category !== "Amplification" &&
+                            {selectedPreviewQuestion.category !==
+                              "Amplification" &&
                               !/^\s*(?:<[^>]+>)*\s*(?:উত্তর|সারাংশ|সারমর্ম|মূলভাব|বঙ্গানুবাদ)\s*(?::|ঃ)/i.test(
                                 selectedPreviewQuestion.generalData
                                   .suggestedAnswer,
                               ) && (
                                 <span className="font-bold text-slate-800 mr-1.5">
-                                  {selectedPreviewQuestion.category === "Summary"
+                                  {selectedPreviewQuestion.category ===
+                                  "Summary"
                                     ? "সারাংশ: "
-                                    : selectedPreviewQuestion.category === "Substance"
+                                    : selectedPreviewQuestion.category ===
+                                        "Substance"
                                       ? "সারমর্ম: "
                                       : "উত্তর: "}
                                 </span>
@@ -2588,12 +2606,14 @@ export default function QuestionBank() {
                                   .suggestedAnswer
                               }
                               className={
-                                selectedPreviewQuestion.category === "Amplification"
+                                selectedPreviewQuestion.category ===
+                                "Amplification"
                                   ? "block"
                                   : "inline-block font-serif"
                               }
                               inline={
-                                selectedPreviewQuestion.category !== "Amplification"
+                                selectedPreviewQuestion.category !==
+                                "Amplification"
                               }
                             />
                           </div>
