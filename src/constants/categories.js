@@ -277,6 +277,11 @@ export const CATEGORIES_MAP = [
     label: "Poem Questions",
     englishLabel: "Poem Questions",
   },
+  {
+    value: "StoryQuestions",
+    label: "Story Questions",
+    englishLabel: "Story Questions",
+  },
 ];
 
 export const CATEGORY_VALUES = CATEGORIES_MAP.map((c) => c.value);

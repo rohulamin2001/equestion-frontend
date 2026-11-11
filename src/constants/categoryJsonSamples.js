@@ -1121,6 +1121,25 @@ export const CATEGORY_JSON_SAMPLES = {
       },
     },
   ],
+
+  StoryQuestions: [
+    {
+      difficulty: "Medium",
+      topics: ["Story Questions", "English For Today"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2028"] }],
+      school: ["Viqarunnisa Noon School & College"],
+      level: "অনুধাবন",
+      specialSearch: ["Story Questions", "Answering Questions from Stories"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Answer any five of the following questions from the stories in your English For Today textbook:</strong></p><ol type='a'><li>Who is the main character of the story and how does he behave?</li><li>Why did the protagonist make a difficult decision at the turning point?</li><li>What conflict did the characters face in the story?</li><li>How did the setting influence the events of the story?</li><li>What role did kindness play in resolving the problem?</li><li>Why was the ending significant for the narrator?</li><li>Which character do you admire most and why?</li><li>What moral lesson does the story teach us?</li></ol>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol type='a'><li>The main character is a determined and honest person who stays true to his principles despite hardships.</li><li>He made the difficult decision out of a sense of duty and moral responsibility towards others.</li><li>The characters faced a conflict between personal interest and ethical obligation.</li><li>The rural setting highlighted the simplicity and close-knit struggles of the characters' daily lives.</li><li>Kindness helped bridge misunderstandings and brought harmony among the characters.</li></ol>",
+        marks: 10,
+      },
+    },
+  ],
 };
 
 /**
