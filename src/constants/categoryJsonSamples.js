@@ -1083,6 +1083,44 @@ export const CATEGORY_JSON_SAMPLES = {
       },
     },
   ],
+
+  Vocabulary: [
+    {
+      difficulty: "Medium",
+      topics: ["Vocabulary", "Synonyms & Antonyms"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Rajuk Uttara Model College"],
+      level: "জ্ঞান",
+      specialSearch: ["Vocabulary", "Synonym", "Antonym"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Read the following words and write the synonym or antonym of each word as directed:</strong></p><ol type='a'><li>famous (synonym)</li><li>always (antonym)</li><li>happy (synonym)</li><li>begin (antonym)</li><li>large (synonym)</li></ol>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol type='a'><li>famous - well-known / renowned</li><li>always - never</li><li>happy - joyful / glad</li><li>begin - end / finish</li><li>large - big / huge</li></ol>",
+        marks: 5,
+      },
+    },
+  ],
+
+  PoemQuestions: [
+    {
+      difficulty: "Medium",
+      topics: ["Poem Questions", "English For Today"],
+      examHistory: [{ board: "ঢাকা বোর্ড", years: ["2026"] }],
+      school: ["Viqarunnisa Noon School & College"],
+      level: "অনুধাবন",
+      specialSearch: ["Poem Questions", "Answering Questions from Poems"],
+      generalData: {
+        stem: "",
+        questionText:
+          "<p><strong>Answer any five of the following questions from the poems in your English For Today textbook:</strong></p><ol type='a'><li>Who is the poet of the poem 'Holding Hands'?</li><li>How do elephants walk in the poem 'Holding Hands'?</li><li>Where do boats sail according to Christina Rossetti?</li><li>What builds a road from earth to sky?</li><li>Why is the sky prettier than the bridges on the rivers?</li><li>What did the poet see when looking at the stars?</li><li>How does the poet describe the rainbow?</li><li>What lesson do we learn from the poem?</li></ol>",
+        suggestedAnswer:
+          "<p><strong>Answer:</strong></p><ol type='a'><li>Leonore M. Link is the poet of 'Holding Hands'.</li><li>The elephants walk along the trails holding hands by holding tails.</li><li>Boats sail on the rivers and ships sail on the seas.</li><li>The rainbow builds a road from earth to sky.</li><li>The clouds that sail across the sky are prettier far than the boats, ships, and bridges.</li></ol>",
+        marks: 10,
+      },
+    },
+  ],
 };
 
 /**

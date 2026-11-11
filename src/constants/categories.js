@@ -267,6 +267,16 @@ export const CATEGORIES_MAP = [
     label: "Parts of Speech",
     englishLabel: "Parts of Speech",
   },
+  {
+    value: "Vocabulary",
+    label: "Vocabulary (Synonyms & Antonyms)",
+    englishLabel: "Vocabulary (Synonyms & Antonyms)",
+  },
+  {
+    value: "PoemQuestions",
+    label: "Poem Questions",
+    englishLabel: "Poem Questions",
+  },
 ];
 
 export const CATEGORY_VALUES = CATEGORIES_MAP.map((c) => c.value);
