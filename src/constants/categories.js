@@ -170,6 +170,11 @@ export const CATEGORIES_MAP = [
     label: "বর্ণনামূলক প্রশ্ন",
     englishLabel: "Descriptive Questions",
   },
+  {
+    value: "ProblemSolving",
+    label: "সমস্যামূলক প্রশ্ন",
+    englishLabel: "Problem Solving Questions",
+  },
 
   // English Specialized Categories (Class 3 to 10 / SSC)
   {
