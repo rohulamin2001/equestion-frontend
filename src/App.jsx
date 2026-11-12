@@ -50,7 +50,8 @@ export default function App() {
       <AuthDrawer />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/terms" element={<Terms />} />
+        <Route path="/termsandcondition" element={<Terms />} />
+        <Route path="/terms" element={<Navigate to="/termsandcondition" replace />} />
         <Route path="/affiliate" element={<AffiliateLanding />} />
         <Route path="/affiliate/register" element={<AffiliateRegister />} />
         <Route path="/affiliate/login" element={<AffiliateLogin />} />

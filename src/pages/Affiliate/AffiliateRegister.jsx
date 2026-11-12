@@ -261,7 +261,7 @@ export default function AffiliateRegister() {
                 className="text-xs text-slate-400 leading-relaxed"
               >
                 আমি স্মার্ট প্রশ্ন ব্যাংক অ্যাফিলিয়েট প্রোগ্রামের{" "}
-                <Link to="/terms" className="text-indigo-400 hover:underline">
+                <Link to="/termsandcondition" className="text-indigo-400 hover:underline">
                   শর্তাবলী ও নীতিমালা
                 </Link>{" "}
                 পড়েছি এবং এতে সম্মতি জানাচ্ছি।

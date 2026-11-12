@@ -406,7 +406,7 @@ export const FOOTER_COLUMNS = [
       { label: "অ্যাফিলিয়েট পার্টনার প্রোগ্রাম (২০% কমিশন)", href: "/affiliate" },
       { label: "যোগাযোগ", href: "mailto:support@smartproshnobank.com" },
       { label: "Privacy Policy", href: "#" },
-      { label: "Terms & Conditions", href: "/terms" },
+      { label: "Terms & Conditions", href: "/termsandcondition" },
     ],
   },
 ];

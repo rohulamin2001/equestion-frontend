@@ -123,7 +123,7 @@ export default function LandingFooter() {
           <div className="mt-9 sm:mt-11 pt-5 border-t border-white/15 flex flex-col xs:flex-row items-center justify-between gap-2 text-[11px] xs:text-xs text-white/60">
             <p>© {year} স্মার্ট প্রশ্নব্যাংক। সর্বস্বত্ব সংরক্ষিত।</p>
             <div className="flex items-center gap-3">
-              <Link to="/terms" className="hover:text-white transition">
+              <Link to="/termsandcondition" className="hover:text-white transition">
                 Terms
               </Link>
               <span className="text-white/30" aria-hidden>

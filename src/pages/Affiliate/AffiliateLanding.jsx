@@ -497,7 +497,7 @@ export default function AffiliateLanding() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center text-xs text-slate-500 space-y-2">
           <p>© ২০২৬ Smart Proshno Bank. সর্বস্বত্ব সংরক্ষিত।</p>
           <div className="flex items-center justify-center gap-4 text-[11px]">
-            <Link to="/terms" className="hover:text-slate-300 transition">
+            <Link to="/termsandcondition" className="hover:text-slate-300 transition">
               শর্তাবলী ও নীতিমালা
             </Link>
             <span>•</span>

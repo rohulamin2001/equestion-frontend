@@ -1,4 +1,5 @@
-import { Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext";
 import CTASection from "./components/CTASection";
 import FAQSection from "./components/FAQSection";
@@ -17,6 +18,15 @@ import WorkflowSection from "./components/WorkflowSection";
 
 export default function Home() {
   const { userProfile, openAuthDrawer } = useUserContext();
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (!hash) return;
+    const el = document.querySelector(hash);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [hash]);
 
   // Only redirect regular Subscribers, Admins, and Staff to their dashboard
   // Allow Affiliates and guests to view the Home landing page freely

@@ -1,11 +1,13 @@
-import { Menu, Sparkles, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { NAV_LINKS } from "../data/landingContent";
 
 export default function LandingNavbar({ onLogin }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -23,6 +25,10 @@ export default function LandingNavbar({ onLogin }) {
 
   const go = (href) => {
     setOpen(false);
+    if (pathname !== "/") {
+      navigate(href === "#home" ? "/" : `/${href}`);
+      return;
+    }
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -82,14 +88,6 @@ export default function LandingNavbar({ onLogin }) {
         </nav>
 
         <div className="hidden lg:flex items-center gap-3">
-          <Link
-            to="/affiliate"
-            className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold text-purple-700 bg-purple-50 hover:bg-purple-100/90 border border-purple-200/80 transition-all hover:scale-[1.02] font-bengali shadow-sm"
-          >
-            <Sparkles className="size-3.5 text-purple-600" />
-            <span>অ্যাফিলিয়েট প্রোগ্রাম</span>
-          </Link>
-
           <button
             type="button"
             onClick={onLogin}
@@ -132,14 +130,6 @@ export default function LandingNavbar({ onLogin }) {
             </a>
           ))}
           <div className="pt-3 flex flex-col gap-2">
-            <Link
-              to="/affiliate"
-              onClick={() => setOpen(false)}
-              className="w-full min-h-11 rounded-xl text-sm font-bold text-purple-800 bg-purple-50 border border-purple-200/80 font-bengali flex items-center justify-center gap-2 hover:bg-purple-100"
-            >
-              <Sparkles className="size-4 text-purple-600" />
-              <span>অ্যাফিলিয়েট পার্টনার প্রোগ্রাম</span>
-            </Link>
             <button
               type="button"
               onClick={() => {
