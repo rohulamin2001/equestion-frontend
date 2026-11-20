@@ -501,6 +501,10 @@ export default function AffiliateLanding() {
               শর্তাবলী ও নীতিমালা
             </Link>
             <span>•</span>
+            <Link to="/privacypolicy" className="hover:text-slate-300 transition">
+              গোপনীয়তা নীতিমালা
+            </Link>
+            <span>•</span>
             <Link to="/" className="hover:text-slate-300 transition">
               স্মার্ট প্রশ্নব্যাংক হোম
             </Link>

@@ -17,6 +17,7 @@ import Institution from "./pages/Institution/Institution";
 //login file
 import CreatedQuestions from "./pages/CreatedQuestions/CreatedQuestions";
 import Terms from "./pages/Legal/Terms";
+import PrivacyPolicy from "./pages/Legal/PrivacyPolicy";
 import AuthDrawer from "./pages/Login/AuthDrawer";
 import Login from "./pages/Login/Login";
 import MetadataSetup from "./pages/MetadataSetup/MetadataSetup";
@@ -52,6 +53,9 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/termsandcondition" element={<Terms />} />
         <Route path="/terms" element={<Navigate to="/termsandcondition" replace />} />
+        <Route path="/privacypolicy" element={<PrivacyPolicy />} />
+        <Route path="/privacy-policy" element={<Navigate to="/privacypolicy" replace />} />
+        <Route path="/privacy" element={<Navigate to="/privacypolicy" replace />} />
         <Route path="/affiliate" element={<AffiliateLanding />} />
         <Route path="/affiliate/register" element={<AffiliateRegister />} />
         <Route path="/affiliate/login" element={<AffiliateLogin />} />

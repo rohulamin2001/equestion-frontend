@@ -129,9 +129,9 @@ export default function LandingFooter() {
               <span className="text-white/30" aria-hidden>
                 ·
               </span>
-              <a href="#" className="hover:text-white transition">
+              <Link to="/privacypolicy" className="hover:text-white transition">
                 Privacy
-              </a>
+              </Link>
             </div>
           </div>
         </div>
