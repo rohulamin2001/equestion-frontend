@@ -18,11 +18,72 @@ import LandingFooter from "../Home/components/LandingFooter";
 import LandingNavbar from "../Home/components/LandingNavbar";
 import { LEGAL_CONTACT, TERMS_SECTIONS } from "./data/termsContent";
 
+function renderFormattedText(text) {
+  if (!text || typeof text !== "string") return text;
+
+  const pattern = /\[([^\]]+)\]\(([^)]+)\)|(\bPrivacy Policy\b)/g;
+  const elements = [];
+  let lastIdx = 0;
+  let match;
+
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > lastIdx) {
+      elements.push(text.slice(lastIdx, match.index));
+    }
+
+    if (match[1] && match[2]) {
+      const label = match[1];
+      const href = match[2];
+      if (href.startsWith("/")) {
+        elements.push(
+          <Link
+            key={`${href}-${match.index}`}
+            to={href}
+            className="font-semibold text-purple-800 hover:text-purple-950 underline underline-offset-2 transition"
+          >
+            {label}
+          </Link>
+        );
+      } else {
+        elements.push(
+          <a
+            key={`${href}-${match.index}`}
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className="font-semibold text-purple-800 hover:text-purple-950 underline underline-offset-2 transition"
+          >
+            {label}
+          </a>
+        );
+      }
+    } else if (match[3]) {
+      elements.push(
+        <Link
+          key={`privacy-${match.index}`}
+          to="/privacypolicy"
+          className="font-semibold text-purple-800 hover:text-purple-950 underline underline-offset-2 transition"
+        >
+          {match[3]}
+        </Link>
+      );
+    }
+
+    lastIdx = pattern.lastIndex;
+  }
+
+  if (lastIdx === 0) return text;
+  if (lastIdx < text.length) {
+    elements.push(text.slice(lastIdx));
+  }
+  return elements;
+}
+
 function BlockRenderer({ block }) {
   if (block.type === "p") {
     return (
       <p className="text-[13.5px] xs:text-sm sm:text-base text-muted-foreground leading-relaxed font-bengali break-words">
-        {block.text}
+        {renderFormattedText(block.text)}
       </p>
     );
   }
@@ -33,7 +94,7 @@ function BlockRenderer({ block }) {
         <span className="font-bold text-foreground mr-1.5">
           {block.title}
         </span>
-        <span>{block.text}</span>
+        <span>{renderFormattedText(block.text)}</span>
       </p>
     );
   }
@@ -43,12 +104,12 @@ function BlockRenderer({ block }) {
       <div className="space-y-1.5">
         {block.title && (
           <h4 className="text-[13.5px] xs:text-sm sm:text-base font-bold text-foreground font-bengali break-words">
-            {block.title}
+            {renderFormattedText(block.title)}
           </h4>
         )}
         {block.text ? (
           <p className="text-[13.5px] xs:text-sm sm:text-base text-muted-foreground leading-relaxed font-bengali break-words">
-            {block.text}
+            {renderFormattedText(block.text)}
           </p>
         ) : null}
       </div>
@@ -59,7 +120,7 @@ function BlockRenderer({ block }) {
     return (
       <div className="flex items-start gap-2.5 rounded-xl border border-purple-200/80 bg-purple-50/70 px-3 xs:px-3.5 py-2.5 xs:py-3 text-[13.5px] xs:text-sm sm:text-base font-semibold text-purple-950 font-bengali">
         <Clock className="size-4 text-purple-700 shrink-0 mt-0.5 sm:mt-1" />
-        <span className="min-w-0 break-words">{block.text}</span>
+        <span className="min-w-0 break-words">{renderFormattedText(block.text)}</span>
       </div>
     );
   }
@@ -77,7 +138,7 @@ function BlockRenderer({ block }) {
             {block.type === "ul" && (
               <span className="mt-2 size-1.5 shrink-0 rounded-full bg-purple-500" />
             )}
-            <span className="min-w-0 break-words">{item}</span>
+            <span className="min-w-0 break-words">{renderFormattedText(item)}</span>
           </li>
         ))}
       </Tag>
@@ -93,7 +154,7 @@ function BlockRenderer({ block }) {
             className="flex items-start gap-2.5 rounded-xl border border-purple-200/70 bg-purple-50/60 px-3 xs:px-3.5 py-2.5 xs:py-3 text-[13.5px] xs:text-sm text-foreground font-bengali min-w-0"
           >
             <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
-            <span className="min-w-0 break-words">{item}</span>
+            <span className="min-w-0 break-words">{renderFormattedText(item)}</span>
           </li>
         ))}
       </ul>

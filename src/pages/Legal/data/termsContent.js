@@ -367,7 +367,7 @@ export const TERMS_SECTIONS = [
       {
         type: "clause",
         title: "১০.৪.",
-        text: "গ্রাহকের তথ্য ব্যবহারের বিস্তারিত নিয়ম আমাদের গোপনীয়তা নীতিমালায় (Privacy Policy) উল্লেখ করা আছে।",
+        text: "গ্রাহকের তথ্য ব্যবহারের বিস্তারিত নিয়ম আমাদের গোপনীয়তা নীতিমালায় ([Privacy Policy](/privacypolicy)) উল্লেখ করা আছে।",
       },
     ],
   },
