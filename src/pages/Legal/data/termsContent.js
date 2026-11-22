@@ -7,7 +7,8 @@ export const LEGAL_CONTACT = {
   website: "https://www.smartproshnobank.com",
   facebookLabel: "স্মার্ট প্রশ্নব্যাংক • Smart Proshno Bank",
   facebookUrl: "https://www.facebook.com/smartproshnobank",
-  supportChannel: "আমাদের অফিসিয়াল পেইজের মেসেঞ্জার ও ওয়েবসাইটের সাপোর্ট টিকেট",
+  supportChannel:
+    "আমাদের অফিসিয়াল পেইজের মেসেঞ্জার ও ওয়েবসাইটের সাপোর্ট টিকেট",
   phone: "+8809658737034",
   supportHours: "প্রতিদিন সকাল ১০টা থেকে সন্ধ্যা ৬টা।",
   effectiveDate: "১১ নভেম্বর ২০২৬",
@@ -366,7 +367,7 @@ export const TERMS_SECTIONS = [
       {
         type: "clause",
         title: "১০.৪.",
-        text: "গ্রাহকের তথ্য ব্যবহারের বিস্তারিত নিয়ম আমাদের গোপনীয়তা নীতিমালায় (Privacy Policy) উল্লেখ করা হবে।",
+        text: "গ্রাহকের তথ্য ব্যবহারের বিস্তারিত নিয়ম আমাদের গোপনীয়তা নীতিমালায় (Privacy Policy) উল্লেখ করা আছে।",
       },
     ],
   },
