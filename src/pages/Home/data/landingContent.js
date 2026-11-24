@@ -279,8 +279,7 @@ export const TARGET_USERS = [
   },
   {
     title: "স্কুল / কলেজ",
-    description:
-      "পরীক্ষা, প্রশ্নব্যাংক ও মূল্যায়ন আরও সহজভাবে পরিচালনা করুন।",
+    description: "পরীক্ষা, প্রশ্নব্যাংক ও মূল্যায়ন আরও সহজভাবে পরিচালনা করুন।",
     icon: "School",
     color: "purple",
     stat: "৫০০+",
@@ -310,8 +309,7 @@ export const TARGET_USERS = [
   },
   {
     title: "শিক্ষার্থী",
-    description:
-      "অনলাইন পরীক্ষা, লেকচার শীট ও প্রস্তুতি রিসোর্স ব্যবহার করুন।",
+    description: "অনলাইন পরীক্ষা, লেকচার শীট ও প্রস্তুতি রিসোর্স ব্যবহার করুন।",
     icon: "Users",
     color: "emerald",
     stat: "১০,০০০+",
@@ -403,7 +401,7 @@ export const FOOTER_COLUMNS = [
     title: "কোম্পানি",
     links: [
       { label: "আমাদের সম্পর্কে", href: "#home" },
-      { label: "অ্যাফিলিয়েট পার্টনার প্রোগ্রাম", href: "/affiliate" },
+      { label: "অ্যাফিলিয়েট পার্টনার", href: "/affiliate" },
       { label: "যোগাযোগ", href: "mailto:support@smartproshnobank.com" },
       { label: "Privacy Policy", href: "/privacypolicy" },
       { label: "Terms & Conditions", href: "/termsandcondition" },
