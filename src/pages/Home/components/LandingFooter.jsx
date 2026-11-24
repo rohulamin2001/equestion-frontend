@@ -1,3 +1,4 @@
+import { MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import footerBg from "../../../assets/landing/footer-bg.png";
 import { FOOTER_COLUMNS } from "../data/landingContent";
@@ -111,22 +112,34 @@ export default function LandingFooter() {
 
       <div className="relative z-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-10 sm:pt-14 pb-7 sm:pb-8">
-          <div className="mb-8 sm:mb-10 flex flex-col xs:flex-row xs:items-center gap-5 justify-between border-b border-white/15 pb-7 sm:pb-8">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="flex aspect-square size-11 shrink-0 items-center justify-center rounded-2xl bg-white p-1.5 shadow-soft ring-1 ring-white/25">
+          <div className="mb-8 sm:mb-10 flex flex-col md:flex-row md:items-center gap-6 justify-between border-b border-white/15 pb-7 sm:pb-8">
+            <div className="flex items-start gap-3.5 min-w-0 max-w-xl">
+              <div className="flex aspect-square size-11 sm:size-12 shrink-0 items-center justify-center rounded-2xl bg-white p-1.5 shadow-soft ring-1 ring-white/25 mt-0.5">
                 <img
                   src="/logo.svg"
                   alt="স্মার্ট প্রশ্নব্যাংক"
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 space-y-1.5">
                 <p className="font-extrabold text-white text-base sm:text-lg tracking-tight font-sans">
                   স্মার্ট প্রশ্নব্যাংক
                 </p>
-                <p className="mt-1 text-[11px] xs:text-xs sm:text-sm text-white/70 leading-relaxed max-w-sm">
+                <p className="text-[11px] xs:text-xs sm:text-sm text-white/70 leading-relaxed">
                   প্রশ্নপত্র, OMR ও পরীক্ষা—এক প্ল্যাটফর্মে।
                 </p>
+                <a
+                  href="https://maps.google.com/?q=Seedstore+Bazar,+Habirbari,+Bhaluka,+Mymensingh"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-start gap-2 pt-1 text-xs sm:text-sm text-white/80 hover:text-white transition group"
+                  title="গুগল ম্যাপে লোকেশন দেখুন"
+                >
+                  <MapPin className="size-4 shrink-0 text-purple-300 mt-0.5 group-hover:text-purple-200 transition" />
+                  <span className="leading-relaxed">
+                    সিডস্টোর বাজার (ইন্ডাস্ট্রিয়াল এরিয়া), হবিরবাড়ী, ভালুকা–২২৪০, ময়মনসিংহ।
+                  </span>
+                </a>
               </div>
             </div>
 
