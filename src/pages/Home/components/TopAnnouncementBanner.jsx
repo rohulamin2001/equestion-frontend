@@ -21,7 +21,7 @@ export default function TopAnnouncementBanner({ banner }) {
   // If banner has an uploaded image
   if (hasImage) {
     const ImageContent = (
-      <div className="relative w-full overflow-hidden flex items-center justify-center">
+      <div className="relative w-full overflow-hidden flex items-center justify-center bg-transparent">
         <img
           src={banner.imageUrl}
           alt={banner.text || "ক্যাম্পেইন ব্যানার"}
@@ -38,10 +38,13 @@ export default function TopAnnouncementBanner({ banner }) {
     );
 
     return (
-      <div className="relative w-full z-50 border-b border-purple-500/20 shadow-md">
+      <div className="relative w-full z-50 border-b border-purple-500/20 shadow-md bg-transparent">
         {hasLink ? (
           isInternalLink ? (
-            <Link to={banner.linkUrl} className="block w-full cursor-pointer hover:opacity-95 transition">
+            <Link
+              to={banner.linkUrl}
+              className="block w-full cursor-pointer hover:opacity-95 transition"
+            >
               {ImageContent}
             </Link>
           ) : (
@@ -75,7 +78,8 @@ export default function TopAnnouncementBanner({ banner }) {
     <div
       className="relative w-full py-2 xs:py-2.5 px-4 text-white text-xs xs:text-sm font-bengali flex items-center justify-center gap-2 sm:gap-3 transition shadow-md z-50"
       style={{
-        background: "linear-gradient(90deg, #58085f 0%, #900eb0 50%, #720a7b 100%)",
+        background:
+          "linear-gradient(90deg, #58085f 0%, #900eb0 50%, #720a7b 100%)",
       }}
     >
       <div className="flex items-center gap-2 max-w-5xl truncate">
@@ -111,7 +115,12 @@ export default function TopAnnouncementBanner({ banner }) {
         {TextBanner}
       </Link>
     ) : (
-      <a href={banner.linkUrl} target="_blank" rel="noreferrer" className="block cursor-pointer">
+      <a
+        href={banner.linkUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="block cursor-pointer"
+      >
         {TextBanner}
       </a>
     );

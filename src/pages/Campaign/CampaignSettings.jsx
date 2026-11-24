@@ -262,7 +262,16 @@ export default function CampaignSettings() {
               </label>
 
               {topBanner.imageUrl ? (
-                <div className="relative rounded-xl border border-slate-200 overflow-hidden bg-slate-900 group max-h-36">
+                <div
+                  className="relative rounded-xl border border-slate-200 overflow-hidden group max-h-36 flex items-center justify-center"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(45deg, #e2e8f0 25%, transparent 25%), linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e2e8f0 75%), linear-gradient(-45deg, transparent 75%, #e2e8f0 75%)",
+                    backgroundSize: "16px 16px",
+                    backgroundPosition: "0 0, 0 8px, 8px -8px, -8px 0px",
+                    backgroundColor: "#f8fafc",
+                  }}
+                >
                   <img
                     src={topBanner.imageUrl}
                     alt="ব্যানার প্রিভিউ"
@@ -447,11 +456,20 @@ export default function CampaignSettings() {
               </label>
 
               {popupModal.imageUrl ? (
-                <div className="relative rounded-2xl border border-slate-200 overflow-hidden bg-slate-900 group max-w-sm mx-auto">
+                <div
+                  className="relative rounded-2xl border border-slate-200 overflow-hidden group max-w-sm mx-auto flex items-center justify-center p-2"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(45deg, #e2e8f0 25%, transparent 25%), linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e2e8f0 75%), linear-gradient(-45deg, transparent 75%, #e2e8f0 75%)",
+                    backgroundSize: "16px 16px",
+                    backgroundPosition: "0 0, 0 8px, 8px -8px, -8px 0px",
+                    backgroundColor: "#f8fafc",
+                  }}
+                >
                   <img
                     src={popupModal.imageUrl}
                     alt="পপআপ প্রিভিউ"
-                    className="w-full h-auto max-h-72 object-contain mx-auto"
+                    className="w-auto max-w-full h-auto max-h-72 object-contain mx-auto drop-shadow-md"
                   />
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
                     <button
