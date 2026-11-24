@@ -39,6 +39,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { translateSubscriptionKey } from "../../constants/subscriptions";
 import { useUserContext } from "../../context/UserContext";
+import { useAcademicConfig } from "../../hooks/useAcademicConfig";
 import { usePricingManagement } from "./hook/usePricingManagement";
 
 const PRICING_TABS = [
@@ -51,6 +52,7 @@ export default function PricingManagement() {
   const {
     packages: packagesList,
     loadingPackages: packagesLoading,
+    activeVersions: packageActiveVersions,
     discounts: discountsList,
     loadingDiscounts: discountsLoading,
     subscribers: subscribersList,
@@ -68,12 +70,32 @@ export default function PricingManagement() {
     removeSubscription,
   } = usePricingManagement();
 
+  const { config } = useAcademicConfig();
+  const activeVersionIds =
+    config?.versions && config.versions.length > 0
+      ? config.versions
+      : packageActiveVersions && packageActiveVersions.length > 0
+        ? packageActiveVersions
+        : ["Bangla"];
+
+  const availableVersions = [
+    { id: "Bangla", label: "বাংলা ভার্সন" },
+    { id: "English", label: "English Version" },
+    { id: "Madrasah", label: "মাদ্রাসা" },
+  ].filter((ver) => activeVersionIds.includes(ver.id));
+
   const { role: loggedInUserRole } = useUserContext();
   const isSuperAdmin = loggedInUserRole === "Super Admin";
 
   const [activeTab, setActiveTab] = useState("packages"); // 'packages', 'discounts' or 'subscribers'
   const [selectedCategory, setSelectedCategory] = useState("tutor");
   const [selectedPkgVersion, setSelectedPkgVersion] = useState("Bangla");
+
+  const effectivePkgVersion = availableVersions.some(
+    (v) => v.id === selectedPkgVersion,
+  )
+    ? selectedPkgVersion
+    : (availableVersions[0]?.id ?? "Bangla");
   const [editingPkg, setEditingPkg] = useState(null);
   const [editPrice, setEditPrice] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -395,31 +417,29 @@ export default function PricingManagement() {
               </div>
 
               {/* Version Switcher Tabs */}
-              <div className="flex justify-center mb-2">
-                <div className="flex gap-1.5 bg-slate-100/80 p-1.5 border border-slate-200/60 rounded-xl">
-                  {[
-                    { id: "Bangla", label: "বাংলা ভার্সন" },
-                    { id: "English", label: "English Version" },
-                    { id: "Madrasah", label: "মাদ্রাসা" },
-                  ].map((ver) => {
-                    const isActive = selectedPkgVersion === ver.id;
-                    return (
-                      <button
-                        key={ver.id}
-                        type="button"
-                        onClick={() => setSelectedPkgVersion(ver.id)}
-                        className={`px-5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                          isActive
-                            ? "bg-primary text-white shadow-sm"
-                            : "text-slate-600 hover:text-slate-900"
-                        }`}
-                      >
-                        <span>{ver.label}</span>
-                      </button>
-                    );
-                  })}
+              {availableVersions.length > 0 && (
+                <div className="flex justify-center mb-2">
+                  <div className="flex gap-1.5 bg-slate-100/80 p-1.5 border border-slate-200/60 rounded-xl">
+                    {availableVersions.map((ver) => {
+                      const isActive = effectivePkgVersion === ver.id;
+                      return (
+                        <button
+                          key={ver.id}
+                          type="button"
+                          onClick={() => setSelectedPkgVersion(ver.id)}
+                          className={`px-5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                            isActive
+                              ? "bg-primary text-white shadow-sm"
+                              : "text-slate-600 hover:text-slate-900"
+                          }`}
+                        >
+                          <span>{ver.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Grid list of packages */}
               {packagesLoading ? (
@@ -441,7 +461,7 @@ export default function PricingManagement() {
                     .filter(
                       (pkg) =>
                         pkg.category === selectedCategory &&
-                        (pkg.version || "Bangla") === selectedPkgVersion,
+                        (pkg.version || "Bangla") === effectivePkgVersion,
                     )
                     .map((pkg) => (
                       <div

@@ -31,6 +31,7 @@ import { GENERATOR_CLASSES } from "../../constants/classes";
 import { translateSubscriptionKey } from "../../constants/subscriptions";
 import { useUserContext } from "../../context/UserContext";
 import apiClient from "../../lib/apiClient";
+import { useAcademicConfig } from "../../hooks/useAcademicConfig";
 import PricingCardGrid from "./components/PricingCardGrid";
 import { useSubscription } from "./hook/useSubscription";
 
@@ -40,6 +41,7 @@ export default function Subscription() {
   const {
     packages: packagesList,
     coupons: couponsList,
+    activeVersions: packageActiveVersions,
     loadingPackages: packagesLoading,
     mySubscriptions: userSubs,
     loadingSubscriptions: subsLoading,
@@ -47,6 +49,20 @@ export default function Subscription() {
     purchaseSubscription,
     checkoutMutation,
   } = useSubscription();
+
+  const { config } = useAcademicConfig();
+  const activeVersionIds =
+    config?.versions && config.versions.length > 0
+      ? config.versions
+      : packageActiveVersions && packageActiveVersions.length > 0
+        ? packageActiveVersions
+        : ["Bangla"];
+
+  const availableVersions = [
+    { id: "Bangla", label: "বাংলা ভার্সন" },
+    { id: "English", label: "English Version" },
+    { id: "Madrasah", label: "মাদ্রাসা" },
+  ].filter((ver) => activeVersionIds.includes(ver.id));
 
   const activeSubs = userSubs.filter(
     (sub) =>
@@ -60,6 +76,12 @@ export default function Subscription() {
   const [selectedSubjects, setSelectedSubjects] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("tutor");
   const [selectedVersion, setSelectedVersion] = useState("Bangla");
+
+  const effectiveVersion = availableVersions.some(
+    (v) => v.id === selectedVersion,
+  )
+    ? selectedVersion
+    : (availableVersions[0]?.id ?? "Bangla");
 
   const [checkoutPkg, setCheckoutPkg] = useState(null);
   const [couponCode, setCouponCode] = useState("");
@@ -657,38 +679,36 @@ export default function Subscription() {
           </div>
 
           {/* Version Switcher Tabs */}
-          <div className="flex justify-center mb-2">
-            <div className="flex gap-1.5 bg-slate-100/80 p-1.5 border border-slate-200/60 rounded-xl">
-              {[
-                { id: "Bangla", label: "বাংলা ভার্সন" },
-                { id: "English", label: "English Version" },
-                { id: "Madrasah", label: "মাদ্রাসা" },
-              ].map((ver) => {
-                const isActive = selectedVersion === ver.id;
-                return (
-                  <button
-                    key={ver.id}
-                    type="button"
-                    onClick={() => setSelectedVersion(ver.id)}
-                    className={`px-5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                      isActive
-                        ? "bg-primary text-white shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    <span>{ver.label}</span>
-                  </button>
-                );
-              })}
+          {availableVersions.length > 0 && (
+            <div className="flex justify-center mb-2">
+              <div className="flex gap-1.5 bg-slate-100/80 p-1.5 border border-slate-200/60 rounded-xl">
+                {availableVersions.map((ver) => {
+                  const isActive = effectiveVersion === ver.id;
+                  return (
+                    <button
+                      key={ver.id}
+                      type="button"
+                      onClick={() => setSelectedVersion(ver.id)}
+                      className={`px-5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                        isActive
+                          ? "bg-primary text-white shadow-sm"
+                          : "text-slate-600 hover:text-slate-900"
+                      }`}
+                    >
+                      <span>{ver.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Filtered Packages Grid */}
           <PricingCardGrid
             packages={packagesList}
             loading={packagesLoading}
             selectedCategory={selectedCategory}
-            selectedVersion={selectedVersion}
+            selectedVersion={effectiveVersion}
             activeSubs={activeSubs}
             categoryIcon={getCategoryIcon(selectedCategory)}
             isPurchasing={loading}

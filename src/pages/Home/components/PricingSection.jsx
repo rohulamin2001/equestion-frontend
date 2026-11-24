@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useAcademicConfig } from "../../../hooks/useAcademicConfig";
 import apiClient from "../../../lib/apiClient";
 import PricingCard from "../../Subscription/components/PricingCard";
 import PricingCardSkeleton from "../../Subscription/components/PricingCardSkeleton";
@@ -40,10 +41,31 @@ const getCategoryIcon = (catId) => {
 };
 
 export default function PricingSection({ onSelectPackage }) {
+  const { config } = useAcademicConfig();
   const [packages, setPackages] = useState([]);
+  const [apiActiveVersions, setApiActiveVersions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("tutor");
   const [selectedVersion, setSelectedVersion] = useState("Bangla");
+
+  const activeVersionIds =
+    config?.versions && config.versions.length > 0
+      ? config.versions
+      : apiActiveVersions && apiActiveVersions.length > 0
+        ? apiActiveVersions
+        : ["Bangla"];
+
+  const availableVersions = [
+    { id: "Bangla", label: "বাংলা ভার্সন" },
+    { id: "English", label: "English Version" },
+    { id: "Madrasah", label: "মাদ্রাসা" },
+  ].filter((ver) => activeVersionIds.includes(ver.id));
+
+  const effectiveVersion = availableVersions.some(
+    (v) => v.id === selectedVersion,
+  )
+    ? selectedVersion
+    : (availableVersions[0]?.id ?? "Bangla");
 
   useEffect(() => {
     let ignore = false;
@@ -51,8 +73,13 @@ export default function PricingSection({ onSelectPackage }) {
     const fetchPackages = async () => {
       try {
         const res = await apiClient.get("/subscriptions/packages");
-        if (!ignore && res.data?.packages) {
-          setPackages(res.data.packages);
+        if (!ignore && res.data) {
+          if (res.data.packages) {
+            setPackages(res.data.packages);
+          }
+          if (res.data.activeVersions && res.data.activeVersions.length > 0) {
+            setApiActiveVersions(res.data.activeVersions);
+          }
         }
       } catch (err) {
         if (!ignore) {
@@ -84,7 +111,7 @@ export default function PricingSection({ onSelectPackage }) {
   const filteredPackages = packages.filter(
     (pkg) =>
       pkg.category === selectedCategory &&
-      (pkg.version || "Bangla") === selectedVersion,
+      (pkg.version || "Bangla") === effectiveVersion,
   );
 
   return (
@@ -126,31 +153,29 @@ export default function PricingSection({ onSelectPackage }) {
         </div>
 
         {/* Version Switcher */}
-        <div className="flex justify-center mb-8 sm:mb-12">
-          <div className="flex gap-1.5 bg-slate-100/90 p-1.5 border border-slate-200/80 rounded-xl shadow-inner">
-            {[
-              { id: "Bangla", label: "বাংলা ভার্সন" },
-              { id: "English", label: "English Version" },
-              { id: "Madrasah", label: "মাদ্রাসা" },
-            ].map((ver) => {
-              const isActive = selectedVersion === ver.id;
-              return (
-                <button
-                  key={ver.id}
-                  type="button"
-                  onClick={() => setSelectedVersion(ver.id)}
-                  className={`px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                    isActive
-                      ? "bg-[var(--purple-700)] text-white shadow-sm"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  <span>{ver.label}</span>
-                </button>
-              );
-            })}
+        {availableVersions.length > 0 && (
+          <div className="flex justify-center mb-8 sm:mb-12">
+            <div className="flex gap-1.5 bg-slate-100/90 p-1.5 border border-slate-200/80 rounded-xl shadow-inner">
+              {availableVersions.map((ver) => {
+                const isActive = effectiveVersion === ver.id;
+                return (
+                  <button
+                    key={ver.id}
+                    type="button"
+                    onClick={() => setSelectedVersion(ver.id)}
+                    className={`px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? "bg-[var(--purple-700)] text-white shadow-sm"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    <span>{ver.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Packages Grid */}
         {loading ? (

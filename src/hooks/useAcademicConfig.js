@@ -25,8 +25,7 @@ export function useAcademicConfig() {
       const response = await apiClient.get("/academic-config");
       return response.data.config;
     },
-    enabled: !!userProfile,
-    staleTime: 10 * 60 * 1000, // Cache for 10 minutes
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   // Default fallback classes (Class 3 to HSC) if no config exists or loading

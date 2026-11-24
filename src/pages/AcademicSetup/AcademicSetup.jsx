@@ -176,6 +176,8 @@ export default function AcademicSetup() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["academicConfig"] });
+      queryClient.invalidateQueries({ queryKey: ["packages"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDiscounts"] });
       toast.success("প্রতিষ্ঠান কনফিগারেশন সফলভাবে সংরক্ষিত হয়েছে!");
       refetch();
       setUserEdits(null);

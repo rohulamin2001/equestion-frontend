@@ -12,6 +12,7 @@ export const useSubscription = () => {
       return {
         packages: res.data.packages || [],
         coupons: res.data.coupons || [],
+        activeVersions: res.data.activeVersions || [],
       };
     },
   });
@@ -68,6 +69,7 @@ export const useSubscription = () => {
   return {
     packages: packagesQuery.data?.packages || [],
     coupons: packagesQuery.data?.coupons || [],
+    activeVersions: packagesQuery.data?.activeVersions || [],
     loadingPackages: packagesQuery.isLoading,
     refetchPackages: packagesQuery.refetch,
 

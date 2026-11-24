@@ -16,6 +16,7 @@ export const usePricingManagement = () => {
       return {
         packages: res.data.packages || [],
         coupons: res.data.coupons || [],
+        activeVersions: res.data.activeVersions || [],
       };
     },
   });
@@ -134,6 +135,7 @@ export const usePricingManagement = () => {
     packages:
       packagesQuery.data?.packages ||
       (Array.isArray(packagesQuery.data) ? packagesQuery.data : []),
+    activeVersions: packagesQuery.data?.activeVersions || [],
     loadingPackages: packagesQuery.isLoading,
     refetchPackages: packagesQuery.refetch,
 
