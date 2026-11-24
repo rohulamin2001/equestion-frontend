@@ -21,11 +21,11 @@ export default function TopAnnouncementBanner({ banner }) {
   // If banner has an uploaded image
   if (hasImage) {
     const ImageContent = (
-      <div className="relative w-full max-h-24 sm:max-h-28 overflow-hidden bg-slate-950 flex items-center justify-center">
+      <div className="relative w-full overflow-hidden flex items-center justify-center">
         <img
           src={banner.imageUrl}
           alt={banner.text || "ক্যাম্পেইন ব্যানার"}
-          className="w-full h-auto max-h-24 sm:max-h-28 object-contain sm:object-cover mx-auto"
+          className="w-full h-16 xs:h-20 sm:h-24 md:h-28 object-cover object-center block"
         />
         {hasText && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center px-4 text-center">
@@ -61,7 +61,7 @@ export default function TopAnnouncementBanner({ banner }) {
         <button
           type="button"
           onClick={() => setDismissed(true)}
-          className="absolute right-2 top-2 p-1 rounded-full bg-black/50 text-white hover:bg-black/80 transition cursor-pointer z-10"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/60 text-white hover:bg-black/85 backdrop-blur-sm transition cursor-pointer z-10 shadow-md"
           aria-label="ব্যানার বন্ধ করুন"
         >
           <X className="size-3.5" />
