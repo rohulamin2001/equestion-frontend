@@ -37,6 +37,7 @@ import {
   KeyRound,
   LayoutDashboard,
   LogOut,
+  Megaphone,
   Monitor,
   PlusCircle,
   Printer,
@@ -183,6 +184,12 @@ const DATA = {
           title: "প্যাকেজ ও ডিসকাউন্ট",
           url: "/dashboard/admin/pricing",
           icon: CreditCard,
+          roles: ["Super Admin", "Admin"],
+        },
+        {
+          title: "ক্যাম্পেইন",
+          url: "/dashboard/campaign",
+          icon: Megaphone,
           roles: ["Super Admin", "Admin"],
         },
         {

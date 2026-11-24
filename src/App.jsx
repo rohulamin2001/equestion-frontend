@@ -9,6 +9,7 @@ import AffiliateLogin from "./pages/Affiliate/AffiliateLogin";
 import AffiliateDashboard from "./pages/Affiliate/AffiliateDashboard";
 import AdminAffiliates from "./pages/Affiliate/AdminAffiliates";
 import AddQuestion from "./pages/AddQuestion/AddQuestion";
+import CampaignSettings from "./pages/Campaign/CampaignSettings";
 import DashboardLayout from "./pages/DashboardLayout/DashboardLayout";
 import Exams from "./pages/Exams/Exams";
 import Generator from "./pages/Generator/Generator";
@@ -252,6 +253,15 @@ export default function App() {
             element={
               <RoleRouteGuard allowedRoles={["Super Admin", "Admin"]}>
                 <AdminAffiliates />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
+            path="campaign"
+            element={
+              <RoleRouteGuard allowedRoles={["Super Admin", "Admin"]}>
+                <CampaignSettings />
               </RoleRouteGuard>
             }
           />

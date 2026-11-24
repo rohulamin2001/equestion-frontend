@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext";
+import apiClient from "../../lib/apiClient";
+import AffiliateCallout from "./components/AffiliateCallout";
+import CampaignPopupModal from "./components/CampaignPopupModal";
 import CTASection from "./components/CTASection";
 import FAQSection from "./components/FAQSection";
-import AffiliateCallout from "./components/AffiliateCallout";
 import HeroHighlights from "./components/HeroHighlights";
 import HeroSection from "./components/HeroSection";
 import LandingFooter from "./components/LandingFooter";
@@ -13,12 +15,32 @@ import OnlineExamSection from "./components/OnlineExamSection";
 import PlatformSection from "./components/PlatformSection";
 import QuestionGeneratorSection from "./components/QuestionGeneratorSection";
 import TargetUsers from "./components/TargetUsers";
+import TopAnnouncementBanner from "./components/TopAnnouncementBanner";
 import TrustSection from "./components/TrustSection";
 import WorkflowSection from "./components/WorkflowSection";
 
 export default function Home() {
   const { userProfile, openAuthDrawer } = useUserContext();
   const { hash } = useLocation();
+  const [campaignSettings, setCampaignSettings] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchCampaigns = async () => {
+      try {
+        const res = await apiClient.get("/campaigns/public");
+        if (isMounted && res.data?.success && res.data?.settings) {
+          setCampaignSettings(res.data.settings);
+        }
+      } catch (e) {
+        console.error("Public campaign fetch error:", e);
+      }
+    };
+    fetchCampaigns();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!hash) return;
@@ -79,6 +101,7 @@ export default function Home() {
       </div>
 
       <div className="relative z-10">
+        <TopAnnouncementBanner banner={campaignSettings?.topBanner} />
         <LandingNavbar onLogin={onLogin} />
         <main className="overflow-x-hidden">
           <HeroSection onDemo={scrollToFeatures} onSubscribe={onSubscribe} />
@@ -96,6 +119,7 @@ export default function Home() {
         </main>
         <LandingFooter />
       </div>
+      <CampaignPopupModal modal={campaignSettings?.popupModal} />
     </div>
   );
 }
