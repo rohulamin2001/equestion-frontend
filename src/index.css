@@ -885,3 +885,51 @@ div[data-ml-keyboard] {
 .amplification-solution p:last-child {
   margin-bottom: 0;
 }
+
+/* ========================================================
+   MCQ Options & Mathematical Notation Clearance
+   Ensures fractions, square roots, and superscripts/subscripts
+   have full natural height without clipping or scrollbars.
+   ======================================================== */
+.mcq-option-render {
+  overflow: visible !important;
+  line-height: normal !important;
+}
+
+.mcq-option-render * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.mcq-option-render *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.mcq-option-render .katex,
+.mcq-option-render .katex-html {
+  overflow: visible !important;
+  white-space: nowrap !important;
+}
+
+.mcq-option-render .katex .base {
+  overflow: visible !important;
+  white-space: nowrap !important;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.mcq-option-render sup {
+  vertical-align: super;
+  font-size: 0.75em;
+  line-height: 0;
+  overflow: visible !important;
+}
+
+.mcq-option-render sub {
+  vertical-align: sub;
+  font-size: 0.75em;
+  line-height: 0;
+  overflow: visible !important;
+}

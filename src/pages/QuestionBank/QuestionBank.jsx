@@ -1257,7 +1257,7 @@ export default function QuestionBank() {
                               </div>
 
                               {/* Options Grid */}
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 pl-2 sm:pl-6 mt-2.5 sm:mt-3 text-sm sm:text-[15px]">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pl-2 sm:pl-6 mt-2.5 sm:mt-3 text-sm sm:text-[15px]">
                                 {q.mcqData?.options?.map((opt, idx) => {
                                   const isCorrect =
                                     isAnswerVisible &&
@@ -1265,11 +1265,11 @@ export default function QuestionBank() {
                                   return (
                                     <div
                                       key={idx}
-                                      className={`flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border transition-all duration-300 ${isCorrect ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm" : "bg-white border-black/[0.04] text-slate-600"}`}
+                                      className={`flex items-center justify-between gap-2.5 px-3.5 sm:px-4 py-2.5 sm:py-3 min-h-[46px] sm:min-h-[50px] h-auto rounded-xl border transition-all duration-300 ${isCorrect ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm" : "bg-white border-black/[0.04] text-slate-600 hover:border-black/[0.08]"}`}
                                     >
-                                      <div className="flex items-center gap-2 sm:gap-2.5">
+                                      <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-visible">
                                         <span
-                                          className={`size-5 sm:size-6 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-semibold transition-all shrink-0 ${isCorrect ? "bg-emerald-500 text-white" : "bg-black/[0.04] text-slate-500"}`}
+                                          className={`size-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all shrink-0 ${isCorrect ? "bg-emerald-500 text-white" : "bg-black/[0.04] text-slate-500"}`}
                                         >
                                           {idx === 0
                                             ? "ক"
@@ -1279,13 +1279,16 @@ export default function QuestionBank() {
                                                 ? "গ"
                                                 : "ঘ"}
                                         </span>
-                                        <RichTextRender
-                                          content={opt}
-                                          className={`inline-block ${isCorrect ? "text-emerald-800" : "font-normal"}`}
-                                        />
+                                        <div className="min-w-0 flex-1 overflow-visible mcq-option-render">
+                                          <RichTextRender
+                                            content={opt}
+                                            inline
+                                            className={`inline-block leading-relaxed overflow-visible ${isCorrect ? "text-emerald-800 font-semibold" : "font-normal text-slate-700"}`}
+                                          />
+                                        </div>
                                       </div>
                                       {isCorrect && (
-                                        <Check className="size-3.5 sm:size-4 text-emerald-600 shrink-0" />
+                                        <Check className="size-4 text-emerald-600 shrink-0 ml-2" />
                                       )}
                                     </div>
                                   );
@@ -1533,7 +1536,7 @@ export default function QuestionBank() {
                         </div>
 
                         {/* Options Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 pl-2 sm:pl-6 text-sm sm:text-[15px] font-serif">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pl-2 sm:pl-6 text-sm sm:text-[15px] font-serif">
                           {q.mcqData.options &&
                             q.mcqData.options.slice(0, 4).map((opt, idx) => {
                               const isCorrect =
@@ -1542,15 +1545,15 @@ export default function QuestionBank() {
                               return (
                                 <div
                                   key={idx}
-                                  className={`flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border transition-all duration-300 ${
+                                  className={`flex items-center justify-between gap-2.5 px-3.5 sm:px-4 py-2.5 sm:py-3 min-h-[46px] sm:min-h-[50px] h-auto rounded-xl border transition-all duration-300 ${
                                     isCorrect
                                       ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm"
                                       : "bg-white/[0.3] hover:bg-white/[0.6] border-black/[0.03] hover:border-black/[0.08] text-slate-600"
                                   }`}
                                 >
-                                  <div className="flex items-center gap-2 sm:gap-2.5">
+                                  <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-visible">
                                     <span
-                                      className={`size-5 sm:size-6 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-semibold transition-all shrink-0 ${
+                                      className={`size-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all shrink-0 ${
                                         isCorrect
                                           ? "bg-emerald-500 text-white"
                                           : "bg-black/[0.04] text-slate-500"
@@ -1564,13 +1567,16 @@ export default function QuestionBank() {
                                             ? "গ"
                                             : "ঘ"}
                                     </span>
-                                    <RichTextRender
-                                      content={opt}
-                                      className={`inline-block  ${isCorrect ? " text-emerald-800" : "font-normal"}`}
-                                    />
+                                    <div className="min-w-0 flex-1 overflow-visible mcq-option-render">
+                                      <RichTextRender
+                                        content={opt}
+                                        inline
+                                        className={`inline-block leading-relaxed overflow-visible ${isCorrect ? " text-emerald-800 font-semibold" : "font-normal text-slate-700"}`}
+                                      />
+                                    </div>
                                   </div>
                                   {isCorrect && (
-                                    <Check className="size-3.5 sm:size-4 text-emerald-600 shrink-0" />
+                                    <Check className="size-4 text-emerald-600 shrink-0 ml-2" />
                                   )}
                                 </div>
                               );
@@ -2333,27 +2339,32 @@ export default function QuestionBank() {
                                   return (
                                     <div
                                       key={idx}
-                                      className={`flex items-center gap-3 px-4 py-2 rounded-xl border transition-all duration-200 ${
+                                      className={`flex items-center justify-between gap-3 px-4 py-2.5 sm:py-3 min-h-[46px] sm:min-h-[50px] h-auto rounded-xl border transition-all duration-200 ${
                                         isCorrect
                                           ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-700 font-semibold"
                                           : "border-black/[0.04] bg-slate-50/50 hover:bg-slate-50 text-slate-650"
                                       }`}
                                     >
-                                      <span
-                                        className={`shrink-0 font-bold ${isCorrect ? "text-emerald-500" : "text-slate-400"}`}
-                                      >
-                                        {idx === 0
-                                          ? "ক)"
-                                          : idx === 1
-                                            ? "খ)"
-                                            : idx === 2
-                                              ? "গ)"
-                                              : "ঘ)"}
-                                      </span>
-                                      <RichTextRender
-                                        content={opt}
-                                        className={`inline-block font-serif [&_p]:inline [&_p]:m-0 ${isCorrect ? "font-semibold text-emerald-800" : "font-normal"}`}
-                                      />
+                                      <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-visible">
+                                        <span
+                                          className={`shrink-0 font-bold ${isCorrect ? "text-emerald-500" : "text-slate-400"}`}
+                                        >
+                                          {idx === 0
+                                            ? "ক)"
+                                            : idx === 1
+                                              ? "খ)"
+                                              : idx === 2
+                                                ? "গ)"
+                                                : "ঘ)"}
+                                        </span>
+                                        <div className="min-w-0 flex-1 overflow-visible mcq-option-render">
+                                          <RichTextRender
+                                            content={opt}
+                                            inline
+                                            className={`inline-block font-serif leading-relaxed overflow-visible ${isCorrect ? "font-semibold text-emerald-800" : "font-normal text-slate-700"}`}
+                                          />
+                                        </div>
+                                      </div>
                                       {isCorrect && (
                                         <Check className="size-4 text-emerald-600 ml-auto shrink-0" />
                                       )}

@@ -1470,18 +1470,21 @@ export default function MyQuestions() {
                                   return (
                                     <div
                                       key={idx}
-                                      className={`flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border transition-all duration-300 ${isCorrect ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm" : "bg-white border-black/[0.04] text-slate-600"}`}
+                                      className={`min-h-[46px] sm:min-h-[50px] h-auto flex items-center justify-between gap-2 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border transition-all duration-300 ${isCorrect ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm" : "bg-white border-black/[0.04] text-slate-600"}`}
                                     >
-                                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                      <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-visible">
                                         <span
                                           className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all shrink-0 ${isCorrect ? "bg-emerald-500 text-white" : "bg-black/[0.04] text-slate-500"}`}
                                         >
                                           {optLetter}
                                         </span>
-                                        <RichTextRender
-                                          content={opt}
-                                          className={`inline-block ${isCorrect ? "text-emerald-800" : "font-normal"}`}
-                                        />
+                                        <div className="min-w-0 flex-1 overflow-visible mcq-option-render">
+                                          <RichTextRender
+                                            content={opt}
+                                            inline
+                                            className={`inline-block leading-relaxed overflow-visible ${isCorrect ? "text-emerald-800" : "font-normal"}`}
+                                          />
+                                        </div>
                                       </div>
                                       <div className="flex items-center gap-2 shrink-0">
                                         {optHasImage && (
@@ -1885,13 +1888,13 @@ export default function MyQuestions() {
                               return (
                                 <div
                                   key={idx}
-                                  className={`flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border transition-all duration-300 ${
+                                  className={`min-h-[46px] sm:min-h-[50px] h-auto flex items-center justify-between gap-2 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border transition-all duration-300 ${
                                     isCorrect
                                       ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-700 shadow-sm"
                                       : "bg-white/[0.3] hover:bg-white/[0.6] border-black/[0.03] hover:border-black/[0.08] text-slate-600"
                                   }`}
                                 >
-                                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                  <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-visible">
                                     <span
                                       className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all shrink-0 ${
                                         isCorrect
@@ -1901,10 +1904,13 @@ export default function MyQuestions() {
                                     >
                                       {optLetter}
                                     </span>
-                                    <RichTextRender
-                                      content={opt}
-                                      className={`inline-block ${isCorrect ? " text-emerald-800" : "font-normal"}`}
-                                    />
+                                    <div className="min-w-0 flex-1 overflow-visible mcq-option-render">
+                                      <RichTextRender
+                                        content={opt}
+                                        inline
+                                        className={`inline-block leading-relaxed overflow-visible ${isCorrect ? " text-emerald-800" : "font-normal"}`}
+                                      />
+                                    </div>
                                   </div>
                                   <div className="flex items-center gap-2 shrink-0">
                                     {optHasImage && (

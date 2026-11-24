@@ -59,7 +59,7 @@ function sanitizePastedWebArtifacts(html) {
 }
 
 // Utility to find LaTeX syntax in HTML and render it to KaTeX HTML
-function parseAndRenderMath(html) {
+function parseAndRenderMath(html, isInline = false) {
   if (!html) return "";
 
   let processedHtml = html;
@@ -75,8 +75,9 @@ function parseAndRenderMath(html) {
       // keep rawLatex on decode error
     }
     const isBlock =
-      match.includes('data-display-mode="block"') ||
-      tag.toLowerCase() === "div";
+      !isInline &&
+      (match.includes('data-display-mode="block"') ||
+        tag.toLowerCase() === "div");
 
     try {
       const rendered = katex.renderToString(latex.trim(), {
@@ -98,6 +99,12 @@ function parseAndRenderMath(html) {
   processedHtml = processedHtml.replace(blockRegex, (match, p1, p2) => {
     const formula = p1 || p2;
     try {
+      if (isInline) {
+        return katex.renderToString(formula.trim(), {
+          displayMode: false,
+          throwOnError: false,
+        });
+      }
       return `<div class="katex-block-wrapper my-4 flex justify-center overflow-x-auto">${katex.renderToString(
         formula.trim(),
         {
@@ -171,14 +178,14 @@ export default function RichTextRender({
     const resolvedHtml = resolveRelativeHtmlImages(rawContent);
     const sanitizedHtml = sanitizeQuestionImageHtml(resolvedHtml);
     const cleanedArtifacts = sanitizePastedWebArtifacts(sanitizedHtml);
-    const parsed = parseAndRenderMath(cleanedArtifacts);
+    const parsed = parseAndRenderMath(cleanedArtifacts, inline);
     return inline ? stripOuterP(parsed) : parsed;
   }, [content, html, inline]);
 
   if (inline) {
     return (
       <span
-        className={`inline [&_p]:inline [&_p]:m-0 [&_p]:p-0 [&_span]:inline [&_img]:!rounded-none [&_img]:!shadow-none [&_img]:!max-w-full [&_img]:h-auto [&_img]:object-contain text-inherit select-text break-words jodit-rendered-content ${className}`}
+        className={`inline [&_p]:inline [&_p]:m-0 [&_p]:p-0 [&_img]:!rounded-none [&_img]:!shadow-none [&_img]:!max-w-full [&_img]:h-auto [&_img]:object-contain text-inherit select-text break-normal jodit-rendered-content ${className}`}
         dangerouslySetInnerHTML={{ __html: renderedContent }}
         {...props}
       />
