@@ -1,34 +1,49 @@
 import { ExternalLink, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 
-export default function CampaignPopupModal({ modal }) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function CampaignPopupModal({
+  modal,
+  isOpen: controlledIsOpen,
+  onClose,
+}) {
+  const [dismissed, setDismissed] = useState(false);
 
-  useEffect(() => {
-    if (modal?.isActive && modal?.imageUrl) {
-      // Trigger modal open on reload/enter
-      setIsOpen(true);
+  const isControlled = controlledIsOpen !== undefined;
+  // If controlled (e.g. test preview), use controlledIsOpen.
+  // If uncontrolled (live website), show if active, has image, and not dismissed yet.
+  const isOpen = isControlled
+    ? Boolean(controlledIsOpen)
+    : Boolean(modal?.isActive && modal?.imageUrl && !dismissed);
+
+  const handleClose = () => {
+    if (!isControlled) {
+      setDismissed(true);
     }
-  }, [modal?.isActive, modal?.imageUrl]);
+    onClose?.();
+  };
 
+  // Sync external DOM and listeners only when modal is open
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
-        setIsOpen(false);
+        handleClose();
       }
     };
-    if (isOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
-    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
     };
   }, [isOpen]);
 
-  if (!modal || !modal.isActive || !modal.imageUrl || !isOpen) {
+  if (typeof document === "undefined" || !modal || !modal.imageUrl || !isOpen) {
     return null;
   }
 
@@ -53,12 +68,12 @@ export default function CampaignPopupModal({ modal }) {
     </div>
   );
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 xs:p-4 sm:p-6 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 xs:p-4 sm:p-6 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
       {/* Backdrop click dismiss */}
       <div
         className="absolute inset-0 -z-10"
-        onClick={() => setIsOpen(false)}
+        onClick={handleClose}
         aria-hidden="true"
       />
 
@@ -66,8 +81,8 @@ export default function CampaignPopupModal({ modal }) {
         {/* Close Button */}
         <button
           type="button"
-          onClick={() => setIsOpen(false)}
-          className="absolute -top-3.5 -right-2.5 sm:-top-4 sm:-right-4 size-9 sm:size-10 rounded-full bg-white text-slate-900 shadow-xl border border-slate-200 flex items-center justify-center hover:bg-slate-100 hover:scale-105 transition cursor-pointer z-20"
+          onClick={handleClose}
+          className="absolute -top-3.5 -right-2.5 sm:-top-4 sm:-right-4 size-9 sm:size-10 rounded-full bg-white text-slate-900 shadow-2xl border border-slate-200 flex items-center justify-center hover:bg-slate-100 hover:scale-105 transition cursor-pointer z-20"
           aria-label="মডাল বন্ধ করুন"
         >
           <X className="size-5" />
@@ -78,7 +93,7 @@ export default function CampaignPopupModal({ modal }) {
           isInternalLink ? (
             <Link
               to={modal.linkUrl}
-              onClick={() => setIsOpen(false)}
+              onClick={handleClose}
               className="block w-full cursor-pointer"
             >
               {ImageWrapper}
@@ -88,7 +103,7 @@ export default function CampaignPopupModal({ modal }) {
               href={modal.linkUrl}
               target="_blank"
               rel="noreferrer"
-              onClick={() => setIsOpen(false)}
+              onClick={handleClose}
               className="block w-full cursor-pointer"
             >
               {ImageWrapper}
@@ -98,6 +113,7 @@ export default function CampaignPopupModal({ modal }) {
           ImageWrapper
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

@@ -49,7 +49,11 @@ function YoutubeIcon({ className = "size-4" }) {
       className={className}
     >
       <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
-      <polygon points="10 15 15 12 10 9 10 15" fill="currentColor" stroke="none" />
+      <polygon
+        points="10 15 15 12 10 9 10 15"
+        fill="currentColor"
+        stroke="none"
+      />
     </svg>
   );
 }
@@ -137,7 +141,8 @@ export default function LandingFooter() {
                 >
                   <MapPin className="size-4 shrink-0 text-purple-300 mt-0.5 group-hover:text-purple-200 transition" />
                   <span className="leading-relaxed">
-                    সিডস্টোর বাজার (ইন্ডাস্ট্রিয়াল এরিয়া), হবিরবাড়ী, ভালুকা–২২৪০, ময়মনসিংহ।
+                    সিডস্টোর বাজার (ইন্ডাস্ট্রিয়াল এরিয়া), হবিরবাড়ী,
+                    ভালুকা–২২৪০, ময়মনসিংহ।
                   </span>
                 </a>
               </div>

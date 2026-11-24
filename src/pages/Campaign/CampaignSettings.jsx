@@ -595,6 +595,8 @@ export default function CampaignSettings() {
             imageUrl: popupModal.imageUrl,
             linkUrl: popupModal.linkUrl,
           }}
+          isOpen={testModalOpen}
+          onClose={() => setTestModalOpen(false)}
         />
       )}
     </div>
