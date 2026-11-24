@@ -17,6 +17,7 @@ import QuestionGeneratorSection from "./components/QuestionGeneratorSection";
 import TargetUsers from "./components/TargetUsers";
 import TopAnnouncementBanner from "./components/TopAnnouncementBanner";
 import TrustSection from "./components/TrustSection";
+import PricingSection from "./components/PricingSection";
 import WorkflowSection from "./components/WorkflowSection";
 
 export default function Home() {
@@ -113,6 +114,7 @@ export default function Home() {
           <WorkflowSection />
           <TargetUsers />
           <TrustSection />
+          <PricingSection onSelectPackage={onSubscribe} />
           <CTASection onDemo={scrollToFeatures} onSubscribe={onSubscribe} />
           <FAQSection />
           <AffiliateCallout />

@@ -3,6 +3,7 @@ export const NAV_LINKS = [
   { href: "#platform", label: "ফিচার" },
   { href: "#workflow", label: "কীভাবে কাজ করে" },
   { href: "#omr", label: "মূল্যায়ন" },
+  { href: "#pricing", label: "প্রাইসিং" },
   { href: "#faq", label: "FAQ" },
 ];
 
