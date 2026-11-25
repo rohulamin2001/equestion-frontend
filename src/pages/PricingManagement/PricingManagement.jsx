@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { translateSubscriptionKey } from "../../constants/subscriptions";
 import { useUserContext } from "../../context/UserContext";
@@ -757,6 +758,27 @@ export default function PricingManagement() {
           {/* Tab 3: Subscribers list */}
           {activeTab === "subscribers" && (
             <div className="space-y-6">
+              <div className="rounded-2xl border border-indigo-200/80 bg-gradient-to-r from-indigo-50/80 via-purple-50/70 to-white p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
+                    <UserCheck className="size-4" />
+                  </div>
+                  <div className="font-bengali">
+                    <p className="text-xs sm:text-sm font-bold text-slate-800">
+                      নতুন পূর্ণাঙ্গ সাবস্ক্রাইবার ব্যবস্থাপনা প্যানেল যুক্ত হয়েছে!
+                    </p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      ফিল্টার, ম্যানুয়াল প্ল্যান বরাদ্দ, মেয়াদ বাড়ানো, SMS, ইনভয়েস, ডিভাইস লগআউট এবং View-as-User সহ সব নিয়ন্ত্রণ পাবেন নতুন প্যানেলে।
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  to="/dashboard/subscribers"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 transition shrink-0 font-bengali"
+                >
+                  <span>সাবস্ক্রাইবার ব্যবস্থাপনায় যান</span>
+                </Link>
+              </div>
               {/* Search bar */}
               <div className="flex items-center gap-3 bg-glass p-4 border rounded-2xl shadow-sm">
                 <div className="relative flex-1">

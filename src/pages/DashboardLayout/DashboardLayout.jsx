@@ -16,7 +16,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useUserContext } from "@/context/UserContext";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { ArrowLeft, Eye } from "lucide-react";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const ROUTE_TITLES = {
   "/dashboard": "ড্যাশবোর্ড ওভারভিউ",
@@ -32,6 +33,7 @@ const ROUTE_TITLES = {
   "/dashboard/omr/evaluator": "ওএমআর মূল্যায়ন ও ফলাফল",
   "/dashboard/omr": "ওএমআর মূল্যায়ন ও ফলাফল",
   "/dashboard/staff": "স্টাফ ব্যবস্থাপনা",
+  "/dashboard/subscribers": "সাবস্ক্রাইবার ব্যবস্থাপনা",
   "/dashboard/syllabus": "সিলেবাস ব্যবস্থাপনা",
   "/dashboard/subject-setup": "সাবজেক্ট সেটআপ",
   "/dashboard/metadata-setup": "মেটাডাটা সেটআপ",
@@ -49,8 +51,15 @@ const ROUTE_TITLES = {
 };
 
 export default function DashboardLayout() {
-  const { userProfile, role, loading: profileLoading } = useUserContext();
+  const {
+    userProfile,
+    role,
+    loading: profileLoading,
+    isImpersonation,
+    exitImpersonation,
+  } = useUserContext();
   const location = useLocation();
+  const navigate = useNavigate();
 
   if (profileLoading) {
     return (
@@ -92,6 +101,33 @@ export default function DashboardLayout() {
 
           <RadixSidebar className="relative z-10" />
           <SidebarInset className="flex-1 flex flex-col min-w-0 bg-transparent relative z-10">
+            {isImpersonation && (
+              <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm font-bengali shadow-md z-50">
+                <div className="flex items-center gap-2 font-semibold">
+                  <Eye className="size-4 shrink-0 animate-pulse" />
+                  <span>
+                    ভিউ-অ্যাজ মোড (Read-Only): আপনি{" "}
+                    <strong className="underline underline-offset-2">
+                      {userProfile.institutionName ||
+                        userProfile.fullName ||
+                        userProfile.phoneNumber}
+                    </strong>
+                    -এর ড্যাশবোর্ড দেখছেন।
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await exitImpersonation();
+                    navigate("/dashboard/subscribers");
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white text-slate-900 hover:bg-slate-100 font-bold text-xs shadow-sm transition cursor-pointer shrink-0"
+                >
+                  <ArrowLeft className="size-3.5" />
+                  <span>অ্যাডমিন প্যানেলে ফিরে যান</span>
+                </button>
+              </div>
+            )}
             {/* Top Header - Saturated Light Glass Layer */}
             <header className="flex h-16 shrink-0 items-center justify-between border-b border-black/[0.05] bg-white/[0.40] backdrop-blur-[20px] saturate-[180%] px-6 sticky top-0 z-50 transition-[width,height] ease-linear">
               <div className="flex items-center gap-2">

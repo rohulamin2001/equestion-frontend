@@ -39,6 +39,7 @@ import QuestionSelect from "./pages/Questions/QuestionSelect";
 import Signup from "./pages/Signup/Signup";
 import StaffManagement from "./pages/Staff/StaffManagement";
 import SubjectSetup from "./pages/SubjectSetup/SubjectSetup";
+import SubscriberManagement from "./pages/Subscribers/SubscriberManagement";
 import Subscription from "./pages/Subscription/Subscription";
 import AdminSupportCenter from "./pages/Support/AdminSupportCenter";
 import SupportDesk from "./pages/Support/SupportDesk";
@@ -90,6 +91,15 @@ export default function App() {
             element={
               <RoleRouteGuard allowedRoles={["Super Admin", "Admin"]}>
                 <StaffManagement />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
+            path="subscribers"
+            element={
+              <RoleRouteGuard allowedRoles={["Super Admin", "Admin"]}>
+                <SubscriberManagement />
               </RoleRouteGuard>
             }
           />

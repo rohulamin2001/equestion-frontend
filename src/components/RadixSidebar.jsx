@@ -46,6 +46,7 @@ import {
   Sliders,
   Sparkles,
   Sparkles as SparklesIcon,
+  UserCheck,
   Users,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -154,6 +155,12 @@ const DATA = {
           title: "স্টাফ ব্যবস্থাপনা",
           url: "/dashboard/staff",
           icon: Users,
+          roles: ["Super Admin", "Admin"],
+        },
+        {
+          title: "সাবস্ক্রাইবার ব্যবস্থাপনা",
+          url: "/dashboard/subscribers",
+          icon: UserCheck,
           roles: ["Super Admin", "Admin"],
         },
         {

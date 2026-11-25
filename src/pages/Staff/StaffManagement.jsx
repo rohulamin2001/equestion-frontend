@@ -132,11 +132,11 @@ export default function StaffManagement() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">
-            স্টাফ ও ইউজার ব্যবস্থাপনা
+            স্টাফ ব্যবস্থাপনা
           </h1>
           <p className="text-slate-500 text-sm mt-1 font-bengali">
-            প্যানেলের এডমিন, স্টাফ ও ব্যবহারকারীদের সরাসরি এখানে যুক্ত, পরিচালনা
-            ও ২-স্টেপ সিকিউরিটি রিসেট করুন।
+            প্যানেলের এডমিন ও স্টাফ মেম্বারদের সরাসরি এখানে যুক্ত, পরিচালনা ও
+            ২-স্টেপ সিকিউরিটি রিসেট করুন।
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
@@ -180,7 +180,6 @@ export default function StaffManagement() {
             { id: "Content Manager", label: "কন্টেন্ট ম্যানেজার" },
             { id: "Question Creator", label: "প্রশ্ন ক্রিয়েটর" },
             { id: "Support Team", label: "সাপোর্ট টিম" },
-            { id: "Subscriber", label: "সাবস্ক্রাইবারগণ" },
           ].map((item) => (
             <button
               key={item.id}
@@ -358,7 +357,6 @@ export default function StaffManagement() {
                                 "Content Manager",
                                 "Question Creator",
                                 "Support Team",
-                                "Subscriber",
                               ].map((roleKey) => {
                                 const isSelected = member.role === roleKey;
                                 const conf = ROLE_CONFIGS[roleKey];

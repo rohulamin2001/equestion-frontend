@@ -1,6 +1,10 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
-import apiClient, { getAccessToken, setAccessToken } from "../lib/apiClient";
+import apiClient, {
+  getAccessToken,
+  setAccessToken,
+  setImpersonating,
+} from "../lib/apiClient";
 
 const UserContext = createContext(null);
 
@@ -9,6 +13,8 @@ export const UserProvider = ({ children }) => {
   const [isInitializing, setIsInitializing] = useState(true);
   const [isAuthDrawerOpen, setIsAuthDrawerOpen] = useState(false);
   const [drawerDefaultTab, setDrawerDefaultTab] = useState("login"); // 'login' or 'register'
+  const [savedAdminToken, setSavedAdminToken] = useState(null);
+  const [isImpersonation, setIsImpersonation] = useState(false);
 
   // Attempt token restore from httpOnly refresh cookie on app init
   useEffect(() => {
@@ -79,16 +85,50 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const startImpersonation = async (impersonationToken) => {
+    if (!impersonationToken) return;
+    setSavedAdminToken(getAccessToken());
+    setImpersonating(true);
+    setIsImpersonation(true);
+    setAccessToken(impersonationToken);
+    queryClient.clear();
+    await refetch();
+  };
+
+  const exitImpersonation = async () => {
+    setImpersonating(false);
+    setIsImpersonation(false);
+    let restoredToken = savedAdminToken;
+    if (!restoredToken) {
+      try {
+        const res = await apiClient.post("/auth/refresh");
+        restoredToken = res.data?.accessToken || null;
+      } catch {
+        restoredToken = null;
+      }
+    }
+    setSavedAdminToken(null);
+    setAccessToken(restoredToken);
+    queryClient.clear();
+    await refetch();
+  };
+
   const logout = async () => {
     try {
+      if (isImpersonation) {
+        await exitImpersonation();
+        return;
+      }
       await apiClient.post("/auth/logout");
     } catch (err) {
       console.error("Logout error:", err);
     } finally {
-      setIsAuthDrawerOpen(false);
-      setAccessToken(null);
-      queryClient.setQueryData(["userProfile", null], null);
-      queryClient.invalidateQueries();
+      if (!isImpersonation) {
+        setIsAuthDrawerOpen(false);
+        setAccessToken(null);
+        queryClient.setQueryData(["userProfile", null], null);
+        queryClient.invalidateQueries();
+      }
     }
   };
 
@@ -106,6 +146,9 @@ export const UserProvider = ({ children }) => {
         login,
         complete2FALogin,
         logout,
+        isImpersonation,
+        startImpersonation,
+        exitImpersonation,
       }}
     >
       {children}

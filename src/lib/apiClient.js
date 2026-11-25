@@ -2,6 +2,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 let inMemoryToken = null;
+let impersonatingFlag = false;
 
 export const setAccessToken = (token) => {
   inMemoryToken = token;
@@ -10,6 +11,12 @@ export const setAccessToken = (token) => {
 export const getAccessToken = () => {
   return inMemoryToken;
 };
+
+export const setImpersonating = (active) => {
+  impersonatingFlag = Boolean(active);
+};
+
+export const getIsImpersonating = () => impersonatingFlag;
 
 const apiClient = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api`,
@@ -68,8 +75,9 @@ apiClient.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      // Do not retry refresh route itself or login endpoints
+      // Do not refresh or mutate tokens during read-only impersonation or on auth endpoints
       if (
+        impersonatingFlag ||
         originalRequest.url?.includes("/auth/refresh") ||
         originalRequest.url?.includes("/auth/login") ||
         originalRequest.url?.includes("/affiliate/login") ||

@@ -42,7 +42,6 @@ export function useStaffManagement() {
       const params = {};
       if (searchQuery.trim()) {
         params.search = searchQuery.trim();
-        params.includeSubscribers = "true";
       }
       if (roleFilter && roleFilter !== "all") {
         params.role = roleFilter;
