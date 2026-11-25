@@ -21,11 +21,11 @@ export default function TopAnnouncementBanner({ banner }) {
   // If banner has an uploaded image
   if (hasImage) {
     const ImageContent = (
-      <div className="relative w-full overflow-hidden flex items-center justify-center bg-transparent">
+      <div className="relative w-full flex items-center justify-center bg-transparent">
         <img
           src={banner.imageUrl}
           alt={banner.text || "ক্যাম্পেইন ব্যানার"}
-          className="w-full h-16 xs:h-20 sm:h-24 md:h-28 object-cover object-center block"
+          className="w-full h-auto block select-none"
         />
         {hasText && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center px-4 text-center">
@@ -38,7 +38,7 @@ export default function TopAnnouncementBanner({ banner }) {
     );
 
     return (
-      <div className="relative w-full z-50 border-b border-purple-500/20 shadow-md bg-transparent">
+      <div className="relative w-full z-50 bg-transparent">
         {hasLink ? (
           isInternalLink ? (
             <Link
@@ -64,10 +64,10 @@ export default function TopAnnouncementBanner({ banner }) {
         <button
           type="button"
           onClick={() => setDismissed(true)}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/60 text-white hover:bg-black/85 backdrop-blur-sm transition cursor-pointer z-10 shadow-md"
+          className="absolute right-1.5 sm:right-2.5 top-1/2 -translate-y-1/2 p-1 sm:p-1.5 rounded-full bg-black/60 text-white hover:bg-black/85 backdrop-blur-sm transition cursor-pointer z-10 shadow-md"
           aria-label="ব্যানার বন্ধ করুন"
         >
-          <X className="size-3.5" />
+          <X className="size-3 sm:size-3.5" />
         </button>
       </div>
     );

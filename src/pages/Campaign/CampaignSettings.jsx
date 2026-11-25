@@ -312,7 +312,7 @@ export default function CampaignSettings() {
                     <span className="font-bold text-purple-700 hover:underline">
                       ক্লিক করে ছবি আপলোড করুন
                     </span>{" "}
-                    (প্রস্তাবিত সাইজ: 1920x80 বা 1200x60 পিক্সেল)
+                    (যেকোনো সাইজ — কাটা ছাড়াই ফুল উইডথে প্রদর্শিত হবে)
                   </div>
                   <p className="text-[11px] text-muted-foreground">
                     JPG, PNG, WebP (সর্বোচ্চ ৮ মেগাবাইট)
