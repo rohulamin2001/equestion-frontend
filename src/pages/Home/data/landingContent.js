@@ -385,14 +385,15 @@ export const FOOTER_COLUMNS = [
       { label: "প্রশ্নপত্র তৈরি", href: "#question-generator" },
       { label: "OMR মূল্যায়ন", href: "#omr" },
       { label: "অনলাইন পরীক্ষা", href: "#exam" },
-      { label: "প্রশ্নব্যাংক", href: "#features" },
+      { label: "প্রশ্নব্যাংক", href: "#platform" },
+      { label: "প্রাইসিং", href: "#pricing" },
     ],
   },
   {
     title: "রিসোর্স",
     links: [
-      { label: "লেকচার শীট", href: "#features" },
-      { label: "ক্লাস রুটিন", href: "#features" },
+      { label: "লেকচার শীট", href: "#platform" },
+      { label: "ক্লাস রুটিন", href: "#platform" },
       { label: "অ্যাফিলিয়েট রেজিস্ট্রেশন", href: "/affiliate/register" },
       { label: "FAQ", href: "#faq" },
       { label: "Help Center", href: "#faq" },
