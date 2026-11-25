@@ -83,7 +83,7 @@ const SOCIAL_LINKS = [
 
 function FooterLink({ link, isHome }) {
   const baseClass =
-    "group inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-all duration-200 leading-relaxed";
+    "group inline-flex items-center gap-1.5 sm:gap-2 text-[11px] xs:text-xs sm:text-sm text-slate-400 hover:text-white transition-all duration-200 leading-snug sm:leading-relaxed";
 
   const content = (
     <>
@@ -237,24 +237,17 @@ export default function LandingFooter() {
           </div>
 
           {/* Navigation Columns */}
-          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-8 lg:pl-6">
-            {FOOTER_COLUMNS.map((col, colIdx) => (
-              <div
-                key={col.title}
-                className={`min-w-0 ${
-                  colIdx === FOOTER_COLUMNS.length - 1
-                    ? "col-span-2 sm:col-span-1"
-                    : ""
-                }`}
-              >
-                <h3 className="mb-4 flex items-center gap-2 text-xs sm:text-sm font-bold tracking-wide text-white">
+          <div className="lg:col-span-7 grid grid-cols-3 gap-x-2.5 xs:gap-x-4 sm:gap-x-6 gap-y-8 lg:pl-6">
+            {FOOTER_COLUMNS.map((col) => (
+              <div key={col.title} className="min-w-0">
+                <h3 className="mb-3 sm:mb-4 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-bold tracking-wide text-white">
                   <span
-                    className="h-3.5 w-1 rounded-full bg-gradient-to-b from-purple-400 to-indigo-500 shrink-0"
+                    className="h-3 sm:h-3.5 w-1 rounded-full bg-gradient-to-b from-purple-400 to-indigo-500 shrink-0"
                     aria-hidden
                   />
                   {col.title}
                 </h3>
-                <ul className="space-y-2.5">
+                <ul className="space-y-2 sm:space-y-2.5">
                   {col.links.map((link) => (
                     <li key={link.label}>
                       <FooterLink link={link} isHome={isHome} />
