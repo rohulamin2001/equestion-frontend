@@ -40,6 +40,7 @@ import Questions from "./pages/Questions/Questions";
 import QuestionSelect from "./pages/Questions/QuestionSelect";
 import Signup from "./pages/Signup/Signup";
 import Smartboard from "./pages/Smartboard/Smartboard";
+import SmartboardPublicNote from "./pages/Smartboard/SmartboardPublicNote";
 import StaffManagement from "./pages/Staff/StaffManagement";
 import SubjectSetup from "./pages/SubjectSetup/SubjectSetup";
 import SubscriberManagement from "./pages/Subscribers/SubscriberManagement";
@@ -57,6 +58,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/books" element={<Books />} />
+        <Route path="/board-notes/:shareToken" element={<SmartboardPublicNote />} />
         <Route path="/termsandcondition" element={<Terms />} />
         <Route path="/terms" element={<Navigate to="/termsandcondition" replace />} />
         <Route path="/privacypolicy" element={<PrivacyPolicy />} />
@@ -148,6 +150,15 @@ export default function App() {
 
           <Route
             path="smartboard"
+            element={
+              <RoleRouteGuard allowedRoles={["Super Admin", "Admin", "Subscriber"]}>
+                <Smartboard />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
+            path="smartboard/:lessonId"
             element={
               <RoleRouteGuard allowedRoles={["Super Admin", "Admin", "Subscriber"]}>
                 <Smartboard />

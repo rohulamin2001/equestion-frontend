@@ -22,6 +22,8 @@ import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 const ROUTE_TITLES = {
   "/dashboard": "ড্যাশবোর্ড ওভারভিউ",
   "/dashboard/generate": "১ ক্লিকে প্রশ্ন তৈরি",
+  "/dashboard/smartboard": "স্মার্টবোর্ড",
+  "/dashboard/board-question-bank": "বোর্ড প্রশ্ন ব্যাংক",
   "/dashboard/created-questions": "তৈরিকৃত প্রশ্ন",
   "/dashboard/bank": "প্রশ্ন",
   "/dashboard/question-approval": "প্রশ্ন অনুমোদন",
@@ -79,7 +81,10 @@ export default function DashboardLayout() {
     return <Navigate to="/affiliate/dashboard" replace />;
   }
 
-  const currentTitle = ROUTE_TITLES[location.pathname] || "ড্যাশবোর্ড";
+  const isSmartboardRoute = location.pathname.startsWith("/dashboard/smartboard");
+  const currentTitle = isSmartboardRoute
+    ? "স্মার্টবোর্ড"
+    : ROUTE_TITLES[location.pathname] || "ড্যাশবোর্ড";
 
   return (
     <TooltipProvider>
@@ -155,7 +160,13 @@ export default function DashboardLayout() {
             </header>
 
             {/* Dashboard Content Workspace */}
-            <main className="flex-1 overflow-y-auto p-6 lg:p-8 w-full relative z-10">
+            <main
+              className={
+                isSmartboardRoute
+                  ? "flex-1 overflow-hidden p-0 w-full relative z-10"
+                  : "flex-1 overflow-y-auto p-6 lg:p-8 w-full relative z-10"
+              }
+            >
               <Outlet />
             </main>
           </SidebarInset>
