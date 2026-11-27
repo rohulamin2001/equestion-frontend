@@ -4,6 +4,7 @@ export const NAV_LINKS = [
   { href: "#workflow", label: "কীভাবে কাজ করে" },
   { href: "#omr", label: "মূল্যায়ন" },
   { href: "#pricing", label: "প্রাইসিং" },
+  { href: "/books", label: "বই" },
   { href: "#faq", label: "FAQ" },
 ];
 
@@ -392,11 +393,11 @@ export const FOOTER_COLUMNS = [
   {
     title: "রিসোর্স",
     links: [
+      { label: "পাঠ্যবই লাইব্রেরি (NCTB)", href: "/books" },
       { label: "লেকচার শীট", href: "#platform" },
       { label: "ক্লাস রুটিন", href: "#platform" },
       { label: "অ্যাফিলিয়েট রেজিস্ট্রেশন", href: "/affiliate/register" },
       { label: "FAQ", href: "#faq" },
-      { label: "Help Center", href: "#faq" },
     ],
   },
   {

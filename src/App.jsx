@@ -9,6 +9,7 @@ import AffiliateLogin from "./pages/Affiliate/AffiliateLogin";
 import AffiliateDashboard from "./pages/Affiliate/AffiliateDashboard";
 import AdminAffiliates from "./pages/Affiliate/AdminAffiliates";
 import AddQuestion from "./pages/AddQuestion/AddQuestion";
+import Books from "./pages/Books/Books";
 import CampaignSettings from "./pages/Campaign/CampaignSettings";
 import DashboardLayout from "./pages/DashboardLayout/DashboardLayout";
 import Exams from "./pages/Exams/Exams";
@@ -53,6 +54,7 @@ export default function App() {
       <AuthDrawer />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/books" element={<Books />} />
         <Route path="/termsandcondition" element={<Terms />} />
         <Route path="/terms" element={<Navigate to="/termsandcondition" replace />} />
         <Route path="/privacypolicy" element={<PrivacyPolicy />} />

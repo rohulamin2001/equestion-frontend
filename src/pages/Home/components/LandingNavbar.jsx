@@ -25,6 +25,11 @@ export default function LandingNavbar({ onLogin }) {
 
   const go = (href) => {
     setOpen(false);
+    if (href.startsWith("/")) {
+      navigate(href);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     if (pathname !== "/") {
       navigate(href === "#home" ? "/" : `/${href}`);
       return;
@@ -72,19 +77,27 @@ export default function LandingNavbar({ onLogin }) {
         </a>
 
         <nav className="hidden lg:flex items-center gap-1">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={(e) => {
-                e.preventDefault();
-                go(link.href);
-              }}
-              className="rounded-lg px-3 py-2 text-sm font-semibold text-muted-foreground hover:text-purple-800 hover:bg-purple-50 transition font-bengali"
-            >
-              {link.label}
-            </a>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const isActiveRoute =
+              link.href.startsWith("/") && pathname === link.href;
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  go(link.href);
+                }}
+                className={`rounded-lg px-3 py-2 text-sm font-semibold transition font-bengali ${
+                  isActiveRoute
+                    ? "text-purple-800 bg-purple-50"
+                    : "text-muted-foreground hover:text-purple-800 hover:bg-purple-50"
+                }`}
+              >
+                {link.label}
+              </a>
+            );
+          })}
         </nav>
 
         <div className="hidden lg:flex items-center gap-3">
@@ -116,19 +129,27 @@ export default function LandingNavbar({ onLogin }) {
             WebkitBackdropFilter: "blur(24px) saturate(180%)",
           }}
         >
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={(e) => {
-                e.preventDefault();
-                go(link.href);
-              }}
-              className="block rounded-xl px-3 py-3 text-sm font-bold text-foreground hover:bg-purple-50 font-bengali"
-            >
-              {link.label}
-            </a>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const isActiveRoute =
+              link.href.startsWith("/") && pathname === link.href;
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  go(link.href);
+                }}
+                className={`block rounded-xl px-3 py-3 text-sm font-bold font-bengali ${
+                  isActiveRoute
+                    ? "bg-purple-50 text-purple-800"
+                    : "text-foreground hover:bg-purple-50"
+                }`}
+              >
+                {link.label}
+              </a>
+            );
+          })}
           <div className="pt-3 flex flex-col gap-2">
             <button
               type="button"
