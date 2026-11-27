@@ -51,12 +51,12 @@ import {
 } from "../constants/subscriberConstants";
 
 const DRAWER_TABS = [
-  { id: "overview", label: "প্রোফাইল ও প্রতিষ্ঠান", icon: User },
+  { id: "overview", label: "প্রোফাইল", icon: User },
   { id: "subscriptions", label: "সাবস্ক্রিপশন", icon: CreditCard },
   { id: "orders", label: "অর্ডার ও ইনভয়েস", icon: FileText },
-  { id: "usage", label: "ব্যবহার অ্যানালিটিক্স", icon: ScanLine },
-  { id: "security", label: "ডিভাইস ও সিকিউরিটি", icon: Laptop },
-  { id: "support", label: "টিকিট ও নোটস", icon: StickyNote },
+  { id: "usage", label: "অ্যানালিটিক্স", icon: ScanLine },
+  { id: "security", label: "সিকিউরিটি", icon: Laptop },
+  { id: "support", label: "টিকিট ও নোট", icon: StickyNote },
 ];
 
 export default function SubscriberDetailDrawer({
@@ -278,29 +278,31 @@ export default function SubscriberDetailDrawer({
               </button>
             </div>
 
-            {/* Drawer Tabs */}
+            {/* Drawer Tabs (Compact Pill Nav, Zero Scrollbar) */}
             {!loading && subscriber && (
               <>
-                <div className="px-4 sm:px-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-1 overflow-x-auto no-scrollbar shrink-0">
-                  {DRAWER_TABS.map((tab) => {
-                    const Icon = tab.icon;
-                    const active = activeTab === tab.id;
-                    return (
-                      <button
-                        key={tab.id}
-                        type="button"
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-3 text-xs font-bold border-b-2 transition whitespace-nowrap cursor-pointer font-bengali ${
-                          active
-                            ? "border-primary text-primary"
-                            : "border-transparent text-slate-500 hover:text-slate-800"
-                        }`}
-                      >
-                        <Icon className="size-3.5" />
-                        <span>{tab.label}</span>
-                      </button>
-                    );
-                  })}
+                <div className="px-4 sm:px-5 py-2.5 border-b border-slate-100 bg-slate-50/70 shrink-0">
+                  <div className="flex flex-wrap sm:flex-nowrap items-center sm:justify-between gap-1 p-1 rounded-xl bg-slate-200/60 border border-slate-200/70">
+                    {DRAWER_TABS.map((tab) => {
+                      const Icon = tab.icon;
+                      const active = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => setActiveTab(tab.id)}
+                          className={`inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all whitespace-nowrap cursor-pointer font-bengali ${
+                            active
+                              ? "bg-white text-primary shadow-sm ring-1 ring-purple-200/80"
+                              : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+                          }`}
+                        >
+                          <Icon className="size-3 shrink-0" />
+                          <span>{tab.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Drawer Tab Body */}

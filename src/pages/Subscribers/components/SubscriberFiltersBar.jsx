@@ -1,5 +1,6 @@
 import {
   CalendarPlus,
+  CheckCircle2,
   Download,
   Loader2,
   MessageSquare,
@@ -7,6 +8,7 @@ import {
   Search,
   X,
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 
 const STATUS_TABS = [
   { id: "all", label: "সকল" },
@@ -193,43 +195,61 @@ export default function SubscriberFiltersBar({
       </div>
 
       {/* Bulk Action Toolbar */}
-      {selectedCount > 0 && (
-        <div className="bg-slate-900 text-white rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-lg font-bengali">
-          <div className="flex items-center gap-2.5 text-xs sm:text-sm font-bold">
-            <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full bg-primary text-white text-xs">
-              {selectedCount.toLocaleString("bn-BD")}
-            </span>
-            <span>জন সাবস্ক্রাইবার নির্বাচিত হয়েছে</span>
-          </div>
+      <AnimatePresence>
+        {selectedCount > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="bg-gradient-to-r from-purple-50/90 via-white to-indigo-50/80 border border-purple-200/80 text-slate-700 rounded-2xl px-4 sm:px-5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm font-bengali"
+          >
+            <div className="flex items-center gap-2.5 text-xs sm:text-sm font-normal">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-purple-100/90 text-purple-700 border border-purple-200/70 text-xs font-normal">
+                <CheckCircle2 className="size-3.5 text-purple-600 shrink-0" />
+                <span>{selectedCount.toLocaleString("bn-BD")} জন</span>
+              </span>
+              <span className="text-slate-600">
+                সাবস্ক্রাইবার নির্বাচিত হয়েছে
+              </span>
+            </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={onOpenBulkSms}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold transition cursor-pointer"
-            >
-              <MessageSquare className="size-3.5" />
-              <span>বাল্ক SMS পাঠান</span>
-            </button>
-            <button
-              type="button"
-              onClick={onOpenBulkExtend}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold transition cursor-pointer"
-            >
-              <CalendarPlus className="size-3.5" />
-              <span>বাল্ক মেয়াদ বাড়ান</span>
-            </button>
-            <button
-              type="button"
-              onClick={onClearSelection}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold transition cursor-pointer"
-            >
-              <X className="size-3.5" />
-              <span>বাতিল</span>
-            </button>
-          </div>
-        </div>
-      )}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onClick={onOpenBulkSms}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-normal shadow-sm hover:shadow transition-all duration-150 cursor-pointer"
+              >
+                <MessageSquare className="size-3.5 shrink-0" />
+                <span>বাল্ক SMS পাঠান</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={onOpenBulkExtend}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/90 hover:border-emerald-300 text-xs font-normal shadow-sm transition-all duration-150 cursor-pointer"
+              >
+                <CalendarPlus className="size-3.5 shrink-0" />
+                <span>বাল্ক মেয়াদ বাড়ান</span>
+              </button>
+
+              <span
+                aria-hidden
+                className="hidden sm:block h-5 w-px bg-slate-200 mx-0.5"
+              />
+
+              <button
+                type="button"
+                onClick={onClearSelection}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 hover:border-rose-200 text-xs font-normal transition-all duration-150 cursor-pointer"
+              >
+                <X className="size-3.5 shrink-0" />
+                <span>বাতিল</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

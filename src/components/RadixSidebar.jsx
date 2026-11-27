@@ -36,10 +36,12 @@ import {
   Home as HomeIcon,
   KeyRound,
   LayoutDashboard,
+  Library,
   LogOut,
   Megaphone,
   Monitor,
   PlusCircle,
+  Presentation,
   Printer,
   ScanLine,
   ShieldAlert,
@@ -76,11 +78,6 @@ const DATA = {
             "Subscriber",
           ],
         },
-      ],
-    },
-    {
-      label: "প্রশ্ন ইঞ্জিন",
-      items: [
         {
           title: "১ ক্লিকে প্রশ্ন তৈরি",
           url: "/dashboard/generate",
@@ -88,11 +85,22 @@ const DATA = {
           roles: ["Subscriber"],
         },
         {
-          title: "তৈরিকৃত প্রশ্ন",
-          url: "/dashboard/created-questions",
-          icon: FolderOpen,
+          title: "স্মার্টবোর্ড",
+          url: "/dashboard/smartboard",
+          icon: Presentation,
           roles: ["Super Admin", "Admin", "Subscriber"],
         },
+        {
+          title: "প্রশ্ন ব্যাংক",
+          url: "/dashboard/board-question-bank",
+          icon: Library,
+          roles: ["Subscriber"],
+        },
+      ],
+    },
+    {
+      label: "প্রশ্ন ইঞ্জিন",
+      items: [
         {
           title: "প্রশ্নব্যাংক",
           url: "/dashboard/bank",
@@ -151,6 +159,12 @@ const DATA = {
     {
       label: "ব্যবস্থাপনা",
       items: [
+        {
+          title: "তৈরিকৃত প্রশ্ন",
+          url: "/dashboard/created-questions",
+          icon: FolderOpen,
+          roles: ["Super Admin", "Admin", "Subscriber"],
+        },
         {
           title: "স্টাফ ব্যবস্থাপনা",
           url: "/dashboard/staff",

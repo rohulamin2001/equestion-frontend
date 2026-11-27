@@ -116,14 +116,16 @@ export default function SubscriberTable({
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50/80 border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider font-bengali">
-                  <th className="pl-4 pr-2 py-3.5 w-10">
-                    <input
-                      type="checkbox"
-                      checked={allOnPageSelected}
-                      onChange={toggleSelectAll}
-                      className="size-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
-                      aria-label="সব নির্বাচন করুন"
-                    />
+                  <th className="px-3 py-3.5 w-12 align-middle text-center">
+                    <div className="flex items-center justify-center">
+                      <input
+                        type="checkbox"
+                        checked={allOnPageSelected}
+                        onChange={toggleSelectAll}
+                        className="size-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer block"
+                        aria-label="সব নির্বাচন করুন"
+                      />
+                    </div>
                   </th>
                   <th className="px-4 py-3.5">সাবস্ক্রাইবার ও প্রতিষ্ঠান</th>
                   <th className="px-4 py-3.5">যোগাযোগ</th>
@@ -162,14 +164,16 @@ export default function SubscriberTable({
                         isSelected ? "bg-indigo-50/40" : ""
                       }`}
                     >
-                      <td className="pl-4 pr-2 py-3.5 align-top pt-4">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => toggleSelectOne(subUser._id)}
-                          className="size-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
-                          aria-label={`${displayName} নির্বাচন করুন`}
-                        />
+                      <td className="px-3 py-3.5 align-middle text-center">
+                        <div className="flex items-center justify-center">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleSelectOne(subUser._id)}
+                            className="size-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer block"
+                            aria-label={`${displayName} নির্বাচন করুন`}
+                          />
+                        </div>
                       </td>
 
                       {/* Identity */}

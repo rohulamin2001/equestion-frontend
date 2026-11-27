@@ -9,6 +9,7 @@ import AffiliateLogin from "./pages/Affiliate/AffiliateLogin";
 import AffiliateDashboard from "./pages/Affiliate/AffiliateDashboard";
 import AdminAffiliates from "./pages/Affiliate/AdminAffiliates";
 import AddQuestion from "./pages/AddQuestion/AddQuestion";
+import BoardQuestionBank from "./pages/BoardQuestionBank/BoardQuestionBank";
 import Books from "./pages/Books/Books";
 import CampaignSettings from "./pages/Campaign/CampaignSettings";
 import DashboardLayout from "./pages/DashboardLayout/DashboardLayout";
@@ -38,6 +39,7 @@ import QuestionPreview from "./pages/Questions/QuestionPreview";
 import Questions from "./pages/Questions/Questions";
 import QuestionSelect from "./pages/Questions/QuestionSelect";
 import Signup from "./pages/Signup/Signup";
+import Smartboard from "./pages/Smartboard/Smartboard";
 import StaffManagement from "./pages/Staff/StaffManagement";
 import SubjectSetup from "./pages/SubjectSetup/SubjectSetup";
 import SubscriberManagement from "./pages/Subscribers/SubscriberManagement";
@@ -140,6 +142,24 @@ export default function App() {
             element={
               <RoleRouteGuard allowedRoles={["Subscriber"]}>
                 <Generator />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
+            path="smartboard"
+            element={
+              <RoleRouteGuard allowedRoles={["Super Admin", "Admin", "Subscriber"]}>
+                <Smartboard />
+              </RoleRouteGuard>
+            }
+          />
+
+          <Route
+            path="board-question-bank"
+            element={
+              <RoleRouteGuard allowedRoles={["Subscriber"]}>
+                <BoardQuestionBank />
               </RoleRouteGuard>
             }
           />
