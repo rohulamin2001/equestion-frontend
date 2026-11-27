@@ -80,7 +80,7 @@ export default function FloatingToolbar({
   };
 
   return (
-    <div className="pointer-events-auto fixed bottom-3 left-1/2 -translate-x-1/2 z-30 max-w-[96vw] font-bengali">
+    <div className="pointer-events-auto absolute bottom-3 left-1/2 -translate-x-1/2 z-30 max-w-[96%] font-bengali">
       <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-1.5 rounded-2xl border border-slate-200/90 bg-white/95 backdrop-blur-md px-2.5 py-2 shadow-xl">
         {/* Main Tool Buttons */}
         <div className="flex items-center gap-1">

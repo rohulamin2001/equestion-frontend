@@ -802,157 +802,164 @@ export default function Smartboard() {
         </div>
       )}
 
-      {/* Main Canvas Stage Container */}
-      <div ref={workspaceContainerRef} className="relative flex-1 min-h-0">
-        <SmartboardCanvas
-          slide={activeSlide}
-          activeTool={activeTool}
-          brushColor={brushColor}
-          strokeWidth={strokeWidth}
-          penOnly={penOnly}
-          viewport={viewport}
-          onChangeViewport={setViewport}
-          selectedId={selectedId}
-          onSelectObject={setSelectedId}
-          onCommitObjects={commitObjects}
-          onUpdateObject={handleUpdateObject}
-          rulerTool={rulerTool}
-          containerWidth={containerSize.width}
-          containerHeight={containerSize.height}
-        />
-
-        {/* Synchronized HTML/KaTeX Question Cards */}
-        <QuestionCardOverlay
-          objects={activeSlide.objects}
-          viewport={viewport}
-          activeTool={activeTool}
-          onUpdateObject={handleUpdateObject}
-          onDeleteObject={handleDeleteObject}
-          registerCardNode={registerCardNode}
-        />
-
-        {/* Virtual Ruler & Protractor */}
-        <StemToolsOverlay
-          viewport={viewport}
-          rulerTool={rulerTool}
-          onChangeRuler={setRulerTool}
-          protractorTool={protractorTool}
-          onChangeProtractor={setProtractorTool}
-        />
-
-        {/* Classroom Presentation Overlays (Laser/Curtain/Spotlight/Timer) */}
-        <ClassroomPresentationTools
-          presentationState={presentationState}
-          onCloseTool={(tool) =>
-            setPresentationState((p) => ({ ...p, [tool]: false }))
-          }
-        />
-
-        {/* Quick Page Navigation Pill (Bottom Right) */}
-        <div className="pointer-events-auto absolute bottom-3 right-3 z-20 hidden sm:flex items-center gap-1 rounded-xl border border-slate-200 bg-white/95 px-2 py-1 shadow-md text-xs font-bengali">
-          <button
-            type="button"
-            disabled={safeSlideIndex === 0}
-            onClick={() => setActiveSlideIndex((i) => Math.max(0, i - 1))}
-            className="p-1 rounded-lg hover:bg-slate-100 disabled:opacity-35 cursor-pointer"
-          >
-            <ChevronLeft className="size-3.5" />
-          </button>
-          <span className="px-1.5 font-semibold text-slate-700">
-            {(safeSlideIndex + 1).toLocaleString("bn-BD")} /{" "}
-            {slides.length.toLocaleString("bn-BD")}
-          </span>
-          <button
-            type="button"
-            disabled={safeSlideIndex >= slides.length - 1}
-            onClick={() =>
-              setActiveSlideIndex((i) => Math.min(slides.length - 1, i + 1))
+      {/* Workspace Body: Docked Left Slide Deck + Main Canvas */}
+      <div className="relative flex flex-1 min-h-0 overflow-hidden">
+        {/* Left Collapsible Multi-Page Slide Deck */}
+        <SlideDeckPanel
+          open={slidePanelOpen}
+          onToggleOpen={() => setSlidePanelOpen((v) => !v)}
+          slides={slides}
+          activeSlideIndex={safeSlideIndex}
+          onSelectSlide={(idx) => {
+            setSelectedId(null);
+            setActiveSlideIndex(idx);
+          }}
+          onAddSlide={() => {
+            const newSlide = createEmptySlide({
+              backgroundType: activeBgType,
+              order: slides.length,
+            });
+            setLesson((prev) => {
+              const updated = { ...prev, slides: [...prev.slides, newSlide] };
+              markDirtyAndPersistDraft(updated, newSlide._id);
+              return updated;
+            });
+            setActiveSlideIndex(slides.length);
+          }}
+          onDuplicateSlide={(idx) => {
+            const copy = duplicateSlideRecord(slides[idx], slides.length);
+            setLesson((prev) => {
+              const next = [...prev.slides];
+              next.splice(idx + 1, 0, copy);
+              const updated = { ...prev, slides: next };
+              markDirtyAndPersistDraft(updated, copy._id);
+              return updated;
+            });
+            setActiveSlideIndex(idx + 1);
+          }}
+          onDeleteSlide={(idx) => {
+            if (slides.length <= 1) return;
+            const targetSlide = slides[idx];
+            setLesson((prev) => {
+              const next = prev.slides.filter((_, i) => i !== idx);
+              const updated = { ...prev, slides: next };
+              markDirtyAndPersistDraft(updated);
+              return updated;
+            });
+            if (
+              lesson._id &&
+              targetSlide?._id &&
+              !String(targetSlide._id).startsWith("slide_")
+            ) {
+              smartboardApi.deleteSlide(lesson._id, targetSlide._id).catch(() => {});
             }
-            className="p-1 rounded-lg hover:bg-slate-100 disabled:opacity-35 cursor-pointer"
-          >
-            <ChevronRight className="size-3.5" />
-          </button>
+            setActiveSlideIndex((i) => Math.max(0, Math.min(i, slides.length - 2)));
+          }}
+        />
+
+        {/* Main Canvas Stage Container */}
+        <div ref={workspaceContainerRef} className="relative flex-1 min-w-0 min-h-0">
+          <SmartboardCanvas
+            slide={activeSlide}
+            activeTool={activeTool}
+            brushColor={brushColor}
+            strokeWidth={strokeWidth}
+            penOnly={penOnly}
+            viewport={viewport}
+            onChangeViewport={setViewport}
+            selectedId={selectedId}
+            onSelectObject={setSelectedId}
+            onCommitObjects={commitObjects}
+            onUpdateObject={handleUpdateObject}
+            rulerTool={rulerTool}
+            containerWidth={containerSize.width}
+            containerHeight={containerSize.height}
+          />
+
+          {/* Synchronized HTML/KaTeX Question Cards */}
+          <QuestionCardOverlay
+            objects={activeSlide.objects}
+            viewport={viewport}
+            activeTool={activeTool}
+            onUpdateObject={handleUpdateObject}
+            onDeleteObject={handleDeleteObject}
+            registerCardNode={registerCardNode}
+          />
+
+          {/* Virtual Ruler & Protractor */}
+          <StemToolsOverlay
+            viewport={viewport}
+            rulerTool={rulerTool}
+            onChangeRuler={setRulerTool}
+            protractorTool={protractorTool}
+            onChangeProtractor={setProtractorTool}
+          />
+
+          {/* Classroom Presentation Overlays (Laser/Curtain/Spotlight/Timer) */}
+          <ClassroomPresentationTools
+            presentationState={presentationState}
+            onCloseTool={(tool) =>
+              setPresentationState((p) => ({ ...p, [tool]: false }))
+            }
+          />
+
+          {/* Quick Page Navigation Pill (Bottom Right) */}
+          <div className="pointer-events-auto absolute bottom-3 right-3 z-20 hidden sm:flex items-center gap-1 rounded-xl border border-slate-200 bg-white/95 px-2 py-1 shadow-md text-xs font-bengali">
+            <button
+              type="button"
+              disabled={safeSlideIndex === 0}
+              onClick={() => setActiveSlideIndex((i) => Math.max(0, i - 1))}
+              className="p-1 rounded-lg hover:bg-slate-100 disabled:opacity-35 cursor-pointer"
+            >
+              <ChevronLeft className="size-3.5" />
+            </button>
+            <span className="px-1.5 font-semibold text-slate-700">
+              {(safeSlideIndex + 1).toLocaleString("bn-BD")} /{" "}
+              {slides.length.toLocaleString("bn-BD")}
+            </span>
+            <button
+              type="button"
+              disabled={safeSlideIndex >= slides.length - 1}
+              onClick={() =>
+                setActiveSlideIndex((i) => Math.min(slides.length - 1, i + 1))
+              }
+              className="p-1 rounded-lg hover:bg-slate-100 disabled:opacity-35 cursor-pointer"
+            >
+              <ChevronRight className="size-3.5" />
+            </button>
+          </div>
+
+          {/* Bottom Floating Drawing Toolbar centered inside canvas */}
+          <FloatingToolbar
+            activeTool={activeTool}
+            onSelectTool={(t) => {
+              setActiveTool(t);
+              if (t !== BOARD_TOOLS.SELECT) setSelectedId(null);
+            }}
+            brushColor={brushColor}
+            onChangeColor={setBrushColor}
+            strokeWidth={strokeWidth}
+            onChangeWidth={setStrokeWidth}
+            penOnly={penOnly}
+            onTogglePenOnly={() => setPenOnly((v) => !v)}
+            isDarkBoard={isDarkBoard}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            onUndo={handleUndo}
+            onRedo={handleRedo}
+            onClearStrokes={() => {
+              const remaining = (activeSlide.objects || []).filter(
+                (o) => o.type !== "STROKE",
+              );
+              commitObjects(remaining);
+            }}
+            onClearPage={() => {
+              commitObjects([]);
+              setSelectedId(null);
+            }}
+          />
         </div>
       </div>
-
-      {/* Left Collapsible Multi-Page Slide Deck */}
-      <SlideDeckPanel
-        open={slidePanelOpen}
-        onToggleOpen={() => setSlidePanelOpen((v) => !v)}
-        slides={slides}
-        activeSlideIndex={safeSlideIndex}
-        onSelectSlide={(idx) => {
-          setSelectedId(null);
-          setActiveSlideIndex(idx);
-        }}
-        onAddSlide={() => {
-          const newSlide = createEmptySlide({
-            backgroundType: activeBgType,
-            order: slides.length,
-          });
-          setLesson((prev) => {
-            const updated = { ...prev, slides: [...prev.slides, newSlide] };
-            markDirtyAndPersistDraft(updated, newSlide._id);
-            return updated;
-          });
-          setActiveSlideIndex(slides.length);
-        }}
-        onDuplicateSlide={(idx) => {
-          const copy = duplicateSlideRecord(slides[idx], slides.length);
-          setLesson((prev) => {
-            const next = [...prev.slides];
-            next.splice(idx + 1, 0, copy);
-            const updated = { ...prev, slides: next };
-            markDirtyAndPersistDraft(updated, copy._id);
-            return updated;
-          });
-          setActiveSlideIndex(idx + 1);
-        }}
-        onDeleteSlide={(idx) => {
-          if (slides.length <= 1) return;
-          const targetSlide = slides[idx];
-          setLesson((prev) => {
-            const next = prev.slides.filter((_, i) => i !== idx);
-            const updated = { ...prev, slides: next };
-            markDirtyAndPersistDraft(updated);
-            return updated;
-          });
-          if (lesson._id && targetSlide?._id && !String(targetSlide._id).startsWith("slide_")) {
-            smartboardApi.deleteSlide(lesson._id, targetSlide._id).catch(() => {});
-          }
-          setActiveSlideIndex((i) => Math.max(0, Math.min(i, slides.length - 2)));
-        }}
-      />
-
-      {/* Bottom Floating Drawing Toolbar */}
-      <FloatingToolbar
-        activeTool={activeTool}
-        onSelectTool={(t) => {
-          setActiveTool(t);
-          if (t !== BOARD_TOOLS.SELECT) setSelectedId(null);
-        }}
-        brushColor={brushColor}
-        onChangeColor={setBrushColor}
-        strokeWidth={strokeWidth}
-        onChangeWidth={setStrokeWidth}
-        penOnly={penOnly}
-        onTogglePenOnly={() => setPenOnly((v) => !v)}
-        isDarkBoard={isDarkBoard}
-        canUndo={canUndo}
-        canRedo={canRedo}
-        onUndo={handleUndo}
-        onRedo={handleRedo}
-        onClearStrokes={() => {
-          const remaining = (activeSlide.objects || []).filter(
-            (o) => o.type !== "STROKE",
-          );
-          commitObjects(remaining);
-        }}
-        onClearPage={() => {
-          commitObjects([]);
-          setSelectedId(null);
-        }}
-      />
 
       {/* Modals & Drawers */}
       <QuestionImportDrawer

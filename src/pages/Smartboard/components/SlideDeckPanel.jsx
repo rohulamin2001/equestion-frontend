@@ -7,6 +7,9 @@ import {
   Trash2,
 } from "lucide-react";
 
+/**
+ * Docked left slide deck inside the Smartboard workspace (never overlaps main app sidebar).
+ */
 export default function SlideDeckPanel({
   open,
   onToggleOpen,
@@ -18,10 +21,10 @@ export default function SlideDeckPanel({
   onDeleteSlide,
 }) {
   return (
-    <div className="pointer-events-auto fixed left-3 top-20 bottom-20 z-20 flex items-start gap-2 font-bengali">
+    <div className="relative h-full flex shrink-0 z-20 font-bengali">
       {open && (
-        <div className="w-48 h-full max-h-[75vh] rounded-2xl border border-slate-200/90 bg-white/95 backdrop-blur-md shadow-xl flex flex-col overflow-hidden">
-          <div className="px-3 py-2.5 border-b border-slate-100 flex items-center justify-between">
+        <aside className="w-52 h-full border-r border-slate-200/90 bg-white/95 backdrop-blur-md flex flex-col overflow-hidden shadow-sm">
+          <div className="px-3 py-2.5 border-b border-slate-100 flex items-center justify-between gap-1.5">
             <span className="text-xs font-bold text-slate-800 inline-flex items-center gap-1.5">
               <Layers className="size-3.5 text-purple-600" />
               <span>পৃষ্ঠাসমূহ ({slides.length.toLocaleString("bn-BD")})</span>
@@ -37,10 +40,13 @@ export default function SlideDeckPanel({
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-2 space-y-2">
+          <div className="flex-1 overflow-y-auto p-2.5 space-y-2.5">
             {slides.map((s, idx) => {
               const isActive = idx === activeSlideIndex;
+              const bgType = s.canvas?.background?.type || "WHITEBOARD";
               const bgColor = s.canvas?.background?.color || "#FFFFFF";
+              const isDarkThumb =
+                bgType === "BLACKBOARD" || bgType === "GREENBOARD";
               const qCount = (s.objects || []).filter(
                 (o) => o.type === "QUESTION_CARD",
               ).length;
@@ -58,7 +64,9 @@ export default function SlideDeckPanel({
                 >
                   <div
                     style={{ backgroundColor: bgColor }}
-                    className="h-16 rounded-lg border border-slate-200/80 flex flex-col items-center justify-center text-[10px] text-slate-500 px-2 text-center"
+                    className={`h-20 rounded-lg border border-slate-200/80 flex flex-col items-center justify-center text-[10px] px-2 text-center ${
+                      isDarkThumb ? "text-slate-200" : "text-slate-600"
+                    }`}
                   >
                     <span className="font-bold">
                       পৃষ্ঠা {(idx + 1).toLocaleString("bn-BD")}
@@ -105,16 +113,21 @@ export default function SlideDeckPanel({
               );
             })}
           </div>
-        </div>
+        </aside>
       )}
 
+      {/* Collapse / Expand Toggle Handle attached to the panel edge */}
       <button
         type="button"
         onClick={onToggleOpen}
         title={open ? "স্লাইড প্যানেল লুকান" : "স্লাইড প্যানেল দেখান"}
-        className="inline-flex size-8 items-center justify-center rounded-xl border border-slate-200 bg-white/95 shadow-md text-slate-600 hover:text-purple-700 cursor-pointer"
+        className="absolute -right-9 top-3 z-20 inline-flex size-8 items-center justify-center rounded-xl border border-slate-200 bg-white/95 shadow-md text-slate-600 hover:text-purple-700 cursor-pointer"
       >
-        {open ? <ChevronLeft className="size-4" /> : <ChevronRight className="size-4" />}
+        {open ? (
+          <ChevronLeft className="size-4" />
+        ) : (
+          <ChevronRight className="size-4" />
+        )}
       </button>
     </div>
   );
