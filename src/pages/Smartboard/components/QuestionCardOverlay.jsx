@@ -27,9 +27,41 @@ const OPTION_LABELS = ["ক", "খ", "গ", "ঘ", "ঙ"];
 const ROMAN_NUMERALS = ["i.", "ii.", "iii.", "iv."];
 
 /**
+ * Shared header badges for live cards and offscreen export snapshots so card body Y-offset stays aligned.
+ */
+function QuestionCardHeaderBadges({ snapshot, useDarkCard, showGrip = false }) {
+  return (
+    <div className="flex items-center gap-2 text-xs">
+      {showGrip && <GripHorizontal className="size-4 text-slate-400" />}
+      <span className="px-2.5 py-0.5 rounded-md bg-purple-100 text-purple-700 text-[11px] font-semibold">
+        {snapshot.categoryLabel ||
+          snapshot.category ||
+          snapshot.questionType ||
+          "প্রশ্ন"}
+      </span>
+      {snapshot.marks !== null && snapshot.marks !== undefined && (
+        <span
+          className={`px-2 py-0.5 rounded-md text-[11px] font-semibold ${
+            useDarkCard
+              ? "bg-slate-700 text-slate-200"
+              : "bg-slate-200/70 text-slate-700"
+          }`}
+        >
+          নম্বর: {Number(snapshot.marks).toLocaleString("bn-BD")}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/**
  * Renders the visual body of a QUESTION_CARD (shared by live overlay and offscreen PDF export).
  */
-export function QuestionCardBody({ obj, useDarkCard = false, allowScroll = false }) {
+export function QuestionCardBody({
+  obj,
+  useDarkCard = false,
+  allowScroll = false,
+}) {
   const snapshot = obj.payload?.snapshot || {};
   const reveal = obj.payload?.reveal || {};
   const fontScale = obj.style?.fontScale || 1;
@@ -38,7 +70,10 @@ export function QuestionCardBody({ obj, useDarkCard = false, allowScroll = false
   const hasLongOptions =
     Array.isArray(snapshot.options) &&
     snapshot.options.some((opt) => {
-      const str = typeof opt === "object" ? opt.text || opt.label || "" : String(opt || "");
+      const str =
+        typeof opt === "object"
+          ? opt.text || opt.label || ""
+          : String(opt || "");
       return str.length > 48 || str.includes("\\frac");
     });
 
@@ -112,7 +147,8 @@ export function QuestionCardBody({ obj, useDarkCard = false, allowScroll = false
           }`}
         >
           {snapshot.options.map((opt, idx) => {
-            const optText = typeof opt === "object" ? opt.text || opt.label : opt;
+            const optText =
+              typeof opt === "object" ? opt.text || opt.label : opt;
             const isCorrectByIndex = correctIdx !== null && idx === correctIdx;
             const isCorrectByText =
               correctIdx === null &&
@@ -156,46 +192,50 @@ export function QuestionCardBody({ obj, useDarkCard = false, allowScroll = false
       )}
 
       {/* Creative (ক, খ, গ, ঘ) or General Sub-questions */}
-      {Array.isArray(snapshot.subQuestions) && snapshot.subQuestions.length > 0 && (
-        <div
-          className={`space-y-2 pt-2 border-t ${
-            useDarkCard ? "border-slate-700" : "border-slate-100"
-          }`}
-        >
-          {snapshot.subQuestions.map((sq, idx) => (
-            <div key={idx} className="space-y-1">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-2 flex-1 min-w-0">
-                  <span className="font-bold shrink-0">
-                    {sq.label || `${OPTION_LABELS[idx] || idx + 1})`}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <RichTextRender content={sq.text || sq.question || ""} inline />
+      {Array.isArray(snapshot.subQuestions) &&
+        snapshot.subQuestions.length > 0 && (
+          <div
+            className={`space-y-2 pt-2 border-t ${
+              useDarkCard ? "border-slate-700" : "border-slate-100"
+            }`}
+          >
+            {snapshot.subQuestions.map((sq, idx) => (
+              <div key={idx} className="space-y-1">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-2 flex-1 min-w-0">
+                    <span className="font-bold shrink-0">
+                      {sq.label || `${OPTION_LABELS[idx] || idx + 1})`}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <RichTextRender
+                        content={sq.text || sq.question || ""}
+                        inline
+                      />
+                    </div>
                   </div>
+                  {sq.marks !== null && sq.marks !== undefined && (
+                    <span
+                      className={`shrink-0 px-2 py-0.5 rounded-md text-[0.75em] font-semibold ${
+                        useDarkCard
+                          ? "bg-slate-800 text-slate-300"
+                          : "bg-slate-100 text-slate-600"
+                      }`}
+                    >
+                      {Number(sq.marks).toLocaleString("bn-BD")}
+                    </span>
+                  )}
                 </div>
-                {sq.marks !== null && sq.marks !== undefined && (
-                  <span
-                    className={`shrink-0 px-2 py-0.5 rounded-md text-[0.75em] font-semibold ${
-                      useDarkCard
-                        ? "bg-slate-800 text-slate-300"
-                        : "bg-slate-100 text-slate-600"
-                    }`}
-                  >
-                    {Number(sq.marks).toLocaleString("bn-BD")}
-                  </span>
+
+                {reveal.answerVisible && sq.answer && (
+                  <div className="ml-6 rounded-xl border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-[0.88em] text-emerald-950">
+                    <span className="font-bold text-emerald-700">উত্তর: </span>
+                    <RichTextRender content={sq.answer} inline />
+                  </div>
                 )}
               </div>
-
-              {reveal.answerVisible && sq.answer && (
-                <div className="ml-6 rounded-xl border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-[0.88em] text-emerald-950">
-                  <span className="font-bold text-emerald-700">উত্তর: </span>
-                  <RichTextRender content={sq.answer} inline />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
       {/* Answer & Explanation Drawer inside card (for MCQ & General single-answer) */}
       {reveal.answerVisible &&
@@ -208,14 +248,22 @@ export function QuestionCardBody({ obj, useDarkCard = false, allowScroll = false
                 <CheckCircle2 className="size-4 text-emerald-600 shrink-0 mt-1" />
                 <div className="flex-1 min-w-0">
                   <span>সঠিক উত্তর: </span>
-                  <RichTextRender content={String(snapshot.correctAnswer)} inline />
+                  <RichTextRender
+                    content={String(snapshot.correctAnswer)}
+                    inline
+                  />
                 </div>
               </div>
             )}
             {snapshot.suggestedAnswer && (
               <div className="text-[0.92em]">
-                <span className="font-bold text-emerald-700">নমুনা উত্তর: </span>
-                <RichTextRender content={String(snapshot.suggestedAnswer)} inline />
+                <span className="font-bold text-emerald-700">
+                  নমুনা উত্তর:{" "}
+                </span>
+                <RichTextRender
+                  content={String(snapshot.suggestedAnswer)}
+                  inline
+                />
               </div>
             )}
             {snapshot.explanation && (
@@ -315,7 +363,9 @@ function QuestionCardItem({
     e.stopPropagation();
     const dx = (e.clientX - resizeOriginRef.current.clientX) / viewport.scale;
     setResizeWidth(
-      Math.round(Math.max(460, Math.min(1820, resizeOriginRef.current.startWidth + dx))),
+      Math.round(
+        Math.max(460, Math.min(1820, resizeOriginRef.current.startWidth + dx)),
+      ),
     );
   };
 
@@ -419,23 +469,11 @@ function QuestionCardItem({
             : "border-slate-100 bg-slate-50/95"
         } ${obj.locked ? "cursor-default" : "cursor-grab active:cursor-grabbing"}`}
       >
-        <div className="flex items-center gap-2 text-xs">
-          {!obj.locked && <GripHorizontal className="size-4 text-slate-400" />}
-          <span className="px-2.5 py-0.5 rounded-md bg-purple-100 text-purple-700 text-[11px] font-semibold">
-            {snapshot.categoryLabel || snapshot.category || snapshot.questionType || "প্রশ্ন"}
-          </span>
-          {snapshot.marks !== null && snapshot.marks !== undefined && (
-            <span
-              className={`px-2 py-0.5 rounded-md text-[11px] font-semibold ${
-                useDarkCard
-                  ? "bg-slate-700 text-slate-200"
-                  : "bg-slate-200/70 text-slate-700"
-              }`}
-            >
-              নম্বর: {Number(snapshot.marks).toLocaleString("bn-BD")}
-            </span>
-          )}
-        </div>
+        <QuestionCardHeaderBadges
+          snapshot={snapshot}
+          useDarkCard={useDarkCard}
+          showGrip={!obj.locked}
+        />
 
         <div className="flex items-center gap-1.5">
           <button
@@ -470,8 +508,9 @@ function QuestionCardItem({
           >
             <Type className="size-3" />
             <span>
-              {FONT_SCALE_OPTIONS.find((f) => Math.abs(f.scale - fontScale) < 0.05)
-                ?.label || "M"}
+              {FONT_SCALE_OPTIONS.find(
+                (f) => Math.abs(f.scale - fontScale) < 0.05,
+              )?.label || "M"}
             </span>
           </button>
 
@@ -480,7 +519,9 @@ function QuestionCardItem({
               type="button"
               onPointerDown={stopBtnPointer}
               onClick={toggleCompact}
-              title={compact ? "সম্পূর্ণ উদ্দীপক দেখুন" : "উদ্দীপক সংক্ষিপ্ত করুন"}
+              title={
+                compact ? "সম্পূর্ণ উদ্দীপক দেখুন" : "উদ্দীপক সংক্ষিপ্ত করুন"
+              }
               className="inline-flex items-center justify-center p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 cursor-pointer"
             >
               {compact ? (
@@ -498,7 +539,11 @@ function QuestionCardItem({
             title={useDarkCard ? "হালকা কার্ড থিম" : "ডার্ক কার্ড থিম"}
             className="inline-flex items-center justify-center p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 cursor-pointer"
           >
-            {useDarkCard ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}
+            {useDarkCard ? (
+              <Sun className="size-3.5" />
+            ) : (
+              <Moon className="size-3.5" />
+            )}
           </button>
 
           <button
@@ -512,7 +557,11 @@ function QuestionCardItem({
                 : "bg-white border-slate-200 text-slate-500 hover:bg-slate-100"
             }`}
           >
-            {obj.locked ? <Lock className="size-3.5" /> : <Unlock className="size-3.5" />}
+            {obj.locked ? (
+              <Lock className="size-3.5" />
+            ) : (
+              <Unlock className="size-3.5" />
+            )}
           </button>
 
           <button
@@ -539,6 +588,7 @@ function QuestionCardItem({
       {/* Right Edge Resize Handle */}
       {!obj.locked && (
         <div
+          data-export-ignore="true"
           onPointerDown={startResize}
           onPointerMove={moveResize}
           onPointerUp={endResize}
@@ -632,12 +682,24 @@ export function OffscreenQuestionExportHost({ slide, registerNode }) {
               width: `${qObj.width || 1100}px`,
               opacity: qObj.style?.cardOpacity ?? 0.97,
             }}
-            className={`rounded-2xl border shadow-lg ${
+            className={`rounded-2xl border shadow-lg font-bengali ${
               useDarkCard
                 ? "bg-slate-900 border-slate-700"
                 : "bg-white border-slate-200"
             }`}
           >
+            <div
+              className={`flex items-center justify-between gap-2 px-4 py-2 rounded-t-2xl border-b min-h-[44px] ${
+                useDarkCard
+                  ? "border-slate-700/80 bg-slate-800/90"
+                  : "border-slate-100 bg-slate-50/95"
+              }`}
+            >
+              <QuestionCardHeaderBadges
+                snapshot={qObj.payload?.snapshot || {}}
+                useDarkCard={useDarkCard}
+              />
+            </div>
             <QuestionCardBody obj={qObj} useDarkCard={useDarkCard} />
           </div>
         );

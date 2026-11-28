@@ -340,18 +340,35 @@ export async function renderSlideToDataUrl(
       for (const qObj of questionCards) {
         const domEl = questionCardNodesMap.get(qObj.id);
         if (!domEl) continue;
+        const cardWidth = domEl.offsetWidth || qObj.width || 1100;
+        const cardHeight = domEl.offsetHeight || qObj.height || 360;
         try {
+          // Reset live overlay positioning (position/left/top) during snapshot so cards moved
+          // anywhere on the slide are captured from (0,0) without SVG foreignObject clipping.
           const cardPng = await toPng(domEl, {
             pixelRatio: 2,
             cacheBust: true,
+            width: cardWidth,
+            height: cardHeight,
+            filter: (node) => node?.dataset?.exportIgnore !== "true",
+            style: {
+              position: "relative",
+              inset: "auto",
+              left: "0px",
+              top: "0px",
+              right: "auto",
+              bottom: "auto",
+              margin: "0px",
+              transform: "none",
+            },
           });
           const cardImg = await loadImageElement(cardPng);
           contentLayer.add(
             new Konva.Image({
               x: qObj.x,
               y: qObj.y,
-              width: qObj.width,
-              height: domEl.offsetHeight || qObj.height,
+              width: cardWidth,
+              height: cardHeight,
               image: cardImg,
             }),
           );
@@ -361,8 +378,8 @@ export async function renderSlideToDataUrl(
             new Konva.Rect({
               x: qObj.x,
               y: qObj.y,
-              width: qObj.width,
-              height: qObj.height,
+              width: cardWidth,
+              height: cardHeight,
               fill: "#FFFFFF",
               stroke: "#CBD5E1",
               cornerRadius: 12,
