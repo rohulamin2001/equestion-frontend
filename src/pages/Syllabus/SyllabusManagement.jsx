@@ -1006,11 +1006,11 @@ export default function SyllabusManagement() {
 
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                          টপিকসমূহ (Topics - কমা দিয়ে আলাদা করুন)
+                          টপিকসমূহ (Topics - সেমিকোলন ; দিয়ে আলাদা করুন)
                         </label>
                         <textarea
                           rows={2}
-                          placeholder="যেমন: সংখ্যার তুলনা, ক্রমবাচক সংখ্যা, ভগ্নাংশ"
+                          placeholder="যেমন: সংখ্যার তুলনা; ক্রমবাচক সংখ্যা; ভগ্নাংশ"
                           value={chap.topicsString}
                           onChange={(e) =>
                             handleChapterFieldChange(
@@ -1030,7 +1030,7 @@ export default function SyllabusManagement() {
                               টপিক ট্যাগ প্রিভিউ:
                             </span>
                             <div className="flex flex-wrap gap-1.5">
-                              {chap.topicsString.split(",").map((t, ti) => {
+                              {chap.topicsString.split(";").map((t, ti) => {
                                 const trimmed = t.trim();
                                 if (!trimmed) return null;
                                 return (
