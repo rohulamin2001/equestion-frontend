@@ -315,12 +315,27 @@ export async function renderSlideToDataUrl(
     drawSlideBackgroundToLayer(bgLayer, slide.canvas?.background);
     stage.add(bgLayer);
 
-    // Composite Question Card DOM snapshots underneath strokes (or in object order)
     const contentLayer = new Konva.Layer();
-    const questionCards = (slide.objects || []).filter(
+    const allObjects = slide.objects || [];
+    const mediaObjects = allObjects.filter(
+      (o) =>
+        (o.type === "IMAGE" || o.type === "PDF_PAGE") && o.visible !== false,
+    );
+    const questionCards = allObjects.filter(
       (o) => o.type === "QUESTION_CARD" && o.visible !== false,
     );
+    const topAnnotations = allObjects.filter(
+      (o) =>
+        o.type !== "QUESTION_CARD" &&
+        o.type !== "IMAGE" &&
+        o.type !== "PDF_PAGE" &&
+        o.visible !== false,
+    );
 
+    // 1. Background images & PDF pages underneath Question Cards
+    await renderSlideObjectsToLayer(contentLayer, mediaObjects);
+
+    // 2. Question Cards in middle layer
     if (questionCardNodesMap && questionCards.length > 0) {
       for (const qObj of questionCards) {
         const domEl = questionCardNodesMap.get(qObj.id);
@@ -357,10 +372,8 @@ export async function renderSlideToDataUrl(
       }
     }
 
-    await renderSlideObjectsToLayer(
-      contentLayer,
-      (slide.objects || []).filter((o) => o.type !== "QUESTION_CARD"),
-    );
+    // 3. Pen, Highlighter, Shapes, Text & Equations on top of Question Cards
+    await renderSlideObjectsToLayer(contentLayer, topAnnotations);
     stage.add(contentLayer);
     stage.draw();
 

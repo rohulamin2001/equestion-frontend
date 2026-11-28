@@ -1,5 +1,10 @@
 import { useUserContext } from "@/context/UserContext";
-import { AlertTriangle, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
+import {
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
+  RotateCcw,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -109,7 +114,10 @@ export default function Smartboard() {
   const dirtySlideIdsRef = useRef(new Set());
   const savingInFlightRef = useRef(false);
   const pendingSaveRequestedRef = useRef(false);
-  const [containerSize, setContainerSize] = useState({ width: 1000, height: 640 });
+  const [containerSize, setContainerSize] = useState({
+    width: 1000,
+    height: 640,
+  });
 
   const registerCardNode = useCallback((id, el) => {
     if (el) {
@@ -120,7 +128,10 @@ export default function Smartboard() {
   }, []);
 
   const slides = lesson.slides || [];
-  const safeSlideIndex = Math.min(activeSlideIndex, Math.max(0, slides.length - 1));
+  const safeSlideIndex = Math.min(
+    activeSlideIndex,
+    Math.max(0, slides.length - 1),
+  );
   const activeSlide = slides[safeSlideIndex] || createEmptySlide();
   const activeSlideId = activeSlide._id || activeSlide.localId;
   const activeBgType = activeSlide.canvas?.background?.type || "WHITEBOARD";
@@ -256,7 +267,9 @@ export default function Smartboard() {
           }));
           await deleteOfflineDraft(userId, "local_active");
           setSaveStatus("saved");
-          navigate(`/dashboard/smartboard/${currentLessonId}`, { replace: true });
+          navigate(`/dashboard/smartboard/${currentLessonId}`, {
+            replace: true,
+          });
           return currentLessonId;
         }
 
@@ -307,7 +320,9 @@ export default function Smartboard() {
         if (err?.response?.status === 409) {
           setConflictBanner(true);
           setSaveStatus("failed");
-          toast.error("অন্য ট্যাব/ডিভাইসে আপডেট হয়েছে — কনফ্লিক্ট কপি সেভ করুন।");
+          toast.error(
+            "অন্য ট্যাব/ডিভাইসে আপডেট হয়েছে — কনফ্লিক্ট কপি সেভ করুন।",
+          );
         } else {
           setSaveStatus(navigator.onLine ? "failed" : "offline");
         }
@@ -342,7 +357,11 @@ export default function Smartboard() {
       setLesson((prev) => {
         const nextSlides = prev.slides.map((s, idx) =>
           idx === safeSlideIndex
-            ? { ...s, objects: nextObjects, updatedAt: new Date().toISOString() }
+            ? {
+                ...s,
+                objects: nextObjects,
+                updatedAt: new Date().toISOString(),
+              }
             : s,
         );
         const updated = { ...prev, slides: nextSlides };
@@ -350,7 +369,12 @@ export default function Smartboard() {
         return updated;
       });
     },
-    [activeSlideId, activeSlide.objects, safeSlideIndex, markDirtyAndPersistDraft],
+    [
+      activeSlideId,
+      activeSlide.objects,
+      safeSlideIndex,
+      markDirtyAndPersistDraft,
+    ],
   );
 
   const handleUpdateObject = useCallback(
@@ -372,7 +396,9 @@ export default function Smartboard() {
 
   const handleDeleteObject = useCallback(
     (objId) => {
-      const nextObjects = (activeSlide.objects || []).filter((o) => o.id !== objId);
+      const nextObjects = (activeSlide.objects || []).filter(
+        (o) => o.id !== objId,
+      );
       if (selectedId === objId) setSelectedId(null);
       commitObjects(nextObjects);
     },
@@ -396,7 +422,13 @@ export default function Smartboard() {
       markDirtyAndPersistDraft(updated, activeSlideId);
       return updated;
     });
-  }, [historyMap, activeSlideId, activeSlide.objects, safeSlideIndex, markDirtyAndPersistDraft]);
+  }, [
+    historyMap,
+    activeSlideId,
+    activeSlide.objects,
+    safeSlideIndex,
+    markDirtyAndPersistDraft,
+  ]);
 
   const handleRedo = useCallback(() => {
     const res = stepRedoSlideHistory(
@@ -415,7 +447,13 @@ export default function Smartboard() {
       markDirtyAndPersistDraft(updated, activeSlideId);
       return updated;
     });
-  }, [historyMap, activeSlideId, activeSlide.objects, safeSlideIndex, markDirtyAndPersistDraft]);
+  }, [
+    historyMap,
+    activeSlideId,
+    activeSlide.objects,
+    safeSlideIndex,
+    markDirtyAndPersistDraft,
+  ]);
 
   // Keyboard shortcuts (Ctrl+Z, Ctrl+Y, Delete, PageUp/PageDown)
   useEffect(() => {
@@ -498,7 +536,8 @@ export default function Smartboard() {
   };
 
   useEffect(() => {
-    const onFsChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    const onFsChange = () =>
+      setIsFullscreen(Boolean(document.fullscreenElement));
     document.addEventListener("fullscreenchange", onFsChange);
     return () => document.removeEventListener("fullscreenchange", onFsChange);
   }, []);
@@ -623,7 +662,9 @@ export default function Smartboard() {
 
     setLesson((prev) => {
       const updated = { ...prev, slides: [...prev.slides, ...newSlides] };
-      newSlides.forEach((s) => dirtySlideIdsRef.current.add(s._id || s.localId));
+      newSlides.forEach((s) =>
+        dirtySlideIdsRef.current.add(s._id || s.localId),
+      );
       markDirtyAndPersistDraft(updated);
       return updated;
     });
@@ -872,14 +913,21 @@ export default function Smartboard() {
               targetSlide?._id &&
               !String(targetSlide._id).startsWith("slide_")
             ) {
-              smartboardApi.deleteSlide(lesson._id, targetSlide._id).catch(() => {});
+              smartboardApi
+                .deleteSlide(lesson._id, targetSlide._id)
+                .catch(() => {});
             }
-            setActiveSlideIndex((i) => Math.max(0, Math.min(i, slides.length - 2)));
+            setActiveSlideIndex((i) =>
+              Math.max(0, Math.min(i, slides.length - 2)),
+            );
           }}
         />
 
         {/* Main Canvas Stage Container */}
-        <div ref={workspaceContainerRef} className="relative flex-1 min-w-0 min-h-0">
+        <div
+          ref={workspaceContainerRef}
+          className="relative flex-1 min-w-0 min-h-0"
+        >
           <SmartboardCanvas
             slide={activeSlide}
             activeTool={activeTool}
@@ -895,18 +943,18 @@ export default function Smartboard() {
             rulerTool={rulerTool}
             containerWidth={containerSize.width}
             containerHeight={containerSize.height}
-          />
-
-          {/* Synchronized HTML/KaTeX Question Cards */}
-          <QuestionCardOverlay
-            objects={activeSlide.objects}
-            viewport={viewport}
-            activeTool={activeTool}
-            isDarkBoard={isDarkBoard}
-            onUpdateObject={handleUpdateObject}
-            onDeleteObject={handleDeleteObject}
-            registerCardNode={registerCardNode}
-          />
+          >
+            {/* Synchronized HTML/KaTeX Question Cards (z-10, between base canvas & top ink stage) */}
+            <QuestionCardOverlay
+              objects={activeSlide.objects}
+              viewport={viewport}
+              activeTool={activeTool}
+              isDarkBoard={isDarkBoard}
+              onUpdateObject={handleUpdateObject}
+              onDeleteObject={handleDeleteObject}
+              registerCardNode={registerCardNode}
+            />
+          </SmartboardCanvas>
 
           {/* Virtual Ruler & Protractor */}
           <StemToolsOverlay

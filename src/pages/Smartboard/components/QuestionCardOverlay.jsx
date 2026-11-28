@@ -29,7 +29,7 @@ const ROMAN_NUMERALS = ["i.", "ii.", "iii.", "iv."];
 /**
  * Renders the visual body of a QUESTION_CARD (shared by live overlay and offscreen PDF export).
  */
-export function QuestionCardBody({ obj, useDarkCard = false }) {
+export function QuestionCardBody({ obj, useDarkCard = false, allowScroll = false }) {
   const snapshot = obj.payload?.snapshot || {};
   const reveal = obj.payload?.reveal || {};
   const fontScale = obj.style?.fontScale || 1;
@@ -61,7 +61,7 @@ export function QuestionCardBody({ obj, useDarkCard = false }) {
             useDarkCard
               ? "bg-slate-800/80 border-slate-700 text-slate-100"
               : "bg-indigo-50/45 border-indigo-200/70 text-slate-800"
-          } ${compact ? "max-h-36 overflow-y-auto" : ""}`}
+          } ${compact ? `max-h-36 overflow-y-auto ${allowScroll ? "pointer-events-auto" : ""}` : ""}`}
         >
           <RichTextRender content={snapshot.stimulus} />
         </div>
@@ -384,7 +384,6 @@ function QuestionCardItem({
   const renderedX = obj.x + (dragOffset?.dx || 0);
   const renderedY = obj.y + (dragOffset?.dy || 0);
   const renderedWidth = resizeWidth ?? (obj.width || 1100);
-  const isBodyInteractive = isSelectMode && !obj.locked;
 
   return (
     <div
@@ -395,7 +394,7 @@ function QuestionCardItem({
         top: `${renderedY}px`,
         width: `${renderedWidth}px`,
         opacity: cardOpacity,
-        pointerEvents: isBodyInteractive ? "auto" : "none",
+        pointerEvents: "none",
       }}
       className={`rounded-2xl border shadow-lg transition-shadow font-bengali ${
         useDarkCard
@@ -531,7 +530,11 @@ function QuestionCardItem({
         </div>
       </div>
 
-      <QuestionCardBody obj={obj} useDarkCard={useDarkCard} />
+      <QuestionCardBody
+        obj={obj}
+        useDarkCard={useDarkCard}
+        allowScroll={isSelectMode}
+      />
 
       {/* Right Edge Resize Handle */}
       {!obj.locked && (

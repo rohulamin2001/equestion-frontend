@@ -188,16 +188,17 @@ export default function SmartboardPublicNote() {
               onUpdateObject={() => {}}
               containerWidth={containerSize.width}
               containerHeight={containerSize.height}
-            />
-            <QuestionCardOverlay
-              objects={activeSlide.objects}
-              viewport={viewport}
-              activeTool={BOARD_TOOLS.HAND}
-              isDarkBoard={isDarkBoard}
-              onUpdateObject={() => {}}
-              onDeleteObject={() => {}}
-              registerCardNode={() => {}}
-            />
+            >
+              <QuestionCardOverlay
+                objects={activeSlide.objects}
+                viewport={viewport}
+                activeTool={BOARD_TOOLS.HAND}
+                isDarkBoard={isDarkBoard}
+                onUpdateObject={() => {}}
+                onDeleteObject={() => {}}
+                registerCardNode={() => {}}
+              />
+            </SmartboardCanvas>
           </>
         )}
       </main>

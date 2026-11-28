@@ -26,7 +26,16 @@ import {
 } from "../engine/objectFactory";
 import BoardBackgroundLayer from "./BoardBackgroundLayer";
 
-function BoardImageNode({ obj, isSelectable, onSelect, onTransformEnd }) {
+function BoardImageNode({
+  obj,
+  isSelectable,
+  listening = true,
+  overrideOpacity,
+  onSelect,
+  onDragMove,
+  onTransform,
+  onTransformEnd,
+}) {
   const [imgEl, setImgEl] = useState(null);
   const src = obj.payload?.src || "";
 
@@ -47,11 +56,13 @@ function BoardImageNode({ obj, isSelectable, onSelect, onTransformEnd }) {
   if (!imgEl) {
     return (
       <Rect
-        id={obj.id}
+        id={listening ? obj.id : undefined}
         x={obj.x}
         y={obj.y}
         width={obj.width}
         height={obj.height}
+        opacity={overrideOpacity ?? 1}
+        listening={listening}
         stroke="#94A3B8"
         dash={[6, 6]}
         fill="rgba(241,245,249,0.5)"
@@ -61,45 +72,86 @@ function BoardImageNode({ obj, isSelectable, onSelect, onTransformEnd }) {
 
   return (
     <KonvaImage
-      id={obj.id}
+      id={listening ? obj.id : undefined}
       image={imgEl}
       x={obj.x}
       y={obj.y}
       width={obj.width}
       height={obj.height}
       rotation={obj.rotation || 0}
-      opacity={obj.opacity ?? 1}
-      draggable={isSelectable && !obj.locked}
-      onClick={(e) => {
-        if (!isSelectable) return;
-        e.cancelBubble = true;
-        onSelect(obj.id);
-      }}
-      onTap={(e) => {
-        if (!isSelectable) return;
-        e.cancelBubble = true;
-        onSelect(obj.id);
-      }}
-      onDragEnd={(e) => {
-        onTransformEnd(obj.id, {
-          x: e.target.x(),
-          y: e.target.y(),
-        });
-      }}
-      onTransformEnd={(e) => {
-        const node = e.target;
-        const scaleX = node.scaleX();
-        const scaleY = node.scaleY();
-        node.scaleX(1);
-        node.scaleY(1);
-        onTransformEnd(obj.id, {
-          x: node.x(),
-          y: node.y(),
-          width: Math.max(24, node.width() * scaleX),
-          height: Math.max(24, node.height() * scaleY),
-          rotation: node.rotation(),
-        });
-      }}
+      opacity={overrideOpacity ?? obj.opacity ?? 1}
+      listening={listening}
+      draggable={listening && isSelectable && !obj.locked}
+      onClick={
+        listening
+          ? (e) => {
+              if (!isSelectable) return;
+              e.cancelBubble = true;
+              onSelect(obj.id);
+            }
+          : undefined
+      }
+      onTap={
+        listening
+          ? (e) => {
+              if (!isSelectable) return;
+              e.cancelBubble = true;
+              onSelect(obj.id);
+            }
+          : undefined
+      }
+      onDragMove={
+        listening && onDragMove
+          ? (e) => {
+              onDragMove(obj.id, {
+                x: e.target.x(),
+                y: e.target.y(),
+              });
+            }
+          : undefined
+      }
+      onDragEnd={
+        listening
+          ? (e) => {
+              onTransformEnd(obj.id, {
+                x: e.target.x(),
+                y: e.target.y(),
+              });
+            }
+          : undefined
+      }
+      onTransform={
+        listening && onTransform
+          ? (e) => {
+              const node = e.target;
+              onTransform(obj.id, {
+                x: node.x(),
+                y: node.y(),
+                width: Math.max(24, node.width() * node.scaleX()),
+                height: Math.max(24, node.height() * node.scaleY()),
+                rotation: node.rotation(),
+              });
+            }
+          : undefined
+      }
+      onTransformEnd={
+        listening
+          ? (e) => {
+              const node = e.target;
+              const scaleX = node.scaleX();
+              const scaleY = node.scaleY();
+              node.scaleX(1);
+              node.scaleY(1);
+              onTransformEnd(obj.id, {
+                x: node.x(),
+                y: node.y(),
+                width: Math.max(24, node.width() * scaleX),
+                height: Math.max(24, node.height() * scaleY),
+                rotation: node.rotation(),
+              });
+            }
+          : undefined
+      }
     />
   );
 }
@@ -244,6 +296,61 @@ function isPointNearStroke(worldPt, strokeObj, radius) {
   return false;
 }
 
+function extractShapePatch(obj, node, includeDimensions) {
+  const sub = obj.payload?.shapeType;
+  const sx = includeDimensions ? node.scaleX() : 1;
+  const sy = includeDimensions ? node.scaleY() : 1;
+  const nextWidth = includeDimensions ? obj.width * sx : obj.width;
+  const nextHeight = includeDimensions ? obj.height * sy : obj.height;
+
+  let nextX = node.x();
+  let nextY = node.y();
+  if (sub === "ellipse") {
+    nextX = node.x() - nextWidth / 2;
+    nextY = node.y() - nextHeight / 2;
+  } else if (sub === "rect") {
+    if (nextWidth < 0) nextX -= nextWidth;
+    if (nextHeight < 0) nextY -= nextHeight;
+  }
+
+  const patch = { x: nextX, y: nextY };
+  if (includeDimensions) {
+    patch.width = nextWidth;
+    patch.height = nextHeight;
+    patch.rotation = node.rotation();
+  }
+  return patch;
+}
+
+function getSelectionBounds(obj) {
+  if (!obj) return null;
+  if (obj.type === "TEXT") {
+    const textStr = obj.payload?.text || "";
+    const lines = textStr.split("\n");
+    const fontSize = obj.style?.fontSize || 28;
+    const maxCols = lines.reduce((max, line) => Math.max(max, line.length), 1);
+    const estWidth = obj.width || Math.max(80, maxCols * fontSize * 0.58);
+    const estHeight = Math.max(fontSize * 1.4, lines.length * fontSize * 1.35);
+    return {
+      x: obj.x,
+      y: obj.y,
+      width: estWidth,
+      height: estHeight,
+      rotation: obj.rotation || 0,
+    };
+  }
+
+  const rawW = obj.width || 120;
+  const rawH = obj.height || 40;
+  return {
+    x: rawW < 0 ? obj.x + rawW : obj.x,
+    y: rawH < 0 ? obj.y + rawH : obj.y,
+    width: Math.max(16, Math.abs(rawW)),
+    height: Math.max(16, Math.abs(rawH)),
+    rotation: obj.rotation || 0,
+  };
+}
+
 export default function SmartboardCanvas({
   slide,
   activeTool,
@@ -259,6 +366,7 @@ export default function SmartboardCanvas({
   rulerTool,
   containerWidth,
   containerHeight,
+  children,
 }) {
   const stageRef = useRef(null);
   const contentLayerRef = useRef(null);
@@ -281,6 +389,7 @@ export default function SmartboardCanvas({
   const laserRafRef = useRef(null);
 
   const [liveShapePreview, setLiveShapePreview] = useState(null);
+  const [transientEdit, setTransientEdit] = useState(null);
   const [editingText, setEditingText] = useState(null);
   const isComposingRef = useRef(false);
 
@@ -372,16 +481,252 @@ export default function SmartboardCanvas({
     [slide.objects],
   );
 
-  const nonStrokeObjects = useMemo(
+  const baseMediaObjects = useMemo(
     () =>
       (slide.objects || []).filter(
         (o) =>
-          o.type !== "STROKE" &&
-          o.type !== "QUESTION_CARD" &&
+          (o.type === "IMAGE" || o.type === "PDF_PAGE") &&
           o.visible !== false,
       ),
     [slide.objects],
   );
+
+  const topAnnotationObjects = useMemo(
+    () =>
+      (slide.objects || []).filter(
+        (o) =>
+          (o.type === "SHAPE" ||
+            o.type === "TEXT" ||
+            o.type === "EQUATION") &&
+          o.visible !== false,
+      ),
+    [slide.objects],
+  );
+
+  const commitTopObjectUpdate = useCallback(
+    (objectId, patch) => {
+      setTransientEdit(null);
+      onUpdateObject(objectId, patch);
+    },
+    [onUpdateObject],
+  );
+
+  const selectedTopBounds = useMemo(() => {
+    if (!isSelectMode || !selectedId) return null;
+    const found = topAnnotationObjects.find((o) => o.id === selectedId);
+    if (!found) return null;
+    const effective =
+      transientEdit?.id === found.id ? { ...found, ...transientEdit } : found;
+    return getSelectionBounds(effective);
+  }, [isSelectMode, selectedId, topAnnotationObjects, transientEdit]);
+
+  const renderAnnotationNode = (obj, { interactive }) => {
+    const renderedObj =
+      !interactive && transientEdit?.id === obj.id
+        ? { ...obj, ...transientEdit }
+        : obj;
+
+    if (obj.type === "EQUATION") {
+      return (
+        <BoardImageNode
+          key={obj.id}
+          obj={renderedObj}
+          isSelectable={interactive && isSelectMode}
+          listening={interactive}
+          overrideOpacity={interactive ? 0.001 : undefined}
+          onSelect={onSelectObject}
+          onDragMove={
+            interactive
+              ? (id, patch) => setTransientEdit({ id, ...patch })
+              : undefined
+          }
+          onTransform={
+            interactive
+              ? (id, patch) => setTransientEdit({ id, ...patch })
+              : undefined
+          }
+          onTransformEnd={interactive ? commitTopObjectUpdate : undefined}
+        />
+      );
+    }
+
+    if (obj.type === "SHAPE") {
+      const proxyProps = interactive
+        ? {
+            id: obj.id,
+            opacity: 0.001,
+            draggable: isSelectMode && !obj.locked,
+            onClick: (ev) => {
+              if (!isSelectMode) return;
+              ev.cancelBubble = true;
+              onSelectObject(obj.id);
+            },
+            onTap: (ev) => {
+              if (!isSelectMode) return;
+              ev.cancelBubble = true;
+              onSelectObject(obj.id);
+            },
+            onDragMove: (ev) => {
+              setTransientEdit({
+                id: obj.id,
+                ...extractShapePatch(obj, ev.target, false),
+              });
+            },
+            onDragEnd: (ev) => {
+              commitTopObjectUpdate(
+                obj.id,
+                extractShapePatch(obj, ev.target, false),
+              );
+            },
+            onTransform: (ev) => {
+              setTransientEdit({
+                id: obj.id,
+                ...extractShapePatch(obj, ev.target, true),
+              });
+            },
+            onTransformEnd: (ev) => {
+              const node = ev.target;
+              const patch = extractShapePatch(obj, node, true);
+              node.scaleX(1);
+              node.scaleY(1);
+              commitTopObjectUpdate(obj.id, patch);
+            },
+          }
+        : {
+            opacity: renderedObj.opacity ?? 1,
+            listening: false,
+          };
+
+      return renderShapeNode(renderedObj, {
+        key: obj.id,
+        x: renderedObj.x,
+        y: renderedObj.y,
+        rotation: renderedObj.rotation || 0,
+        ...proxyProps,
+      });
+    }
+
+    if (obj.type === "TEXT") {
+      const extractTextPatch = (node, includeDimensions) => {
+        const sx = includeDimensions ? node.scaleX() : 1;
+        const sy = includeDimensions ? node.scaleY() : 1;
+        return {
+          x: node.x(),
+          y: node.y(),
+          ...(includeDimensions ? { rotation: node.rotation() } : {}),
+          ...(includeDimensions && Math.abs(sx - 1) > 0.01
+            ? { width: Math.max(40, node.width() * sx) }
+            : {}),
+          ...(includeDimensions && Math.abs(sy - 1) > 0.01
+            ? {
+                style: {
+                  ...obj.style,
+                  fontSize: Math.max(
+                    12,
+                    Math.round((obj.style?.fontSize || 28) * sy),
+                  ),
+                },
+              }
+            : {}),
+        };
+      };
+
+      return (
+        <Text
+          key={obj.id}
+          id={interactive ? obj.id : undefined}
+          x={renderedObj.x}
+          y={renderedObj.y}
+          width={renderedObj.width}
+          rotation={renderedObj.rotation || 0}
+          text={renderedObj.payload?.text || ""}
+          fontSize={renderedObj.style?.fontSize || 28}
+          fontFamily={
+            renderedObj.style?.fontFamily || "Hind Siliguri, sans-serif"
+          }
+          fill={renderedObj.style?.color || "#0F172A"}
+          align={renderedObj.style?.align || "left"}
+          opacity={interactive ? 0.001 : renderedObj.opacity ?? 1}
+          listening={interactive}
+          perfectDrawEnabled={false}
+          draggable={interactive && isSelectMode && !obj.locked}
+          onClick={
+            interactive
+              ? (ev) => {
+                  if (!isSelectMode) return;
+                  ev.cancelBubble = true;
+                  onSelectObject(obj.id);
+                }
+              : undefined
+          }
+          onTap={
+            interactive
+              ? (ev) => {
+                  if (!isSelectMode) return;
+                  ev.cancelBubble = true;
+                  onSelectObject(obj.id);
+                }
+              : undefined
+          }
+          onDblClick={
+            interactive
+              ? (ev) => {
+                  ev.cancelBubble = true;
+                  setEditingText({
+                    isNew: false,
+                    object: obj,
+                    value: obj.payload?.text || "",
+                  });
+                }
+              : undefined
+          }
+          onDragMove={
+            interactive
+              ? (ev) => {
+                  setTransientEdit({
+                    id: obj.id,
+                    ...extractTextPatch(ev.target, false),
+                  });
+                }
+              : undefined
+          }
+          onDragEnd={
+            interactive
+              ? (ev) => {
+                  commitTopObjectUpdate(
+                    obj.id,
+                    extractTextPatch(ev.target, false),
+                  );
+                }
+              : undefined
+          }
+          onTransform={
+            interactive
+              ? (ev) => {
+                  setTransientEdit({
+                    id: obj.id,
+                    ...extractTextPatch(ev.target, true),
+                  });
+                }
+              : undefined
+          }
+          onTransformEnd={
+            interactive
+              ? (ev) => {
+                  const node = ev.target;
+                  const patch = extractTextPatch(node, true);
+                  node.scaleX(1);
+                  node.scaleY(1);
+                  commitTopObjectUpdate(obj.id, patch);
+                }
+              : undefined
+          }
+        />
+      );
+    }
+
+    return null;
+  };
 
   const strokeOutlines = useMemo(() => {
     const map = new Map();
@@ -716,198 +1061,168 @@ export default function SmartboardCanvas({
       className={`relative w-full h-full overflow-hidden select-none ${cursorClass}`}
       style={{ touchAction: "none" }}
     >
-      <Stage
-        ref={stageRef}
-        width={containerWidth}
-        height={containerHeight}
-        x={viewport.x}
-        y={viewport.y}
-        scaleX={viewport.scale}
-        scaleY={viewport.scale}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        onWheel={handleWheel}
+      <div className="relative z-0 w-full h-full">
+        <Stage
+          ref={stageRef}
+          width={containerWidth}
+          height={containerHeight}
+          x={viewport.x}
+          y={viewport.y}
+          scaleX={viewport.scale}
+          scaleY={viewport.scale}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          onWheel={handleWheel}
+        >
+          <BoardBackgroundLayer background={slide.canvas?.background} />
+
+          {/* Base Stage Layer: Background Media & Hit Proxies for Top-Tier Annotations */}
+          <Layer ref={contentLayerRef}>
+            {baseMediaObjects.map((obj) => (
+              <BoardImageNode
+                key={obj.id}
+                obj={obj}
+                isSelectable={isSelectMode}
+                onSelect={onSelectObject}
+                onTransformEnd={onUpdateObject}
+              />
+            ))}
+
+            {topAnnotationObjects.map((obj) =>
+              renderAnnotationNode(obj, { interactive: true }),
+            )}
+
+            <Transformer
+              ref={transformerRef}
+              rotateEnabled
+              keepRatio={false}
+              borderStroke="#6366F1"
+              anchorStroke="#4F46E5"
+              anchorFill="#FFFFFF"
+              anchorSize={9}
+            />
+          </Layer>
+        </Stage>
+      </div>
+
+      {/* Middle Layer (z-10): Interactive Question Card DOM Overlay */}
+      {children}
+
+      {/* Top Annotation Tier (z-20, non-interactive): Ink, Highlights, Shapes, Text, Equations & Live Previews */}
+      <div
+        className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
+        style={{ pointerEvents: "none" }}
+        aria-hidden
       >
-        <BoardBackgroundLayer background={slide.canvas?.background} />
+        <Stage
+          width={containerWidth}
+          height={containerHeight}
+          x={viewport.x}
+          y={viewport.y}
+          scaleX={viewport.scale}
+          scaleY={viewport.scale}
+          listening={false}
+        >
+          <Layer listening={false}>
+            {topAnnotationObjects.map((obj) =>
+              renderAnnotationNode(obj, { interactive: false }),
+            )}
 
-        {/* Content Layer: Non-Stroke Media, Shapes, Text & Strokes */}
-        <Layer ref={contentLayerRef}>
-          {nonStrokeObjects.map((obj) => {
-            if (
-              obj.type === "IMAGE" ||
-              obj.type === "PDF_PAGE" ||
-              obj.type === "EQUATION"
-            ) {
-              return (
-                <BoardImageNode
-                  key={obj.id}
-                  obj={obj}
-                  isSelectable={isSelectMode}
-                  onSelect={onSelectObject}
-                  onTransformEnd={onUpdateObject}
-                />
-              );
-            }
+            {strokeObjects.map((stk) => {
+              if (stk.style?.dashed) {
+                return (
+                  <Line
+                    key={stk.id}
+                    points={(stk.payload?.points || []).flatMap((p) => [p[0], p[1]])}
+                    stroke={stk.style?.color || "#0F172A"}
+                    strokeWidth={stk.style?.strokeWidth || 4}
+                    dash={[14, 10]}
+                    lineCap="round"
+                    lineJoin="round"
+                    opacity={stk.opacity ?? 1}
+                    listening={false}
+                    perfectDrawEnabled={false}
+                  />
+                );
+              }
 
-            if (obj.type === "SHAPE") {
-              return renderShapeNode(obj, {
-                key: obj.id,
-                id: obj.id,
-                x: obj.x,
-                y: obj.y,
-                rotation: obj.rotation || 0,
-                draggable: isSelectMode && !obj.locked,
-                onClick: (ev) => {
-                  if (!isSelectMode) return;
-                  ev.cancelBubble = true;
-                  onSelectObject(obj.id);
-                },
-                onDragEnd: (ev) => {
-                  onUpdateObject(obj.id, { x: ev.target.x(), y: ev.target.y() });
-                },
-                onTransformEnd: (ev) => {
-                  const node = ev.target;
-                  const sx = node.scaleX();
-                  const sy = node.scaleY();
-                  node.scaleX(1);
-                  node.scaleY(1);
-                  onUpdateObject(obj.id, {
-                    x: node.x(),
-                    y: node.y(),
-                    width: obj.width * sx,
-                    height: obj.height * sy,
-                    rotation: node.rotation(),
-                  });
-                },
-              });
-            }
-
-            if (obj.type === "TEXT") {
-              return (
-                <Text
-                  key={obj.id}
-                  id={obj.id}
-                  x={obj.x}
-                  y={obj.y}
-                  width={obj.width}
-                  rotation={obj.rotation || 0}
-                  text={obj.payload?.text || ""}
-                  fontSize={obj.style?.fontSize || 28}
-                  fontFamily={obj.style?.fontFamily || "Hind Siliguri, sans-serif"}
-                  fill={obj.style?.color || "#0F172A"}
-                  align={obj.style?.align || "left"}
-                  draggable={isSelectMode && !obj.locked}
-                  onClick={(ev) => {
-                    if (!isSelectMode) return;
-                    ev.cancelBubble = true;
-                    onSelectObject(obj.id);
-                  }}
-                  onDblClick={(ev) => {
-                    ev.cancelBubble = true;
-                    setEditingText({
-                      isNew: false,
-                      object: obj,
-                      value: obj.payload?.text || "",
-                    });
-                  }}
-                  onDragEnd={(ev) => {
-                    onUpdateObject(obj.id, { x: ev.target.x(), y: ev.target.y() });
-                  }}
-                />
-              );
-            }
-            return null;
-          })}
-
-          {strokeObjects.map((stk) => {
-            if (stk.style?.dashed) {
               return (
                 <Line
                   key={stk.id}
-                  points={(stk.payload?.points || []).flatMap((p) => [p[0], p[1]])}
-                  stroke={stk.style?.color || "#0F172A"}
-                  strokeWidth={stk.style?.strokeWidth || 4}
-                  dash={[14, 10]}
-                  lineCap="round"
-                  lineJoin="round"
+                  points={strokeOutlines.get(stk.id) || []}
+                  fill={stk.style?.color || "#0F172A"}
+                  closed
                   opacity={stk.opacity ?? 1}
                   listening={false}
                   perfectDrawEnabled={false}
                 />
               );
-            }
+            })}
 
-            return (
-              <Line
-                key={stk.id}
-                points={strokeOutlines.get(stk.id) || []}
-                fill={stk.style?.color || "#0F172A"}
-                closed
-                opacity={stk.opacity ?? 1}
+            {selectedTopBounds && (
+              <Rect
+                x={selectedTopBounds.x - 4}
+                y={selectedTopBounds.y - 4}
+                width={selectedTopBounds.width + 8}
+                height={selectedTopBounds.height + 8}
+                rotation={selectedTopBounds.rotation}
+                stroke="#6366F1"
+                strokeWidth={1.5 / Math.max(0.5, viewport.scale)}
+                dash={[6, 4]}
                 listening={false}
                 perfectDrawEnabled={false}
               />
-            );
-          })}
+            )}
+          </Layer>
 
-          <Transformer
-            ref={transformerRef}
-            rotateEnabled
-            keepRatio={false}
-            borderStroke="#6366F1"
-            anchorStroke="#4F46E5"
-            anchorFill="#FFFFFF"
-            anchorSize={9}
-          />
-        </Layer>
-
-        {/* Ephemeral Live Stroke & Laser Overlay Layer */}
-        <Layer ref={liveLayerRef} listening={false}>
-          <Line
-            ref={liveStrokeRef}
-            points={[]}
-            fill={brushColor}
-            closed
-            visible={false}
-            listening={false}
-            perfectDrawEnabled={false}
-          />
-          <Line
-            ref={liveDashedRef}
-            points={[]}
-            stroke={brushColor}
-            strokeWidth={strokeWidth}
-            dash={[14, 10]}
-            lineCap="round"
-            lineJoin="round"
-            visible={false}
-            listening={false}
-            perfectDrawEnabled={false}
-          />
-          {liveShapePreview &&
-            renderShapeNode(liveShapePreview, {
-              key: "live-shape-preview",
-              x: liveShapePreview.x,
-              y: liveShapePreview.y,
-              listening: false,
-            })}
-          <Line
-            ref={laserLineRef}
-            points={[]}
-            stroke="#EF4444"
-            strokeWidth={6 / Math.max(0.5, viewport.scale)}
-            shadowColor="#EF4444"
-            shadowBlur={14}
-            lineCap="round"
-            lineJoin="round"
-            visible={false}
-            listening={false}
-            perfectDrawEnabled={false}
-          />
-        </Layer>
-      </Stage>
+          {/* Ephemeral Live Stroke, Shape Preview & Laser Overlay Layer */}
+          <Layer ref={liveLayerRef} listening={false}>
+            <Line
+              ref={liveStrokeRef}
+              points={[]}
+              fill={brushColor}
+              closed
+              visible={false}
+              listening={false}
+              perfectDrawEnabled={false}
+            />
+            <Line
+              ref={liveDashedRef}
+              points={[]}
+              stroke={brushColor}
+              strokeWidth={strokeWidth}
+              dash={[14, 10]}
+              lineCap="round"
+              lineJoin="round"
+              visible={false}
+              listening={false}
+              perfectDrawEnabled={false}
+            />
+            {liveShapePreview &&
+              renderShapeNode(liveShapePreview, {
+                key: "live-shape-preview",
+                x: liveShapePreview.x,
+                y: liveShapePreview.y,
+                listening: false,
+              })}
+            <Line
+              ref={laserLineRef}
+              points={[]}
+              stroke="#EF4444"
+              strokeWidth={6 / Math.max(0.5, viewport.scale)}
+              shadowColor="#EF4444"
+              shadowBlur={14}
+              lineCap="round"
+              lineJoin="round"
+              visible={false}
+              listening={false}
+              perfectDrawEnabled={false}
+            />
+          </Layer>
+        </Stage>
+      </div>
 
       {/* Bangla-IME-Safe Inline Text Editor Overlay */}
       {editingText && editScreenPos && (
