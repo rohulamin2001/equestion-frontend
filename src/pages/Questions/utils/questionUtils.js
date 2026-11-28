@@ -62,3 +62,173 @@ export const getCategoryMarkLabel = (category, count) => {
   }
   return "";
 };
+
+export const DIFFICULTY_BADGES = {
+  Easy: {
+    label: "সহজ",
+    className: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  },
+  Medium: {
+    label: "মধ্যম",
+    className: "bg-amber-50 text-amber-700 border-amber-200",
+  },
+  Hard: {
+    label: "কঠিন",
+    className: "bg-rose-50 text-rose-700 border-rose-200",
+  },
+};
+
+export const COGNITIVE_LEVEL_LABELS = {
+  Knowledge: "জ্ঞান",
+  Understanding: "অনুধাবন",
+  Application: "প্রয়োগ",
+  "Higher Order": "উচ্চতর দক্ষতা",
+};
+
+export const MCQ_TYPE_LABELS = {
+  Simple: "সাধারণ MCQ",
+  MultipleCompletion: "বহুপদী সমাপ্তিসূচক",
+  Contextual: "অভিন্ন তথ্য/উদ্দীপকভিত্তিক",
+};
+
+export function toBnNumber(num) {
+  const digits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+  return String(num ?? "").replace(/\d/g, (d) => digits[Number(d)]);
+}
+
+/**
+ * Computes consistent point weight of any question across MCQ, Creative, and General formats.
+ */
+export function getQuestionMarks(q) {
+  if (!q || typeof q !== "object") return 0;
+  if (q.category === "MCQ") {
+    return Number(q.mcqData?.marks) || 1;
+  }
+  if (q.category === "Creative") {
+    const subs = q.creativeData?.subQuestions || {};
+    const total = ["cognitiveA", "cognitiveB", "cognitiveC", "cognitiveD"].reduce(
+      (sum, key) => sum + (Number(subs[key]?.marks) || 0),
+      0,
+    );
+    return total > 0 ? total : 10;
+  }
+  if (
+    Array.isArray(q.generalData?.subQuestions) &&
+    q.generalData.subQuestions.length > 0 &&
+    !q.generalData?.marks
+  ) {
+    return q.generalData.subQuestions.reduce(
+      (sum, sq) => sum + (Number(sq.marks) || 2),
+      0,
+    );
+  }
+  return Number(q.generalData?.marks) || 1;
+}
+
+function normalizeStringArray(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) {
+    return val.map((v) => (v != null ? String(v).trim() : "")).filter(Boolean);
+  }
+  return String(val)
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+/**
+ * Extracts normalized metadata & keywords attached during question authoring
+ * so cards, tooltips, and the Right Metadata Inspector render uniformly.
+ */
+export function extractQuestionMetadata(q, availableChapters = []) {
+  if (!q || typeof q !== "object") {
+    return {
+      uid: "",
+      schools: [],
+      boardYearPairs: [],
+      topics: [],
+      specialSearches: [],
+      levelLabel: "",
+      difficultyMeta: { label: "—", className: "bg-slate-50 text-slate-600 border-slate-200" },
+      chapterName: "",
+      marks: 0,
+      hasImage: false,
+      hasAnswer: false,
+    };
+  }
+
+  const schools = normalizeStringArray(q.school);
+  const topics = normalizeStringArray(q.topics);
+  const specialSearches = normalizeStringArray(q.specialSearch);
+
+  // Merge modern examHistory [{ board, years }] with legacy top-level board/year arrays
+  const boardYearPairs = [];
+  if (Array.isArray(q.examHistory) && q.examHistory.length > 0) {
+    for (const entry of q.examHistory) {
+      if (!entry) continue;
+      const b = entry.board ? String(entry.board).trim() : "";
+      const ys = Array.isArray(entry.years) ? entry.years.filter(Boolean) : [];
+      if (b && ys.length > 0) {
+        boardYearPairs.push(`${b} (${ys.join(", ")})`);
+      } else if (b) {
+        boardYearPairs.push(b);
+      } else if (ys.length > 0) {
+        boardYearPairs.push(ys.join(", "));
+      }
+    }
+  } else {
+    const legacyBoards = normalizeStringArray(q.board);
+    const legacyYears = normalizeStringArray(q.year);
+    const joined = [legacyBoards.join(", "), legacyYears.join(", ")]
+      .filter(Boolean)
+      .join(" — ");
+    if (joined) boardYearPairs.push(joined);
+  }
+
+  const chapterMatch = availableChapters.find(
+    (c) => Number(c.chapterNumber) === Number(q.chapterNumber),
+  );
+
+  const rawHtmlBlob = [
+    q.passageStem,
+    q.mcqData?.stem,
+    q.mcqData?.questionText,
+    ...(q.mcqData?.options || []),
+    q.creativeData?.stem,
+    q.generalData?.stem,
+    q.generalData?.questionText,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const hasAnswer = Boolean(
+    (q.category === "MCQ" &&
+      (q.mcqData?.correctAnswer !== undefined || q.mcqData?.explanation)) ||
+      (q.category === "Creative" &&
+        ["cognitiveA", "cognitiveB", "cognitiveC", "cognitiveD"].some(
+          (k) => q.creativeData?.subQuestions?.[k]?.answer,
+        )) ||
+      (q.generalData?.suggestedAnswer ||
+        (Array.isArray(q.generalData?.subQuestions) &&
+          q.generalData.subQuestions.some((sq) => sq.answer))),
+  );
+
+  const rawLevel = q.level ? String(q.level).trim() : "";
+
+  return {
+    uid: q.questionUid || "",
+    schools,
+    boardYearPairs,
+    topics,
+    specialSearches,
+    levelLabel: COGNITIVE_LEVEL_LABELS[rawLevel] || rawLevel,
+    difficultyMeta: DIFFICULTY_BADGES[q.difficulty] || {
+      label: q.difficulty || "সাধারণ",
+      className: "bg-slate-50 text-slate-600 border-slate-200",
+    },
+    chapterName: chapterMatch?.chapterName || "",
+    marks: getQuestionMarks(q),
+    hasImage: /<img\b[^>]*>/i.test(rawHtmlBlob),
+    hasAnswer,
+  };
+}

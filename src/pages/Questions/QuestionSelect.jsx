@@ -1,28 +1,28 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { groupPassageQuestions } from "@/lib/questionUtils";
 import {
   BookOpen,
-  Check,
-  ChevronLeft,
-  Eye,
+  Filter,
   Info,
   Loader2,
-  Search,
-  Sliders,
+  RotateCcw,
+  SlidersHorizontal,
+  X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import RichTextRender from "../../components/RichTextRender.jsx";
+import QuestionBankCard from "./components/select/QuestionBankCard";
+import QuestionFilterSidebar from "./components/select/QuestionFilterSidebar";
+import QuestionPreviewModal from "./components/select/QuestionPreviewModal";
+import QuestionSelectHeader from "./components/select/QuestionSelectHeader";
 import { useQuestions } from "./hook/useQuestions";
-import { groupPassageQuestions } from "@/lib/questionUtils";
+import { toBnNumber } from "./utils/questionUtils";
 
+/**
+ * Modern Question Bank Selection Workspace (`/dashboard/questions/select`)
+ * using MyQuestions-matched 15px typography, server-side metadata & keyword filtering,
+ * and a sticky Right Sidebar for Filters, Metadata Inspection & Selection Reordering.
+ */
 export default function QuestionSelect() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -34,39 +34,111 @@ export default function QuestionSelect() {
     setActiveSetId,
     activeSet,
     bankQuestions,
+    totalBankCount,
     loadingBank,
+    isFetchingBank,
+    isFetchingNextBankPage,
     fetchNextBankPage,
     hasMoreBankQuestions,
     searchKeyword,
     setSearchKeyword,
     uniqueMode,
     setUniqueMode,
+    selectedChapters,
+    setSelectedChapters,
+    setChapterNumbers,
+    selectedTopics,
+    setSelectedTopics,
+    selectedDifficulties,
+    setSelectedDifficulties,
     selectedLevels,
     setSelectedLevels,
+    selectedBoards,
+    setSelectedBoards,
+    selectedYears,
+    setSelectedYears,
+    selectedSchools,
+    setSelectedSchools,
     selectedTags,
     setSelectedTags,
+    selectedMcqTypes,
+    setSelectedMcqTypes,
+    selectedCategories,
+    setSelectedCategories,
+    hasImageOnly,
+    setHasImageOnly,
+    sortOrder,
+    setSortOrder,
+    resetAllFilters,
+    metadataOptions,
+    availableChapters,
+    availableTopics,
+    allowedSubjectCategories,
+    syllabusList,
     updateQuestionSet,
   } = useQuestions();
 
-  const [selectedQuestions, setSelectedQuestions] = useState([]);
+  const [selectionOverride, setSelectionOverride] = useState({
+    setId: null,
+    questions: null,
+  });
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [globalShowAnswers, setGlobalShowAnswers] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState("filters");
+  const [inspectedQuestion, setInspectedQuestion] = useState(null);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
-  const [initializedSetId, setInitializedSetId] = useState(null);
-
-  const groupedBankItems = useMemo(() => groupPassageQuestions(bankQuestions), [bankQuestions]);
-
-  // Set active set ID on load
+  // Sync active set ID from query string
   useEffect(() => {
     if (targetId && activeSetId !== targetId) {
       setActiveSetId(targetId);
     }
   }, [targetId, activeSetId, setActiveSetId]);
 
-  // Sync selected questions with the set's existing questions once loaded
-  if (activeSet && activeSet._id !== initializedSetId) {
-    setInitializedSetId(activeSet._id);
-    setSelectedQuestions(activeSet.questions || []);
-  }
+  const selectedQuestions = useMemo(() => {
+    if (
+      selectionOverride.setId === activeSet?._id &&
+      Array.isArray(selectionOverride.questions)
+    ) {
+      return selectionOverride.questions;
+    }
+    return activeSet?.questions || [];
+  }, [selectionOverride, activeSet]);
+
+  const setSelectedQuestions = useCallback(
+    (updater) => {
+      const next =
+        typeof updater === "function" ? updater(selectedQuestions) : updater;
+      setSelectionOverride({
+        setId: activeSet?._id || null,
+        questions: next,
+      });
+    },
+    [activeSet?._id, selectedQuestions],
+  );
+
+  const selectedIdsSet = useMemo(
+    () => new Set(selectedQuestions.map((sq) => sq._id || sq)),
+    [selectedQuestions],
+  );
+
+  const groupedBankItems = useMemo(
+    () => groupPassageQuestions(bankQuestions),
+    [bankQuestions],
+  );
+
+  const itemStartSerials = useMemo(() => {
+    const starts = [];
+    let cursor = 1;
+    for (const item of groupedBankItems) {
+      starts.push(cursor);
+      cursor += item.isGroup ? item.questions?.length || 1 : 1;
+    }
+    return starts;
+  }, [groupedBankItems]);
+
+  const returnSetsParam =
+    searchParams.get("setIds") || searchParams.get("setId") || activeSetId || "";
 
   const handleSaveQuestions = async () => {
     if (!activeSetId) return;
@@ -77,11 +149,7 @@ export default function QuestionSelect() {
         payload: { questions: qIds },
       });
       toast.success("প্রশ্নমালা সফলভাবে সংরক্ষণ করা হয়েছে!");
-
-      // Redirect back to preview page with all setId parameters preserved
-      const idsParam =
-        searchParams.get("setId") || searchParams.get("setIds") || activeSetId;
-      navigate(`/dashboard/questions?setId=${idsParam}`);
+      navigate(`/dashboard/questions?setId=${returnSetsParam}`);
     } catch (err) {
       console.error("Error saving questions:", err);
       toast.error("প্রশ্ন সংরক্ষণ করতে ব্যর্থ হয়েছে।");
@@ -89,64 +157,238 @@ export default function QuestionSelect() {
   };
 
   const handleCancel = () => {
-    const idsParam =
-      searchParams.get("setId") ||
-      searchParams.get("setIds") ||
-      activeSetId ||
-      "";
-    navigate(`/dashboard/questions?setId=${idsParam}`);
+    navigate(`/dashboard/questions?setId=${returnSetsParam}`);
   };
 
-  // Toggle selection
-  const handleToggleQuestion = (q) => {
-    const isSelected = selectedQuestions.some((sq) => (sq._id || sq) === q._id);
-    
-    if (isSelected) {
-      // Uncheck only this question
-      setSelectedQuestions((prev) => prev.filter((sq) => (sq._id || sq) !== q._id));
-    } else {
-      // Check this question. If it's part of a group, check all related questions visible in the current list
-      if (q.passageGroupId) {
-        const relatedQuestions = bankQuestions.filter(bq => bq.passageGroupId === q.passageGroupId);
+  const handleToggleQuestion = useCallback(
+    (q, { standalone = false } = {}) => {
+      const isSelected = selectedQuestions.some(
+        (sq) => (sq._id || sq) === q._id,
+      );
+      if (isSelected) {
+        setSelectedQuestions((prev) =>
+          prev.filter((sq) => (sq._id || sq) !== q._id),
+        );
+      } else if (!standalone && q.passageGroupId) {
+        const related = bankQuestions.filter(
+          (bq) => bq.passageGroupId === q.passageGroupId,
+        );
         setSelectedQuestions((prev) => {
-          const toAdd = relatedQuestions.filter(rq => !prev.some(sq => (sq._id || sq) === rq._id));
+          const existing = new Set(prev.map((sq) => sq._id || sq));
+          const toAdd = related.filter((rq) => !existing.has(rq._id));
           return [...prev, ...toAdd];
         });
       } else {
         setSelectedQuestions((prev) => [...prev, q]);
       }
-    }
-  };
+    },
+    [bankQuestions, selectedQuestions, setSelectedQuestions],
+  );
 
-  // Select all questions currently shown in bank questions
-  const handleSelectAllShown = () => {
+  const handleToggleGroup = useCallback(
+    (groupQuestions, allGroupSelected) => {
+      if (allGroupSelected) {
+        const gIds = new Set(groupQuestions.map((gq) => gq._id));
+        setSelectedQuestions((prev) =>
+          prev.filter((sq) => !gIds.has(sq._id || sq)),
+        );
+      } else {
+        setSelectedQuestions((prev) => {
+          const existing = new Set(prev.map((sq) => sq._id || sq));
+          const toAdd = groupQuestions.filter((gq) => !existing.has(gq._id));
+          return [...prev, ...toAdd];
+        });
+      }
+    },
+    [setSelectedQuestions],
+  );
+
+  const handleSelectAllShown = useCallback(() => {
     const newQuestions = bankQuestions.filter(
-      (q) => !selectedQuestions.some((sq) => (sq._id || sq) === q._id),
+      (q) => !selectedIdsSet.has(q._id),
     );
     if (newQuestions.length === 0) {
-      // If all are already selected, clear current page selection
+      const shownIds = new Set(bankQuestions.map((b) => b._id));
       setSelectedQuestions((prev) =>
-        prev.filter(
-          (sq) => !bankQuestions.some((bq) => bq._id === (sq._id || sq)),
-        ),
+        prev.filter((sq) => !shownIds.has(sq._id || sq)),
       );
     } else {
       setSelectedQuestions((prev) => [...prev, ...newQuestions]);
     }
-  };
+  }, [bankQuestions, selectedIdsSet, setSelectedQuestions]);
 
   const allShownSelected = useMemo(() => {
     if (bankQuestions.length === 0) return false;
-    return bankQuestions.every((bq) =>
-      selectedQuestions.some((sq) => (sq._id || sq) === bq._id),
+    return bankQuestions.every((bq) => selectedIdsSet.has(bq._id));
+  }, [bankQuestions, selectedIdsSet]);
+
+  const handleReorderSelected = useCallback(
+    (fromIndex, toIndex) => {
+      if (
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= selectedQuestions.length ||
+        toIndex >= selectedQuestions.length
+      ) {
+        return;
+      }
+      setSelectedQuestions((prev) => {
+        const next = [...prev];
+        const [moved] = next.splice(fromIndex, 1);
+        next.splice(toIndex, 0, moved);
+        return next;
+      });
+    },
+    [selectedQuestions.length, setSelectedQuestions],
+  );
+
+  const handleRemoveSelected = useCallback(
+    (qId) => {
+      setSelectedQuestions((prev) =>
+        prev.filter((sq) => (sq._id || sq) !== qId),
+      );
+    },
+    [setSelectedQuestions],
+  );
+
+  const handleInspectQuestion = useCallback((question) => {
+    setInspectedQuestion(question);
+    setSidebarTab("inspector");
+    setShowMobileSidebar(true);
+  }, []);
+
+  const handleQuickTagFilter = useCallback(
+    (type, value) => {
+      const toggleVal = (setter) =>
+        setter((prev) =>
+          prev.includes(value) ? prev : [...prev, value],
+        );
+
+      if (type === "topic") {
+        toggleVal(setSelectedTopics);
+        toast.success(`টপিক "#${value}" দিয়ে ফিল্টার করা হচ্ছে`);
+      } else if (type === "special") {
+        toggleVal(setSelectedTags);
+        toast.success(`কীওয়ার্ড "${value}" দিয়ে ফিল্টার করা হচ্ছে`);
+      } else if (type === "school") {
+        toggleVal(setSelectedSchools);
+        toast.success(`স্কুল "${value}" দিয়ে ফিল্টার করা হচ্ছে`);
+      }
+      setSidebarTab("filters");
+    },
+    [setSelectedSchools, setSelectedTags, setSelectedTopics],
+  );
+
+  // Active filter summary chips displayed above feed
+  const activeFilterChips = useMemo(() => {
+    const chips = [];
+    selectedChapters.forEach((chNum) => {
+      chips.push({
+        key: `ch-${chNum}`,
+        label: `অধ্যায় ${toBnNumber(chNum)}`,
+        onRemove: () =>
+          setSelectedChapters((prev) => prev.filter((c) => c !== chNum)),
+      });
+    });
+    selectedTopics.forEach((t) =>
+      chips.push({
+        key: `tp-${t}`,
+        label: `#${t}`,
+        onRemove: () =>
+          setSelectedTopics((prev) => prev.filter((x) => x !== t)),
+      }),
     );
-  }, [bankQuestions, selectedQuestions]);
+    selectedTags.forEach((t) =>
+      chips.push({
+        key: `ss-${t}`,
+        label: t === "Exercise" ? "অনুশীলনী" : t,
+        onRemove: () =>
+          setSelectedTags((prev) => prev.filter((x) => x !== t)),
+      }),
+    );
+    selectedBoards.forEach((b) =>
+      chips.push({
+        key: `bd-${b}`,
+        label: b,
+        onRemove: () =>
+          setSelectedBoards((prev) => prev.filter((x) => x !== b)),
+      }),
+    );
+    selectedYears.forEach((y) =>
+      chips.push({
+        key: `yr-${y}`,
+        label: y,
+        onRemove: () =>
+          setSelectedYears((prev) => prev.filter((x) => x !== y)),
+      }),
+    );
+    selectedSchools.forEach((s) =>
+      chips.push({
+        key: `sch-${s}`,
+        label: s,
+        onRemove: () =>
+          setSelectedSchools((prev) => prev.filter((x) => x !== s)),
+      }),
+    );
+    selectedDifficulties.forEach((d) =>
+      chips.push({
+        key: `df-${d}`,
+        label: d === "Easy" ? "সহজ" : d === "Medium" ? "মধ্যম" : "কঠিন",
+        onRemove: () =>
+          setSelectedDifficulties((prev) => prev.filter((x) => x !== d)),
+      }),
+    );
+    selectedLevels.forEach((l) =>
+      chips.push({
+        key: `lv-${l}`,
+        label: l,
+        onRemove: () =>
+          setSelectedLevels((prev) => prev.filter((x) => x !== l)),
+      }),
+    );
+    if (hasImageOnly) {
+      chips.push({
+        key: "img-only",
+        label: "চিত্রযুক্ত প্রশ্ন",
+        onRemove: () => setHasImageOnly(false),
+      });
+    }
+    if (uniqueMode) {
+      chips.push({
+        key: "unique-mode",
+        label: "ইউনিক মোড",
+        onRemove: () => setUniqueMode(false),
+      });
+    }
+    return chips;
+  }, [
+    selectedChapters,
+    selectedTopics,
+    selectedTags,
+    selectedBoards,
+    selectedYears,
+    selectedSchools,
+    selectedDifficulties,
+    selectedLevels,
+    hasImageOnly,
+    uniqueMode,
+    setSelectedChapters,
+    setSelectedTopics,
+    setSelectedTags,
+    setSelectedBoards,
+    setSelectedYears,
+    setSelectedSchools,
+    setSelectedDifficulties,
+    setSelectedLevels,
+    setHasImageOnly,
+    setUniqueMode,
+  ]);
 
   if (loadingSets || !activeSet) {
     return (
-      <div className="h-[60vh] flex flex-col items-center justify-center space-y-3">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-        <p className="text-xs text-slate-500 font-semibold">
+      <div className="h-[60vh] flex flex-col items-center justify-center space-y-3 font-bengali">
+        <Loader2 className="h-8 w-8 animate-spin text-[#900EB0]" />
+        <p className="text-sm text-slate-500 font-semibold">
           প্রশ্ন ডেটা লোড হচ্ছে...
         </p>
       </div>
@@ -154,320 +396,173 @@ export default function QuestionSelect() {
   }
 
   return (
-    <div className="space-y-6 pb-12 font-bengali text-left">
-      {/* Top Header Card */}
-      <div className="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleCancel}
-              className="p-1.5 hover:bg-slate-50 text-slate-500 hover:text-slate-800 transition rounded-lg"
-            >
-              <ChevronLeft className="size-5" />
-            </button>
-            <h1 className="text-lg font-black text-slate-800">
-              {activeSet.examName} • {activeSet.subjectName}
-            </h1>
-          </div>
-          <p className="text-xs text-slate-400 pl-8">
-            শ্রেণী: {activeSet.className} • মোট মার্কস: {activeSet.totalMarks} (
-            {selectedQuestions.length} টি নির্বাচিত)
-          </p>
-        </div>
-
-        {/* Action Controls */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={handleSelectAllShown}
-            className={`px-4 py-2 border rounded-xl text-xs font-bold transition cursor-pointer select-none ${
-              allShownSelected
-                ? "bg-indigo-50 border-indigo-200 text-indigo-700"
-                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-            }`}
-          >
-            {allShownSelected ? "সব নির্বাচন বাতিল" : "সব নির্বাচন করুন"}
-          </button>
-
-          <button
-            onClick={() => setIsPreviewOpen(true)}
-            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-          >
-            <Eye className="size-4" />
-            প্রিভিউ ({selectedQuestions.length})
-          </button>
-
-          <button
-            onClick={handleSaveQuestions}
-            disabled={updateQuestionSet.isPending}
-            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-          >
-            {updateQuestionSet.isPending && (
-              <Loader2 className="size-4 animate-spin" />
-            )}
-            সেভ করুন
-          </button>
-        </div>
+    <div className="w-full lg:h-full flex flex-col lg:flex-row lg:overflow-hidden font-bengali text-left">
+      {/* Mobile Filter Drawer Toggle */}
+      <div className="lg:hidden px-4 pt-4 order-1">
+        <button
+          type="button"
+          onClick={() => setShowMobileSidebar((v) => !v)}
+          className="w-full py-2.5 px-4 rounded-2xl border border-purple-200 bg-white/95 text-[#720A7B] text-xs font-bold flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
+        >
+          <SlidersHorizontal className="size-4" />
+          <span>
+            {showMobileSidebar
+              ? "ফিল্টার ও মেটাডাটা প্যানেল লুকান"
+              : `ফিল্টার, কীওয়ার্ড ও নির্বাচিত (${toBnNumber(selectedQuestions.length)})`}
+          </span>
+        </button>
       </div>
 
-      {/* Main Grid: Left Questions area, Right sidebar filters */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left/Middle Area (8 cols): Questions List */}
-        <div className="lg:col-span-8 space-y-4">
-          <div className="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm space-y-4">
-            <h2 className="text-sm font-black text-slate-700 flex items-center gap-1">
-              <BookOpen className="size-4 text-indigo-600" />
-              প্রশ্নব্যাংক থেকে প্রশ্ন নির্বাচন করুন
-            </h2>
+      {/* Left/Main Scrollable Workspace: Sticky-Header Card + Question Bank Feed */}
+      <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto p-4 sm:p-6 lg:p-7 space-y-5 order-3 lg:order-1">
+        <QuestionSelectHeader
+          activeSet={activeSet}
+          syllabusList={syllabusList}
+          selectedQuestions={selectedQuestions}
+          allShownSelected={allShownSelected}
+          hasVisibleQuestions={bankQuestions.length > 0}
+          globalShowAnswers={globalShowAnswers}
+          onToggleGlobalAnswers={() => setGlobalShowAnswers((v) => !v)}
+          onToggleSelectAll={handleSelectAllShown}
+          onOpenPreview={() => setIsPreviewOpen(true)}
+          onSave={handleSaveQuestions}
+          onCancel={handleCancel}
+          saving={updateQuestionSet.isPending}
+        />
 
+        <div className="bg-white/75 backdrop-blur-md border border-slate-200/70 rounded-3xl p-4 sm:p-6 shadow-sm space-y-4">
+            {/* Feed Sub-Header */}
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <span className="p-1.5 rounded-xl bg-[#900EB0]/10 text-[#900EB0]">
+                  <BookOpen className="size-4" />
+                </span>
+                <div>
+                  <h2 className="text-sm sm:text-base font-bold text-slate-800">
+                    প্রশ্নব্যাংক থেকে প্রশ্ন নির্বাচন করুন
+                  </h2>
+                  <p className="text-[11px] text-slate-500">
+                    মোট{" "}
+                    <strong className="text-slate-700">
+                      {toBnNumber(totalBankCount)}
+                    </strong>{" "}
+                    টি অনুমোদিত প্রশ্ন পাওয়া গেছে (প্রদর্শিত:{" "}
+                    {toBnNumber(bankQuestions.length)} টি)
+                  </p>
+                </div>
+              </div>
+
+              {isFetchingBank && !loadingBank && (
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#900EB0] bg-purple-50 px-2.5 py-1 rounded-full">
+                  <Loader2 className="size-3 animate-spin" />
+                  আপডেট হচ্ছে...
+                </span>
+              )}
+            </div>
+
+            {/* Active Filter Chips Bar */}
+            {activeFilterChips.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5 bg-purple-50/40 p-2.5 rounded-2xl border border-purple-100/80">
+                <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1 mr-1">
+                  <Filter className="size-3 text-[#900EB0]" />
+                  সক্রিয়:
+                </span>
+                {activeFilterChips.map((chip) => (
+                  <button
+                    key={chip.key}
+                    type="button"
+                    onClick={chip.onRemove}
+                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white border border-purple-200 text-[#720A7B] text-[11px] font-semibold hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 cursor-pointer transition"
+                  >
+                    <span>{chip.label}</span>
+                    <X className="size-3" />
+                  </button>
+                ))}
+                {selectedChapters.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedChapters([])}
+                    className="ml-auto text-[11px] font-bold text-[#900EB0] hover:underline cursor-pointer px-2"
+                  >
+                    সব অধ্যায় দেখুন
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Question List States */}
             {loadingBank ? (
-              <div className="h-60 flex flex-col items-center justify-center space-y-2">
-                <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
-                <p className="text-[11px] text-slate-400">
+              <div className="h-72 flex flex-col items-center justify-center space-y-3">
+                <Loader2 className="h-7 w-7 animate-spin text-[#900EB0]" />
+                <p className="text-xs font-semibold text-slate-500">
                   প্রশ্নসমূহ লোড হচ্ছে...
                 </p>
               </div>
             ) : bankQuestions.length === 0 ? (
-              <div className="border border-dashed border-slate-200 bg-slate-50/30 p-12 rounded-2xl text-center">
-                <Info className="h-8 w-8 text-slate-350 mx-auto mb-2" />
-                <p className="text-xs text-slate-400">
-                  কোনো মেলানো প্রশ্ন পাওয়া যায়নি। দয়া করে অন্য ফিল্টার চেষ্টা
-                  করুন।
+              <div className="border border-dashed border-purple-200 bg-purple-50/20 p-10 sm:p-14 rounded-2xl text-center space-y-3">
+                <Info className="h-9 w-9 text-purple-300 mx-auto" />
+                <h3 className="text-sm font-bold text-slate-700">
+                  এই ফিল্টারের সাথে কোনো প্রশ্ন পাওয়া যায়নি
+                </h3>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  {selectedChapters.length > 0
+                    ? "নির্বাচিত অধ্যায়গুলোতে পর্যাপ্ত প্রশ্ন না থাকলে সব অধ্যায় থেকে খুঁজে দেখতে পারেন।"
+                    : "দয়া করে অন্য কীওয়ার্ড, বোর্ড, টপিক বা স্পেশাল সার্চ ফিল্টার পরিবর্তন করুন।"}
                 </p>
+                <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
+                  {selectedChapters.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedChapters([])}
+                      className="px-4 py-2 rounded-xl bg-[#900EB0] hover:bg-[#720A7B] text-white text-xs font-bold cursor-pointer transition"
+                    >
+                      সব অধ্যায় থেকে দেখুন
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={resetAllFilters}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold cursor-pointer transition"
+                  >
+                    <RotateCcw className="size-3.5" />
+                    সব ফিল্টার রিসেট
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
-                {groupedBankItems.map((item) => {
-                  if (item.isGroup) {
-                    const groupQuestions = item.questions;
-                    const allGroupSelected = groupQuestions.every((gq) =>
-                      selectedQuestions.some((sq) => (sq._id || sq) === gq._id),
-                    );
-                    const someGroupSelected = groupQuestions.some((gq) =>
-                      selectedQuestions.some((sq) => (sq._id || sq) === gq._id),
-                    );
+                {groupedBankItems.map((item, idx) => (
+                  <QuestionBankCard
+                    key={
+                      item.isGroup
+                        ? `grp-${item.passageGroupId}`
+                        : `q-${item.question?._id}`
+                    }
+                    item={item}
+                    indexOffset={itemStartSerials[idx]}
+                    selectedIdsSet={selectedIdsSet}
+                    globalShowAnswers={globalShowAnswers}
+                    inspectedQuestionId={inspectedQuestion?._id || null}
+                    availableChapters={availableChapters}
+                    onToggleQuestion={handleToggleQuestion}
+                    onToggleGroup={handleToggleGroup}
+                    onInspectQuestion={handleInspectQuestion}
+                    onQuickTagFilter={handleQuickTagFilter}
+                  />
+                ))}
 
-                    return (
-                      <div
-                        key={item.groupId}
-                        className={`border p-4 rounded-2xl transition space-y-3 ${
-                          someGroupSelected
-                            ? "bg-indigo-50/20 border-indigo-300 shadow-sm"
-                            : "bg-white border-slate-150 hover:border-slate-300"
-                        }`}
-                      >
-                        {/* Group Header Stem */}
-                        <div className="flex justify-between items-start gap-4 border-b border-slate-150 pb-3">
-                          <div className="flex-1 space-y-1">
-                            <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
-                              উদ্দীপকভিত্তিক প্রশ্নগুচ্ছ ({groupQuestions.length} টি)
-                            </span>
-                            <div className="font-bold text-slate-800 text-[13px] italic mt-1 leading-relaxed">
-                              <RichTextRender html={item.passageStem} />
-                            </div>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (allGroupSelected) {
-                                const gIds = new Set(groupQuestions.map((gq) => gq._id));
-                                setSelectedQuestions((prev) =>
-                                  prev.filter((sq) => !gIds.has(sq._id || sq)),
-                                );
-                              } else {
-                                setSelectedQuestions((prev) => {
-                                  const existingIds = new Set(prev.map((sq) => sq._id || sq));
-                                  const toAdd = groupQuestions.filter(
-                                    (gq) => !existingIds.has(gq._id),
-                                  );
-                                  return [...prev, ...toAdd];
-                                });
-                              }
-                            }}
-                            className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 shrink-0 ${
-                              allGroupSelected
-                                ? "bg-indigo-600 text-white"
-                                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                            }`}
-                          >
-                            <Check className="size-3" />
-                            {allGroupSelected ? "সবগুলো নির্বাচিত" : "সবগুলো বাছুন"}
-                          </button>
-                        </div>
-
-                        {/* Sub-questions List */}
-                        <div className="space-y-2.5 pt-1">
-                          {groupQuestions.map((q, subIdx) => {
-                            const isSubSelected = selectedQuestions.some(
-                              (sq) => (sq._id || sq) === q._id,
-                            );
-                            return (
-                              <div
-                                key={q._id}
-                                onClick={() => {
-                                  if (isSubSelected) {
-                                    setSelectedQuestions((prev) =>
-                                      prev.filter((sq) => (sq._id || sq) !== q._id),
-                                    );
-                                  } else {
-                                    setSelectedQuestions((prev) => [...prev, q]);
-                                  }
-                                }}
-                                className={`p-3 rounded-xl border transition cursor-pointer flex justify-between gap-3 ${
-                                  isSubSelected
-                                    ? "bg-indigo-100/50 border-indigo-300"
-                                    : "bg-slate-50/70 border-slate-200/70 hover:bg-slate-100/70"
-                                }`}
-                              >
-                                <div className="space-y-1 text-[13px] text-slate-800 flex-1">
-                                  <div className="flex gap-2">
-                                    <span className="font-bold shrink-0 text-slate-500">
-                                      {(subIdx + 1).toLocaleString("bn-BD")}।
-                                    </span>
-                                    <div className="flex-1 font-semibold">
-                                      <RichTextRender html={q.mcqData?.questionText || q.generalData?.questionText || ""} />
-                                    </div>
-                                  </div>
-
-                                  {q.category === "MCQ" && q.mcqData?.options && (
-                                    <div className="grid grid-cols-2 gap-1.5 text-slate-600 text-[12px] pl-6 mt-1">
-                                      {q.mcqData.options.map((opt, oIdx) => (
-                                        <div key={oIdx}>
-                                          {["ক", "খ", "গ", "ঘ"][oIdx]}। {opt}
-                                        </div>
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-
-                                <div className="shrink-0 flex items-center justify-center">
-                                  <div
-                                    className={`h-4.5 w-4.5 rounded-full border-2 flex items-center justify-center transition-all ${
-                                      isSubSelected
-                                        ? "bg-indigo-600 border-indigo-600 text-white shadow"
-                                        : "bg-white border-slate-300"
-                                    }`}
-                                  >
-                                    {isSubSelected && <Check className="size-3" />}
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  const q = item.question;
-                  const isSelected = selectedQuestions.some(
-                    (sq) => (sq._id || sq) === q._id,
-                  );
-                  return (
-                    <div
-                      key={q._id}
-                      onClick={() => handleToggleQuestion(q)}
-                      className={`border p-4 rounded-2xl transition cursor-pointer flex justify-between gap-4 text-left ${
-                        isSelected
-                          ? "bg-indigo-50/20 border-indigo-300 shadow-sm"
-                          : "bg-white border-slate-150 hover:border-slate-300"
-                      }`}
-                    >
-                      <div className="space-y-2 text-[13px] text-slate-800 flex-1">
-                        {/* MCQ Stem/Options */}
-                        {q.category === "MCQ" && q.mcqData && (
-                          <div className="space-y-1.5">
-                            <div className="font-bold">
-                              <RichTextRender html={q.mcqData.questionText} />
-                            </div>
-                            {q.mcqData.options && (
-                              <div className="grid grid-cols-2 gap-1.5 text-slate-600 text-[13px]">
-                                {q.mcqData.options.map((opt, oIdx) => (
-                                  <div key={oIdx}>
-                                    {["ক", "খ", "গ", "ঘ"][oIdx]}। {opt}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {/* CQ Stem/Questions */}
-                        {q.category === "Creative" && q.creativeData && (
-                          <div className="space-y-1.5">
-                            <div className="font-bold text-slate-700 leading-relaxed">
-                              <RichTextRender html={q.creativeData.stem} />
-                            </div>
-                            {q.creativeData.subQuestions && (
-                              <div className="space-y-1 pl-2 text-slate-600 text-[13px]">
-                                {Object.entries(
-                                  q.creativeData.subQuestions,
-                                ).map(([key, sq], sqIdx) => (
-                                  <div key={key}>
-                                    {["ক", "খ", "গ", "ঘ"][sqIdx]}) {sq.text}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {/* General questions */}
-                        {q.category !== "MCQ" &&
-                          q.category !== "Creative" &&
-                          q.generalData && (
-                            <div className="font-bold">
-                              <RichTextRender
-                                html={q.generalData.questionText}
-                              />
-                            </div>
-                          )}
-
-                        {/* Badges footer */}
-                        <div className="flex items-center gap-1.5 flex-wrap pt-1 text-[9px] font-bold text-slate-400 uppercase">
-                          <span className="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200/50">
-                            {q.level === "Knowledge"
-                              ? "জ্ঞান"
-                              : q.level === "Understanding"
-                                ? "অনুধাবন"
-                                : q.level === "Application"
-                                  ? "প্রয়োগ"
-                                  : "উচ্চতর দক্ষতা"}
-                          </span>
-                          <span className="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200/50">
-                            {q.difficulty === "Easy"
-                              ? "সহজ"
-                              : q.difficulty === "Medium"
-                                ? "মধ্যম"
-                                : "কঠিন"}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Checkbox circle selector */}
-                      <div className="shrink-0 flex items-center justify-center">
-                        <div
-                          className={`h-5 w-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                            isSelected
-                              ? "bg-indigo-600 border-indigo-600 text-white scale-110 shadow"
-                              : "bg-white border-slate-250"
-                          }`}
-                        >
-                          {isSelected && <Check className="size-3" />}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* Infinite Load More button */}
                 {hasMoreBankQuestions && (
-                  <div className="pt-2 flex justify-center">
+                  <div className="pt-3 flex justify-center">
                     <button
-                      onClick={fetchNextBankPage}
-                      className="px-6 py-2.5 bg-slate-50 border text-slate-600 rounded-xl text-xs font-bold hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition cursor-pointer"
+                      type="button"
+                      disabled={isFetchingNextBankPage}
+                      onClick={() => fetchNextBankPage()}
+                      className="px-7 py-2.5 bg-purple-50 hover:bg-[#900EB0] text-[#720A7B] hover:text-white border border-purple-200 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-2xs"
                     >
-                      আরও প্রশ্ন লোড করুন
+                      {isFetchingNextBankPage && (
+                        <Loader2 className="size-3.5 animate-spin" />
+                      )}
+                      <span>আরও প্রশ্ন লোড করুন</span>
                     </button>
                   </div>
                 )}
@@ -476,214 +571,72 @@ export default function QuestionSelect() {
           </div>
         </div>
 
-        {/* Right Sidebar Area (4 cols): Filters Menu */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="bg-glass-elevated border border-slate-200/50 p-5 rounded-2xl space-y-6">
-            <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-1">
-              <Sliders className="size-3.5" />
-              অ্যাডভান্সড ফিল্টার মেনু
-            </h3>
+        {/* Right Fixed-Height Docked Sidebar: Filters & Metadata Inspector */}
+        <QuestionFilterSidebar
+          className={
+            showMobileSidebar
+              ? "block px-4 pt-3 lg:p-0 order-2"
+              : "hidden lg:block lg:order-2"
+          }
+          activeTab={sidebarTab}
+            onChangeTab={setSidebarTab}
+            activeSet={activeSet}
+            searchKeyword={searchKeyword}
+            setSearchKeyword={setSearchKeyword}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+            uniqueMode={uniqueMode}
+            setUniqueMode={setUniqueMode}
+            selectedChapters={selectedChapters}
+            setSelectedChapters={setSelectedChapters}
+            setChapterNumbers={setChapterNumbers}
+            selectedTopics={selectedTopics}
+            setSelectedTopics={setSelectedTopics}
+            selectedDifficulties={selectedDifficulties}
+            setSelectedDifficulties={setSelectedDifficulties}
+            selectedLevels={selectedLevels}
+            setSelectedLevels={setSelectedLevels}
+            selectedBoards={selectedBoards}
+            setSelectedBoards={setSelectedBoards}
+            selectedYears={selectedYears}
+            setSelectedYears={setSelectedYears}
+            selectedSchools={selectedSchools}
+            setSelectedSchools={setSelectedSchools}
+            selectedTags={selectedTags}
+            setSelectedTags={setSelectedTags}
+            selectedMcqTypes={selectedMcqTypes}
+            setSelectedMcqTypes={setSelectedMcqTypes}
+            selectedCategories={selectedCategories}
+            setSelectedCategories={setSelectedCategories}
+            hasImageOnly={hasImageOnly}
+            setHasImageOnly={setHasImageOnly}
+            resetAllFilters={resetAllFilters}
+            metadataOptions={metadataOptions}
+            availableChapters={availableChapters}
+            availableTopics={availableTopics}
+            allowedSubjectCategories={allowedSubjectCategories}
+            totalBankCount={totalBankCount}
+            selectedQuestions={selectedQuestions}
+            inspectedQuestion={inspectedQuestion}
+            onReorderSelected={handleReorderSelected}
+            onRemoveSelected={handleRemoveSelected}
+            onClearSelected={() => setSelectedQuestions([])}
+            onInspectQuestion={handleInspectQuestion}
+            onQuickTagFilter={handleQuickTagFilter}
+          />
 
-            {/* Keyword Search */}
-            <div className="space-y-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="কীওয়ার্ড সার্চ করুন"
-                  value={searchKeyword}
-                  onChange={(e) => setSearchKeyword(e.target.value)}
-                  className="w-full pl-9 pr-3 h-10 border border-slate-200 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none focus:ring-4 focus:ring-indigo-50 transition-all font-sans"
-                />
-              </div>
-            </div>
-
-            {/* Unique Mode Toggle */}
-            <div className="border border-slate-100 bg-slate-50 p-3.5 rounded-xl space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-extrabold text-slate-700">
-                  ইউনিক মোড
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setUniqueMode(!uniqueMode)}
-                  className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-                    uniqueMode ? "bg-indigo-600" : "bg-slate-200"
-                  }`}
-                >
-                  <span
-                    className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
-                      uniqueMode ? "translate-x-4" : "translate-x-0"
-                    }`}
-                  />
-                </button>
-              </div>
-              <p className="text-[10px] text-slate-400 leading-normal">
-                পূর্বে তৈরি করা প্রশ্ন বাদ দিয়ে নতুন প্রশ্ন তৈরি হবে, একটি
-                পরীক্ষার সাথে অন্য পরীক্ষার প্রশ্ন মিল হবে না।
-              </p>
-            </div>
-
-            {/* Cognitive Level Checklist */}
-            <div className="space-y-3">
-              <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-wide">
-                কগনিটিভ লেভেল
-              </h4>
-              {[
-                { value: "Knowledge", label: "জ্ঞান" },
-                { value: "Understanding", label: "অনুধাবন" },
-                { value: "Application", label: "প্রয়োগ" },
-                { value: "Higher Order", label: "উচ্চতর দক্ষতা" },
-              ].map((lvl) => {
-                const isChecked = selectedLevels.includes(lvl.value);
-                return (
-                  <label
-                    key={lvl.value}
-                    className="flex items-center gap-2 text-xs font-bold text-slate-600 cursor-pointer select-none"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() =>
-                        setSelectedLevels((prev) =>
-                          isChecked
-                            ? prev.filter((l) => l !== lvl.value)
-                            : [...prev, lvl.value],
-                        )
-                      }
-                      className="size-3.5 accent-indigo-600 rounded border-slate-350"
-                    />
-                    <span>{lvl.label}</span>
-                  </label>
-                );
-              })}
-            </div>
-
-            {/* Special Search flags checkboxes */}
-            <div className="space-y-3">
-              <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-wide">
-                প্রশ্নব্যাংক স্পেশাল সার্চ
-              </h4>
-              {[
-                { value: "Exercise", label: "অনুশীলনী" },
-                { value: "HasImage", label: "চিত্রযুক্ত" },
-                { value: "MultipleCompletion", label: "বহুপদী" },
-                { value: "StimulusBased", label: "অভিন্ন তথ্যভিত্তিক" },
-              ].map((tag) => {
-                const isChecked = selectedTags.includes(tag.value);
-                return (
-                  <label
-                    key={tag.value}
-                    className="flex items-center gap-2 text-xs font-bold text-slate-600 cursor-pointer select-none"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() =>
-                        setSelectedTags((prev) =>
-                          isChecked
-                            ? prev.filter((t) => t !== tag.value)
-                            : [...prev, tag.value],
-                        )
-                      }
-                      className="size-3.5 accent-indigo-600 rounded border-slate-350"
-                    />
-                    <span>{tag.label}</span>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Selected Questions Preview Modal */}
-      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto bg-glass-elevated backdrop-blur-xl border border-slate-200/50 shadow-2xl rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-base font-extrabold text-slate-800 font-bengali">
-              নির্বাচিত প্রশ্ন প্রিভিউ ({selectedQuestions.length} টি)
-            </DialogTitle>
-            <DialogDescription className="text-xs text-slate-400">
-              নির্বাচিত প্রশ্নগুলোর খসড়া তালিকা
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 my-4 font-bengali text-xs">
-            {selectedQuestions.length === 0 ? (
-              <p className="text-center text-slate-400 py-6">
-                কোনো প্রশ্ন নির্বাচিত নেই।
-              </p>
-            ) : (
-              selectedQuestions.map((q, idx) => (
-                <div key={q._id} className="border-b pb-3 flex gap-2">
-                  <span className="font-extrabold text-slate-400">
-                    {(idx + 1).toLocaleString("bn-BD")}।
-                  </span>
-                  <div className="flex-1 space-y-2">
-                    {q.category === "MCQ" && q.mcqData && (
-                      <div className="space-y-1">
-                        <div className="font-bold">
-                          <RichTextRender html={q.mcqData.questionText} />
-                        </div>
-                        {q.mcqData.options && (
-                          <div className="grid grid-cols-2 gap-1 text-[11px] text-slate-500">
-                            {q.mcqData.options.map((opt, oIdx) => (
-                              <div key={oIdx}>
-                                {["ক", "খ", "গ", "ঘ"][oIdx]}। {opt}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    {q.category === "Creative" && q.creativeData && (
-                      <div className="space-y-1">
-                        <div className="font-bold text-slate-700 leading-relaxed">
-                          <RichTextRender html={q.creativeData.stem} />
-                        </div>
-                        {q.creativeData.subQuestions && (
-                          <div className="space-y-0.5 text-slate-600 pl-2">
-                            {Object.entries(q.creativeData.subQuestions).map(
-                              ([key, sq], sqIdx) => (
-                                <div key={key}>
-                                  {["ক", "খ", "গ", "ঘ"][sqIdx]}) {sq.text}
-                                </div>
-                              ),
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    {q.category !== "MCQ" &&
-                      q.category !== "Creative" &&
-                      q.generalData && (
-                        <div className="font-bold">
-                          <RichTextRender html={q.generalData.questionText} />
-                        </div>
-                      )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          <DialogFooter>
-            <button
-              onClick={() => setIsPreviewOpen(false)}
-              className="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold cursor-pointer transition font-bengali"
-            >
-              বন্ধ করুন
-            </button>
-            <button
-              onClick={handleSaveQuestions}
-              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold cursor-pointer transition font-bengali"
-            >
-              নিশ্চিত করুন ও সেভ দিন
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Modern Preview, Arrange & Save Confirmation Modal */}
+      <QuestionPreviewModal
+        open={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+        activeSet={activeSet}
+        selectedQuestions={selectedQuestions}
+        availableChapters={availableChapters}
+        onReorderSelected={handleReorderSelected}
+        onRemoveSelected={handleRemoveSelected}
+        onSave={handleSaveQuestions}
+        saving={updateQuestionSet.isPending}
+      />
     </div>
   );
 }

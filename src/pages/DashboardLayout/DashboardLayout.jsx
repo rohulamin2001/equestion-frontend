@@ -81,7 +81,11 @@ export default function DashboardLayout() {
     return <Navigate to="/affiliate/dashboard" replace />;
   }
 
-  const isSmartboardRoute = location.pathname.startsWith("/dashboard/smartboard");
+  const isSmartboardRoute = location.pathname.startsWith(
+    "/dashboard/smartboard",
+  );
+  const isQuestionSelectRoute =
+    location.pathname === "/dashboard/questions/select";
   const currentTitle = isSmartboardRoute
     ? "স্মার্টবোর্ড"
     : ROUTE_TITLES[location.pathname] || "ড্যাশবোর্ড";
@@ -164,7 +168,9 @@ export default function DashboardLayout() {
               className={
                 isSmartboardRoute
                   ? "flex-1 overflow-hidden p-0 w-full relative z-10"
-                  : "flex-1 overflow-y-auto p-6 lg:p-8 w-full relative z-10"
+                  : isQuestionSelectRoute
+                    ? "flex-1 overflow-y-auto lg:overflow-hidden p-0 w-full relative z-10"
+                    : "flex-1 overflow-y-auto p-6 lg:p-8 w-full relative z-10"
               }
             >
               <Outlet />
