@@ -10,10 +10,13 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import QuestionCardOverlay from "./components/QuestionCardOverlay";
+import QuestionCardOverlay, {
+  OffscreenQuestionExportHost,
+} from "./components/QuestionCardOverlay";
 import SmartboardCanvas from "./components/SmartboardCanvas";
-import { BOARD_TOOLS } from "./constants/boardDefaults";
+import { BACKGROUND_TEMPLATES, BOARD_TOOLS } from "./constants/boardDefaults";
 import { computeFitViewport } from "./engine/coordinateSystem";
+import { useOffscreenCardExport } from "./hooks/useOffscreenCardExport";
 import { smartboardApi } from "./services/smartboardApi";
 import { downloadLessonPdf } from "./utils/exportBoard";
 
@@ -24,6 +27,13 @@ export default function SmartboardPublicNote() {
 
   const [viewport, setViewport] = useState({ x: 20, y: 20, scale: 0.65 });
   const [containerSize, setContainerSize] = useState({ width: 960, height: 600 });
+
+  const {
+    exportRenderSlide,
+    registerOffscreenCardNode,
+    resolveCardNodesForSlide,
+    resetExportRender,
+  } = useOffscreenCardExport();
 
   useEffect(() => {
     const updateSize = () => {
@@ -78,6 +88,8 @@ export default function SmartboardPublicNote() {
   const slides = data.slides || [];
   const activeSlide = slides[slideIdx] || slides[0];
   const allowDownload = data.permissions?.downloadPdf !== false;
+  const activeBgType = activeSlide?.canvas?.background?.type || "WHITEBOARD";
+  const isDarkBoard = Boolean(BACKGROUND_TEMPLATES[activeBgType]?.isDark);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 font-bengali">
@@ -131,14 +143,18 @@ export default function SmartboardPublicNote() {
               onClick={async () => {
                 setExporting(true);
                 try {
-                  await downloadLessonPdf({
-                    title: data.lesson.title,
-                    slides,
-                  });
+                  await downloadLessonPdf(
+                    {
+                      title: data.lesson.title,
+                      slides,
+                    },
+                    { resolveCardNodesForSlide },
+                  );
                   toast.success("PDF ডাউনলোড হয়েছে!");
                 } catch {
                   toast.error("PDF তৈরি করা যায়নি।");
                 } finally {
+                  resetExportRender();
                   setExporting(false);
                 }
               }}
@@ -177,6 +193,7 @@ export default function SmartboardPublicNote() {
               objects={activeSlide.objects}
               viewport={viewport}
               activeTool={BOARD_TOOLS.HAND}
+              isDarkBoard={isDarkBoard}
               onUpdateObject={() => {}}
               onDeleteObject={() => {}}
               registerCardNode={() => {}}
@@ -184,6 +201,11 @@ export default function SmartboardPublicNote() {
           </>
         )}
       </main>
+
+      <OffscreenQuestionExportHost
+        slide={exportRenderSlide}
+        registerNode={registerOffscreenCardNode}
+      />
     </div>
   );
 }

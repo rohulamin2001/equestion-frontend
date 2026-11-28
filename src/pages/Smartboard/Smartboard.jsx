@@ -7,7 +7,9 @@ import ClassroomPresentationTools from "./components/ClassroomPresentationTools"
 import EquationModal from "./components/EquationModal";
 import FloatingToolbar from "./components/FloatingToolbar";
 import PdfImportModal from "./components/PdfImportModal";
-import QuestionCardOverlay from "./components/QuestionCardOverlay";
+import QuestionCardOverlay, {
+  OffscreenQuestionExportHost,
+} from "./components/QuestionCardOverlay";
 import QuestionImportDrawer from "./components/QuestionImportDrawer";
 import ShareLessonModal from "./components/ShareLessonModal";
 import SlideDeckPanel from "./components/SlideDeckPanel";
@@ -36,6 +38,7 @@ import {
   createImageObject,
   createQuestionCardObject,
 } from "./engine/objectFactory";
+import { useOffscreenCardExport } from "./hooks/useOffscreenCardExport";
 import { smartboardApi } from "./services/smartboardApi";
 import { downloadLessonPdf, downloadSlidePng } from "./utils/exportBoard";
 import {
@@ -122,6 +125,16 @@ export default function Smartboard() {
   const activeSlideId = activeSlide._id || activeSlide.localId;
   const activeBgType = activeSlide.canvas?.background?.type || "WHITEBOARD";
   const isDarkBoard = Boolean(BACKGROUND_TEMPLATES[activeBgType]?.isDark);
+
+  const {
+    exportRenderSlide,
+    registerOffscreenCardNode,
+    resolveCardNodesForSlide,
+    resetExportRender,
+  } = useOffscreenCardExport({
+    activeSlideId,
+    activeCardNodesRef: questionCardNodesRef,
+  });
 
   // Measure workspace container and auto-fit initial viewport
   useEffect(() => {
@@ -491,17 +504,24 @@ export default function Smartboard() {
   }, []);
 
   // Import Single Question onto active slide
-  const handleImportSingleQuestion = (question, setId) => {
+  const handleImportSingleQuestion = (
+    question,
+    setId,
+    cardLayout = "top",
+    subjectContext = null,
+  ) => {
     const qObj = createQuestionCardObject({
       question,
       questionSetId: setId,
+      subjectContext,
+      layout: cardLayout,
     });
     commitObjects([...(activeSlide.objects || []), qObj]);
     toast.success("প্রশ্ন স্লাইডে যোগ হয়েছে!");
   };
 
   // Import Whole QuestionSet as 1 Question per Slide
-  const handleImportWholeSet = (set) => {
+  const handleImportWholeSet = (set, cardLayout = "top") => {
     const questions = Array.isArray(set?.questions) ? set.questions : [];
     if (questions.length === 0) return;
 
@@ -515,9 +535,8 @@ export default function Smartboard() {
         createQuestionCardObject({
           question: q,
           questionSetId: set._id,
-          x: 80,
-          y: 44,
-          width: 1200,
+          subjectContext: set.subjectId,
+          layout: cardLayout,
         }),
       ];
       return slide;
@@ -710,11 +729,13 @@ export default function Smartboard() {
           try {
             await downloadLessonPdf(lesson, {
               questionCardNodesMap: questionCardNodesRef.current,
+              resolveCardNodesForSlide,
             });
             toast.success("মাল্টি-পেজ PDF ডাউনলোড হয়েছে!");
           } catch {
             toast.error("PDF এক্সপোর্ট ব্যর্থ হয়েছে।");
           } finally {
+            resetExportRender();
             setExporting(false);
           }
         }}
@@ -881,6 +902,7 @@ export default function Smartboard() {
             objects={activeSlide.objects}
             viewport={viewport}
             activeTool={activeTool}
+            isDarkBoard={isDarkBoard}
             onUpdateObject={handleUpdateObject}
             onDeleteObject={handleDeleteObject}
             registerCardNode={registerCardNode}
@@ -1034,6 +1056,11 @@ export default function Smartboard() {
             toast.error("ডিলিট করা যায়নি।");
           }
         }}
+      />
+
+      <OffscreenQuestionExportHost
+        slide={exportRenderSlide}
+        registerNode={registerOffscreenCardNode}
       />
     </div>
   );

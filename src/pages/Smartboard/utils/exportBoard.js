@@ -392,10 +392,16 @@ export async function downloadSlidePng(slide, options = {}) {
 /**
  * Exports all slides sequentially (one slide rendered & freed at a time)
  * into a 16:9 multi-page landscape PDF without memory spikes.
+ * Uses `resolveCardNodesForSlide` when provided so inactive slides render their
+ * Question Cards offscreen before capture.
  */
 export async function downloadLessonPdf(
   lesson,
-  { questionCardNodesMap = null, onProgress = null } = {},
+  {
+    questionCardNodesMap = null,
+    resolveCardNodesForSlide = null,
+    onProgress = null,
+  } = {},
 ) {
   const slides = Array.isArray(lesson?.slides) ? lesson.slides : [];
   if (slides.length === 0) {
@@ -413,9 +419,13 @@ export async function downloadLessonPdf(
     if (onProgress) {
       onProgress(i + 1, slides.length);
     }
+    const slideCardsMap = resolveCardNodesForSlide
+      ? await resolveCardNodesForSlide(slides[i])
+      : questionCardNodesMap;
+
     const dataUrl = await renderSlideToDataUrl(slides[i], {
       pixelRatio: 1.5,
-      questionCardNodesMap,
+      questionCardNodesMap: slideCardsMap,
     });
     if (i > 0) {
       pdf.addPage([WORLD_WIDTH, WORLD_HEIGHT], "landscape");

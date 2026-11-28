@@ -1,5 +1,6 @@
 import { getStroke } from "perfect-freehand";
 import { BOARD_TOOLS } from "../constants/boardDefaults";
+import { normalizeQuestionToSnapshot } from "../utils/questionSnapshotAdapter";
 
 export function generateBoardId(prefix = "obj") {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
@@ -190,37 +191,26 @@ export function createImageObject({
 export function createQuestionCardObject({
   question,
   questionSetId = null,
-  x = 80,
-  y = 48,
-  width = 1120,
+  subjectContext = null,
+  layout = "top",
+  x,
+  y,
+  width,
   height = 280,
 }) {
   const now = new Date().toISOString();
-  // Normalize immutable snapshot from backend Question / QuestionSet entry
-  const snapshot = {
-    questionText: question.questionText || question.stem || question.question || "",
-    stimulus: question.passageStem || question.stimulus || "",
-    options: Array.isArray(question.options) ? [...question.options] : [],
-    correctAnswer:
-      question.correctAnswer ??
-      question.answer ??
-      (typeof question.correctOptionIndex === "number"
-        ? question.options?.[question.correctOptionIndex]
-        : ""),
-    explanation: question.explanation || question.solution || "",
-    questionType: question.category || question.questionType || "MCQ",
-    subQuestions: Array.isArray(question.subQuestions)
-      ? question.subQuestions.map((sq) => ({ ...sq }))
-      : [],
-    imageUrl: question.imageUrl || question.questionImage || "",
-  };
+  const snapshot = normalizeQuestionToSnapshot(question, subjectContext);
+
+  const defaultX = layout === "side" ? 48 : 80;
+  const defaultY = 44;
+  const defaultWidth = layout === "side" ? 760 : 1220;
 
   return {
     id: generateBoardId("qcard"),
     type: "QUESTION_CARD",
-    x,
-    y,
-    width,
+    x: x ?? defaultX,
+    y: y ?? defaultY,
+    width: width ?? defaultWidth,
     height,
     rotation: 0,
     scaleX: 1,
@@ -230,7 +220,9 @@ export function createQuestionCardObject({
     locked: false,
     style: {
       fontScale: 1,
-      cardOpacity: 0.96,
+      cardOpacity: 0.97,
+      cardTheme: "auto", // "auto" | "light" | "dark"
+      compact: false,
     },
     payload: {
       sourceQuestionId: question._id || question.id || null,
